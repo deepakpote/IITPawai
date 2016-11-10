@@ -16,6 +16,7 @@
         android:layout_height="match_parent"
         android:src="@drawable/sign_in_or_regsiter_background"
         android:scaleType="centerCrop"
+        android:layout_below="@+id/toolbar"
         />
 
     <FrameLayout
