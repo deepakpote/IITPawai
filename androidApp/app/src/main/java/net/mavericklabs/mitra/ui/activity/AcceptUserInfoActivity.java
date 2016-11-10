@@ -31,8 +31,8 @@ public class AcceptUserInfoActivity extends AppCompatActivity {
             return true;
         }
         if (id == R.id.action_next) {
-            //Intent verifyOtp = new Intent(AcceptUserInfoActivity.this,VerifyOtpActivity.class);
-            //startActivity(verifyOtp);
+            Intent verifyOtp = new Intent(AcceptUserInfoActivity.this,HomeActivity.class);
+            startActivity(verifyOtp);
             Logger.d("next clicked.. go to home");
             return true;
         }

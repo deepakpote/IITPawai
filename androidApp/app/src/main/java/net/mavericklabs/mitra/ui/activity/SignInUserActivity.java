@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
 
 import net.mavericklabs.mitra.R;
 
@@ -17,6 +18,9 @@ public class SignInUserActivity extends AppCompatActivity {
 
     @BindView(R.id.register_button)
     Button signIn;
+
+    @BindView(R.id.phone_number_edit_text)
+    EditText phoneNumberEditText;
 
     @OnClick(R.id.register_button)
     void register () {
@@ -47,6 +51,14 @@ public class SignInUserActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             onBackPressed();
+            return true;
+        }
+        if (id == R.id.action_next) {
+            Intent verifyOtp = new Intent(SignInUserActivity.this,VerifyOtpActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("phone_number",phoneNumberEditText.getText().toString());
+            verifyOtp.putExtras(bundle);
+            startActivity(verifyOtp);
             return true;
         }
         return super.onOptionsItemSelected(item);
