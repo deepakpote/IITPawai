@@ -3,6 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-
+    <color name="color_teal">#009688</color>
+    <color name="color_teal_light">#B2DFDB</color>
+    <color name="color_teal_dark">#004D40</color>
     <color name="primary_text">#000000</color>
+    <color name="default_grey">#bebebe</color>
 </resources>

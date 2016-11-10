@@ -18,7 +18,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalVideoCardListAdapter;
+import net.mavericklabs.mitra.utils.Constants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,8 +31,11 @@ import butterknife.ButterKnife;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    @BindView(R.id.popularVideosRecyclerView)
+    @BindView(R.id.popularTeachingAidsRecyclerView)
     RecyclerView popularVideosRecyclerView;
+
+    @BindView(R.id.popularSelfLearningRecyclerView)
+    RecyclerView popularSelfLearningRecyclerView;
 
     @BindView(R.id.bottom_navigation_view)
     BottomNavigationView bottomNavigationView;
@@ -58,9 +66,21 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        List<Content> contents = new ArrayList<>();
+        contents.add(new Content("Video 1", Constants.FileType.VIDEO));
+        contents.add(new Content("PDF 1", Constants.FileType.PDF));
+        contents.add(new Content("PPT 1", Constants.FileType.PPT));
+        contents.add(new Content("Video 2", Constants.FileType.VIDEO));
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
         popularVideosRecyclerView.setLayoutManager(linearLayoutManager);
-        popularVideosRecyclerView.setAdapter(new BaseHorizontalVideoCardListAdapter());
+        popularVideosRecyclerView.setAdapter(new BaseHorizontalVideoCardListAdapter(getApplicationContext(), contents));
+
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
+        popularSelfLearningRecyclerView.setLayoutManager(layoutManager);
+        popularSelfLearningRecyclerView.setAdapter(new BaseHorizontalVideoCardListAdapter(getApplicationContext(), contents));
+
 
         bottomNavigationView.setLayoutAnimation(null);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingBottom="64dp"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
@@ -13,12 +13,87 @@
     tools:context="net.mavericklabs.mitra.ui.activity.HomeActivity"
     tools:showIn="@layout/app_bar_home">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/popularVideosRecyclerView"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    </android.support.v7.widget.RecyclerView>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Discover Teaching Aids"
+                style="@style/ColoredButton"
+                android:layout_margin="8dp"
+                android:background="@color/color_teal_dark"/>
 
-</RelativeLayout>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Learn Something New"
+                style="@style/ColoredButton"
+                android:layout_margin="8dp"
+                android:background="@color/color_teal"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="View Available Trainings"
+                style="@style/ColoredButton"
+                android:layout_margin="8dp"
+                android:background="@color/color_teal_light"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/default_grey"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp">
+            </View>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Popular Teaching Aids"
+                    android:layout_marginBottom="16dp"
+                    android:textSize="20sp"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/popularTeachingAidsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </android.support.v7.widget.RecyclerView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/default_grey"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp">
+                </View>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Popular Self Learning"
+                    android:layout_marginBottom="16dp"
+                    android:textSize="20sp"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/popularSelfLearningRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </android.support.v7.widget.RecyclerView>
+
+
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
