@@ -4,4 +4,12 @@
     <string name="submit">दाखल</string>
     <string name="enter_number">फोन नंबर</string>
     <string name="country_code">+91</string>
+    <string name="welcome_to_mitra">मित्र मध्ये आपले स्वागत</string>
+    <string name="sign_in">साइन इन</string>
+    <string name="register">नोंदणी</string>
+    <string name="enter_your_phone_number">Enter your phone number</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="do_not_have_an_account">Do not have an account?</string>
+    <string name="didn_t_not_receive_otp">Didn\'t not receive OTP?</string>
+    <string name="resend_otp">Resend OTP</string>
 </resources>
