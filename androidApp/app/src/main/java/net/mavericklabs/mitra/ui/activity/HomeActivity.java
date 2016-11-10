@@ -1,6 +1,8 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,6 +29,8 @@ public class HomeActivity extends AppCompatActivity
     @BindView(R.id.popularVideosRecyclerView)
     RecyclerView popularVideosRecyclerView;
 
+    @BindView(R.id.bottom_navigation_view)
+    BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +61,15 @@ public class HomeActivity extends AppCompatActivity
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
         popularVideosRecyclerView.setLayoutManager(linearLayoutManager);
         popularVideosRecyclerView.setAdapter(new BaseHorizontalVideoCardListAdapter());
+
+        bottomNavigationView.setLayoutAnimation(null);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                item.setChecked(true);
+                return false;
+            }
+        });
 
     }
 
