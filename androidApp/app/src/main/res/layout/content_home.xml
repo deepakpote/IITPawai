@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="64dp"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="net.mavericklabs.mitra.ui.activity.HomeActivity"
@@ -58,8 +58,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Popular Teaching Aids"
+                    android:textStyle="bold"
                     android:layout_marginBottom="16dp"
                     android:textSize="20sp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/popularTeachingAidsRecyclerView"
@@ -67,6 +72,18 @@
                     android:layout_height="wrap_content">
 
                 </android.support.v7.widget.RecyclerView>
+                
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"/>
+            </RelativeLayout>
+
 
                 <View
                     android:layout_width="match_parent"
@@ -80,15 +97,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Popular Self Learning"
+                    android:textStyle="bold"
                     android:layout_marginBottom="16dp"
                     android:textSize="20sp"/>
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/popularSelfLearningRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                 </android.support.v7.widget.RecyclerView>
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"/>
+
+            </RelativeLayout>
 
 
 

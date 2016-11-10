@@ -19,7 +19,7 @@ import android.view.MenuItem;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
-import net.mavericklabs.mitra.ui.adapter.BaseHorizontalVideoCardListAdapter;
+import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.utils.Constants;
 
 import java.util.ArrayList;
@@ -39,6 +39,8 @@ public class HomeActivity extends AppCompatActivity
 
     @BindView(R.id.bottom_navigation_view)
     BottomNavigationView bottomNavigationView;
+
+    BaseHorizontalCardListAdapter teachingAidsAdapter, selfLearningAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,12 +76,14 @@ public class HomeActivity extends AppCompatActivity
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
         popularVideosRecyclerView.setLayoutManager(linearLayoutManager);
-        popularVideosRecyclerView.setAdapter(new BaseHorizontalVideoCardListAdapter(getApplicationContext(), contents));
+        teachingAidsAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
+        popularVideosRecyclerView.setAdapter(teachingAidsAdapter);
 
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
         popularSelfLearningRecyclerView.setLayoutManager(layoutManager);
-        popularSelfLearningRecyclerView.setAdapter(new BaseHorizontalVideoCardListAdapter(getApplicationContext(), contents));
+        selfLearningAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
+        popularSelfLearningRecyclerView.setAdapter(selfLearningAdapter);
 
 
         bottomNavigationView.setLayoutAnimation(null);
@@ -91,6 +95,13 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        teachingAidsAdapter.releaseLoaders();
+        selfLearningAdapter.releaseLoaders();
     }
 
     @Override
