@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">MITRA</string>
+    <string name="next">Next</string>
+    <string name="submit">Submit</string>
+    <string name="enter_number">Enter your phone number</string>
+    <string name="country_code">+91</string>
+    <string name="toast_isd_code">Enter ISD code</string>
+    <string name="toast_valid_isd_code">Enter a valid ISD code</string>
+    <string name="toast_valid_phone_number">Enter valid phone number</string>
+    <string name="button_send_code">Send Code</string>
+    <string name="button_manually">ENTER CODE MANUALLY</string>
+    <string name="text_resend_code">Did not receive the code? Resend the code.</string>
+    <string name="toast_automatic_detect">We could not automatically detect an SMS sent to your number. Please enter verification code manually.</string>
+    <string name="phone_hint">Enter phone number</string>
+    <string name="title_edit_phone">Edit Phone Number</string>
+    <string name="toast_6_digits">Please enter all 6 digits.</string>
+    <string name="title_activity_home">HomeActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+</resources>
