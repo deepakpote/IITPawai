@@ -78,7 +78,7 @@ public class HomeActivity extends AppCompatActivity
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
-                            fab.setImageResource(R.drawable.ic_done_white_24dp);
+                            fab.setImageResource(R.drawable.ic_close_white_24dp);
                         }
                     });
                     fadeOutView(bottomNavigationView);
@@ -137,7 +137,7 @@ public class HomeActivity extends AppCompatActivity
         // Animate the viewToShow to 100% opacity
         viewToShow.animate()
                 .alpha(1f)
-                .setDuration(100)
+                .setDuration(200)
                 .setListener(listenerAdapter);
 
     }
@@ -149,7 +149,7 @@ public class HomeActivity extends AppCompatActivity
 
         viewToHide.animate()
                 .alpha(0f)
-                .setDuration(100)
+                .setDuration(300)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
