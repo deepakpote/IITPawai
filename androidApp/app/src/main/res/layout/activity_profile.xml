@@ -193,25 +193,43 @@
                     android:layout_marginRight="16dp"
                     >
 
-                    <android.support.v7.widget.RecyclerView
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/subject_recycler_view"
-                        android:layout_marginEnd="24dp"
-                        android:layout_marginRight="24dp" />
+                        android:layout_height="match_parent"
+                        android:id="@+id/subject_wrapper"
+                        >
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_add_accent_18dp"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true" />
+                        <android.support.v7.widget.RecyclerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/subject_recycler_view"
+                            android:layout_marginEnd="24dp"
+                            android:layout_marginRight="24dp" />
+
+                        <TextView
+                            android:id="@+id/subject_placeholder_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:text="@string/subject_s"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="16sp"
+                            />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/add_subjects"
+                            android:src="@drawable/ic_add_accent_18dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true" />
+                    </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_below="@+id/subject_recycler_view"
+                        android:layout_below="@+id/subject_wrapper"
                         android:background="@color/secondary_text"
                         android:layout_marginTop="4dp"
                         />
@@ -226,25 +244,44 @@
                     android:layout_marginTop="16dp"
                     >
 
-                    <android.support.v7.widget.RecyclerView
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/grade_recycler_view"
-                        android:layout_marginEnd="24dp"
-                        android:layout_marginRight="24dp" />
+                        android:layout_height="match_parent"
+                        android:id="@+id/grade_wrapper"
+                        >
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_add_accent_18dp"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true" />
+                        <android.support.v7.widget.RecyclerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/grade_recycler_view"
+                            android:layout_marginEnd="24dp"
+                            android:layout_marginRight="24dp"
+                            />
+
+                        <TextView
+                            android:id="@+id/grade_placeholder_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/grade_s"
+                            android:textColor="@color/secondary_text"
+                            android:layout_centerVertical="true"
+                            android:textSize="16sp"
+                            />
+
+                        <ImageView
+                            android:id="@+id/add_grades"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_add_accent_18dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true" />
+                    </RelativeLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_below="@+id/grade_recycler_view"
+                        android:layout_below="@+id/grade_wrapper"
                         android:background="@color/secondary_text"
                         android:layout_marginTop="4dp"
                         />

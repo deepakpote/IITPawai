@@ -39,7 +39,7 @@
         <activity
             android:name=".ui.activity.VerifyOtpActivity"
             android:label="Phone Verification" />
-        <activity android:name=".ui.activity.AcceptUserInfoActivity"
+        <activity android:name=".ui.activity.ProfileActivity"
             android:label="My Profile"/>
     </application>
 

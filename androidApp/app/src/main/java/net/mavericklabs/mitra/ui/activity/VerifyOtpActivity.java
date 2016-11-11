@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -68,7 +67,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
         }
         if (id == R.id.action_next) {
             if (isValidOtp()) {
-                Intent verifyOtp = new Intent(VerifyOtpActivity.this,AcceptUserInfoActivity.class);
+                Intent verifyOtp = new Intent(VerifyOtpActivity.this,ProfileActivity.class);
                 startActivity(verifyOtp);
             } else {
                 Toast.makeText(getApplicationContext(), R.string.error_please_enter_4_digit_otp,Toast.LENGTH_LONG).show();
