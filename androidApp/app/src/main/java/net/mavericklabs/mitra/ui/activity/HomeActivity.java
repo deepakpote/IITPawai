@@ -1,5 +1,7 @@
 package net.mavericklabs.mitra.ui.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -40,6 +42,14 @@ public class HomeActivity extends AppCompatActivity
     @BindView(R.id.bottom_navigation_view)
     BottomNavigationView bottomNavigationView;
 
+    @BindView(R.id.faded_background_view)
+    View fadedBackgroundView;
+
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
+
+    private boolean isFabExpanded = false;
+
     BaseHorizontalCardListAdapter teachingAidsAdapter, selfLearningAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,21 +58,41 @@ public class HomeActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if(isFabExpanded) {
+                    fadeInView(bottomNavigationView, new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            fab.setImageResource(R.drawable.ic_explore_white_24dp);
+                        }
+                    });
+                    fadeOutView(fadedBackgroundView);
+
+                    isFabExpanded = false;
+                } else {
+                    fadeInView(fadedBackgroundView, new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            fab.setImageResource(R.drawable.ic_done_white_24dp);
+                        }
+                    });
+                    fadeOutView(bottomNavigationView);
+                    isFabExpanded = true;
+                }
+
+
             }
         });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -96,6 +126,40 @@ public class HomeActivity extends AppCompatActivity
         });
 
     }
+
+    private void fadeInView(View viewToShow, AnimatorListenerAdapter listenerAdapter) {
+        // Set the viewToShow to 0% opacity but visible, so that it is visible
+        // (but fully transparent) during the animation.
+
+        viewToShow.setAlpha(0f);
+        viewToShow.setVisibility(View.VISIBLE);
+
+        // Animate the viewToShow to 100% opacity
+        viewToShow.animate()
+                .alpha(1f)
+                .setDuration(100)
+                .setListener(listenerAdapter);
+
+    }
+
+    private void fadeOutView(final View viewToHide) {
+
+        // Animate the viewToHide to 0% opacity.
+        // After the animation ends, set its visibility to GONE
+
+        viewToHide.animate()
+                .alpha(0f)
+                .setDuration(100)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        viewToHide.setVisibility(View.GONE);
+                    }
+                });
+
+    }
+
 
     @Override
     protected void onDestroy() {
