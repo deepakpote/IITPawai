@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ /*
+  ~  * ************************************************************************
+  ~  *
+  ~  *  MAVERICK LABS CONFIDENTIAL
+  ~  *  __________________
+  ~  *
+  ~  *   [2015] Maverick Labs
+  ~  *   All Rights Reserved.
+  ~  *
+  ~  *  NOTICE:  All information contained herein is, and remains
+  ~  *  the property of Maverick Labs and its suppliers,
+  ~  *  if any.  The intellectual and technical concepts contained
+  ~  *  herein are proprietary to Maverick Labs
+  ~  *  and its suppliers and may be covered by U.S. and Foreign Patents,
+  ~  *  patents in process, and are protected by trade secret or copyright law.
+  ~  *  Dissemination of this information or reproduction of this material
+  ~  *  is strictly forbidden unless prior written permission is obtained
+  ~  *  from Maverick Labs.
+  ~  * /
+  ~  */
+  -->
+
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:elevation="@dimen/cardview_default_elevation"
+    app:cardCornerRadius="@dimen/cardview_default_radius"
+    android:layout_marginTop="8dp"
+    android:layout_marginLeft="4dp"
+    android:layout_marginRight="4dp">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/content_thumbnail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@color/default_grey">
+
+            <com.google.android.youtube.player.YouTubeThumbnailView
+                android:id="@+id/youtube_thumbnail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/file_icon"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/pdf_512"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                android:contentDescription="pdf"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp">
+
+            <TextView
+                android:id="@+id/content_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Title"
+                android:textSize="20sp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/content_title"
+                android:text="Subject | Grade"
+                android:textColor="@color/colorAccent"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginRight="32dp"
+                    android:text="VIEW"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SAVE"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+
+
+    </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+

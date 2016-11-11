@@ -1,3 +1,26 @@
+/*
+ *
+ *  * ************************************************************************
+ *  *
+ *  *  MAVERICK LABS CONFIDENTIAL
+ *  *  __________________
+ *  *
+ *  *   [2015] Maverick Labs
+ *  *   All Rights Reserved.
+ *  *
+ *  *  NOTICE:  All information contained herein is, and remains
+ *  *  the property of Maverick Labs and its suppliers,
+ *  *  if any.  The intellectual and technical concepts contained
+ *  *  herein are proprietary to Maverick Labs
+ *  *  and its suppliers and may be covered by U.S. and Foreign Patents,
+ *  *  patents in process, and are protected by trade secret or copyright law.
+ *  *  Dissemination of this information or reproduction of this material
+ *  *  is strictly forbidden unless prior written permission is obtained
+ *  *  from Maverick Labs.
+ *  * /
+ *
+ */
+
 package net.mavericklabs.mitra.ui.adapter;
 
 import android.content.Context;
@@ -31,13 +54,13 @@ import butterknife.ButterKnife;
  * Created by root on 9/11/16.
  */
 
-public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHorizontalCardListAdapter.CardViewHolder> {
+public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<ContentVerticalCardListAdapter.CardViewHolder> {
 
     private Context context;
     private List<Content> contents;
     private final Map<YouTubeThumbnailView, YouTubeThumbnailLoader> thumbnailViewToLoaderMap;
 
-    public BaseHorizontalCardListAdapter(Context applicationContext, List<Content> contents) {
+    public ContentVerticalCardListAdapter(Context applicationContext, List<Content> contents) {
         this.context = applicationContext;
         this.contents = contents;
         thumbnailViewToLoaderMap = new HashMap<>();
@@ -50,7 +73,7 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
 
     @Override
     public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.popular_item_card_view,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_item_card_view,parent,false);
         return new CardViewHolder(view);
     }
 
@@ -60,9 +83,10 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
 
         ViewGroup.LayoutParams layoutParams = holder.contentView.getLayoutParams();
-        layoutParams.width = displayMetrics.widthPixels / 2 - (DisplayUtils.dpToPx(24, context));
-        layoutParams.height = layoutParams.width + (DisplayUtils.dpToPx(8, context));
+        layoutParams.width = displayMetrics.widthPixels / 3;
+        layoutParams.height = layoutParams.width - (DisplayUtils.dpToPx(16, context));
         holder.contentView.setLayoutParams(layoutParams);
+
 
         //Load Video
         if(holder.getItemViewType() == Constants.FileType.VIDEO.ordinal()) {

@@ -22,6 +22,7 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/teaching_aids_solid_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Discover Teaching Aids"
@@ -30,6 +31,7 @@
                 android:background="@color/color_teal_dark"/>
 
             <Button
+                android:id="@+id/self_learning_solid_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Learn Something New"
@@ -38,6 +40,7 @@
                 android:background="@color/color_teal"/>
 
             <Button
+                android:id="@+id/trainings_solid_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="View Available Trainings"

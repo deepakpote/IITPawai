@@ -37,7 +37,7 @@
                 android:contentDescription="pdf"/>
 
             <TextView
-                android:id="@+id/youtube_video_title"
+                android:id="@+id/content_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Title"

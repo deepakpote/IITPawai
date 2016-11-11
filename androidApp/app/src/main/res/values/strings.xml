@@ -35,5 +35,8 @@
     <string name="name">Name</string>
     <string name="i_am">I am</string>
     <string name="district">District</string>
+    <string name="title_activity_teaching_aids">TeachingAidsActivity</string>
+    <string name="subject">Subject</string>
+    <string name="grade">Grade</string>
 
 </resources>

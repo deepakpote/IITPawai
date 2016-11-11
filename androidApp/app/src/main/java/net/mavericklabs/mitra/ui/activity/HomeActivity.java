@@ -2,11 +2,11 @@ package net.mavericklabs.mitra.ui.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -18,11 +18,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.AnimationUtils;
+import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +51,24 @@ public class HomeActivity extends AppCompatActivity
     @BindView(R.id.fab)
     FloatingActionButton fab;
 
+    @BindView(R.id.teaching_aids_button)
+    Button teachingAidsButton;
+
+    @BindView(R.id.self_learning_button)
+    Button selfLearningButton;
+
+    @BindView(R.id.trainings_button)
+    Button trainingsButton;
+
+    @BindView(R.id.teaching_aids_solid_button)
+    Button teachingAidsSolidButton;
+
+    @BindView(R.id.self_learning_solid_button)
+    Button selfLearningSolidButton;
+
+    @BindView(R.id.trainings_solid_button)
+    Button trainingsSolidButton;
+
     private boolean isFabExpanded = false;
 
     BaseHorizontalCardListAdapter teachingAidsAdapter, selfLearningAdapter;
@@ -59,33 +80,14 @@ public class HomeActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        setupFAB();
+
+        teachingAidsSolidButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isFabExpanded) {
-                    fadeInView(bottomNavigationView, new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            fab.setImageResource(R.drawable.ic_explore_white_24dp);
-                        }
-                    });
-                    fadeOutView(fadedBackgroundView);
-
-                    isFabExpanded = false;
-                } else {
-                    fadeInView(fadedBackgroundView, new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            fab.setImageResource(R.drawable.ic_close_white_24dp);
-                        }
-                    });
-                    fadeOutView(bottomNavigationView);
-                    isFabExpanded = true;
-                }
-
-
+                //Go to teaching aids
+                Intent intent = new Intent(HomeActivity.this, TeachingAidsActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -127,37 +129,54 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
-    private void fadeInView(View viewToShow, AnimatorListenerAdapter listenerAdapter) {
-        // Set the viewToShow to 0% opacity but visible, so that it is visible
-        // (but fully transparent) during the animation.
-
-        viewToShow.setAlpha(0f);
-        viewToShow.setVisibility(View.VISIBLE);
-
-        // Animate the viewToShow to 100% opacity
-        viewToShow.animate()
-                .alpha(1f)
-                .setDuration(200)
-                .setListener(listenerAdapter);
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AnimationUtils.fadeInView(bottomNavigationView, null);
+        fadedBackgroundView.setVisibility(View.GONE);
+        fab.setImageResource(R.drawable.ic_explore_white_24dp);
+        isFabExpanded = false;
     }
 
-    private void fadeOutView(final View viewToHide) {
+    private void setupFAB() {
+        teachingAidsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Go to teaching aids
+                Intent intent = new Intent(HomeActivity.this, TeachingAidsActivity.class);
+                startActivity(intent);
+            }
+        });
 
-        // Animate the viewToHide to 0% opacity.
-        // After the animation ends, set its visibility to GONE
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isFabExpanded) {
+                    AnimationUtils.fadeInView(bottomNavigationView, new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            fab.setImageResource(R.drawable.ic_explore_white_24dp);
+                        }
+                    });
+                    AnimationUtils.fadeOutView(fadedBackgroundView);
 
-        viewToHide.animate()
-                .alpha(0f)
-                .setDuration(300)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        viewToHide.setVisibility(View.GONE);
-                    }
-                });
+                    isFabExpanded = false;
+                } else {
+                    AnimationUtils.fadeInView(fadedBackgroundView, new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            fab.setImageResource(R.drawable.ic_close_white_24dp);
+                        }
+                    });
+                    AnimationUtils.fadeOutView(bottomNavigationView);
+                    isFabExpanded = true;
+                }
 
+
+            }
+        });
     }
 
 
