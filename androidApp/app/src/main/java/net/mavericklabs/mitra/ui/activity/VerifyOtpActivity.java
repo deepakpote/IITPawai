@@ -1,17 +1,23 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.telephony.PhoneNumberUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.os.Build.VERSION.SDK_INT;
 
 public class VerifyOtpActivity extends AppCompatActivity {
 
@@ -20,6 +26,9 @@ public class VerifyOtpActivity extends AppCompatActivity {
 
     @BindView(R.id.resend_otp_button)
     Button resendOtpButton;
+
+    @BindView(R.id.otp_edit_text)
+    EditText otpEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +41,16 @@ public class VerifyOtpActivity extends AppCompatActivity {
         if (getIntent().getExtras() != null) {
             Bundle bundle = getIntent().getExtras();
             phoneNumber = bundle.getString("phone_number");
-            enteredPhoneNumberEditText.setText(phoneNumber);
+            String formattedNumber;
+            if (SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber,"in");
+            } else {
+                formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber);
+            }
+            enteredPhoneNumberEditText.setText(formattedNumber);
         }
+
+        otpEditText.requestFocus();
     }
 
     @Override
@@ -50,10 +67,18 @@ public class VerifyOtpActivity extends AppCompatActivity {
             return true;
         }
         if (id == R.id.action_next) {
-            Intent verifyOtp = new Intent(VerifyOtpActivity.this,AcceptUserInfoActivity.class);
-            startActivity(verifyOtp);
+            if (isValidOtp()) {
+                Intent verifyOtp = new Intent(VerifyOtpActivity.this,AcceptUserInfoActivity.class);
+                startActivity(verifyOtp);
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.error_please_enter_4_digit_otp,Toast.LENGTH_LONG).show();
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean isValidOtp() {
+        return otpEditText.getText().length() == 4;
     }
 }

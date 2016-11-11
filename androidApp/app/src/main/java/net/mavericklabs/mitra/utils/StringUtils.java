@@ -229,4 +229,8 @@ public class StringUtils {
         return str.replaceAll("[^\\x00-\\x7F]", "");
     }
 
+    public static String removeAllWhitespace(String str) {
+        return str.replaceAll("\\s+","");
+    }
+
 }

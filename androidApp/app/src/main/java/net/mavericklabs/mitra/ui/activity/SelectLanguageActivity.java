@@ -30,6 +30,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -49,12 +50,14 @@ import butterknife.OnClick;
 
 public class SelectLanguageActivity extends AppCompatActivity {
 
-    int currentLocale = 0;
     @BindView(R.id.select_english_button)
     Button selectEnglish;
 
     @BindView(R.id.select_marathi_button)
     Button selectMarathi;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     @OnClick(R.id.select_english_button) void selectEnglish() {
         Logger.d("selected english");
@@ -70,6 +73,11 @@ public class SelectLanguageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_language);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        Logger.d("toolbar is set " + getSupportActionBar());
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("");
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
