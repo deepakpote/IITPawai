@@ -1,9 +1,11 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.telephony.PhoneNumberUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -14,6 +16,8 @@ import net.mavericklabs.mitra.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.os.Build.VERSION.SDK_INT;
 
 public class VerifyOtpActivity extends AppCompatActivity {
 
@@ -37,7 +41,13 @@ public class VerifyOtpActivity extends AppCompatActivity {
         if (getIntent().getExtras() != null) {
             Bundle bundle = getIntent().getExtras();
             phoneNumber = bundle.getString("phone_number");
-            enteredPhoneNumberEditText.setText(phoneNumber);
+            String formattedNumber;
+            if (SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber,"in");
+            } else {
+                formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber);
+            }
+            enteredPhoneNumberEditText.setText(formattedNumber);
         }
 
         otpEditText.requestFocus();
