@@ -67,7 +67,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
         }
         if (id == R.id.action_next) {
             if (isValidOtp()) {
-                Intent verifyOtp = new Intent(VerifyOtpActivity.this,ProfileActivity.class);
+                Intent verifyOtp = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
                 startActivity(verifyOtp);
             } else {
                 Toast.makeText(getApplicationContext(), R.string.error_please_enter_4_digit_otp,Toast.LENGTH_LONG).show();

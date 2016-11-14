@@ -45,4 +45,9 @@
     <string name="grade_s">Grade/s</string>
     <string name="subject_s">Subject/s</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="almost_done">Almost done!</string>
+    <string name="just_tell_a_little_about_yourself">Just tell a little about yourself</string>
+
 </resources>

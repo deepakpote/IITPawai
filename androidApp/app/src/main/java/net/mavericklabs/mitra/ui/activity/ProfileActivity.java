@@ -1,6 +1,8 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,21 +11,25 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivityGradesAdapter;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivitySubjectsAdapter;
+import net.mavericklabs.mitra.ui.fragment.SubjectAndGradeFragment;
 import net.mavericklabs.mitra.utils.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity implements OnDialogFragmentDismissedListener {
 
     private boolean isAdditionalViewExpanded;
 
@@ -35,10 +41,15 @@ public class ProfileActivity extends AppCompatActivity {
     @BindView(R.id.less_image) ImageView lessImage;
     @BindView(R.id.grade_placeholder_text) TextView gradePlaceholderTextView;
     @BindView(R.id.subject_placeholder_text) TextView subjectPlaceholderTextView;
+    @BindView(R.id.i_am_spinner) Spinner iAmSpinner;
 
     @OnClick(R.id.add_grades)
     void showAddGradesMenu() {
-        Logger.d("adding grades..");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(android.R.id.content,new SubjectAndGradeFragment(),"grade_fragment");
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     @OnClick(R.id.add_subjects)
@@ -80,6 +91,12 @@ public class ProfileActivity extends AppCompatActivity {
         gradeRecyclerView.setHasFixedSize(true);
         gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
         gradeRecyclerView.setAdapter(new ProfileActivityGradesAdapter());
+
+        String[] choices = {"SELECT","Teacher","Student"};
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item,choices);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        iAmSpinner.setAdapter(adapter);
+
     }
 
     @Override
@@ -98,5 +115,11 @@ public class ProfileActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDialogFragmentDismissed() {
+        Logger.d("dialog fragment dismissed..");
+        gradeRecyclerView.getAdapter().notifyDataSetChanged();
     }
 }
