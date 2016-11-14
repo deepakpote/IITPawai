@@ -24,6 +24,7 @@
 package net.mavericklabs.mitra.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -40,6 +41,7 @@ import com.google.android.youtube.player.YouTubeThumbnailView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
 
@@ -126,6 +128,15 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
         }
 
         holder.videoTitle.setText(contents.get(holder.getAdapterPosition()).getTitle());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ContentDetailsActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+
+            }
+        });
 
     }
 

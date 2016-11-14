@@ -41,4 +41,9 @@
         <item name="android:padding">8dp</item>
     </style>
 
+    <style name="ColoredTitle" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
 </resources>
