@@ -20,7 +20,15 @@
         </activity>
         <activity
             android:name=".ui.activity.HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" >
+
+             <!--<intent-filter>-->
+             <!--<action android:name="android.intent.action.MAIN" />-->
+
+
+             <!--<category android:name="android.intent.category.LAUNCHER" />-->
+             <!--</intent-filter>-->
+        </activity>
         <activity
             android:name=".ui.activity.SelectLanguageActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -42,6 +50,10 @@
             android:name=".ui.activity.ProfileActivity"
             android:label="My Profile" />
         <activity android:name=".ui.activity.AlmostDoneActivity" />
+        <activity
+            android:name=".ui.activity.TeachingAidsActivity"
+            android:label="@string/title_activity_teaching_aids"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

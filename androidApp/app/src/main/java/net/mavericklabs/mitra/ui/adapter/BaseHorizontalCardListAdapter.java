@@ -1,13 +1,13 @@
 package net.mavericklabs.mitra.ui.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -20,8 +20,9 @@ import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
 
-import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,14 +31,16 @@ import butterknife.ButterKnife;
  * Created by root on 9/11/16.
  */
 
-public class BaseHorizontalVideoCardListAdapter extends RecyclerView.Adapter<BaseHorizontalVideoCardListAdapter.CardViewHolder> {
+public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHorizontalCardListAdapter.CardViewHolder> {
 
     private Context context;
     private List<Content> contents;
+    private final Map<YouTubeThumbnailView, YouTubeThumbnailLoader> thumbnailViewToLoaderMap;
 
-    public BaseHorizontalVideoCardListAdapter(Context applicationContext, List<Content> contents) {
+    public BaseHorizontalCardListAdapter(Context applicationContext, List<Content> contents) {
         this.context = applicationContext;
         this.contents = contents;
+        thumbnailViewToLoaderMap = new HashMap<>();
     }
 
     @Override
@@ -47,7 +50,7 @@ public class BaseHorizontalVideoCardListAdapter extends RecyclerView.Adapter<Bas
 
     @Override
     public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_card_view,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.popular_item_card_view,parent,false);
         return new CardViewHolder(view);
     }
 
@@ -68,6 +71,7 @@ public class BaseHorizontalVideoCardListAdapter extends RecyclerView.Adapter<Bas
             final YouTubeThumbnailLoader.OnThumbnailLoadedListener onThumbnailLoadedListener = new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
                 @Override
                 public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
+                    holder.contentView.setBackgroundColor(Color.BLACK);
 
                 }
 
@@ -80,7 +84,8 @@ public class BaseHorizontalVideoCardListAdapter extends RecyclerView.Adapter<Bas
             holder.youTubeThumbnailView.initialize(Constants.youtubeDeveloperKey, new YouTubeThumbnailView.OnInitializedListener() {
                 @Override
                 public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
-                    youTubeThumbnailLoader.setVideo("IVpOyKCNZYw");
+                    thumbnailViewToLoaderMap.put(youTubeThumbnailView, youTubeThumbnailLoader);
+                    youTubeThumbnailLoader.setVideo("AZ2ZPmEfjvU");
                     youTubeThumbnailLoader.setOnThumbnailLoadedListener(onThumbnailLoadedListener);
                 }
 
@@ -100,6 +105,12 @@ public class BaseHorizontalVideoCardListAdapter extends RecyclerView.Adapter<Bas
 
     }
 
+    public void releaseLoaders() {
+        for (YouTubeThumbnailLoader loader : thumbnailViewToLoaderMap.values()) {
+            loader.release();
+        }
+    }
+
     @Override
     public int getItemCount() {
         return contents.size();
@@ -112,7 +123,7 @@ public class BaseHorizontalVideoCardListAdapter extends RecyclerView.Adapter<Bas
         @BindView(R.id.youtube_thumbnail)
         YouTubeThumbnailView youTubeThumbnailView;
 
-        @BindView(R.id.youtube_video_title)
+        @BindView(R.id.content_title)
         TextView videoTitle;
 
         @BindView(R.id.file_icon)

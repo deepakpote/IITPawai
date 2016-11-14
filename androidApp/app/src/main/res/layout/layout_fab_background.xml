@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ /*
+  ~  * ************************************************************************
+  ~  *
+  ~  *  MAVERICK LABS CONFIDENTIAL
+  ~  *  __________________
+  ~  *
+  ~  *   [2015] Maverick Labs
+  ~  *   All Rights Reserved.
+  ~  *
+  ~  *  NOTICE:  All information contained herein is, and remains
+  ~  *  the property of Maverick Labs and its suppliers,
+  ~  *  if any.  The intellectual and technical concepts contained
+  ~  *  herein are proprietary to Maverick Labs
+  ~  *  and its suppliers and may be covered by U.S. and Foreign Patents,
+  ~  *  patents in process, and are protected by trade secret or copyright law.
+  ~  *  Dissemination of this information or reproduction of this material
+  ~  *  is strictly forbidden unless prior written permission is obtained
+  ~  *  from Maverick Labs.
+  ~  * /
+  ~  */
+  -->
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/faded_background_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/select_language_background" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#CCFFFFFF"/>
+
+        <LinearLayout
+            android:id="@+id/button_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="120dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp">
+
+            <Button
+                android:id="@+id/teaching_aids_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Teaching Aids"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"/>
+
+            <Button
+                android:id="@+id/self_learning_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Self learning"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"/>
+
+            <Button
+                android:id="@+id/trainings_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trainings"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"/>
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="64dp"
+        app:srcCompat="@drawable/ic_explore_white_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>
