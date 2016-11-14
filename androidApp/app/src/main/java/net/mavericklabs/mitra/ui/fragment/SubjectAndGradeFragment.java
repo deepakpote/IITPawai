@@ -47,6 +47,7 @@ public class SubjectAndGradeFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnDialogFragmentDismissedListener) {
+            Logger.d("on attached is instanceof listener..");
             onDialogFragmentDismissedListener = ((OnDialogFragmentDismissedListener)context);
         }
     }
@@ -70,6 +71,7 @@ public class SubjectAndGradeFragment extends DialogFragment {
         ButterKnife.bind(this,view);
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.grade_s);
+        Logger.d("activity is : " + getActivity());
         String[] gradeList = {"Grade 1" , "Grade 2"};
         subjectOrGradeListView.setAdapter(new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_multiple_choice,gradeList));
         subjectOrGradeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

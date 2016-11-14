@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -23,6 +25,9 @@ import android.widget.Button;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
+import net.mavericklabs.mitra.ui.fragment.HomeFragment;
+import net.mavericklabs.mitra.ui.fragment.ProfileFragment;
+import net.mavericklabs.mitra.ui.fragment.SubjectAndGradeFragment;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.AnimationUtils;
 import net.mavericklabs.mitra.utils.Logger;
@@ -35,12 +40,6 @@ import butterknife.ButterKnife;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    @BindView(R.id.popularTeachingAidsRecyclerView)
-    RecyclerView popularVideosRecyclerView;
-
-    @BindView(R.id.popularSelfLearningRecyclerView)
-    RecyclerView popularSelfLearningRecyclerView;
 
     @BindView(R.id.bottom_navigation_view)
     BottomNavigationView bottomNavigationView;
@@ -60,18 +59,7 @@ public class HomeActivity extends AppCompatActivity
     @BindView(R.id.trainings_button)
     Button trainingsButton;
 
-    @BindView(R.id.teaching_aids_solid_button)
-    Button teachingAidsSolidButton;
-
-    @BindView(R.id.self_learning_solid_button)
-    Button selfLearningSolidButton;
-
-    @BindView(R.id.trainings_solid_button)
-    Button trainingsSolidButton;
-
     private boolean isFabExpanded = false;
-
-    BaseHorizontalCardListAdapter teachingAidsAdapter, selfLearningAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,17 +67,8 @@ public class HomeActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
+        setSupportActionBar(toolbar);
         setupFAB();
-
-        teachingAidsSolidButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Go to teaching aids
-                Intent intent = new Intent(HomeActivity.this, TeachingAidsActivity.class);
-                startActivity(intent);
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -100,22 +79,7 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        List<Content> contents = new ArrayList<>();
-        contents.add(new Content("Video 1", Constants.FileType.VIDEO));
-        contents.add(new Content("PDF 1", Constants.FileType.PDF));
-        contents.add(new Content("PPT 1", Constants.FileType.PPT));
-        contents.add(new Content("Video 2", Constants.FileType.VIDEO));
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
-        popularVideosRecyclerView.setLayoutManager(linearLayoutManager);
-        teachingAidsAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
-        popularVideosRecyclerView.setAdapter(teachingAidsAdapter);
-
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
-        popularSelfLearningRecyclerView.setLayoutManager(layoutManager);
-        selfLearningAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
-        popularSelfLearningRecyclerView.setAdapter(selfLearningAdapter);
+        selectFragment(bottomNavigationView.getMenu().getItem(0));
 
 
         bottomNavigationView.setLayoutAnimation(null);
@@ -123,10 +87,29 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 item.setChecked(true);
-                return false;
+                selectFragment(item);
+                return true;
             }
         });
+    }
 
+    private void selectFragment(MenuItem item) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction;
+        switch (item.getItemId()) {
+            case R.id.action_home :
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, new HomeFragment(),"ACTION_HOME");
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                break;
+            case R.id.action_profile:
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, new ProfileFragment(),"ACTION_PROFILE");
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                break;
+        }
     }
 
     @Override
@@ -183,8 +166,6 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        teachingAidsAdapter.releaseLoaders();
-        selfLearningAdapter.releaseLoaders();
     }
 
     @Override

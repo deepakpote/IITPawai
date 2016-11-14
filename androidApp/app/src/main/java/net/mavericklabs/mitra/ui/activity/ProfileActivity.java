@@ -42,6 +42,7 @@ public class ProfileActivity extends AppCompatActivity implements OnDialogFragme
     @BindView(R.id.grade_placeholder_text) TextView gradePlaceholderTextView;
     @BindView(R.id.subject_placeholder_text) TextView subjectPlaceholderTextView;
     @BindView(R.id.i_am_spinner) Spinner iAmSpinner;
+    @BindView(R.id.district_spinner) Spinner districtSpinner;
 
     @OnClick(R.id.add_grades)
     void showAddGradesMenu() {
@@ -92,11 +93,17 @@ public class ProfileActivity extends AppCompatActivity implements OnDialogFragme
         gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
         gradeRecyclerView.setAdapter(new ProfileActivityGradesAdapter());
 
+        //temp
         String[] choices = {"SELECT","Teacher","Student"};
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item,choices);
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        iAmSpinner.setAdapter(adapter);
+        String[] districts = {"SELECT","Beed","Jalna"};
 
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_spinner_item,choices);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        iAmSpinner.setAdapter(adapter);
+
+        ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_spinner_item,districts);
+        districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        districtSpinner.setAdapter(districtAdapter);
     }
 
     @Override
