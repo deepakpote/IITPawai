@@ -13,9 +13,11 @@ import android.widget.Button;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.activity.TeachingAidsActivity;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
+import net.mavericklabs.mitra.ui.adapter.NewsListAdapter;
 import net.mavericklabs.mitra.utils.Constants;
 
 import java.util.ArrayList;
@@ -36,6 +38,9 @@ public class HomeFragment extends Fragment{
 
     @BindView(R.id.popularSelfLearningRecyclerView)
     RecyclerView popularSelfLearningRecyclerView;
+
+    @BindView(R.id.news_recycler_view)
+    RecyclerView newsRecyclerView;
 
     @BindView(R.id.teaching_aids_solid_button)
     Button teachingAidsSolidButton;
@@ -80,18 +85,34 @@ public class HomeFragment extends Fragment{
         teachingAidsAdapter = new BaseHorizontalCardListAdapter(getContext(), contents);
         popularVideosRecyclerView.setAdapter(teachingAidsAdapter);
 
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
-        popularSelfLearningRecyclerView.setLayoutManager(layoutManager);
+        LinearLayoutManager manager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+        popularSelfLearningRecyclerView.setLayoutManager(manager);
         selfLearningAdapter = new BaseHorizontalCardListAdapter(getContext(), contents);
         popularSelfLearningRecyclerView.setAdapter(selfLearningAdapter);
+
+        List<News> news = new ArrayList<>();
+        news.add(new News("Title 1", "Details 1"));
+        news.add(new News("Title 2", "Details 2"));
+        news.add(new News("Title 3", "Details 3"));
+        news.add(new News("Title 4", "Details 4"));
+
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        newsRecyclerView.setLayoutManager(layoutManager);
+        NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), news);
+        newsRecyclerView.setAdapter(newsListAdapter);
 
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        teachingAidsAdapter.releaseLoaders();
-        selfLearningAdapter.releaseLoaders();
+        if(teachingAidsAdapter != null) {
+            teachingAidsAdapter.releaseLoaders();
+        }
+
+        if(selfLearningAdapter != null) {
+            selfLearningAdapter.releaseLoaders();
+        }
     }
 }
