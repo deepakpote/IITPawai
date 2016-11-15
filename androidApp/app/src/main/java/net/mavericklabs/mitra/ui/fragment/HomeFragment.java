@@ -91,7 +91,11 @@ public class HomeFragment extends Fragment{
     @Override
     public void onDetach() {
         super.onDetach();
-        teachingAidsAdapter.releaseLoaders();
-        selfLearningAdapter.releaseLoaders();
+        if (teachingAidsAdapter != null ) {
+            teachingAidsAdapter.releaseLoaders();
+        }
+        if (selfLearningAdapter != null) {
+            selfLearningAdapter.releaseLoaders();
+        }
     }
 }

@@ -25,6 +25,7 @@ import android.widget.Button;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
+import net.mavericklabs.mitra.ui.fragment.EventCalendarFragment;
 import net.mavericklabs.mitra.ui.fragment.HomeFragment;
 import net.mavericklabs.mitra.ui.fragment.ProfileFragment;
 import net.mavericklabs.mitra.ui.fragment.SubjectAndGradeFragment;
@@ -37,6 +38,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.R.attr.id;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -60,6 +63,8 @@ public class HomeActivity extends AppCompatActivity
     Button trainingsButton;
 
     private boolean isFabExpanded = false;
+    private int selectedBottomView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,14 +103,24 @@ public class HomeActivity extends AppCompatActivity
         FragmentTransaction fragmentTransaction;
         switch (item.getItemId()) {
             case R.id.action_home :
+                selectedBottomView = R.id.action_home;
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, new HomeFragment(),"ACTION_HOME");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
+                Logger.d("action home selected..");
                 break;
             case R.id.action_profile:
+                selectedBottomView = R.id.action_profile;
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, new ProfileFragment(),"ACTION_PROFILE");
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                break;
+            case R.id.action_trainings:
+                selectedBottomView = R.id.action_trainings;
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, new EventCalendarFragment(),"ACTION_CALENDAR");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 break;
@@ -174,6 +189,13 @@ public class HomeActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            MenuItem homeItem = bottomNavigationView.getMenu().getItem(0);
+            Logger.d("in else.. home item id : " + homeItem.getItemId() + "\n selectedBottomView : " + selectedBottomView);
+            if (selectedBottomView != homeItem.getItemId()) {
+                // select home item
+                Logger.d("in if.. selecting home item..");
+                selectFragment(homeItem);
+            }
             super.onBackPressed();
         }
     }

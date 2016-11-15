@@ -3,6 +3,7 @@
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#FF9100</color>
+    <color name="colorAccentTransparent">#FFD180</color>
     <color name="colorToolbarText">#FFFFFF</color>
     <color name="colorTransparentWhite">#BFFFFFFF</color>
     <color name="colorWhite">#FFFFFF</color>
