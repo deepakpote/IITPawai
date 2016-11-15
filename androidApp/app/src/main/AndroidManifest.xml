@@ -13,28 +13,23 @@
         <activity
             android:name=".ui.activity.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar">
-
-             <intent-filter>
-             <action android:name="android.intent.action.MAIN" />
-
-
-             <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity
             android:name=".ui.activity.HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            android:theme="@style/AppTheme.NoActionBar" >
+             <intent-filter>
+             <action android:name="android.intent.action.MAIN" />
+             <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.SelectLanguageActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.activity.AcceptPhoneNumberActivity" />
-        <activity android:name=".ui.activity.PhoneVerificationActivity" />
         <activity android:name=".ui.activity.UserInfoActivity" />
         <activity
             android:name=".ui.activity.ChooseSignInOrRegisterActivity"
@@ -49,12 +44,14 @@
             android:name=".ui.activity.VerifyOtpActivity"
             android:label="Phone Verification" />
         <activity
-            android:name=".ui.activity.AcceptUserInfoActivity"
+            android:name=".ui.activity.ProfileActivity"
             android:label="My Profile" />
+        <activity android:name=".ui.activity.AlmostDoneActivity" />
         <activity
             android:name=".ui.activity.TeachingAidsActivity"
             android:label="@string/title_activity_teaching_aids"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity android:name=".ui.activity.ContentDetailsActivity"></activity>
     </application>
 
