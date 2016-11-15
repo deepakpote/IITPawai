@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,6 +27,7 @@ import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.fragment.HomeFragment;
+import net.mavericklabs.mitra.ui.fragment.MyResourcesFragment;
 import net.mavericklabs.mitra.ui.fragment.ProfileFragment;
 import net.mavericklabs.mitra.ui.fragment.SubjectAndGradeFragment;
 import net.mavericklabs.mitra.utils.Constants;
@@ -59,12 +61,14 @@ public class HomeActivity extends AppCompatActivity
     @BindView(R.id.trainings_button)
     Button trainingsButton;
 
+    private TabLayout tabLayout;
     private boolean isFabExpanded = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
+        tabLayout = (TabLayout) findViewById(R.id.tabs_my_resources);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -98,12 +102,26 @@ public class HomeActivity extends AppCompatActivity
         FragmentTransaction fragmentTransaction;
         switch (item.getItemId()) {
             case R.id.action_home :
+                tabLayout.setVisibility(View.GONE);
+
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, new HomeFragment(),"ACTION_HOME");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 break;
+
+            case R.id.action_bookmarks :
+                tabLayout.setVisibility(View.VISIBLE);
+
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, new MyResourcesFragment(),"ACTION_MY_RESOURCES");
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                break;
+
             case R.id.action_profile:
+                tabLayout.setVisibility(View.GONE);
+
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, new ProfileFragment(),"ACTION_PROFILE");
                 fragmentTransaction.addToBackStack(null);
