@@ -25,7 +25,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="16dp"
+    android:layout_marginBottom="16dp"
     tools:context="net.mavericklabs.mitra.ui.activity.ContentDetailsActivity">
 
     <LinearLayout
@@ -57,26 +57,25 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_below="@+id/content_image_view"
-                    android:background="@color/color_teal_dark">
+                    android:layout_below="@+id/content_image_view">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:src="@drawable/ic_event_white_24dp" />
+                        android:src="@drawable/ic_favorite_grey_24dp" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:src="@drawable/ic_bookmark_white_24dp" />
+                        android:src="@drawable/ic_bookmark_grey_24dp" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:src="@drawable/ic_person_white_24dp" />
+                        android:src="@drawable/ic_share_grey_24dp" />
 
                 </LinearLayout>
 
@@ -100,11 +99,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="Subject | Grade" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="Lorem ipsum" />
 
         </LinearLayout>
@@ -130,7 +131,8 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/requirements_grid_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
 
             </android.support.v7.widget.RecyclerView>
 
@@ -151,14 +153,15 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Similar"
-                android:textColor="@color/colorAccent" />
+                android:text="Similar Resources"
+                android:textSize="20sp"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/similar_contents_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="32dp">
 
             </android.support.v7.widget.RecyclerView>
 
