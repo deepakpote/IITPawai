@@ -29,7 +29,6 @@ import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -256,10 +255,10 @@ public class TeachingAidsActivity extends AppCompatActivity {
 
 
             List<Content> contents = new ArrayList<>();
-            contents.add(new Content("Video 1", Constants.FileType.VIDEO));
-            contents.add(new Content("PDF 1", Constants.FileType.PDF));
-            contents.add(new Content("PPT 1", Constants.FileType.PPT));
-            contents.add(new Content("Video 2", Constants.FileType.VIDEO));
+            contents.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
+            contents.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.TEACHING_AIDS));
+            contents.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.TEACHING_AIDS));
+            contents.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
             contentRecyclerView.setLayoutManager(linearLayoutManager);

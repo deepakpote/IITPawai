@@ -51,6 +51,9 @@
             android:name=".ui.activity.TeachingAidsActivity"
             android:label="@string/title_activity_teaching_aids"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.SelfLearningActivity"
+            android:label="@string/title_activity_teaching_aids"/>
 
         <activity android:name=".ui.activity.ContentDetailsActivity"></activity>
     </application>

@@ -101,8 +101,18 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
             holder.youTubeThumbnailView.setVisibility(View.GONE);
         }
 
-        holder.videoTitle.setText(contents.get(holder.getAdapterPosition()).getTitle());
+        holder.videoTitle.setText(getObject(holder).getTitle());
 
+        if(getObject(holder).getType() == Constants.Type.TEACHING_AIDS) {
+            holder.details.setText("Subject | Grade");
+        } else {
+            holder.details.setText("Topic | Language");
+        }
+
+    }
+
+    private Content getObject(RecyclerView.ViewHolder holder) {
+        return contents.get(holder.getAdapterPosition());
     }
 
     public void releaseLoaders() {
@@ -125,6 +135,9 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
 
         @BindView(R.id.content_title)
         TextView videoTitle;
+
+        @BindView(R.id.details)
+        TextView details;
 
         @BindView(R.id.file_icon)
         ImageView fileIcon;

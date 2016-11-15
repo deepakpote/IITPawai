@@ -26,6 +26,7 @@ package net.mavericklabs.mitra.ui.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,16 +130,29 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
         }
 
         holder.videoTitle.setText(contents.get(holder.getAdapterPosition()).getTitle());
+        if(getObject(holder).getType() == Constants.Type.TEACHING_AIDS) {
+            holder.details.setText("Subject | Grade");
+        } else {
+            holder.details.setText("Topic | Language");
+        }
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, ContentDetailsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("content", (Serializable) getObject(holder));
+                intent.putExtras(bundle);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
 
             }
         });
 
+    }
+
+    private Content getObject(RecyclerView.ViewHolder holder) {
+        return contents.get(holder.getAdapterPosition());
     }
 
     public void releaseLoaders() {
@@ -163,6 +178,9 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
 
         @BindView(R.id.file_icon)
         ImageView fileIcon;
+
+        @BindView(R.id.details)
+        TextView details;
 
         CardViewHolder(View itemView) {
             super(itemView);

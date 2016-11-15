@@ -131,6 +131,15 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
+        selfLearningButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Go to teaching aids
+                Intent intent = new Intent(HomeActivity.this, SelfLearningActivity.class);
+                startActivity(intent);
+            }
+        });
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

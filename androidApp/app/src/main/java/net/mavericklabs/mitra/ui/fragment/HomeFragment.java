@@ -14,7 +14,7 @@ import android.widget.Button;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.News;
-import net.mavericklabs.mitra.ui.activity.HomeActivity;
+import net.mavericklabs.mitra.ui.activity.SelfLearningActivity;
 import net.mavericklabs.mitra.ui.activity.TeachingAidsActivity;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.NewsListAdapter;
@@ -54,6 +54,12 @@ public class HomeFragment extends Fragment{
     @BindView(R.id.self_learning_solid_button)
     Button selfLearningSolidButton;
 
+    @OnClick(R.id.self_learning_solid_button)
+    void goToSelfLearning() {
+        Intent intent = new Intent(getContext(), SelfLearningActivity.class);
+        startActivity(intent);
+    }
+
     @BindView(R.id.trainings_solid_button)
     Button trainingsSolidButton;
 
@@ -74,21 +80,19 @@ public class HomeFragment extends Fragment{
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
 
-        List<Content> contents = new ArrayList<>();
-        contents.add(new Content("Video 1", Constants.FileType.VIDEO));
-        contents.add(new Content("PDF 1", Constants.FileType.PDF));
-        contents.add(new Content("PPT 1", Constants.FileType.PPT));
-        contents.add(new Content("Video 2", Constants.FileType.VIDEO));
+        //Dummy data
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
-        popularVideosRecyclerView.setLayoutManager(linearLayoutManager);
-        teachingAidsAdapter = new BaseHorizontalCardListAdapter(getContext(), contents);
-        popularVideosRecyclerView.setAdapter(teachingAidsAdapter);
+        List<Content> contentsTeachingAids = new ArrayList<>();
+        contentsTeachingAids.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
+        contentsTeachingAids.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.TEACHING_AIDS));
+        contentsTeachingAids.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.TEACHING_AIDS));
+        contentsTeachingAids.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
 
-        LinearLayoutManager manager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
-        popularSelfLearningRecyclerView.setLayoutManager(manager);
-        selfLearningAdapter = new BaseHorizontalCardListAdapter(getContext(), contents);
-        popularSelfLearningRecyclerView.setAdapter(selfLearningAdapter);
+        List<Content> contentsSelfLearning = new ArrayList<>();
+        contentsSelfLearning.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
+        contentsSelfLearning.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.SELF_LEARNING));
+        contentsSelfLearning.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.SELF_LEARNING));
+        contentsSelfLearning.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
 
         List<News> news = new ArrayList<>();
         news.add(new News("Title 1", "Details 1"));
@@ -96,6 +100,15 @@ public class HomeFragment extends Fragment{
         news.add(new News("Title 3", "Details 3"));
         news.add(new News("Title 4", "Details 4"));
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+        popularVideosRecyclerView.setLayoutManager(linearLayoutManager);
+        teachingAidsAdapter = new BaseHorizontalCardListAdapter(getContext(), contentsTeachingAids);
+        popularVideosRecyclerView.setAdapter(teachingAidsAdapter);
+
+        LinearLayoutManager manager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+        popularSelfLearningRecyclerView.setLayoutManager(manager);
+        selfLearningAdapter = new BaseHorizontalCardListAdapter(getContext(), contentsSelfLearning);
+        popularSelfLearningRecyclerView.setAdapter(selfLearningAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         newsRecyclerView.setLayoutManager(layoutManager);
@@ -105,8 +118,8 @@ public class HomeFragment extends Fragment{
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onDestroy() {
+        super.onDestroy();
         if(teachingAidsAdapter != null) {
             teachingAidsAdapter.releaseLoaders();
         }

@@ -16,4 +16,10 @@ public interface Constants {
         PDF,
         PPT
     }
+
+    //Temp enum
+    enum Type {
+        TEACHING_AIDS,
+        SELF_LEARNING
+    }
 }
