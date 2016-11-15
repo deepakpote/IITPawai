@@ -10,29 +10,47 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity
+            android:name=".ui.activity.SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
         <activity
             android:name=".ui.activity.HomeActivity"
-            android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:theme="@style/AppTheme.NoActionBar" >
+             <intent-filter>
+             <action android:name="android.intent.action.MAIN" />
+             <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.MainActivity">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
+        <activity
+            android:name=".ui.activity.SelectLanguageActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.activity.AcceptPhoneNumberActivity" />
-        <activity android:name=".ui.activity.PhoneVerificationActivity" />
         <activity android:name=".ui.activity.UserInfoActivity" />
+        <activity
+            android:name=".ui.activity.ChooseSignInOrRegisterActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.RegisterUserActivity"
+            android:label="Register" />
+        <activity
+            android:name=".ui.activity.SignInUserActivity"
+            android:label="Sign In" />
+        <activity
+            android:name=".ui.activity.VerifyOtpActivity"
+            android:label="Phone Verification" />
+        <activity
+            android:name=".ui.activity.ProfileActivity"
+            android:label="My Profile" />
+        <activity android:name=".ui.activity.AlmostDoneActivity" />
+        <activity
+            android:name=".ui.activity.TeachingAidsActivity"
+            android:label="@string/title_activity_teaching_aids"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

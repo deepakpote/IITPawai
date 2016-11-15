@@ -20,5 +20,37 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="title_activity_choose_sign_in_or_register">ChooseSignInOrRegisterActivity</string>
+    <string name="welcome_to_mitra">Welcome to MITRA!</string>
+    <string name="sign_in">Sign in</string>
+    <string name="register">Register</string>
+    <string name="enter_your_phone_number">Enter your phone number</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="do_not_have_an_account">Do not have an account?</string>
+    <string name="didn_t_not_receive_otp">Didn\'t not receive OTP?</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="enter_phone_number">Enter phone number</string>
+    <string name="error_please_enter_4_digit_otp">Please enter 4 digit OTP</string>
+    <string name="error_10_digit_phone_number">Please enter 10 digit phone number</string>
+    <string name="name">Name</string>
+    <string name="i_am">I am</string>
+    <string name="district">District</string>
+    <string name="udise">UDISE</string>
+    <string name="more">More</string>
+    <string name="i_teach">I Teach</string>
+    <string name="less">LESS</string>
+    <string name="i_am_interested_in_learning">I am interested in learning</string>
+    <string name="topics">Topics</string>
+    <string name="skills">Skills</string>
+    <string name="grade_s">Grade/s</string>
+    <string name="subject_s">Subject/s</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="almost_done">Almost done!</string>
+    <string name="just_tell_a_little_about_yourself">Just tell a little about yourself</string>
+    <string name="title_activity_teaching_aids">TeachingAidsActivity</string>
+    <string name="subject">Subject</string>
+    <string name="grade">Grade</string>
 
 </resources>

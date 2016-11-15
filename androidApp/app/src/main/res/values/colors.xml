@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-
-    <color name="primary_text">#000000</color>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#FF9100</color>
+    <color name="colorToolbarText">#FFFFFF</color>
+    <color name="colorTransparentWhite">#BFFFFFFF</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="primary_text">#D8000000</color>
+    <color name="secondary_text">#35000000</color>
+    <color name="chip_background">#1F000000</color>
+    <color name="color_teal">#009688</color>
+    <color name="color_teal_light">#B2DFDB</color>
+    <color name="color_teal_dark">#004D40</color>
+    <color name="default_grey">#bebebe</color>
 </resources>

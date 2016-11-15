@@ -1,24 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content_home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="64dp"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="net.mavericklabs.mitra.ui.activity.HomeActivity"
     tools:showIn="@layout/app_bar_home">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/popularVideosRecyclerView"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    </android.support.v7.widget.RecyclerView>
+            <Button
+                android:id="@+id/teaching_aids_solid_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Discover Teaching Aids"
+                style="@style/ColoredButton"
+                android:layout_margin="8dp"
+                android:background="@color/color_teal_dark"/>
 
-</RelativeLayout>
+            <Button
+                android:id="@+id/self_learning_solid_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Learn Something New"
+                style="@style/ColoredButton"
+                android:layout_margin="8dp"
+                android:background="@color/color_teal"/>
+
+            <Button
+                android:id="@+id/trainings_solid_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="View Available Trainings"
+                style="@style/ColoredButton"
+                android:layout_margin="8dp"
+                android:background="@color/color_teal_light"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/default_grey"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp">
+            </View>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Popular Teaching Aids"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp"
+                    android:textSize="20sp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/popularTeachingAidsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </android.support.v7.widget.RecyclerView>
+                
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"/>
+            </RelativeLayout>
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/default_grey"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp">
+                </View>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Popular Self Learning"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp"
+                    android:textSize="20sp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/popularSelfLearningRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </android.support.v7.widget.RecyclerView>
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"/>
+
+            </RelativeLayout>
+
+
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

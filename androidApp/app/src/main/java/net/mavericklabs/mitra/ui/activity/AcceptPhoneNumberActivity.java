@@ -46,7 +46,7 @@ public class AcceptPhoneNumberActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 String phoneNumber = phoneNumberEditText.getText().toString();
-                Intent intent = new Intent(getApplicationContext(), PhoneVerificationActivity.class);
+                Intent intent = new Intent(getApplicationContext(), VerifyOtpActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("phoneNumber", phoneNumber);
                 intent.putExtras(bundle);
