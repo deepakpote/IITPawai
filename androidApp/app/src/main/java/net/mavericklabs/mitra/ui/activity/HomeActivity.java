@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
@@ -100,6 +101,16 @@ public class HomeActivity extends AppCompatActivity
     private void selectFragment(MenuItem item) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction;
+//        if(fragmentManager.getFragments() != null) {
+//            Logger.d("--------- Fragments : ");
+//            for (Fragment fragment : fragmentManager.getFragments()) {
+//                Logger.d(fragment.getTag());
+//            }
+//            Logger.d("--------- Fragments END ");
+//        }
+
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         switch (item.getItemId()) {
             case R.id.action_home :
                 tabLayout.setVisibility(View.GONE);
