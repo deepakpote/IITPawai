@@ -41,7 +41,6 @@ import java.util.TimeZone;
 
 public class StringUtils {
 
-
     /**
      * Java isEmpty function fails for null Strings.
      * Custom isEmpty function which returns true on NULL & BLANK strings

@@ -25,7 +25,7 @@ public class SignInUserActivity extends AppCompatActivity {
 
     @OnClick(R.id.register_button)
     void register () {
-        Intent register = new Intent(SignInUserActivity.this,RegisterUserActivity.class);
+        Intent register = new Intent(SignInUserActivity.this, RegisterUserActivity.class);
         startActivity(register);
         finish();
     }

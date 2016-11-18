@@ -3,8 +3,6 @@ package net.mavericklabs.mitra.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import net.mavericklabs.mitra.utils.Logger;
-
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -20,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class RestClient {
-    private static final String BASE_URL = "https://devel.smartsenseinfo.in/api/v1/";
+    private static final String BASE_URL = "http://192.168.0.199:8000/";
     //private static String accessToken = "";
     private static OkHttpClient client;
     private static Gson gson;
@@ -53,7 +51,7 @@ public class RestClient {
         return retrofit.create(Api.class);
     }
 
-    public static Retrofit getRetrofitInstance() {
+    private static Retrofit getRetrofitInstance() {
         return new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(client)

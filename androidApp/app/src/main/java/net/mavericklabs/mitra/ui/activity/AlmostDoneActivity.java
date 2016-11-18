@@ -26,12 +26,12 @@ public class AlmostDoneActivity extends AppCompatActivity {
 
     @OnTouch(R.id.background_image)
     boolean interruptThread() {
-        if(timerThread != null) {
+        if (timerThread != null) {
             timerThread.interrupt();
         }
         return true;
     }
-
+    
     private Thread timerThread;
 
     @Override

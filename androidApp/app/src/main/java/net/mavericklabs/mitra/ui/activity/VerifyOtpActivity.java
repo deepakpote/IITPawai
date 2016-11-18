@@ -12,9 +12,16 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.GenericListDataModel;
+import net.mavericklabs.mitra.api.model.VerifyUserOtp;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.os.Build.VERSION.SDK_INT;
 
@@ -29,13 +36,13 @@ public class VerifyOtpActivity extends AppCompatActivity {
     @BindView(R.id.otp_edit_text)
     EditText otpEditText;
 
+    private String phoneNumber = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify_otp);
         ButterKnife.bind(this);
-
-        String phoneNumber = "";
 
         if (getIntent().getExtras() != null) {
             Bundle bundle = getIntent().getExtras();
@@ -67,8 +74,23 @@ public class VerifyOtpActivity extends AppCompatActivity {
         }
         if (id == R.id.action_next) {
             if (isValidOtp()) {
-                Intent verifyOtp = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
-                startActivity(verifyOtp);
+                VerifyUserOtp verifyUserOtp = new VerifyUserOtp(phoneNumber,otpEditText.getText().toString());
+                RestClient.getApiService("").verifyOtp(verifyUserOtp).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+                    @Override
+                    public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                        if(response.isSuccessful()) {
+                            Intent verifyOtp = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
+                            startActivity(verifyOtp);
+                        } else {
+                            Toast.makeText(getApplicationContext(), R.string.error_please_enter_4_digit_otp,Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+
+                    }
+                });
             } else {
                 Toast.makeText(getApplicationContext(), R.string.error_please_enter_4_digit_otp,Toast.LENGTH_LONG).show();
             }
