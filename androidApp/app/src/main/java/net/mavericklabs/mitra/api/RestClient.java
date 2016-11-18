@@ -35,7 +35,7 @@ public class RestClient {
                     public Response intercept(Interceptor.Chain chain) throws IOException {
                         Request original = chain.request();
                         Request.Builder requestBuilder = original.newBuilder()
-                                .header("Authorization",authToken)
+                                .header("Authorization","CUSTOM-ANDROID-AUTH token=" + authToken)
                                 .method(original.method(), original.body());
                         Request request = requestBuilder.build();
                         return chain.proceed(request);

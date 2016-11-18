@@ -33,6 +33,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.RegisterUser;
+import net.mavericklabs.mitra.api.model.RegisterUserResponse;
 import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivityGradesAdapter;
@@ -46,6 +50,9 @@ import java.io.File;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity implements OnDialogFragmentDismissedListener {
 
@@ -66,6 +73,7 @@ public class ProfileActivity extends AppCompatActivity implements OnDialogFragme
     private Uri imageCaptureUri;
     private final int PICK_PROFILE = 0;
     private Context context;
+    private String otp;
 
     @OnClick(R.id.profile_photo_image_view)
     void pickProfilePhoto() {
@@ -126,6 +134,9 @@ public class ProfileActivity extends AppCompatActivity implements OnDialogFragme
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
 
+        Bundle bundle = getIntent().getExtras();
+        otp = bundle.getString("otp");
+
         this.context = getApplicationContext();
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -166,9 +177,24 @@ public class ProfileActivity extends AppCompatActivity implements OnDialogFragme
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_next) {
-            Intent verifyOtp = new Intent(ProfileActivity.this,HomeActivity.class);
-            startActivity(verifyOtp);
-            finishAffinity();
+            RegisterUser user = new RegisterUser("Amogh",otp,"+919967295984");
+            RestClient.getApiService("").registerUser(user).enqueue(new Callback<BaseModel<RegisterUserResponse>>() {
+                @Override
+                public void onResponse(Call<BaseModel<RegisterUserResponse>> call, Response<BaseModel<RegisterUserResponse>> response) {
+                    if(response.isSuccessful()) {
+                        RegisterUserResponse response1 = response.body().getData().get(0);
+                        Logger.d("response : " + response1.getName());
+                        Intent verifyOtp = new Intent(ProfileActivity.this,HomeActivity.class);
+                        startActivity(verifyOtp);
+                        finishAffinity();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<BaseModel<RegisterUserResponse>> call, Throwable t) {
+
+                }
+            });
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -79,8 +79,11 @@ public class VerifyOtpActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
                         if(response.isSuccessful()) {
-                            Intent verifyOtp = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
-                            startActivity(verifyOtp);
+                            Intent almostDone = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("otp",otpEditText.getText().toString());
+                            almostDone.putExtras(bundle);
+                            startActivity(almostDone);
                         } else {
                             Toast.makeText(getApplicationContext(), R.string.error_please_enter_4_digit_otp,Toast.LENGTH_LONG).show();
                         }

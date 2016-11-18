@@ -14,4 +14,20 @@ public class BaseModel<T> {
 
     @SerializedName("data")
     private List<T> data;
+
+    public String getResponseMessage() {
+        return responseMessage;
+    }
+
+    public void setResponseMessage(String responseMessage) {
+        this.responseMessage = responseMessage;
+    }
+
+    public List<T> getData() {
+        return data;
+    }
+
+    public void setData(List<T> data) {
+        this.data = data;
+    }
 }

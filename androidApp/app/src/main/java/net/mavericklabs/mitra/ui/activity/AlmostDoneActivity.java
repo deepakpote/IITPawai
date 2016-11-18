@@ -39,6 +39,7 @@ public class AlmostDoneActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_almost_done);
         ButterKnife.bind(this);
+        final Bundle bundle = getIntent().getExtras();
         timerThread = new Thread()  {
             public void run() {
                 try {
@@ -46,8 +47,9 @@ public class AlmostDoneActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
-                    Intent selectLanguage = new Intent(AlmostDoneActivity.this,ProfileActivity.class);
-                    startActivity(selectLanguage);
+                    Intent profileActivity = new Intent(AlmostDoneActivity.this,ProfileActivity.class);
+                    profileActivity.putExtras(bundle);
+                    startActivity(profileActivity);
                     finishAffinity();
                 }
             }
