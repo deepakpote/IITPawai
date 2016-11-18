@@ -3,11 +3,6 @@ package net.mavericklabs.mitra.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -25,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -44,6 +40,7 @@ import net.mavericklabs.mitra.ui.adapter.ProfileActivitySubjectsAdapter;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.ui.fragment.SubjectAndGradeFragment;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.io.File;
 
@@ -54,7 +51,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ProfileActivity extends AppCompatActivity implements OnDialogFragmentDismissedListener {
+public class EditProfileActivity extends AppCompatActivity implements OnDialogFragmentDismissedListener {
 
     private boolean isAdditionalViewExpanded;
 
@@ -69,6 +66,7 @@ public class ProfileActivity extends AppCompatActivity implements OnDialogFragme
     @BindView(R.id.i_am_spinner) Spinner iAmSpinner;
     @BindView(R.id.district_spinner) Spinner districtSpinner;
     @BindView(R.id.profile_photo_image_view) ImageView profilePhotoImageView;
+    @BindView(R.id.name_edit_text) EditText nameEditText;
 
     private Uri imageCaptureUri;
     private final int PICK_PROFILE = 0;
@@ -134,8 +132,11 @@ public class ProfileActivity extends AppCompatActivity implements OnDialogFragme
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
 
-        Bundle bundle = getIntent().getExtras();
-        otp = bundle.getString("otp");
+        // Check bundle
+        Bundle bundle;
+        if ((bundle = getIntent().getExtras()) != null) {
+            otp = bundle.getString("otp");
+        }
 
         this.context = getApplicationContext();
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -177,24 +178,31 @@ public class ProfileActivity extends AppCompatActivity implements OnDialogFragme
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_next) {
-            RegisterUser user = new RegisterUser("Amogh",otp,"+919967295984");
-            RestClient.getApiService("").registerUser(user).enqueue(new Callback<BaseModel<RegisterUserResponse>>() {
-                @Override
-                public void onResponse(Call<BaseModel<RegisterUserResponse>> call, Response<BaseModel<RegisterUserResponse>> response) {
-                    if(response.isSuccessful()) {
-                        RegisterUserResponse response1 = response.body().getData().get(0);
-                        Logger.d("response : " + response1.getName());
-                        Intent verifyOtp = new Intent(ProfileActivity.this,HomeActivity.class);
-                        startActivity(verifyOtp);
-                        finishAffinity();
+            if(isValidInformation()) {
+                String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
+                //TODO get the name from name edit text. Amogh name is temporary
+                RegisterUser user = new RegisterUser("Amogh",otp,phoneNumber);
+                RestClient.getApiService("").registerUser(user).enqueue(new Callback<BaseModel<RegisterUserResponse>>() {
+                    @Override
+                    public void onResponse(Call<BaseModel<RegisterUserResponse>> call, Response<BaseModel<RegisterUserResponse>> response) {
+                        if(response.isSuccessful()) {
+                            if(response.body().getData() != null) {
+                                RegisterUserResponse serverResponse = response.body().getData().get(0);
+                                String token = serverResponse.getToken();
+                                UserDetailUtils.saveToken(token,getApplicationContext());
+                                Intent verifyOtp = new Intent(EditProfileActivity.this,HomeActivity.class);
+                                startActivity(verifyOtp);
+                                finishAffinity();
+                            }
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(Call<BaseModel<RegisterUserResponse>> call, Throwable t) {
+                    @Override
+                    public void onFailure(Call<BaseModel<RegisterUserResponse>> call, Throwable t) {
 
-                }
-            });
+                    }
+                });
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -245,5 +253,10 @@ public class ProfileActivity extends AppCompatActivity implements OnDialogFragme
                 }
             }
         }
+    }
+
+    private boolean isValidInformation() {
+        //TODO perform validations
+        return true;
     }
 }

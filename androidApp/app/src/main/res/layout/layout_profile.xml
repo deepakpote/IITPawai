@@ -7,8 +7,8 @@
 
         <ImageView
             android:id="@+id/profile_photo_image_view"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="24dp"
             android:scaleType="centerCrop"
@@ -20,19 +20,19 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/profile_photo_image_view"
             android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:hint="@string/name"
-            android:drawableRight="@android:drawable/ic_menu_manage"
-            android:drawableEnd="@android:drawable/ic_menu_manage"
             />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/name_edit_text"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:id="@+id/i_am_layout"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             >
 
             <TextView
@@ -61,18 +61,18 @@
             android:layout_height="1dp"
             android:layout_below="@id/i_am_layout"
             android:background="@color/secondary_text"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/i_am_layout"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="30dp"
             android:id="@+id/district_layout"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             >
 
             <TextView
@@ -101,8 +101,8 @@
             android:layout_height="1dp"
             android:layout_below="@id/district_layout"
             android:background="@color/secondary_text"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             />
 
         <EditText
@@ -110,8 +110,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/district_underline"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:hint="@string/udise"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             />
 
         <ImageView
@@ -145,6 +147,7 @@
             android:layout_centerHorizontal="true"
             />
 
+        <!-- more layout -->
         <LinearLayout
             android:id="@+id/more_layout"
             android:layout_width="match_parent"
@@ -166,16 +169,18 @@
                 android:text="@string/i_teach"
                 android:textColor="@color/primary_text"
                 android:layout_gravity="center"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="32dp"
                 android:layout_marginBottom="24dp"
                 android:textSize="16sp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
                 />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
                 >
 
                 <RelativeLayout
@@ -198,7 +203,7 @@
                         android:layout_centerVertical="true"
                         android:text="@string/subject_s"
                         android:textColor="@color/secondary_text"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         />
 
                     <ImageView
@@ -224,9 +229,10 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
                 >
 
                 <RelativeLayout
@@ -250,7 +256,7 @@
                         android:text="@string/grade_s"
                         android:textColor="@color/secondary_text"
                         android:layout_centerVertical="true"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         />
 
                     <ImageView
@@ -297,8 +303,8 @@
                 android:drawableRight="@drawable/ic_add_accent_18dp"
                 android:hint="@string/topics"
                 android:layout_marginBottom="16dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
                 />
 
             <EditText
@@ -307,8 +313,8 @@
                 android:drawableEnd="@drawable/ic_add_accent_18dp"
                 android:drawableRight="@drawable/ic_add_accent_18dp"
                 android:hint="@string/skills"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
                 />
 
         </LinearLayout>

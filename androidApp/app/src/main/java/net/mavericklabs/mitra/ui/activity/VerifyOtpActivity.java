@@ -16,6 +16,7 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.VerifyUserOtp;
+import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -79,6 +80,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
                         if(response.isSuccessful()) {
+                            UserDetailUtils.saveMobileNumber(phoneNumber,getApplicationContext());
                             Intent almostDone = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putString("otp",otpEditText.getText().toString());

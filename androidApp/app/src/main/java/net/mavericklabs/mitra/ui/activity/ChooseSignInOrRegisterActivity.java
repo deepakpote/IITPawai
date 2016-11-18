@@ -1,12 +1,15 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 
@@ -51,11 +54,15 @@ public class ChooseSignInOrRegisterActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("");
         }
         String defaultLanguage = getDefaultLanguage();
-        Snackbar.make(relativeLayout, "ENGLISH is your default language. To change visit settings > language",
-                Snackbar.LENGTH_LONG).show();
+        Snackbar snackbar = Snackbar.make(relativeLayout, defaultLanguage + " is your default language. To change visit settings > language",
+                Snackbar.LENGTH_LONG);
+        View view = snackbar.getView();
+        TextView textView = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackbar.show();
     }
 
     private String getDefaultLanguage() {
-        return "MARATHI";
+        return "ENGLISH";
     }
 }

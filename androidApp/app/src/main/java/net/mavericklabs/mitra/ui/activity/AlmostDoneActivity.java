@@ -1,16 +1,12 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
-import android.support.annotation.AnimatorRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.utils.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,7 +43,7 @@ public class AlmostDoneActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
-                    Intent profileActivity = new Intent(AlmostDoneActivity.this,ProfileActivity.class);
+                    Intent profileActivity = new Intent(AlmostDoneActivity.this,EditProfileActivity.class);
                     profileActivity.putExtras(bundle);
                     startActivity(profileActivity);
                     finishAffinity();
