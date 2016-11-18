@@ -21,10 +21,10 @@
         <activity
             android:name=".ui.activity.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar" >
-             <intent-filter>
-             <action android:name="android.intent.action.MAIN" />
-             <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
+             <!--<intent-filter>-->
+             <!--<action android:name="android.intent.action.MAIN" />-->
+             <!--<category android:name="android.intent.category.LAUNCHER" />-->
+             <!--</intent-filter>-->
         </activity>
         <activity
             android:name=".ui.activity.SelectLanguageActivity"
@@ -45,7 +45,12 @@
             android:label="Phone Verification" />
         <activity
             android:name=".ui.activity.ProfileActivity"
-            android:label="My Profile" />
+            android:label="My Profile" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            </activity>
         <activity android:name=".ui.activity.AlmostDoneActivity" />
         <activity
             android:name=".ui.activity.TeachingAidsActivity"
