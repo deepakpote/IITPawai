@@ -1,6 +1,5 @@
 package net.mavericklabs.mitra.ui.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,6 +13,7 @@ import android.widget.Button;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.News;
+import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.NewsListAdapter;
 import net.mavericklabs.mitra.utils.Constants;
@@ -45,8 +45,10 @@ public class HomeFragment extends Fragment{
 
     @OnClick(R.id.teaching_aids_solid_button)
     void goToTeachingAids() {
-//        Intent intent = new Intent(getContext(), TeachingAidsActivity.class);
-//        startActivity(intent);
+        if(getActivity() instanceof HomeActivity) {
+            HomeActivity homeActivity = (HomeActivity) getActivity();
+            homeActivity.selectDrawerItem(homeActivity.navigationView.getMenu().getItem(1));
+        }
     }
 
     @BindView(R.id.self_learning_solid_button)
@@ -54,8 +56,10 @@ public class HomeFragment extends Fragment{
 
     @OnClick(R.id.self_learning_solid_button)
     void goToSelfLearning() {
-//        Intent intent = new Intent(getContext(), SelfLearningFragment.class);
-//        startActivity(intent);
+        if(getActivity() instanceof HomeActivity) {
+            HomeActivity homeActivity = (HomeActivity) getActivity();
+            homeActivity.selectDrawerItem(homeActivity.navigationView.getMenu().getItem(2));
+        }
     }
 
     @BindView(R.id.trainings_solid_button)

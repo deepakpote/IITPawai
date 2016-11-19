@@ -67,24 +67,6 @@ import butterknife.ButterKnife;
 
 public class SelfLearningFragment extends Fragment {
 
-    @BindView(R.id.faded_background_view)
-    View fadedBackgroundView;
-
-    @BindView(R.id.button_layout)
-    LinearLayout buttonLayout;
-
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
-
-    @BindView(R.id.teaching_aids_button)
-    Button teachingAidsButton;
-
-    @BindView(R.id.self_learning_button)
-    Button selfLearningButton;
-
-    @BindView(R.id.trainings_button)
-    Button trainingsButton;
-
     @BindView(R.id.subject_spinner)
     Spinner subjectSpinner;
 
@@ -96,7 +78,6 @@ public class SelfLearningFragment extends Fragment {
 
     private ContentVerticalCardListAdapter adapter;
 
-    private boolean isFabExpanded = false;
 
     public SelfLearningFragment() {
         //mandatory constructor
