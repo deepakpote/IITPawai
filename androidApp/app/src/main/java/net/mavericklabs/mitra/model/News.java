@@ -23,24 +23,20 @@
 
 package net.mavericklabs.mitra.model;
 
-import net.mavericklabs.mitra.utils.Constants;
-
-import java.io.Serializable;
-
 /**
- * Created by vishakha on 10/11/16.
+ * Created by vishakha on 14/11/16.
  */
 
-public class Content implements Serializable{
-    private String title;
-    private Constants.FileType fileType;
-    private Constants.Type type;
+public class News {
 
-    public Content(String title, Constants.FileType fileType, Constants.Type type) {
+    private String details;
+    private String title;
+
+    public News(String title, String details) {
+        this.details = details;
         this.title = title;
-        this.fileType = fileType;
-        this.type = type;
     }
+
 
     public String getTitle() {
         return title;
@@ -50,19 +46,11 @@ public class Content implements Serializable{
         this.title = title;
     }
 
-    public Constants.FileType getFileType() {
-        return fileType;
+    public String getDetails() {
+        return details;
     }
 
-    public void setFileType(Constants.FileType fileType) {
-        this.fileType = fileType;
-    }
-
-    public Constants.Type getType() {
-        return type;
-    }
-
-    public void setType(Constants.Type type) {
-        this.type = type;
+    public void setDetails(String details) {
+        this.details = details;
     }
 }

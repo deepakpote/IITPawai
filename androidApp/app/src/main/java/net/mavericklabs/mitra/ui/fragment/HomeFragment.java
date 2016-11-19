@@ -13,9 +13,9 @@ import android.widget.Button;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
-import net.mavericklabs.mitra.ui.activity.HomeActivity;
-import net.mavericklabs.mitra.ui.activity.TeachingAidsActivity;
+import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
+import net.mavericklabs.mitra.ui.adapter.NewsListAdapter;
 import net.mavericklabs.mitra.utils.Constants;
 
 import java.util.ArrayList;
@@ -37,17 +37,26 @@ public class HomeFragment extends Fragment{
     @BindView(R.id.popularSelfLearningRecyclerView)
     RecyclerView popularSelfLearningRecyclerView;
 
+    @BindView(R.id.news_recycler_view)
+    RecyclerView newsRecyclerView;
+
     @BindView(R.id.teaching_aids_solid_button)
     Button teachingAidsSolidButton;
 
     @OnClick(R.id.teaching_aids_solid_button)
     void goToTeachingAids() {
-        Intent intent = new Intent(getContext(), TeachingAidsActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(getContext(), TeachingAidsActivity.class);
+//        startActivity(intent);
     }
 
     @BindView(R.id.self_learning_solid_button)
     Button selfLearningSolidButton;
+
+    @OnClick(R.id.self_learning_solid_button)
+    void goToSelfLearning() {
+//        Intent intent = new Intent(getContext(), SelfLearningFragment.class);
+//        startActivity(intent);
+    }
 
     @BindView(R.id.trainings_solid_button)
     Button trainingsSolidButton;
@@ -69,32 +78,60 @@ public class HomeFragment extends Fragment{
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
 
-        List<Content> contents = new ArrayList<>();
-        contents.add(new Content("Video 1", Constants.FileType.VIDEO));
-        contents.add(new Content("PDF 1", Constants.FileType.PDF));
-        contents.add(new Content("PPT 1", Constants.FileType.PPT));
-        contents.add(new Content("Video 2", Constants.FileType.VIDEO));
+        //Dummy data
+
+        List<Content> contentsTeachingAids = new ArrayList<>();
+        contentsTeachingAids.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
+        contentsTeachingAids.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.TEACHING_AIDS));
+        contentsTeachingAids.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.TEACHING_AIDS));
+        contentsTeachingAids.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
+
+        List<Content> contentsSelfLearning = new ArrayList<>();
+        contentsSelfLearning.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
+        contentsSelfLearning.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.SELF_LEARNING));
+        contentsSelfLearning.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.SELF_LEARNING));
+        contentsSelfLearning.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
+
+        List<News> news = new ArrayList<>();
+        news.add(new News("Title 1", "Details 1"));
+        news.add(new News("Title 2", "Details 2"));
+        news.add(new News("Title 3", "Details 3"));
+        news.add(new News("Title 4", "Details 4"));
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
         popularVideosRecyclerView.setLayoutManager(linearLayoutManager);
-        teachingAidsAdapter = new BaseHorizontalCardListAdapter(getContext(), contents);
+        teachingAidsAdapter = new BaseHorizontalCardListAdapter(getContext(), contentsTeachingAids);
         popularVideosRecyclerView.setAdapter(teachingAidsAdapter);
 
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
-        popularSelfLearningRecyclerView.setLayoutManager(layoutManager);
-        selfLearningAdapter = new BaseHorizontalCardListAdapter(getContext(), contents);
+        LinearLayoutManager manager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+        popularSelfLearningRecyclerView.setLayoutManager(manager);
+        selfLearningAdapter = new BaseHorizontalCardListAdapter(getContext(), contentsSelfLearning);
         popularSelfLearningRecyclerView.setAdapter(selfLearningAdapter);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        newsRecyclerView.setLayoutManager(layoutManager);
+        NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), news);
+        newsRecyclerView.setAdapter(newsListAdapter);
 
     }
 
     @Override
+<<<<<<< HEAD
     public void onDetach() {
         super.onDetach();
         if (teachingAidsAdapter != null ) {
             teachingAidsAdapter.releaseLoaders();
         }
         if (selfLearningAdapter != null) {
+=======
+    public void onDestroy() {
+        super.onDestroy();
+        if(teachingAidsAdapter != null) {
+            teachingAidsAdapter.releaseLoaders();
+        }
+
+        if(selfLearningAdapter != null) {
+>>>>>>> b8af5f4254b93884440b8c2f956180c738e35c8e
             selfLearningAdapter.releaseLoaders();
         }
     }
