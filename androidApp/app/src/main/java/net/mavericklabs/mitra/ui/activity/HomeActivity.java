@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -54,6 +55,10 @@ public class HomeActivity extends AppCompatActivity {
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
 
+    @BindView(R.id.nav_view)
+    public NavigationView navigationView;
+
+
     private TabLayout tabLayout;
     private boolean isFabExpanded = false;
     @Override
@@ -72,46 +77,24 @@ public class HomeActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                         selectDrawerItem(menuItem);
                         return true;
                     }
                 });
 
         selectDrawerItem(navigationView.getMenu().getItem(0));
-
-//        selectFragment(bottomNavigationView.getMenu().getItem(0));
-//
-//
-//        bottomNavigationView.setLayoutAnimation(null);
-//        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-//            @Override
-//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//                item.setChecked(true);
-//                selectFragment(item);
-//                return true;
-//            }
-//        });
     }
 
-    private void selectDrawerItem(MenuItem item) {
+    public void selectDrawerItem(MenuItem item) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction;
 
         Fragment fragment = null;
         Class fragmentClass;
-//        if(fragmentManager.getFragments() != null) {
-//            Logger.d("--------- Fragments : ");
-//            for (Fragment fragment : fragmentManager.getFragments()) {
-//                Logger.d(fragment.getTag());
-//            }
-//            Logger.d("--------- Fragments END ");
-//        }
 
         switch (item.getItemId()) {
             case R.id.nav_home :
@@ -181,17 +164,17 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Go to teaching aids
-//                Intent intent = new Intent(HomeActivity.this, TeachingAidsActivity.class);
-//                startActivity(intent);
+                selectDrawerItem(navigationView.getMenu().getItem(1));
+                collapseFab();
             }
         });
 
         selfLearningButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Go to teaching aids
-//                Intent intent = new Intent(HomeActivity.this, SelfLearningFragment.class);
-//                startActivity(intent);
+                //Go to self learning
+                selectDrawerItem(navigationView.getMenu().getItem(2));
+                collapseFab();
             }
         });
 
@@ -199,27 +182,33 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(isFabExpanded) {
-                    fab.setImageResource(R.drawable.ic_explore_white_24dp);
-                    AnimationUtils.fadeOutView(fadedBackgroundView);
-
-                    isFabExpanded = false;
+                    collapseFab();
                 } else {
-                    AnimationUtils.fadeInView(fadedBackgroundView, new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            fab.setImageResource(R.drawable.ic_close_white_24dp);
-                        }
-                    });
-                    //AnimationUtils.fadeOutView(bottomNavigationView);
-                    isFabExpanded = true;
+                    expandFab();
                 }
-
 
             }
         });
     }
 
+    private void expandFab() {
+        AnimationUtils.fadeInView(fadedBackgroundView, new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                fab.setImageResource(R.drawable.ic_close_white_24dp);
+            }
+        });
+        //AnimationUtils.fadeOutView(bottomNavigationView);
+        isFabExpanded = true;
+    }
+
+    private void collapseFab() {
+        fab.setImageResource(R.drawable.ic_explore_white_24dp);
+        AnimationUtils.fadeOutView(fadedBackgroundView);
+
+        isFabExpanded = false;
+    }
 
     @Override
     protected void onDestroy() {
