@@ -60,7 +60,7 @@
                     android:layout_marginRight="@dimen/fab_margin"
                     android:layout_marginTop="4dp"
                     app:backgroundTint="@color/colorAccent_light"
-                    android:src="@drawable/ic_expand_less_black_18dp"/>
+                    android:src="@drawable/ic_bookmark_black_18dp"/>
 
                 <Button
                     android:id="@+id/my_resources_button"
@@ -84,7 +84,7 @@
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="@dimen/fab_margin"
                     android:layout_marginRight="@dimen/fab_margin"
-                    android:src="@drawable/ic_expand_more_black_18dp"/>
+                    android:src="@drawable/ic_school_black_18dp"/>
 
                 <Button
                     android:id="@+id/teaching_aids_button"
@@ -108,7 +108,7 @@
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="@dimen/fab_margin"
                     android:layout_marginRight="@dimen/fab_margin"
-                    android:src="@drawable/ic_expand_less_black_18dp" />
+                    android:src="@drawable/ic_subscriptions_black_18dp" />
 
                 <Button
                     android:id="@+id/self_learning_button"
@@ -133,7 +133,7 @@
                     app:backgroundTint="@color/color_teal_light"
                     android:layout_marginEnd="@dimen/fab_margin"
                     android:layout_marginRight="@dimen/fab_margin"
-                    android:src="@drawable/ic_expand_less_black_18dp"/>
+                    android:src="@drawable/ic_date_range_black_18dp"/>
 
                 <Button
                     android:id="@+id/trainings_button"

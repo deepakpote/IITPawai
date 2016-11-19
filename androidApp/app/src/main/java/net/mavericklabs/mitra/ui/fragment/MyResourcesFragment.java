@@ -82,6 +82,7 @@ public class MyResourcesFragment extends Fragment{
         Logger.d("My resources on view created ");
 
         tabLayout = (TabLayout) getActivity().findViewById(R.id.tabs_my_resources);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.

@@ -31,6 +31,7 @@ import net.mavericklabs.mitra.ui.fragment.ProfileFragment;
 import net.mavericklabs.mitra.ui.fragment.SelfLearningFragment;
 import net.mavericklabs.mitra.ui.fragment.TeachingAidsFragment;
 import net.mavericklabs.mitra.utils.AnimationUtils;
+import net.mavericklabs.mitra.utils.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -225,16 +226,18 @@ public class HomeActivity extends AppCompatActivity {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            return;
         } else {
-//            MenuItem homeItem = bottomNavigationView.getMenu().getItem(0);
-//            Logger.d("in else.. home item id : " + homeItem.getItemId() + "\n selectedBottomView : " + selectedBottomView);
-//            if (selectedBottomView != homeItem.getItemId()) {
-//                // select home item
-//                Logger.d("in if.. selecting home item..");
-//                selectFragment(homeItem);
-//            }
-//            super.onBackPressed();
+            MenuItem homeItem = navigationView.getMenu().getItem(0);
+
+            if (!homeItem.isChecked()) {
+                // select home item
+                Logger.d("in if.. selecting home item..");
+                selectDrawerItem(homeItem);
+                return;
+            }
         }
+        finishAffinity();
     }
 
     @Override
