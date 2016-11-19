@@ -14,8 +14,6 @@ import android.widget.Button;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.News;
-import net.mavericklabs.mitra.ui.activity.SelfLearningActivity;
-import net.mavericklabs.mitra.ui.activity.TeachingAidsActivity;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.NewsListAdapter;
 import net.mavericklabs.mitra.utils.Constants;
@@ -47,8 +45,8 @@ public class HomeFragment extends Fragment{
 
     @OnClick(R.id.teaching_aids_solid_button)
     void goToTeachingAids() {
-        Intent intent = new Intent(getContext(), TeachingAidsActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(getContext(), TeachingAidsActivity.class);
+//        startActivity(intent);
     }
 
     @BindView(R.id.self_learning_solid_button)
@@ -56,8 +54,8 @@ public class HomeFragment extends Fragment{
 
     @OnClick(R.id.self_learning_solid_button)
     void goToSelfLearning() {
-        Intent intent = new Intent(getContext(), SelfLearningActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(getContext(), SelfLearningFragment.class);
+//        startActivity(intent);
     }
 
     @BindView(R.id.trainings_solid_button)

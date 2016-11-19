@@ -4,17 +4,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,30 +17,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.model.Content;
-import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.fragment.HomeFragment;
 import net.mavericklabs.mitra.ui.fragment.MyResourcesFragment;
 import net.mavericklabs.mitra.ui.fragment.ProfileFragment;
-import net.mavericklabs.mitra.ui.fragment.SubjectAndGradeFragment;
-import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.ui.fragment.SelfLearningFragment;
+import net.mavericklabs.mitra.ui.fragment.TeachingAidsFragment;
 import net.mavericklabs.mitra.utils.AnimationUtils;
-import net.mavericklabs.mitra.utils.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class HomeActivity extends AppCompatActivity {
 
-    @BindView(R.id.bottom_navigation_view)
-    BottomNavigationView bottomNavigationView;
+//    @BindView(R.id.bottom_navigation_view)
+//    BottomNavigationView bottomNavigationView;
 
     @BindView(R.id.faded_background_view)
     View fadedBackgroundView;
@@ -62,6 +51,9 @@ public class HomeActivity extends AppCompatActivity
     @BindView(R.id.trainings_button)
     Button trainingsButton;
 
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
+
     private TabLayout tabLayout;
     private boolean isFabExpanded = false;
     @Override
@@ -75,32 +67,44 @@ public class HomeActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         setupFAB();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
 
-        selectFragment(bottomNavigationView.getMenu().getItem(0));
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        selectDrawerItem(menuItem);
+                        return true;
+                    }
+                });
 
+        selectDrawerItem(navigationView.getMenu().getItem(0));
 
-        bottomNavigationView.setLayoutAnimation(null);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                item.setChecked(true);
-                selectFragment(item);
-                return true;
-            }
-        });
+//        selectFragment(bottomNavigationView.getMenu().getItem(0));
+//
+//
+//        bottomNavigationView.setLayoutAnimation(null);
+//        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//                item.setChecked(true);
+//                selectFragment(item);
+//                return true;
+//            }
+//        });
     }
 
-    private void selectFragment(MenuItem item) {
+    private void selectDrawerItem(MenuItem item) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction;
+
+        Fragment fragment = null;
+        Class fragmentClass;
 //        if(fragmentManager.getFragments() != null) {
 //            Logger.d("--------- Fragments : ");
 //            for (Fragment fragment : fragmentManager.getFragments()) {
@@ -109,42 +113,64 @@ public class HomeActivity extends AppCompatActivity
 //            Logger.d("--------- Fragments END ");
 //        }
 
-        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
         switch (item.getItemId()) {
-            case R.id.action_home :
+            case R.id.nav_home :
                 tabLayout.setVisibility(View.GONE);
-
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, new HomeFragment(),"ACTION_HOME");
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                fragmentClass = HomeFragment.class;
                 break;
 
-            case R.id.action_bookmarks :
+            case R.id.nav_teaching_aids :
                 tabLayout.setVisibility(View.VISIBLE);
+                fragmentClass = TeachingAidsFragment.class;
+                break;
 
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, new MyResourcesFragment(),"ACTION_MY_RESOURCES");
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+            case R.id.nav_self_learning_videos :
+                tabLayout.setVisibility(View.GONE);
+                fragmentClass = SelfLearningFragment.class;
+                break;
+
+            case R.id.nav_my_resources :
+                tabLayout.setVisibility(View.VISIBLE);
+                fragmentClass = MyResourcesFragment.class;
                 break;
 
             case R.id.action_profile:
                 tabLayout.setVisibility(View.GONE);
-
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, new ProfileFragment(),"ACTION_PROFILE");
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                fragmentClass = ProfileFragment.class;
                 break;
+
+            default:
+                fragmentClass = HomeFragment.class;
+
         }
+
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+
+        item.setChecked(true);
+        // Set action bar title
+        setTitle(item.getTitle());
+        // Close the navigation drawer
+        drawerLayout.closeDrawers();
+
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        AnimationUtils.fadeInView(bottomNavigationView, null);
+        //AnimationUtils.fadeInView(bottomNavigationView, null);
         fadedBackgroundView.setVisibility(View.GONE);
         fab.setImageResource(R.drawable.ic_explore_white_24dp);
         isFabExpanded = false;
@@ -155,8 +181,8 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 //Go to teaching aids
-                Intent intent = new Intent(HomeActivity.this, TeachingAidsActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(HomeActivity.this, TeachingAidsActivity.class);
+//                startActivity(intent);
             }
         });
 
@@ -164,8 +190,8 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 //Go to teaching aids
-                Intent intent = new Intent(HomeActivity.this, SelfLearningActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(HomeActivity.this, SelfLearningFragment.class);
+//                startActivity(intent);
             }
         });
 
@@ -173,13 +199,7 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if(isFabExpanded) {
-                    AnimationUtils.fadeInView(bottomNavigationView, new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            fab.setImageResource(R.drawable.ic_explore_white_24dp);
-                        }
-                    });
+                    fab.setImageResource(R.drawable.ic_explore_white_24dp);
                     AnimationUtils.fadeOutView(fadedBackgroundView);
 
                     isFabExpanded = false;
@@ -191,7 +211,7 @@ public class HomeActivity extends AppCompatActivity
                             fab.setImageResource(R.drawable.ic_close_white_24dp);
                         }
                     });
-                    AnimationUtils.fadeOutView(bottomNavigationView);
+                    //AnimationUtils.fadeOutView(bottomNavigationView);
                     isFabExpanded = true;
                 }
 
@@ -230,36 +250,14 @@ public class HomeActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 }

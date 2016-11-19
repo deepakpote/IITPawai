@@ -21,12 +21,13 @@
  *
  */
 
-package net.mavericklabs.mitra.ui.activity;
+package net.mavericklabs.mitra.ui.fragment;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -55,6 +56,7 @@ import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.utils.AnimationUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
+import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,7 +65,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SelfLearningActivity extends AppCompatActivity {
+public class SelfLearningFragment extends Fragment {
 
     @BindView(R.id.faded_background_view)
     View fadedBackgroundView;
@@ -96,25 +98,26 @@ public class SelfLearningActivity extends AppCompatActivity {
 
     private boolean isFabExpanded = false;
 
+    public SelfLearningFragment() {
+        //mandatory constructor
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_self_learning,container,false);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_self_learning);
-        ButterKnife.bind(this);
-
-        if(getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Self Learning");
-        }
-
-        setupFAB();
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ButterKnife.bind(this, view);
 
         //Temp
         List<String> topics = Arrays.asList("Topic", "English", "Marathi", "Maths");
         List<String> languages = Arrays.asList("Language", "1", "2", "3");
 
-        ArrayAdapter<String> subjectAdapter = new ArrayAdapter<>(getApplicationContext(),
+        ArrayAdapter<String> subjectAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_dropdown_item, topics);
         subjectSpinner.setAdapter(subjectAdapter);
         subjectSpinner.setPrompt(topics.get(0));
@@ -126,100 +129,24 @@ public class SelfLearningActivity extends AppCompatActivity {
         contents.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.SELF_LEARNING));
         contents.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         contentRecyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new ContentVerticalCardListAdapter(getApplicationContext(), contents);
+        adapter = new ContentVerticalCardListAdapter(getContext(), contents);
         contentRecyclerView.setAdapter(adapter);
 
-        ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(getApplicationContext(),
+        ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_dropdown_item, languages);
         gradeSpinner.setAdapter(gradeAdapter);
         gradeSpinner.setPrompt(languages.get(0));
 
     }
 
-    private void setupFAB() {
 
-//            teachingAidsButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    //Go to teaching aids
-//                    Intent intent = new Intent(HomeActivity.this, TeachingAidsActivity.class);
-//                    startActivity(intent);
-//                }
-//            });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            selfLearningButton.setTextColor(getResources().getColor(R.color.colorAccent, getTheme()));
-        } else {
-            selfLearningButton.setTextColor(getResources().getColor(R.color.colorAccent));
-        }
-
-        //Here the bottom nav bar is missing, so adjust margins accordingly
-
-        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)fab.getLayoutParams();
-        layoutParams.setMargins(0,0,0, DisplayUtils.dpToPx(16, getApplicationContext()));
-        fab.setLayoutParams(layoutParams);
-
-        RelativeLayout.LayoutParams buttonLayoutParams = (RelativeLayout.LayoutParams) buttonLayout.getLayoutParams();
-        buttonLayoutParams.setMargins(0,0,0, DisplayUtils.dpToPx(72, getApplicationContext()));
-        buttonLayout.setLayoutParams(buttonLayoutParams);
-
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(isFabExpanded) {
-                        AnimationUtils.fadeOutView(fadedBackgroundView);
-                        fab.setImageResource(R.drawable.ic_explore_white_24dp);
-                        isFabExpanded = false;
-                    } else {
-                        AnimationUtils.fadeInView(fadedBackgroundView, new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                fab.setImageResource(R.drawable.ic_close_white_24dp);
-                            }
-                        });
-                        isFabExpanded = true;
-                    }
-
-
-                }
-            });
-
-    }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_teaching_aids, menu);
-        return true;
-    }
-
-    @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         adapter.releaseLoaders();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if(id == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
 }

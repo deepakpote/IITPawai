@@ -27,12 +27,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="net.mavericklabs.mitra.ui.activity.TeachingAidsActivity">
+    android:layout_height="match_parent">
 
 
-    <include layout="@layout/fragment_teaching_aids"
+    <include layout="@layout/fragment_teaching_aids_list"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <include layout="@layout/layout_fab_background" />

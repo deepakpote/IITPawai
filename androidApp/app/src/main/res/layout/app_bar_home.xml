@@ -36,16 +36,16 @@
 
     <include layout="@layout/layout_fab_background" />
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/bottom_navigation_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:itemBackground="@color/color_teal"
-        app:itemIconTint="@drawable/nav_item_color_state"
-        app:itemTextColor="@drawable/nav_item_color_state"
-        app:menu="@menu/bottom_navigation_main" >
+    <!--<android.support.design.widget.BottomNavigationView-->
+        <!--android:id="@+id/bottom_navigation_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom"-->
+        <!--app:itemBackground="@color/color_teal"-->
+        <!--app:itemIconTint="@drawable/nav_item_color_state"-->
+        <!--app:itemTextColor="@drawable/nav_item_color_state"-->
+        <!--app:menu="@menu/bottom_navigation_main" >-->
 
-    </android.support.design.widget.BottomNavigationView>
+    <!--</android.support.design.widget.BottomNavigationView>-->
 
 </android.support.design.widget.CoordinatorLayout>
