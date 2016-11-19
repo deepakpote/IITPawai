@@ -52,5 +52,6 @@
     <string name="title_activity_teaching_aids">TeachingAidsActivity</string>
     <string name="subject">Subject</string>
     <string name="grade">Grade</string>
+    <string name="required_field">* Required</string>
 
 </resources>

@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
@@ -151,7 +152,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
         gradeRecyclerView.setAdapter(new ProfileActivityGradesAdapter());
 
-        //temp
+        //TODO temp options. these are to be fetched from server
         String[] choices = {"SELECT","Teacher","Student"};
         String[] districts = {"SELECT","Beed","Jalna"};
 
@@ -164,8 +165,6 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         districtSpinner.setAdapter(districtAdapter);
 
         Glide.with(this).load(R.drawable.placeholder_user).bitmapTransform(new CropCircleTransformation(getApplicationContext())).into(profilePhotoImageView);
-
-        Logger.d("glide operation complete.");
     }
 
     @Override
@@ -202,6 +201,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
                     }
                 });
+            } else {
+                Toast.makeText(getApplicationContext(),"Please enter required fields.",Toast.LENGTH_LONG).show();
             }
             return true;
         }
@@ -217,46 +218,42 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     @Override
     protected void onActivityResult(final int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        //nothing is selected by the user. boo! return after setting placeholder icon again.
+        if(resultCode == 0) {
+            Glide.with(this).load(R.drawable.placeholder_user).
+                    bitmapTransform(new CropCircleTransformation(getApplicationContext())).
+                    into(profilePhotoImageView);
+            return;
+        }
+
+        //else proceed
         if (requestCode == PICK_PROFILE) {
+            Logger.d("data is : " + data);
             if(data != null) {
                 imageCaptureUri = data.getData();
                 if(imageCaptureUri != null) {
-                    Glide.with(this).load(imageCaptureUri).asBitmap()
-                            .into(new BitmapImageViewTarget(profilePhotoImageView) {
-                                      @Override
-                                      protected void setResource(Bitmap resource) {
-                                          Logger.d("resource height : " + resource.getHeight());
-                                          Logger.d("resource width : " + resource.getWidth());
-                                          RoundedBitmapDrawable circularBitmapDrawable =
-                                                  RoundedBitmapDrawableFactory.create(context.getResources(), resource);
-                                          circularBitmapDrawable.setCircular(true);
-                                          profilePhotoImageView.setImageDrawable(circularBitmapDrawable);
-                                      }
-                                  }
-                            );
+                    Glide.with(this).load(imageCaptureUri).
+                            bitmapTransform(new CropCircleTransformation(getApplicationContext())).
+                            into(profilePhotoImageView);
                 }
-            } else {
-                if(imageCaptureUri != null && imageCaptureUri.getPath() != null) {
-                    Glide.with(this).load(imageCaptureUri.getPath()).asBitmap()
-                            .into(new BitmapImageViewTarget(profilePhotoImageView) {
-                                      @Override
-                                      protected void setResource(Bitmap resource) {
-                                          Logger.d("resource height : " + resource.getHeight());
-                                          Logger.d("resource width : " + resource.getWidth());
-                                          RoundedBitmapDrawable circularBitmapDrawable =
-                                                  RoundedBitmapDrawableFactory.create(context.getResources(), resource);
-                                          circularBitmapDrawable.setCircular(true);
-                                          profilePhotoImageView.setImageDrawable(circularBitmapDrawable);
-                                      }
-                                  }
-                            );
-                }
+            } else if(imageCaptureUri != null && imageCaptureUri.getPath() != null) {
+                    File file = new File(imageCaptureUri.getPath());
+                    Glide.with(this).load(Uri.fromFile(file)).
+                            bitmapTransform(new CropCircleTransformation(getApplicationContext())).
+                            into(profilePhotoImageView);
             }
         }
     }
 
     private boolean isValidInformation() {
-        //TODO perform validations
+        if(nameEditText.getText().length() == 0) {
+            return false;
+        } else if (iAmSpinner.getSelectedItem().toString().contains("SELECT")) {
+            return false;
+        } else if(districtSpinner.getSelectedItem().toString().contains("SELECT")) {
+            return false;
+        }
         return true;
     }
 }

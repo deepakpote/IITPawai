@@ -29,4 +29,5 @@
     <string name="subject_s">Subject/s</string>
     <string name="almost_done">Almost done!</string>
     <string name="just_tell_a_little_about_yourself">Just tell a little about yourself</string>
+    <string name="required_field">* Required</string>
 </resources>
