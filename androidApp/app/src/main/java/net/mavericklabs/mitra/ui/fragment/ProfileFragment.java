@@ -29,55 +29,6 @@ import butterknife.OnClick;
 
 public class ProfileFragment extends Fragment implements OnDialogFragmentDismissedListener{
 
-    private boolean isAdditionalViewExpanded;
-
-    @BindView(R.id.more_or_less_button)
-    Button moreOrLessButtun;
-    @BindView(R.id.more_layout)
-    LinearLayout moreLayout;
-    @BindView(R.id.subject_recycler_view)
-    RecyclerView subjectRecyclerView;
-    @BindView(R.id.grade_recycler_view) RecyclerView gradeRecyclerView;
-    @BindView(R.id.more_image)
-    ImageView moreImage;
-    @BindView(R.id.less_image) ImageView lessImage;
-    @BindView(R.id.grade_placeholder_text)
-    TextView gradePlaceholderTextView;
-    @BindView(R.id.subject_placeholder_text) TextView subjectPlaceholderTextView;
-    @BindView(R.id.i_am_spinner)
-    Spinner iAmSpinner;
-    @BindView(R.id.district_spinner) Spinner districtSpinner;
-
-    @OnClick(R.id.add_grades)
-    void showAddGradesMenu() {
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(android.R.id.content,new SubjectAndGradeFragment(),"grade_fragment");
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
-
-    @OnClick(R.id.add_subjects)
-    void showAddSubjectsMenu() {
-        Logger.d("adding subjects..");
-    }
-
-    @OnClick(R.id.more_or_less_button)
-    void expandOrCollapse() {
-        if(isAdditionalViewExpanded) {
-            moreOrLessButtun.setText(R.string.more);
-            moreLayout.setVisibility(View.GONE);
-            isAdditionalViewExpanded = false;
-            moreImage.setVisibility(View.VISIBLE);
-            lessImage.setVisibility(View.GONE);
-        } else {
-            moreOrLessButtun.setText(R.string.less);
-            moreLayout.setVisibility(View.VISIBLE);
-            isAdditionalViewExpanded = true;
-            moreImage.setVisibility(View.GONE);
-            lessImage.setVisibility(View.VISIBLE);
-        }
-    }
 
     public ProfileFragment() {
         super();

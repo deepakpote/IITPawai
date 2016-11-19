@@ -120,14 +120,16 @@ public class HomeFragment extends Fragment{
     }
 
     @Override
-<<<<<<< HEAD
     public void onDetach() {
         super.onDetach();
-        if (teachingAidsAdapter != null ) {
+        if (teachingAidsAdapter != null) {
             teachingAidsAdapter.releaseLoaders();
         }
         if (selfLearningAdapter != null) {
-=======
+            selfLearningAdapter.releaseLoaders();
+        }
+    }
+
     public void onDestroy() {
         super.onDestroy();
         if(teachingAidsAdapter != null) {
@@ -135,7 +137,6 @@ public class HomeFragment extends Fragment{
         }
 
         if(selfLearningAdapter != null) {
->>>>>>> b8af5f4254b93884440b8c2f956180c738e35c8e
             selfLearningAdapter.releaseLoaders();
         }
     }

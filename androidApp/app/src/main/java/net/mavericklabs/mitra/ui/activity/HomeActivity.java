@@ -91,6 +91,7 @@ public class HomeActivity extends AppCompatActivity {
                 });
 
         selectDrawerItem(navigationView.getMenu().getItem(0));
+        View headerView = navigationView.getHeaderView(0);
     }
 
     public void selectDrawerItem(MenuItem item) {
