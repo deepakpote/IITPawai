@@ -25,15 +25,6 @@ package net.mavericklabs.mitra.utils;
 
 import android.text.InputFilter;
 import android.text.Spanned;
-import android.text.format.DateUtils;
-
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 /**
  * Created by root on 3/11/16.

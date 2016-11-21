@@ -41,10 +41,6 @@ import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.utils.Constants;
-import net.mavericklabs.mitra.utils.DisplayUtils;
-
-import net.mavericklabs.mitra.model.Content;
 
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;

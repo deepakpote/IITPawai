@@ -23,7 +23,6 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
-import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -44,8 +43,6 @@ import net.mavericklabs.mitra.model.Requirements;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.RequirementsListAdapter;
 import net.mavericklabs.mitra.utils.Constants;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;

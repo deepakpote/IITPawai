@@ -6,14 +6,11 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static net.mavericklabs.mitra.utils.UserDetailUtils.getMobileNumber;
 
 public class SplashActivity extends AppCompatActivity {
 
