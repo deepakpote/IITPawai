@@ -49,8 +49,8 @@ class language(models.Model):
     languageName =  models.CharField(max_length = 256)
     resourceCode = models.CharField(max_length = 3)
      
-    createdBy = models.ForeignKey('user', related_name = 'language_createdBy', db_column = 'createdBy')
-    createdOn = models.DateTimeField(auto_now_add=True)
+#     createdBy = models.ForeignKey('user', related_name = 'language_createdBy', db_column = 'createdBy')
+#     createdOn = models.DateTimeField(auto_now_add=True)
      
     class Meta:
         db_table = 'com_Language'
