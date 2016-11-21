@@ -35,6 +35,7 @@ import net.mavericklabs.mitra.utils.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -43,6 +44,11 @@ public class HomeActivity extends AppCompatActivity {
 
     @BindView(R.id.faded_background_view)
     View fadedBackgroundView;
+
+    @OnClick(R.id.faded_background_view)
+    void dismissView() {
+        collapseFab();
+    }
 
     @BindView(R.id.fab)
     FloatingActionButton fab;
@@ -93,6 +99,22 @@ public class HomeActivity extends AppCompatActivity {
 
         selectDrawerItem(navigationView.getMenu().getItem(0));
         View headerView = navigationView.getHeaderView(0);
+        headerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction;
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                tabLayout.setVisibility(View.GONE);
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, new ProfileFragment());
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                setTitle("My Profile");
+                // Close the navigation drawer
+                drawerLayout.closeDrawers();
+            }
+        });
     }
 
     public void selectDrawerItem(MenuItem item) {
@@ -151,8 +173,6 @@ public class HomeActivity extends AppCompatActivity {
         setTitle(item.getTitle());
         // Close the navigation drawer
         drawerLayout.closeDrawers();
-
-
 
     }
 
