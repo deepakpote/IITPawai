@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:maxLength="13"
-            android:text="+91"
+            android:text="@string/india_code"
             />
     </android.support.design.widget.TextInputLayout>
 

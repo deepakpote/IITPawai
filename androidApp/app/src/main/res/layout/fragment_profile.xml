@@ -71,7 +71,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="I Teach"
+                    android:text="@string/i_teach"
                     />
 
                 <EditText
@@ -111,7 +111,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="I'm interested in learning"
+                    android:text="@string/interested_in_learning"
                     />
 
                 <EditText

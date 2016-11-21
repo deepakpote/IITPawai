@@ -9,8 +9,7 @@
     android:paddingBottom="16dp"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="net.mavericklabs.mitra.ui.activity.HomeActivity"
-    tools:showIn="@layout/app_bar_home">
+    tools:context="net.mavericklabs.mitra.ui.activity.HomeActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -28,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:background="@color/color_teal_dark"
-                android:text="Discover Teaching Aids" />
+                android:text="@string/discover_teaching_aids" />
 
             <Button
                 android:id="@+id/self_learning_solid_button"
@@ -37,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:background="@color/color_teal"
-                android:text="Learn Something New" />
+                android:text="@string/learn_something_new" />
 
             <Button
                 android:id="@+id/trainings_solid_button"
@@ -46,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:background="@color/color_teal_light"
-                android:text="View Available Trainings" />
+                android:text="@string/view_available_trainings" />
 
             <View
                 android:layout_width="match_parent"
@@ -60,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:text="Popular Teaching Aids"
+                android:text="@string/popular_teaching_aids"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -98,7 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:text="Popular Self Learning"
+                android:text="@string/popular_self_learning"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -140,14 +139,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="News &amp; Circulars"
+                    android:text="@string/news_and_circulars"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="See All"
+                    android:text="@string/see_all"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:textColor="@color/colorAccent"

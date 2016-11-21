@@ -332,7 +332,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/i_am_interested_in_learning"
+                android:text="@string/interested_in_learning"
                 android:layout_marginBottom="16dp"
                 android:textColor="@color/primary_text"
                 android:textSize="16sp"

@@ -146,9 +146,9 @@ public class HomeActivity extends AppCompatActivity {
                 fragmentClass = MyResourcesFragment.class;
                 break;
 
-            case R.id.action_trainings:
-                fragmentClass = EventCalendarFragment.class;
-                break;
+//            case R.id.action_trainings:
+//                fragmentClass = EventCalendarFragment.class;
+//                break;
 
             default:
                 fragmentClass = HomeFragment.class;
