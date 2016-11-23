@@ -51,7 +51,7 @@
             android:id="@+id/i_am_layout"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            >
+            android:padding="4dp">
 
             <TextView
                 android:id="@+id/i_am_text_view"
@@ -91,6 +91,7 @@
             android:layout_alignParentRight="true"
             android:text="@string/required_field"
             android:textColor="@color/color_teal"
+            android:layout_marginTop="4dp"
             android:layout_marginRight="16dp"
             android:layout_marginEnd="16dp"
             />
@@ -103,7 +104,7 @@
             android:id="@+id/district_layout"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            >
+            android:padding="4dp">
 
             <TextView
                 android:id="@+id/district_text_view"
@@ -143,6 +144,7 @@
             android:layout_alignParentRight="true"
             android:text="@string/required_field"
             android:textColor="@color/color_teal"
+            android:layout_marginTop="4dp"
             android:layout_marginRight="16dp"
             android:layout_marginEnd="16dp"
             />

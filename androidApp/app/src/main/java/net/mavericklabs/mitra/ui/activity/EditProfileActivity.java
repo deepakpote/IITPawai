@@ -152,12 +152,12 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         String[] choices = {"SELECT","Teacher","Student"};
         String[] districts = {"SELECT","Beed","Jalna"};
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_spinner_item,choices);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),R.layout.custom_spinner_item_header,choices);
+        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
         iAmSpinner.setAdapter(adapter);
 
-        ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_spinner_item,districts);
-        districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.custom_spinner_item_header,districts);
+        districtAdapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
         districtSpinner.setAdapter(districtAdapter);
 
         Glide.with(this).load(R.drawable.placeholder_user).bitmapTransform(new CropCircleTransformation(getApplicationContext())).into(profilePhotoImageView);
