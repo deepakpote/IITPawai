@@ -5,27 +5,27 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home_white_24dp"
-            android:title="Home" />
+            android:title="@string/home" />
         <item
             android:id="@+id/nav_teaching_aids"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Teaching Aids" />
+            android:title="@string/teaching_aids" />
         <item
             android:id="@+id/nav_self_learning_videos"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Self Learning Videos" />
+            android:title="@string/self_learning" />
         <item
             android:id="@+id/nav_training_calendar"
             android:icon="@drawable/ic_event_white_24dp"
-            android:title="Training Calendar" />
+            android:title="@string/training_calendar" />
         <item
             android:id="@+id/nav_my_resources"
             android:icon="@drawable/ic_bookmark_grey_24dp"
-            android:title="My Saved Resources" />
+            android:title="@string/my_saved_resources" />
         <item
             android:id="@+id/nav_news"
             android:icon="@drawable/ic_menu_send"
-            android:title="News and Circulars" />
+            android:title="@string/news_and_circulars" />
     </group>
 
 

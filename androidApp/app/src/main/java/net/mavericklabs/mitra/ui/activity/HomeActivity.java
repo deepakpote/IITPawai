@@ -2,7 +2,6 @@ package net.mavericklabs.mitra.ui.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -22,15 +21,13 @@ import android.view.View;
 import android.widget.Button;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.model.Content;
-import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
-import net.mavericklabs.mitra.ui.fragment.EventCalendarFragment;
 import net.mavericklabs.mitra.ui.fragment.HomeFragment;
 import net.mavericklabs.mitra.ui.fragment.MyResourcesFragment;
 import net.mavericklabs.mitra.ui.fragment.ProfileFragment;
 import net.mavericklabs.mitra.ui.fragment.SelfLearningFragment;
 import net.mavericklabs.mitra.ui.fragment.TeachingAidsFragment;
 import net.mavericklabs.mitra.utils.AnimationUtils;
+import net.mavericklabs.mitra.utils.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -143,9 +140,9 @@ public class HomeActivity extends AppCompatActivity {
                 fragmentClass = MyResourcesFragment.class;
                 break;
 
-            case R.id.action_trainings:
-                fragmentClass = EventCalendarFragment.class;
-                break;
+//            case R.id.action_trainings:
+//                fragmentClass = EventCalendarFragment.class;
+//                break;
 
             default:
                 fragmentClass = HomeFragment.class;
@@ -243,16 +240,18 @@ public class HomeActivity extends AppCompatActivity {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            return;
         } else {
-//            MenuItem homeItem = bottomNavigationView.getMenu().getItem(0);
-//            Logger.d("in else.. home item id : " + homeItem.getItemId() + "\n selectedBottomView : " + selectedBottomView);
-//            if (selectedBottomView != homeItem.getItemId()) {
-//                // select home item
-//                Logger.d("in if.. selecting home item..");
-//                selectFragment(homeItem);
-//            }
-//            super.onBackPressed();
+            MenuItem homeItem = navigationView.getMenu().getItem(0);
+
+            if (!homeItem.isChecked()) {
+                // select home item
+                Logger.d("in if.. selecting home item..");
+                selectDrawerItem(homeItem);
+                return;
+            }
         }
+        finishAffinity();
     }
 
     @Override

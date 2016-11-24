@@ -21,18 +21,20 @@
  *
  */
 
-package net.mavericklabs.mitra.ui.activity;
+package net.mavericklabs.mitra.utils;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.app.Application;
 
-import net.mavericklabs.mitra.R;
+import io.realm.Realm;
 
-public class UserInfoActivity extends AppCompatActivity {
+/**
+ * Created by vishakha on 22/11/16.
+ */
 
+public class MitraApplication extends Application {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_info);
+    public void onCreate() {
+        super.onCreate();
+        Realm.init(this);
     }
 }

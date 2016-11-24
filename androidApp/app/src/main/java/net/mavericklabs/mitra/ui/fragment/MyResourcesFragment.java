@@ -82,6 +82,7 @@ public class MyResourcesFragment extends Fragment{
         Logger.d("My resources on view created ");
 
         tabLayout = (TabLayout) getActivity().findViewById(R.id.tabs_my_resources);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -101,7 +102,7 @@ public class MyResourcesFragment extends Fragment{
         tab0.setCustomView(R.layout.custom_tab);
 
         TextView title = (TextView) tab0.getCustomView().findViewById(R.id.title);
-        title.setText("Teaching Aids");
+        title.setText(getResources().getString(R.string.teaching_aids));
 
         TextView subtitle = (TextView) tab0.getCustomView().findViewById(R.id.subtitle);
         subtitle.setText("10 resources saved");
@@ -110,7 +111,7 @@ public class MyResourcesFragment extends Fragment{
         tab1.setCustomView(R.layout.custom_tab);
 
         TextView title1 = (TextView) tab1.getCustomView().findViewById(R.id.title);
-        title1.setText("Self Learning");
+        title1.setText(getResources().getString(R.string.self_learning));
 
         TextView subtitle1 = (TextView) tab1.getCustomView().findViewById(R.id.subtitle);
         subtitle1.setText("5 resources saved");

@@ -3,30 +3,20 @@ package net.mavericklabs.mitra.ui.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
-import net.mavericklabs.mitra.utils.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by root on 14/11/16.

@@ -30,6 +30,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -42,8 +43,6 @@ import net.mavericklabs.mitra.model.Requirements;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.RequirementsListAdapter;
 import net.mavericklabs.mitra.utils.Constants;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,5 +135,21 @@ public class ContentDetailsActivity extends AppCompatActivity {
         contentRecyclerView.setAdapter(similarContentsAdapter);
 
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+        }
+
+
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -23,7 +23,7 @@
         android:id="@+id/otp_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter OTP"
+        android:hint="@string/enter_otp"
         android:inputType="number"
         android:layout_marginTop="16dp"
         android:layout_below="@+id/entered_phone_number_edit_text"

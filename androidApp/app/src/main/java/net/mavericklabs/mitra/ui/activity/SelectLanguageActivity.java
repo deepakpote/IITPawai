@@ -32,21 +32,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.utils.Logger;
 
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SelectLanguageActivity extends AppCompatActivity {
 
@@ -82,6 +84,31 @@ public class SelectLanguageActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void setLocale(String lang) {
+
+        Call<List<CommonCode>> commonCodeList = RestClient.getApiService("").getCodeNameList();
+
+        commonCodeList.enqueue(new Callback<List<CommonCode>>() {
+            @Override
+            public void onResponse(Call<List<CommonCode>> call, Response<List<CommonCode>> response) {
+                if(response.isSuccessful()) {
+                    Realm realm = Realm.getDefaultInstance();
+                    Logger.d(" realm : " + realm.getPath());
+                    List<CommonCode> responseList = response.body();
+                    realm.beginTransaction();
+                    realm.copyToRealm(responseList);
+                    realm.commitTransaction();
+                    for (CommonCode commonCode : responseList) {
+                        Logger.d(" " + commonCode.getCodeID() + " " + commonCode.getCodeNameEnglish());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<CommonCode>> call, Throwable t) {
+
+            }
+        });
+
         Locale myLocale = new Locale(lang);
         Resources res = getResources();
         DisplayMetrics dm = res.getDisplayMetrics();

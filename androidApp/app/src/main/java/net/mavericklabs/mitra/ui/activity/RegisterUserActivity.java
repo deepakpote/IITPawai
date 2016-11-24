@@ -1,14 +1,8 @@
 package net.mavericklabs.mitra.ui.activity;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.system.Os;
-import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.telephony.PhoneNumberUtils;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -27,9 +21,6 @@ import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.os.Build.VERSION.SDK;
-import static net.mavericklabs.mitra.api.RestClient.getApiService;
 
 public class RegisterUserActivity extends AppCompatActivity {
 
