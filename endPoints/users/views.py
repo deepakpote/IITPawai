@@ -7,6 +7,8 @@ from rest_framework import status
 from rest_framework import viewsets,permissions
 from users.serializers import userSerializer, otpSerializer
 from users.models import user, otp, token
+from mitraEndPoints import constants
+import random
  
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -24,21 +26,21 @@ class UserViewSet(viewsets.ModelViewSet):
     def requestOtp(self,request):
         phoneNumber = request.data.get('phoneNumber')
         if not phoneNumber:
-            return Response({"message": "phone number not specified", "data": []},
+            return Response({"response_message": constants.messages.registration_phone_number_cannot_be_empty, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
             
         objOtp = otpSerializer(data = request.data)
         if not objOtp.is_valid():
-            return Response({"message": "phone number invalid", "data": []},
+            return Response({"response_message": constants.messages.registration_phone_number_is_invalid, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
         
-        generatedOTP = get_random_string(length = 6)
+        generatedOTP = random.randint(100000, 999999)
         objOtp = otp(phoneNumber = phoneNumber, otp = generatedOTP)
         objOtp.save()
         
         # TODO:
         # make call to plivo here
-        return Response({"message": "otp sent to " + phoneNumber, "data":[]})
+        return Response({"response_message": constants.messages.success, "data":[]})
 
     """
     API to verify OTP
@@ -51,21 +53,22 @@ class UserViewSet(viewsets.ModelViewSet):
         
         # Check if phone # is passed in post param
         if not phoneNumber:
-            return Response({"message": "phone number not specified", "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"response_message": constants.messages.registration_phone_number_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
         
         # Validate phone #
         objOtp = otpSerializer(data = request.data)
         if not objOtp.is_valid():
-            return Response({"message": "phone number invalid", "data": []},
+            return Response({"response_message": constants.messages.registration_phone_number_is_invalid, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
 
         otpList = otp.objects.filter(phoneNumber=phoneNumber, otp=otp_string).first()
         if not otpList:
-            return Response({"message": "invalid otp", "data": []},
+            return Response({"response_message": constants.messages.registration_otp_is_invalid, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
         else:
-            return Response({"message": "valid otp", "data": []})
+            return Response({"response_message": constants.messages.success, "data": []})
 
     """
     API to register user
@@ -84,7 +87,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # validate OTP
         otpList = otp.objects.filter(phoneNumber = phoneNumber,otp = otp_string).first()
         if not otpList:
-            return Response({"message": "invalid otp", "data":[]},
+            return Response({"response_message": constants.messages.registration_otp_is_invalid, "data":[]},
                             status=status.HTTP_401_UNAUTHORIZED)
         
         # If user information is valid, save it
@@ -108,7 +111,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # Add user data, along with the generated token to the response
         response = user.data
         response['token'] = token_string
-        return Response({"message": "", "data": [response]})
+        return Response({"response_message": constants.messages.success, "data": [response]})
     
 
 

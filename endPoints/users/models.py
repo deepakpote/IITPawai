@@ -3,10 +3,12 @@ from __future__ import unicode_literals
 from django.db import models
 from django.core.validators import RegexValidator
 from django.utils import timezone
-from commons.models import district 
+#from commons.models import district 
 from idlelib.IOBinding import blank_re
 
+"""
 # user model
+"""
 class user(models.Model):
     userID = models.AutoField(primary_key = True)
      
@@ -17,9 +19,11 @@ class user(models.Model):
     photoUrl = models.CharField(max_length = 255, null = True, blank = True)
     udiseCode = models.CharField(max_length = 255, null = True, blank = True)
     emailID = models.EmailField(max_length = 100, null = True, blank = True)
-     
-    #preferredLanguage = models.ForeignKey('language', db_column = 'preferredLanguageID', null = False, related_name='user_preferredLanguage')
-    district = models.ForeignKey('commons.district', db_column = 'districtID', null = False, related_name="user_district")
+    
+    # For district and language, set null = true, so as to allow inserting of admin user - with blank values for these 2 fields. Later on update these 2 fields for admin
+    # Further set blank = false, so as to NOT allow blank inputs
+    preferredLanguage = models.ForeignKey('commons.code', db_column = 'preferredLanguageCodeID', null = True, blank = False, related_name='user_preferredLanguageCodeID')
+    district = models.ForeignKey('commons.code', db_column = 'districtCodeID', null = True, blank = False, related_name="user_districtCodeID")
      
     createdBy = models.ForeignKey('user', null = True, related_name='user_createdBy', db_column = 'createdBy')
     createdOn = models.DateTimeField(auto_now_add=True)
@@ -47,6 +51,9 @@ class user(models.Model):
         db_table = 'usr_User'
         get_latest_by = 'userName'
 
+"""
+OTP model
+"""
 class otp(models.Model):
     otpID = models.AutoField(primary_key=True)
     phoneRegex = RegexValidator(regex=r'^\+?1?\d{10,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
@@ -59,6 +66,9 @@ class otp(models.Model):
     class Meta:
         db_table = 'usr_Otp'
 
+"""
+Token model
+"""
 class token(models.Model):
     tokenID = models.AutoField(primary_key=True)
     user = models.ForeignKey('user', related_name='token_user', db_column = 'userID')
@@ -69,7 +79,10 @@ class token(models.Model):
 
     class Meta:
         db_table = 'usr_Token'
-                 
+
+"""
+user authentication model
+"""                 
 class userAuth(models.Model):
     userAuthID = models.AutoField(primary_key = True)
     loginID = models.IntegerField(unique = True)
@@ -84,13 +97,13 @@ class userAuth(models.Model):
      
     class Meta:
         db_table = 'usr_userAuth'
-     
-class language(models.Model):
-    languageID = models.AutoField(primary_key = True)
-    languageName =  models.CharField(max_length = 256)
-    resourceCode = models.CharField(max_length = 3)
-    
-    class Meta:
-        db_table = 'com_Language'
-        get_latest_by = 'userName'
-        
+#      
+# class language(models.Model):
+#     languageID = models.AutoField(primary_key = True)
+#     languageName =  models.CharField(max_length = 256)
+#     resourceCode = models.CharField(max_length = 3)
+#     
+#     class Meta:
+#         db_table = 'com_Language'
+#         get_latest_by = 'userName'
+#         

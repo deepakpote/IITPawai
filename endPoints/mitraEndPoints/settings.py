@@ -140,7 +140,7 @@ REST_FRAMEWORK = {
         'users.authentication.TokenAuthentication',
         #'users.authentication.TestAuthentication',
     ),
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    ),
+#     'DEFAULT_RENDERER_CLASSES': (
+#         'rest_framework.renderers.JSONRenderer',
+#     ),
 }
