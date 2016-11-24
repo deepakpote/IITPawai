@@ -9,6 +9,7 @@ from users.serializers import userSerializer, otpSerializer
 from users.models import user, otp, token
 from mitraEndPoints import constants
 import random
+import plivo
  
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -38,7 +39,8 @@ class UserViewSet(viewsets.ModelViewSet):
         objOtp = otp(phoneNumber = phoneNumber, otp = generatedOTP)
         objOtp.save()
         
-        # TODO:
+        # Send OTP SMS Call
+        sendOtpSms(phoneNumber, generatedOTP, 101100)
         # make call to plivo here
         return Response({"response_message": constants.messages.success, "data":[]})
 
@@ -123,3 +125,23 @@ class UserViewSet(viewsets.ModelViewSet):
 #     def myinfo(self,request):
 #         print request.user
 #         return Response(UserSerializer(request.user).data)
+def sendOtpSms(recepientPhoneNumber, generatedOtp, languageCodeID):
+    
+    print ("Entered SMS OTP")
+    #Verify the Plivo account
+    objPlivo = plivo.RestAPI(constants.sms.authId, constants.sms.authToken)
+    
+    #Set the SMS Parameters
+    params = {
+        'src': constants.sms.srcPhoneNumber, # Sender's phone number with country code
+        'dst' : recepientPhoneNumber, # Receiver's phone Number with country code
+        'text' : constants.sms.registrationMessage + str(generatedOtp), # Your SMS Text Message - English
+        'url' : "http://example.com/report/", # The URL to which with the status of the message is sent
+        'method' : 'POST' # The method used to call the url
+    }
+        
+    #Send SMS Call
+    response = objPlivo.send_message(params)
+    
+    #Print Response
+    print (response)
