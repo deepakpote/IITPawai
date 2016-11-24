@@ -38,8 +38,6 @@ import butterknife.OnClick;
 
 public class HomeActivity extends AppCompatActivity {
 
-//    @BindView(R.id.bottom_navigation_view)
-//    BottomNavigationView bottomNavigationView;
 
     @BindView(R.id.faded_background_view)
     View fadedBackgroundView;

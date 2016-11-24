@@ -53,5 +53,6 @@
     <string name="subject">Subject</string>
     <string name="grade">Grade</string>
     <string name="required_field">* Required</string>
+    <string name="menu_edit">Edit</string>
 
 </resources>
