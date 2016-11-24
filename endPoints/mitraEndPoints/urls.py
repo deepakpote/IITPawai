@@ -4,9 +4,9 @@ from users import views as userView
 from commons import views as commonViews
 
 router = routers.DefaultRouter()
-router.register(r'users', userView.UserViewSet)
-router.register(r'district', commonViews.DistrictViewSet)
-router.register(r'codeNameList', commonViews.CodeNameViewSet)
+router.register(r'user', userView.UserViewSet)
+#router.register(r'district', commonViews.DistrictViewSet)
+router.register(r'code', commonViews.CodeViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
