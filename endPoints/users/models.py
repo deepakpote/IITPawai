@@ -4,7 +4,6 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.utils import timezone
 #from commons.models import district 
-from idlelib.IOBinding import blank_re
 
 """
 # user model
