@@ -30,7 +30,7 @@
     <string name="didn_t_not_receive_otp">Didn\'t not receive OTP?</string>
     <string name="resend_otp">Resend OTP</string>
     <string name="enter_phone_number">Enter phone number</string>
-    <string name="error_please_enter_4_digit_otp">Please enter 4 digit OTP</string>
+    <string name="error_please_enter_6_digit_otp">Please enter 6 digit OTP</string>
     <string name="error_10_digit_phone_number">Please enter 10 digit phone number</string>
     <string name="name">Name</string>
     <string name="i_am">I am</string>

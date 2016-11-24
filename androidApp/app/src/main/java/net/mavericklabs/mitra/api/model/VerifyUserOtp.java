@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class VerifyUserOtp {
 
-    @SerializedName("phone_number")
+    @SerializedName("phoneNumber")
     private String mobileNumber;
 
     @SerializedName("otp")

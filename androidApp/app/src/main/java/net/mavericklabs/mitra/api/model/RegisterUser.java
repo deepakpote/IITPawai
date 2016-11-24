@@ -8,19 +8,23 @@ import com.google.gson.annotations.SerializedName;
 
 public class RegisterUser {
 
-    @SerializedName("name")
+    @SerializedName("userName")
     private String name;
 
     @SerializedName("otp")
     private String otp;
 
-    @SerializedName("phone_number")
+    @SerializedName("phoneNumber")
     private String phoneNumber;
 
-    public RegisterUser(String name, String otp, String phoneNumber) {
-        this.name = name;
+    @SerializedName("district")
+    private String district;
+
+    public RegisterUser(String userName, String otp, String phoneNumber, String districtCode) {
+        this.name = userName;
         this.otp = otp;
         this.phoneNumber = phoneNumber;
+        this.district = districtCode;
     }
 
     public String getName() {
