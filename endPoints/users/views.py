@@ -6,6 +6,7 @@ from rest_framework import status
 #from users.models import user 
 from rest_framework import viewsets,permissions
 from users.serializers import userSerializer, otpSerializer
+
 from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade
 from commons.models import code
 from mitraEndPoints import constants
@@ -84,9 +85,9 @@ class UserViewSet(viewsets.ModelViewSet):
         otp_string = request.data.get('otp')
 
         # validate user information
-        user = userSerializer(data = request.data)#, context={'request': request})
-        if not user.is_valid():
-            return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+        objUserSerializer = userSerializer(data = request.data)#, context={'request': request})
+        if not objUserSerializer.is_valid():
+            return Response(objUserSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         # validate OTP
         otpList = otp.objects.filter(phoneNumber = phoneNumber,otp = otp_string).first()
@@ -94,9 +95,30 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.registration_otp_is_invalid, "data":[]},
                             status=status.HTTP_401_UNAUTHORIZED)
         
-        # If user information is valid, save it
-        user.save()
         
+        # If user information is valid, save it
+        objUserSerializer.save()
+        
+        #Once user is saved, update it's created by and modified by fields
+        objCreatedUser = user.objects.get(phoneNumber = phoneNumber)
+        user.objects.filter(phoneNumber = phoneNumber).update(createdBy = objCreatedUser, modifiedBy = objCreatedUser)
+        
+        #Save user subject
+        subjectCodeIDs = request.data.get('subjectCodeIDs')
+        userSubjectSave(subjectCodeIDs, objUserSerializer.instance)
+        
+        # Save user skill
+        skillCodeIDs = request.data.get('skillCodeIDs')
+        userSkillSave(skillCodeIDs, objUserSerializer.instance)
+         
+        # save user grade.
+        gradeCodeIDs = request.data.get('gradeCodeIDs')
+        userGradeSave(gradeCodeIDs, objUserSerializer.instance)
+         
+        # save user topics
+        topicCodeIDs  = request.data.get('topicCodeIDs')
+        userTopicSave(topicCodeIDs, objUserSerializer.instance)
+#         
         # Generate auth token for user
         tokenAreadyExists = True
         while tokenAreadyExists:
@@ -110,137 +132,13 @@ class UserViewSet(viewsets.ModelViewSet):
                 tokenAreadyExists = False
         
         # Save the auth generated token
-        objToken = token(user=user.instance, token = token_string).save()
+        objToken = token(user=objUserSerializer.instance, token = token_string).save()
         
         # Add user data, along with the generated token to the response
-        response = user.data
+        response = objUserSerializer.data
         response['token'] = token_string
         return Response({"response_message": constants.messages.success, "data": [response]})
     
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
-    def userProfileSave(self, request):            
-        # Get input data
-        phone_number = request.data.get('phoneNumber')
-        userName_string = request.data.get('userName')
-        photoUrl_string  = request.data.get('photoUrl')
-        udiseCode_string = request.data.get('udiseCode')
-        emailID_string = request.data.get('emailID')
-        #preferredLanguageID_number = request.data.get('preferredLanguageID')
-        districtID_number = request.data.get('district')
-        subjectID_string = request.data.get('subjectCodeIDs')
-        skillID_string = request.data.get('skillCodeIDs')
-        topicID_string = request.data.get('topicCodeIDs')
-        gradeID_string = request.data.get('gradeCodeIDs')
-
-        # validate user information
-#             user = userSerializer(data = request.data)
-#             if not user.is_valid():
-#                return Response(user.errors, status = status.HTTP_400_BAD_REQUEST)
-        
-        # Get existing user object.
-        #userObj = user.objects.filter(phoneNumber=phone_number)
-        userObj = user.objects.get(phoneNumber=phone_number)
-        #Update the user profile
-        userObj.userName = userName_string
-        userObj.photoUrl = photoUrl_string
-        userObj.udiseCode = udiseCode_string
-        userObj.emailID = emailID_string
-        #userObj.preferredLanguageID = preferredLanguageID_number
-        userObj.districtID = districtID_number
-#           userObj.modifiedBy = userObj.userID
-        userObj.modifiedOn = datetime.now()
-            
-        # save it
-        userObj.save()
-        
-        #Save user subject
-        usrSubIbj = self.userSubjectSave(subjectID_string,userObj)
-        # Save user skill
-        self.userSkillSave(skillID_string,userObj)
-        # save user grade.
-        self.userTopicSave(topicID_string,userObj)
-        # save user topics
-        self.gradeID_string(gradeID_string,userObj)
-        
-        # Response
-        response = request.data
-        return Response({"message": "User profile saved successfully", "data": [response]})
-            
-    
-    """
-    API to save user subjects
-    """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
-    def userSubjectSave(self,subjectCodeIDs,userObj):
-        if not subjectCodeIDs:
-            return Response({"message": "subjects are not selected", "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
-        
-        # save the user subject.
-        subjectList = subjectCodeIDs.split(',')
-        for subject in subjectList:
-             codeObj = code.objects.get(codeID=subject)
-             usrSubject = userSubject(subjectCodeID= codeObj,userID=userObj)
-             usrSubject.save()
-        
-        return Response({"message": "Subjects saved successfully", "data":[]})
-    
-    """
-    API to save user Skill
-    """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
-    def userSkillSave(self,skillCodeIDs,userObj):
-        if not skillCodeIDs:
-            return Response({"message": "Skills are not selected", "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
-            
-        # save the user skills.
-        skillList = skillCodeIDs.split(',')
-        for skill in skillList:
-             codeObj = code.objects.get(codeID=skill)
-             usrSkill = userSkill(skillCodeID=codeObj,userID=userObj)
-             usrSkill.save()
-        
-        return Response({"message": "Skills saved successfully", "data":[]})
-            
-    """
-    API to save user topics
-    """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
-    def userTopicSave(self,topicCodeIDs,userObj):
-        if not topicCodeIDs:
-            return Response({"message": "Topic are not selected", "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
-        
-        
-        # save the user topics.
-        topicList = topicCodeIDs.split(',')
-        for topic in topicList:
-             codeObj = code.objects.get(codeID=topic)
-             usrTopic = userTopic(topicCodeID=codeObj,userID=userObj )
-             usrTopic.save()
-        
-        return Response({"message": "Topic saved successfully", "data":[]})
-    
-    """
-    API to save user Grade
-    """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
-    def userGradeSave(self,gradeCodeIDs,userObj):
-        if not gradeCodeIDs:
-            return Response({"message": "Grade are not selected", "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
-        
-        
-        # save the user Grade.
-        gradeList = gradeCodeIDs.split(',')
-        for grade in gradeList:
-             codeObj = code.objects.get(codeID=grade)
-             usrGrade = userGrade(gradeCodeID=codeObj,userid=userObj)
-             usrGrade.save()
-        
-        return Response({"message": "Grade saved successfully", "data":[]})
-
 #     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])
 #     def opentoAll(self,request):
 #         return Response({"hello"})
@@ -269,3 +167,59 @@ def sendOtpSms(recepientPhoneNumber, generatedOtp, languageCodeID):
     
     #Print Response
     print (response)
+"""
+Function to save the user subjects.
+"""
+def userSubjectSave(subjectCodeIDs, objUser):
+    if not subjectCodeIDs:
+        return
+    
+    # save the user subject.
+    subjectCodeList = subjectCodeIDs.split(',')
+    for subjectCodeID in subjectCodeList:
+         objCode = code.objects.get(codeID = subjectCodeID)
+         userSubject(subject = objCode, user = objUser).save()
+    
+    return
+"""
+Function to save the user skills.
+"""
+def userSkillSave(skillCodeIDs, userObj):
+    if not skillCodeIDs:
+        return
+        
+    # save the user skills.
+    skillCodeList = skillCodeIDs.split(',')
+    for skillCodeID in skillCodeList:
+         objCode = code.objects.get(codeID = skillCodeID)
+         userSkill(skill = objCode, user = userObj).save()
+    
+    return
+"""
+Function to save the user topics.
+"""
+def userTopicSave(topicCodeIDs, userObj):
+    if not topicCodeIDs:
+        return
+    
+    # save the user topics.
+    topicCodeList = topicCodeIDs.split(',')
+    for topicCodeID in topicCodeList:
+         objCode = code.objects.get(codeID=topicCodeID)
+         userTopic(topic = objCode, user = userObj ).save()
+    
+    return
+"""
+Function to save the user grades.
+"""
+def userGradeSave(gradeCodeIDs , userObj):
+    if not gradeCodeIDs:
+        return 
+    
+    # save the user Grade.
+    gradeCodeList = gradeCodeIDs.split(',')
+    for gradeCodeID in gradeCodeList:
+         objCode = code.objects.get(codeID = gradeCodeID)
+         userGrade(grade = objCode, user = userObj).save()
+
+    return

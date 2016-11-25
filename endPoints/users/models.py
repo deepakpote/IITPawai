@@ -82,51 +82,71 @@ class token(models.Model):
 
 """
 user authentication model
-"""
+"""                 
 class userAuth(models.Model):
-    userauthid = models.AutoField(db_column='userAuthID', primary_key=True)  # Field name made lowercase.
-    loginid = models.IntegerField(db_column='loginID', unique=True)  # Field name made lowercase.
-    password = models.CharField(max_length=256, blank=True, null=True)
-    sessiontoken = models.CharField(db_column='sessionToken', max_length=256, blank=True, null=True)  # Field name made lowercase.
-    lastloggedinon = models.DateTimeField(db_column='lastLoggedInOn')  # Field name made lowercase.
+    userAuthID = models.AutoField(primary_key = True)
+    loginID = models.IntegerField(unique = True)
+    password = models.CharField(max_length = 256, null = True)
+    sessionToken = models.CharField(max_length = 256, null = True)
+    lastLoggedInOn = models.DateTimeField(auto_now_add=True)
      
-    createdon = models.DateTimeField(db_column='createdOn')  # Field name made lowercase.
-    modifiedon = models.DateTimeField(db_column='modifiedOn')  # Field name made lowercase.
-    createdby = models.ForeignKey(user,  related_name='userAuth_createdBy', db_column='createdBy')  # Field name made lowercase.
-    modifiedby = models.ForeignKey(user,  related_name='userAuth_modifiedby', db_column='modifiedBy')  # Field name made lowercase.
- 
+    createdBy = models.ForeignKey('user', related_name='userAuth_createdBy', db_column = 'createdBy')
+    createdOn = models.DateTimeField(auto_now_add=True)
+    modifiedBy = models.ForeignKey('user', related_name='userAuth_modifiedBy', db_column = 'modifiedBy')
+    modifiedOn = models.DateTimeField(auto_now_add=True)
+     
     class Meta:
-        db_table = 'usr_userauth'
+        db_table = 'usr_userAuth'
 
-
+"""
+user subject model
+"""  
 class userSubject(models.Model):
-    userSubjectID = models.AutoField(primary_key=True)  # Field name made lowercase.
-    subjectCodeID = models.ForeignKey('commons.code', related_name='userSubject_subjectcodeid', db_column='subjectCodeID')  # Field name made lowercase.
-    userID = models.ForeignKey('user', related_name='userSubject_userid', db_column='userID')  # Field name made lowercase.
+    userSubjectID = models.AutoField(primary_key=True)
+    subject = models.ForeignKey('commons.code', db_column='subjectCodeID', related_name='userSubject_subjectCodeID')
+    user = models.ForeignKey('user', db_column='userID', related_name='userSubject_userID')
+    
+    createdOn = models.DateTimeField(auto_now=False, auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
  
     class Meta:
         db_table = 'usr_userSubject'
-
+"""
+user skill model
+"""  
 class userSkill(models.Model):
-    userSkillID = models.AutoField(primary_key=True)  # Field name made lowercase.
-    skillCodeID = models.ForeignKey('commons.code', related_name='userSkill_skillcodeid', db_column='skillCodeID')  # Field name made lowercase.
-    userID = models.ForeignKey('user', related_name='userSkill_userid', db_column='userID')  # Field name made lowercase.
+    userSkillID = models.AutoField(primary_key=True)
+    skill = models.ForeignKey('commons.code', db_column='skillCodeID', related_name='userSkill_skillCodeID')
+    user = models.ForeignKey('user', db_column='userID', related_name='userSkill_userid')
+    
+    createdOn = models.DateTimeField(auto_now=False, auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
  
     class Meta:
-        db_table = 'use_userSkill'
- 
+        db_table = 'usr_userSkill'
+"""
+user topic model
+"""   
 class userTopic(models.Model):
-    userTopicID = models.AutoField(primary_key=True)  # Field name made lowercase.
-    topicCodeID = models.ForeignKey('commons.code', related_name='userTopic_topiccodeid', db_column='topicCodeID')  # Field name made lowercase.
-    userid = models.ForeignKey('user', related_name='userTopic_userid', db_column='userID')  # Field name made lowercase.
+    userTopicID = models.AutoField(primary_key=True)
+    topic = models.ForeignKey('commons.code', db_column='topicCodeID', related_name='userTopic_topicCodeID')
+    user = models.ForeignKey('user', db_column='userID', related_name='userTopic_userid')
+    
+    createdOn = models.DateTimeField(auto_now=False, auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
  
     class Meta:
         db_table = 'usr_userTopic'
-         
+"""
+user grade model
+"""          
 class userGrade(models.Model):
-    userGradeID = models.AutoField(primary_key=True)  # Field name made lowercase.
-    gradeCodeID = models.ForeignKey('commons.code', related_name='userGrade_gradeCodeID', db_column='gradeCodeID')  # Field name made lowercase.
-    userID = models.ForeignKey('user', related_name='userGrade_userid', db_column='userID')  # Field name made lowercase.
+    userGradeID = models.AutoField(primary_key=True)  
+    grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='userGrade_gradeCodeID')
+    user = models.ForeignKey('user', db_column='userID', related_name='userGrade_userID')
+    
+    createdOn = models.DateTimeField(auto_now=False, auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
  
     class Meta:
         db_table = 'usr_userGrade'        
