@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User 
 import re
 from rest_framework import serializers
+from users.models import user 
 from django.core.validators import RegexValidator
 from users.models import user, otp
 
@@ -35,4 +36,3 @@ class otpSerializer(serializers.ModelSerializer):
     class Meta:
         model = otp
         fields = ('phoneNumber', 'otp')
-        

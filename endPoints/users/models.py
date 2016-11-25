@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.core.validators import RegexValidator
 from django.utils import timezone
+from commons.models import code 
 #from commons.models import district 
-
 """
 # user model
 """
@@ -28,6 +28,7 @@ class user(models.Model):
     createdOn = models.DateTimeField(auto_now_add=True)
     modifiedBy = models.ForeignKey('user', null = True, related_name='user_modifiedBy', db_column = 'modifiedBy')
     modifiedOn = models.DateTimeField(auto_now_add=True)
+
     
     USERNAME_FIELD = 'phoneNumber'
     REQUIRED_FIELDS = ['name',]
@@ -96,6 +97,60 @@ class userAuth(models.Model):
      
     class Meta:
         db_table = 'usr_userAuth'
+
+"""
+user subject model
+"""  
+class userSubject(models.Model):
+    userSubjectID = models.AutoField(primary_key=True)
+    subject = models.ForeignKey('commons.code', db_column='subjectCodeID', related_name='userSubject_subjectCodeID')
+    user = models.ForeignKey('user', db_column='userID', related_name='userSubject_userID')
+    
+    createdOn = models.DateTimeField(auto_now=False, auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
+ 
+    class Meta:
+        db_table = 'usr_userSubject'
+"""
+user skill model
+"""  
+class userSkill(models.Model):
+    userSkillID = models.AutoField(primary_key=True)
+    skill = models.ForeignKey('commons.code', db_column='skillCodeID', related_name='userSkill_skillCodeID')
+    user = models.ForeignKey('user', db_column='userID', related_name='userSkill_userid')
+    
+    createdOn = models.DateTimeField(auto_now=False, auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
+ 
+    class Meta:
+        db_table = 'usr_userSkill'
+"""
+user topic model
+"""   
+class userTopic(models.Model):
+    userTopicID = models.AutoField(primary_key=True)
+    topic = models.ForeignKey('commons.code', db_column='topicCodeID', related_name='userTopic_topicCodeID')
+    user = models.ForeignKey('user', db_column='userID', related_name='userTopic_userid')
+    
+    createdOn = models.DateTimeField(auto_now=False, auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
+ 
+    class Meta:
+        db_table = 'usr_userTopic'
+"""
+user grade model
+"""          
+class userGrade(models.Model):
+    userGradeID = models.AutoField(primary_key=True)  
+    grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='userGrade_gradeCodeID')
+    user = models.ForeignKey('user', db_column='userID', related_name='userGrade_userID')
+    
+    createdOn = models.DateTimeField(auto_now=False, auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
+ 
+    class Meta:
+        db_table = 'usr_userGrade'        
+
 #      
 # class language(models.Model):
 #     languageID = models.AutoField(primary_key = True)
@@ -106,3 +161,4 @@ class userAuth(models.Model):
 #         db_table = 'com_Language'
 #         get_latest_by = 'userName'
 #         
+
