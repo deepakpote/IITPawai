@@ -23,6 +23,7 @@ class user(models.Model):
     # Further set blank = false, so as to NOT allow blank inputs
     preferredLanguage = models.ForeignKey('commons.code', db_column = 'preferredLanguageCodeID', null = True, blank = False, related_name='user_preferredLanguageCodeID')
     district = models.ForeignKey('commons.code', db_column = 'districtCodeID', null = True, blank = False, related_name="user_districtCodeID")
+    userType = models.ForeignKey('commons.code', db_column = 'userTypeCodeID', null = True, blank = False, related_name="user_userTypeCodeID")
      
     createdBy = models.ForeignKey('user', null = True, related_name='user_createdBy', db_column = 'createdBy')
     createdOn = models.DateTimeField(auto_now_add=True)

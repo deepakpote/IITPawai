@@ -21,7 +21,7 @@ user serializer class
 class userSerializer(serializers.ModelSerializer):
     class Meta:
         model = user
-        fields = ('userID', 'phoneNumber', 'userName', 'photoUrl', 'udiseCode', 'emailID', 'district')
+        fields = ('userID', 'phoneNumber', 'userName', 'userType' , 'preferredLanguage' , 'photoUrl', 'udiseCode', 'emailID', 'district')
 
 """
 OTP serializer class

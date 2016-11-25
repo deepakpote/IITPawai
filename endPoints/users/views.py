@@ -87,7 +87,8 @@ class UserViewSet(viewsets.ModelViewSet):
         # validate user information
         objUserSerializer = userSerializer(data = request.data)#, context={'request': request})
         if not objUserSerializer.is_valid():
-            return Response(objUserSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[ objUserSerializer.errors]},
+                            status=status.HTTP_401_UNAUTHORIZED)
         
         # validate OTP
         otpList = otp.objects.filter(phoneNumber = phoneNumber,otp = otp_string).first()
@@ -135,7 +136,8 @@ class UserViewSet(viewsets.ModelViewSet):
         objToken = token(user=objUserSerializer.instance, token = token_string).save()
         
         # Add user data, along with the generated token to the response
-        response = objUserSerializer.data
+        #response = objUserSerializer.data
+        response = { 'userID' : objCreatedUser.userID }  #objCreatedUser.userID
         response['token'] = token_string
         return Response({"response_message": constants.messages.success, "data": [response]})
     
