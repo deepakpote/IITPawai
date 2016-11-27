@@ -26,6 +26,8 @@ package net.mavericklabs.mitra.utils;
 import android.text.InputFilter;
 import android.text.Spanned;
 
+import java.util.List;
+
 /**
  * Created by root on 3/11/16.
  */
@@ -85,6 +87,20 @@ public class StringUtils {
 
     public static String removeAllWhitespace(String str) {
         return str.replaceAll("\\s+","");
+    }
+
+    public static String stringify(List<String> list) {
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for(String e : list) {
+            sb.append(e);
+            i++;
+            if(i == list.size()) {
+                break;
+            }
+            sb.append(",");
+        }
+        return sb.toString();
     }
 
 }

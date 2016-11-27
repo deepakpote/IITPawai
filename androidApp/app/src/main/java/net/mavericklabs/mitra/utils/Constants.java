@@ -6,8 +6,6 @@ package net.mavericklabs.mitra.utils;
 
 public interface Constants {
     String youtubeDeveloperKey = "AIzaSyBbjz0Z4iYWFWSvbDRIrpeAz27FOqvX8VA";
-
-    String districtCodeGroup = "102";
     //Temp enum
     enum FileType {
         VIDEO,
