@@ -16,6 +16,7 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.VerifyUserOtp;
+import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import butterknife.BindView;
@@ -82,12 +83,10 @@ public class VerifyOtpActivity extends AppCompatActivity {
                         if(response.isSuccessful()) {
                             UserDetailUtils.saveMobileNumber(phoneNumber,getApplicationContext());
                             Intent almostDone = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("otp",otpEditText.getText().toString());
-                            almostDone.putExtras(bundle);
+                            MitraSharedPreferences.saveToPreferences(getApplicationContext(), "OTP", otpEditText.getText().toString());
                             startActivity(almostDone);
                         } else {
-                            Toast.makeText(getApplicationContext(), R.string.error_please_enter_4_digit_otp,Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), R.string.error_please_enter_6_digit_otp,Toast.LENGTH_LONG).show();
                         }
                     }
 
@@ -97,7 +96,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
                     }
                 });
             } else {
-                Toast.makeText(getApplicationContext(), R.string.error_please_enter_4_digit_otp,Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.error_please_enter_6_digit_otp,Toast.LENGTH_LONG).show();
             }
             return true;
         }
@@ -105,6 +104,6 @@ public class VerifyOtpActivity extends AppCompatActivity {
     }
 
     private boolean isValidOtp() {
-        return otpEditText.getText().length() == 4;
+        return otpEditText.getText().length() == 6;
     }
 }

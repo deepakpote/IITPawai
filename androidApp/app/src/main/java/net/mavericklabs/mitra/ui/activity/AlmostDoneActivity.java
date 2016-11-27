@@ -35,7 +35,6 @@ public class AlmostDoneActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_almost_done);
         ButterKnife.bind(this);
-        final Bundle bundle = getIntent().getExtras();
         timerThread = new Thread()  {
             public void run() {
                 try {
@@ -44,7 +43,6 @@ public class AlmostDoneActivity extends AppCompatActivity {
                     e.printStackTrace();
                 } finally {
                     Intent profileActivity = new Intent(AlmostDoneActivity.this,EditProfileActivity.class);
-                    profileActivity.putExtras(bundle);
                     startActivity(profileActivity);
                     finishAffinity();
                 }

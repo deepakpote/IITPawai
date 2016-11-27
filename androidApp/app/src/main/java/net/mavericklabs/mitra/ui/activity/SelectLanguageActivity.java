@@ -36,7 +36,9 @@ import android.widget.Button;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.List;
@@ -46,6 +48,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -85,27 +88,31 @@ public class SelectLanguageActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void setLocale(String lang) {
 
-        Call<List<CommonCode>> commonCodeList = RestClient.getApiService("").getCodeNameList();
+        Call<BaseModel<CommonCode>> codeNameListCall = RestClient.getApiService("").getCodeNameList();
 
-        commonCodeList.enqueue(new Callback<List<CommonCode>>() {
+        codeNameListCall.enqueue(new Callback<BaseModel<CommonCode>>() {
             @Override
-            public void onResponse(Call<List<CommonCode>> call, Response<List<CommonCode>> response) {
+            public void onResponse(Call<BaseModel<CommonCode>> call, Response<BaseModel<CommonCode>> response) {
                 if(response.isSuccessful()) {
+                    Logger.d(" is successful");
                     Realm realm = Realm.getDefaultInstance();
-                    Logger.d(" realm : " + realm.getPath());
-                    List<CommonCode> responseList = response.body();
-                    realm.beginTransaction();
-                    realm.copyToRealm(responseList);
-                    realm.commitTransaction();
-                    for (CommonCode commonCode : responseList) {
-                        Logger.d(" " + commonCode.getCodeID() + " " + commonCode.getCodeNameEnglish());
+                    RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
+                            .where(CommonCode.class).findAll();
+                    if(commonCodes.isEmpty()) {
+                        List<CommonCode> responseList = response.body().getData();
+                        realm.beginTransaction();
+                        realm.copyToRealm(responseList);
+                        realm.commitTransaction();
+                        for (CommonCode commonCode : responseList) {
+                            Logger.d(" " + commonCode.getCodeID() + " " + commonCode.getCodeNameEnglish());
+                        }
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<List<CommonCode>> call, Throwable t) {
-
+            public void onFailure(Call<BaseModel<CommonCode>> call, Throwable t) {
+                Logger.d(" on failure ");
             }
         });
 

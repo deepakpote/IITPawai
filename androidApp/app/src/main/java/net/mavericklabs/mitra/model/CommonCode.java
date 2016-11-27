@@ -25,6 +25,10 @@ package net.mavericklabs.mitra.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import net.mavericklabs.mitra.utils.Logger;
+
+import java.util.Locale;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -38,7 +42,7 @@ public class CommonCode extends RealmObject{
     @SerializedName("codeID")
     private String codeID;
 
-    @SerializedName("codeGroupID")
+    @SerializedName("codeGroup")
     private String codeGroupID;
 
     @SerializedName("codeNameEn")
@@ -49,6 +53,17 @@ public class CommonCode extends RealmObject{
 
     @SerializedName("displayOrder")
     private int displayOder;
+
+    public CommonCode() {
+    }
+
+    public CommonCode(String codeID, String codeGroupID, String codeNameEnglish, String codeNameMarathi, int displayOder) {
+        this.codeID = codeID;
+        this.codeGroupID = codeGroupID;
+        this.codeNameEnglish = codeNameEnglish;
+        this.codeNameMarathi = codeNameMarathi;
+        this.displayOder = displayOder;
+    }
 
     public String getCodeID() {
         return codeID;
@@ -88,5 +103,18 @@ public class CommonCode extends RealmObject{
 
     public void setDisplayOder(int displayOder) {
         this.displayOder = displayOder;
+    }
+
+    public String getCodeNameForCurrentLocale() {
+        String currentLocale = Locale.getDefault().getLanguage();
+        //Logger.d(" current locale " + currentLocale);
+
+        if(currentLocale.equals("en")) {
+            return codeNameEnglish;
+        } else if(currentLocale.equals("mr")) {
+            return codeNameMarathi;
+        }
+
+        return codeNameEnglish;
     }
 }

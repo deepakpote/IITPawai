@@ -21,15 +21,15 @@ import retrofit2.http.POST;
 
 public interface Api {
 
-    @POST("users/requestotp/")
+    @POST("user/requestOtp/")
     Call<BaseModel<GenericListDataModel>> requestOtp(@Body NewUser user);
 
-    @POST("users/verifyotp/")
+    @POST("user/verifyOtp/")
     Call<BaseModel<GenericListDataModel>> verifyOtp(@Body VerifyUserOtp verifyUserOtp);
 
-    @POST("users/register/")
+    @POST("user/register/")
     Call<BaseModel<RegisterUserResponse>> registerUser(@Body RegisterUser user);
 
-    @GET("codeNameList/")
-    Call<List<CommonCode>> getCodeNameList();
+    @GET("code/")
+    Call<BaseModel<CommonCode>> getCodeNameList();
 }

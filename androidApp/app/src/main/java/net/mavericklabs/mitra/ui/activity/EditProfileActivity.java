@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,18 +33,26 @@ import net.mavericklabs.mitra.api.model.RegisterUser;
 import net.mavericklabs.mitra.api.model.RegisterUserResponse;
 import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivityGradesAdapter;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivitySubjectsAdapter;
+import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.ui.fragment.SubjectAndGradeFragment;
+import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -69,6 +78,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     private final int PICK_PROFILE = 0;
     private Context context;
     private String otp;
+    private SpinnerArrayAdapter districtAdapter;
 
     @OnClick(R.id.profile_photo_image_view)
     void pickProfilePhoto() {
@@ -129,11 +139,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
 
-        // Check bundle
-        Bundle bundle;
-        if ((bundle = getIntent().getExtras()) != null) {
-            otp = bundle.getString("otp");
-        }
+        otp = MitraSharedPreferences.readFromPreferences(getApplicationContext(), "OTP", "");
+        Logger.d(" otp "  + otp);
 
         this.context = getApplicationContext();
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -150,14 +157,21 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         //TODO temp options. these are to be fetched from server
         String[] choices = {"SELECT","Teacher","Student"};
-        String[] districts = {"SELECT","Beed","Jalna"};
+
+        RealmResults<CommonCode> districtList = Realm.getDefaultInstance().where(CommonCode.class)
+                .equalTo("codeGroupID", Constants.districtCodeGroup).findAll();
+        Logger.d(" list " + districtList.size());
+        List<CommonCode> districts = new ArrayList<>(districtList);
+
+        //Header - not a valid value
+        districts.add(0, new CommonCode("0", "0","SELECT", "SELECT", 0));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),R.layout.custom_spinner_item_header,choices);
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
         iAmSpinner.setAdapter(adapter);
 
-        ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.custom_spinner_item_header,districts);
-        districtAdapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
+        districtAdapter = new SpinnerArrayAdapter(EditProfileActivity.this,
+                R.layout.custom_spinner_dropdown_item, districts);
         districtSpinner.setAdapter(districtAdapter);
 
         Glide.with(this).load(R.drawable.placeholder_user).bitmapTransform(new CropCircleTransformation(getApplicationContext())).into(profilePhotoImageView);
@@ -175,11 +189,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         if (id == R.id.action_next) {
             if(isValidInformation()) {
                 String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
-                //TODO get the name from name edit text. Amogh name is temporary
-                RegisterUser user = new RegisterUser("Amogh",otp,phoneNumber);
+                RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID());
                 RestClient.getApiService("").registerUser(user).enqueue(new Callback<BaseModel<RegisterUserResponse>>() {
                     @Override
                     public void onResponse(Call<BaseModel<RegisterUserResponse>> call, Response<BaseModel<RegisterUserResponse>> response) {
+                        Logger.d(" Succes");
                         if(response.isSuccessful()) {
                             if(response.body().getData() != null) {
                                 RegisterUserResponse serverResponse = response.body().getData().get(0);
@@ -194,7 +208,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
                     @Override
                     public void onFailure(Call<BaseModel<RegisterUserResponse>> call, Throwable t) {
-
+                        Logger.d(" on fail");
                     }
                 });
             } else {
@@ -243,13 +257,20 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     }
 
     private boolean isValidInformation() {
+
         if(nameEditText.getText().length() == 0) {
             return false;
-        } else if (iAmSpinner.getSelectedItem().toString().contains("SELECT")) {
-            return false;
-        } else if(districtSpinner.getSelectedItem().toString().contains("SELECT")) {
+//        } else if (iAmSpinner.getSelectedItem().toString().contains("SELECT")) {
+//            return false;
+        } else if(getSelectedDistrictID().equals("0")) {
             return false;
         }
         return true;
+    }
+
+    private String getSelectedDistrictID() {
+        CommonCode district = (CommonCode) districtSpinner.getSelectedItem();
+        Logger.d(" name  " + district.getCodeNameEnglish() + " " + district.getCodeID());
+        return district.getCodeID();
     }
 }
