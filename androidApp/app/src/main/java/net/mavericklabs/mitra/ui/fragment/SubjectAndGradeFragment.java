@@ -38,9 +38,14 @@ import io.realm.RealmResults;
  * Created by root on 13/11/16.
  */
 
-public class SubjectAndGradeFragment extends BaseDialogFragment {
+public class SubjectAndGradeFragment extends DialogFragment {
 
     private OnDialogFragmentDismissedListener onDialogFragmentDismissedListener;
+    private List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> objects;
+
+    @BindView(R.id.subject_or_grade_list_view)
+    ListView subjectOrGradeListView;
+
 
     public SubjectAndGradeFragment() {
         //mandatory constructor
@@ -76,6 +81,28 @@ public class SubjectAndGradeFragment extends BaseDialogFragment {
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.grade_s);
 
+        objects = (List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject>) getArguments().getSerializable("item_list");
+        subjectOrGradeListView.setAdapter(new SubjectAndGradeFragmentListAdapter(getContext(),android.R.layout.simple_list_item_multiple_choice,objects));
+        subjectOrGradeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                CheckedTextView textView = (CheckedTextView) view.findViewById(android.R.id.text1);
+                if (!textView.isChecked()) {
+                    textView.setChecked(true);
+                    objects.get(i).setChecked(true);
+                } else {
+                    textView.setChecked(false);
+                    objects.get(i).setChecked(false);
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.menu_action_next_fragment,menu);
     }
 
     @Override
@@ -88,10 +115,23 @@ public class SubjectAndGradeFragment extends BaseDialogFragment {
                     checkedItems.add(object);
                 }
             }
+
             onDialogFragmentDismissedListener.onDialogFragmentDismissed(checkedItems);
             dismiss();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        return super.onCreateDialog(savedInstanceState);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("My Profile");
     }
 }
