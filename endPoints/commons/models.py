@@ -12,7 +12,7 @@ class codeGroup(models.Model):
     createdBy = models.ForeignKey('users.user', related_name='codeGroup_createdBy', db_column = 'createdBy')
     createdOn = models.DateTimeField(auto_now_add=True)
     modifiedBy = models.ForeignKey('users.user', related_name='codeGroup_modifiedBy', db_column = 'modifiedBy')
-    modifiedOn = models.DateTimeField(auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'com_CodeGroup'
@@ -28,7 +28,7 @@ class code(models.Model):
     createdBy = models.ForeignKey('users.user', related_name='code_createdBy', db_column = 'createdBy')
     createdOn = models.DateTimeField(auto_now_add=True)
     modifiedBy = models.ForeignKey('users.user', related_name='code_modifiedBy', db_column = 'modifiedBy')
-    modifiedOn = models.DateTimeField(auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_nows=True)
     
     class Meta:
         db_table = 'com_Code'
