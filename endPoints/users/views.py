@@ -7,11 +7,12 @@ from rest_framework import status
 from rest_framework import viewsets,permissions
 from users.serializers import userSerializer, otpSerializer
 
-from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade
+from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth
 from commons.models import code
 from mitraEndPoints import constants
 import random
 import plivo
+import datetime
 
  
 class UserViewSet(viewsets.ModelViewSet):
@@ -141,6 +142,56 @@ class UserViewSet(viewsets.ModelViewSet):
         response['token'] = token_string
         return Response({"response_message": constants.messages.success, "data": [response]})
     
+    """
+    API to login
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def login(self,request):
+        # get inputs
+        phoneNumber = request.data.get('phoneNumber')
+        authtoken = request.data.get('token')
+        
+        # Check if phoneNumber is passed in post param
+        if not phoneNumber:
+            return Response({"response_message": constants.messages.registration_phone_number_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if token is passed in post param
+        if not authtoken:
+            return Response({"response_message": constants.messages.login_token_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)            
+                  
+        # Check if phone number exists.
+        objUser = user.objects.filter(phoneNumber = phoneNumber).first()
+        if not objUser:
+            return Response({"response_message": constants.messages.registration_phone_number_is_invalid, "data": []},
+                    status=status.HTTP_401_UNAUTHORIZED)
+
+        
+        #authenticate user with it's token.
+        tokenList = token.objects.filter(user = objUser , token = authtoken).first()
+        
+        # Check authentication result.
+        if not tokenList:
+            return Response({"response_message": constants.messages.login_user_token_invalid, "data": []},
+                            status=status.HTTP_401_UNAUTHORIZED)
+        
+        # Fetch userAuth for respective phoneNumber
+        objuserAuth = userAuth.objects.filter(loginID = phoneNumber).first()
+        
+        # If first time login then make entry into the userAuth
+        if not objuserAuth:
+            userAuth(loginID = phoneNumber, authToken = authtoken, createdBy = objUser , modifiedBy = objUser).save()  
+        else:
+            #Update the lastLoggedInOn and modifiedOn
+#             objuserAuth.lastLoggedInOn = datetime.datetime.now()
+#             objuserAuth.modifiedOn = datetime.datetime.now()
+            objuserAuth.save()
+        
+        return Response({"response_message": constants.messages.success, "data": []})
+    
 #     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])
 #     def opentoAll(self,request):
 #         return Response({"hello"})
@@ -225,3 +276,4 @@ def userGradeSave(gradeCodeIDs , userObj):
          userGrade(grade = objCode, user = userObj).save()
 
     return
+

@@ -4,6 +4,8 @@ class messages():
     registration_phone_number_is_invalid = 100102
     registration_otp_is_invalid = 100103
     registration_user_validation_failed = 100104
+    login_token_cannot_be_empty = 100105
+    login_user_token_invalid = 100106
 
 class sms():
     authId = "MAOTGWZJI2NDAXNJHMMZ"

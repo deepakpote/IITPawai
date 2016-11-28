@@ -28,7 +28,7 @@ class user(models.Model):
     createdBy = models.ForeignKey('user', null = True, related_name='user_createdBy', db_column = 'createdBy')
     createdOn = models.DateTimeField(auto_now_add=True)
     modifiedBy = models.ForeignKey('user', null = True, related_name='user_modifiedBy', db_column = 'modifiedBy')
-    modifiedOn = models.DateTimeField(auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
 
     
     USERNAME_FIELD = 'phoneNumber'
@@ -86,15 +86,15 @@ user authentication model
 """                 
 class userAuth(models.Model):
     userAuthID = models.AutoField(primary_key = True)
-    loginID = models.IntegerField(unique = True)
-    password = models.CharField(max_length = 256, null = True)
-    sessionToken = models.CharField(max_length = 256, null = True)
-    lastLoggedInOn = models.DateTimeField(auto_now_add=True)
+    loginID = models.CharField(null = False, unique = True, max_length = 15)
+    password = models.CharField(max_length = 255, null = True)
+    authToken = models.CharField(max_length = 255, null = True)
+    lastLoggedInOn = models.DateTimeField(auto_now=True)
      
     createdBy = models.ForeignKey('user', related_name='userAuth_createdBy', db_column = 'createdBy')
     createdOn = models.DateTimeField(auto_now_add=True)
     modifiedBy = models.ForeignKey('user', related_name='userAuth_modifiedBy', db_column = 'modifiedBy')
-    modifiedOn = models.DateTimeField(auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
      
     class Meta:
         db_table = 'usr_userAuth'
@@ -155,7 +155,7 @@ class userGrade(models.Model):
 #      
 # class language(models.Model):
 #     languageID = models.AutoField(primary_key = True)
-#     languageName =  models.CharField(max_length = 256)
+#     languageName =  models.CharField(max_length = 255)
 #     resourceCode = models.CharField(max_length = 3)
 #     
 #     class Meta:
