@@ -3,6 +3,7 @@ from django.shortcuts import render
 from rest_framework import viewsets,permissions
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route, list_route
+from rest_framework import status
 
 from mitraEndPoints import constants
 from events.serializers import eventQuerySerializer
@@ -19,6 +20,8 @@ class EventViewSet(viewsets.ViewSet):
     
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def listEvents(self, request):
+        reqData = {str(key):request.data[key] for key in request.data.keys()}
+        print(reqData) 
         queryParameters=eventQuerySerializer(data=request.data)
         
         if not queryParameters.is_valid():
@@ -28,5 +31,5 @@ class EventViewSet(viewsets.ViewSet):
                             status=status.HTTP_401_UNAUTHORIZED
                             )
         
-        lstEvents=calender.listEvents(**(queryParameters.data))
+        lstEvents=EventViewSet.calender.listEvents(**(queryParameters.data))
         return Response({"response_message": constants.messages.success, "data":lstEvents})

@@ -25,12 +25,12 @@ class eventSerializer(serializers.Serializer):
 	reminders=remindersSerializer()
 
 # object serializer for query filter parameters
-class eventQuerySerializer():
-	timeMin = serializers.DateTimeField()
-	timeMax = serializers.DateTimeField()
+class eventQuerySerializer(serializers.Serializer):
+	timeMin = serializers.CharField()
+	timeMax = serializers.CharField()
 	orderBy = serializers.CharField()
 	singleEvents = serializers.BooleanField()
 	maxResults = serializers.IntegerField()
-	subjectCodeIDs = serializers.CharField()
-	districtCodeIDs = serializers.CharField()
+	#subjectCodeIDs = serializers.CharField()
+	#districtCodeIDs = serializers.CharField()
 	
