@@ -2,6 +2,7 @@ from django.shortcuts import render
 
 from rest_framework import viewsets,permissions
 from rest_framework.response import Response
+from rest_framework.decorators import detail_route, list_route
 
 from mitraEndPoints import constants
 from events.serializers import eventQuerySerializer
@@ -11,11 +12,13 @@ class EventViewSet(viewsets.ViewSet):
     """
     API endpoint to fetch list of events from calender
     """
-    serializer_class=eventQuerySerializer
+    serializer_class = eventQuerySerializer
     calender = EventsCalender()
     
+    http_method_names = ['get', 'post']
+    
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
-    def getEventsList(self,request):
+    def listEvents(self, request):
         queryParameters=eventQuerySerializer(data=request.data)
         
         if not queryParameters.is_valid():

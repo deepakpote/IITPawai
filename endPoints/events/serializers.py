@@ -31,4 +31,6 @@ class eventQuerySerializer():
 	orderBy = serializers.CharField()
 	singleEvents = serializers.BooleanField()
 	maxResults = serializers.IntegerField()
+	subjectCodeIDs = serializers.CharField()
+	districtCodeIDs = serializers.CharField()
 	

@@ -7,7 +7,7 @@ from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
 
-from eventsCalender.serializers import eventSerializer
+from events.serializers import eventSerializer
 
 import datetime
 
