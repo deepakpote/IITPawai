@@ -1,4 +1,3 @@
-
 from __future__ import print_function
 import httplib2
 import os
@@ -8,14 +7,17 @@ from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
 
+from eventsCalender.serializers import eventSerializer
+
 import datetime
 
 class EventsCalender:
 	# If modifying these scopes, delete your previously saved credentials
-	# at ~/.credentials/calendar-python-quickstart.json
+	# at ~/.credentials/GoogleCalenderCredentials.json
 	SCOPES = 'https://www.googleapis.com/auth/calendar'
 	CLIENT_SECRET_FILE = 'client_secret.json'
 	APPLICATION_NAME = 'Google Calender'
+	CALENDER_ID = 'primary'
 
     	credential_dir = os.path.join(os.path.expanduser('~'), '.credentials')
 
@@ -31,7 +33,7 @@ class EventsCalender:
 	the OAuth2 flow is completed to obtain the new credentials.
 
 	Returns:
-	Credentials, the obtained credential.
+		Credentials, the obtained credential.
 	"""
 	def __get_credentials(self):
 		if not os.path.exists(EventsCalender.credential_dir):
@@ -49,22 +51,46 @@ class EventsCalender:
 		
 		return credentials
 	
-	"Gets upcoming 10 events"
-	def getEvents(self):
-		now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-		print('Getting the upcoming 10 events')
-		eventsResult = self.__service.events().list(
-			calendarId='primary', timeMin=now, maxResults=10, singleEvents=True,
-			orderBy='startTime').execute()
-		events = eventsResult.get('items', [])
+	# Get list of events from server
+	# input:query parameters (timeMin=datetime.datetime.utcnow().isoformat(), maxResults=10, singleEvents=True,orderBy='startTime' , ...)
+	# returns:Array of event data in dict format (validated using eventSerializer)		
+	def listEvents(self,**kwargs):
+		eventsResult = self.__service.events().list(calendarId=EventsCalender.CALENDER_ID,**kwargs).execute()
+		return [eventData.data for eventData in [eventSerializer(data=event) for event in eventsResult.get('items', [])] if eventData.is_valid()]
+	
+	# adds new event in calender 
+	# input : dict of event data
+	# returns : (server response) if <success> else <False> 
+	def addEvent(self,dict_event):
+		# pass data to eventSerializer for format validation
+		event=eventSerializer(data=dict_event)
+		if event.is_valid():
+			server_response = self.__service.events().insert(calendarId=EventsCalender.CALENDER_ID, body=event.data,sendNotifications=True).execute()
+			return server_response
+		else:
+			return False
 
-		if not events:
-			print('No upcoming events found.')
-		for event in events:
-			start = event['start'].get('dateTime', event['start'].get('date'))
-			print(start, event['summary'])
 
-
+#usage examples
 objCalender=EventsCalender()
-objCalender.getEvents()
-
+#print(objCalender.listEvents(timeMin=datetime.datetime.utcnow().isoformat(), maxResults=10, singleEvents=True,orderBy='startTime'))
+print(objCalender.addEvent({
+  'summary': 'Test event',
+  'location': 'Kothrud,pune',
+  'description': 'Calender Demo',
+  'start': {
+    'dateTime': '2016-12-03T09:00:00+05:30',
+    'timeZone': 'Asia/Kolkata',
+  },
+  'end': {
+    'dateTime': '2016-12-04T17:00:00+05:00',
+    'timeZone': 'Asia/Kolkata',
+  },
+  'recurrence': [
+    'RRULE:FREQ=DAILY;COUNT=2'
+  ],
+  'attendees': [
+    {'email': 'thokesaurabh@gmail.com'},
+    {'email': 'rahulkatre007@gmail.com'},
+  ]
+}))
