@@ -51,15 +51,15 @@ class EventsCalender:
 		
 		return credentials
 	
-	# Get list of events from server
+	# Gets list of events from server
 	# input:query parameters (timeMin=datetime.datetime.utcnow().isoformat(), maxResults=10, singleEvents=True,orderBy='startTime' , ...)
-	# returns:Array of event data in dict format (validated using eventSerializer)		
+	# returns:Array of events in dict format (validated using eventSerializer)		
 	def listEvents(self,**kwargs):
 		eventsResult = self.__service.events().list(calendarId=EventsCalender.CALENDER_ID,**kwargs).execute()
 		return [eventData.data for eventData in [eventSerializer(data=event) for event in eventsResult.get('items', [])] if eventData.is_valid()]
 	
-	# adds new event in calender 
-	# input : dict of event data
+	# Adds new event in calender 
+	# input : event data dict
 	# returns : (server response) if <success> else <False> 
 	def addEvent(self,dict_event):
 		# pass data to eventSerializer for format validation
@@ -71,26 +71,33 @@ class EventsCalender:
 			return False
 
 
-#usage examples
+#usage
+""" Calender object """ 
 objCalender=EventsCalender()
-#print(objCalender.listEvents(timeMin=datetime.datetime.utcnow().isoformat(), maxResults=10, singleEvents=True,orderBy='startTime'))
-print(objCalender.addEvent({
-  'summary': 'Test event',
-  'location': 'Kothrud,pune',
-  'description': 'Calender Demo',
-  'start': {
-    'dateTime': '2016-12-03T09:00:00+05:30',
-    'timeZone': 'Asia/Kolkata',
-  },
-  'end': {
-    'dateTime': '2016-12-04T17:00:00+05:00',
-    'timeZone': 'Asia/Kolkata',
-  },
-  'recurrence': [
-    'RRULE:FREQ=DAILY;COUNT=2'
-  ],
-  'attendees': [
-    {'email': 'thokesaurabh@gmail.com'},
-    {'email': 'rahulkatre007@gmail.com'},
-  ]
-}))
+
+""" Uncomment this to fetch events """
+
+#print(objCalender.listEvents(timeMin=datetime.datetime.utcnow().isoformat()+"Z", maxResults=10, singleEvents=True,orderBy='startTime'))
+
+""" Uncomment following lines to add event """
+
+#print(objCalender.addEvent({
+#  'summary': 'Test event',
+#  'location': 'Kothrud,pune',
+#  'description': 'Calender Demo',
+# 'start': {
+#    'dateTime': '2016-12-03T09:00:00+05:30',
+#    'timeZone': 'Asia/Kolkata',
+#  },
+#  'end': {
+#    'dateTime': '2016-12-04T17:00:00+05:00',
+#    'timeZone': 'Asia/Kolkata',
+#  },
+#  'recurrence': [
+#    'RRULE:FREQ=DAILY;COUNT=2'
+#  ],
+#  'attendees': [
+#    {'email': 'thokesaurabh@gmail.com'},
+#    {'email': 'rahulkatre007@gmail.com'},
+#  ]
+#}))
