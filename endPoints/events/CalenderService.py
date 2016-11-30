@@ -18,8 +18,8 @@ class EventsCalender:
 	CLIENT_SECRET_FILE = 'client_secret.json'
 	APPLICATION_NAME = 'Google Calender'
 	CALENDER_ID = 'primary'
-
-    	credential_dir = os.path.join(os.path.expanduser('~'), '.credentials')
+	
+	credential_dir = os.path.join(os.path.expanduser('~'), '.credentials')
 
 	""" Init calender service and returnes service object """
 	def __init__(self):
@@ -69,11 +69,11 @@ class EventsCalender:
 			return server_response
 		else:
 			return False
-
+        
 
 #usage
 """ Calender object """ 
-objCalender=EventsCalender()
+# objCalender=EventsCalender()
 
 """ Uncomment this to fetch events """
 

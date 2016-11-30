@@ -13,7 +13,7 @@ class remindersSerializer(serializers.DictField):
 class listAttendeeSerializer(serializers.ListField):
 	attendee=attendeeSerializer()
 
-# object serializer for event
+# nested object serializer for event
 class eventSerializer(serializers.Serializer):
 	summary = serializers.CharField()
 	location = serializers.CharField()
@@ -23,3 +23,12 @@ class eventSerializer(serializers.Serializer):
 	recurrence=serializers.ListField(serializers.CharField())
 	attendees=listAttendeeSerializer()
 	reminders=remindersSerializer()
+
+# object serializer for query filter parameters
+class eventQuerySerializer():
+	timeMin = serializers.DateTimeField()
+	timeMax = serializers.DateTimeField()
+	orderBy = serializers.CharField()
+	singleEvents = serializers.BooleanField()
+	maxResults = serializers.IntegerField()
+	
