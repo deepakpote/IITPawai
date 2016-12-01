@@ -63,7 +63,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         fromRecord = 0
             
         #If pageNumber param is not set then fetch the default no of rows from the content
-        if not pageNumber:
+        if not pageNumber or pageNumber == 0:
             pageNumber = constants.contentSearchRecords.default
         else:
             fromRecord = constants.contentSearchRecords.default
