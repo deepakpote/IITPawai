@@ -24,7 +24,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def searchTeachingAid(self,request):
         # get inputs
-#         contentTypeCodeID = request.data.get('contentTypeCodeID')
+#       contentType = request.data.get('contentTypeCodeID')
         userID = request.data.get('userID') 
         fileTypeCodeID = request.data.get('fileTypeCodeID')
         languageCodeID = request.data.get('languageCodeID')
@@ -76,10 +76,10 @@ class ContentViewSet(viewsets.ModelViewSet):
         arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs , objUser)         
         
         #Get the query set using filter on filetype, subject, grade     
-        contentQuerySet = content.objects.filter(languageCodeID = languageCodeID,
-                                                  fileTypeCodeID = fileTypeCodeID, 
-                                                  subjectCodeID__in = arrSubjectCodeIDs, 
-                                                  gradeCodeID__in = arrGradeCodeIDs).order_by('-contentID')[fromRecord:pageNumber]
+        contentQuerySet = content.objects.filter(language = languageCodeID,
+                                                  fileType = fileTypeCodeID, 
+                                                  subject__in = arrSubjectCodeIDs, 
+                                                  grade__in = arrGradeCodeIDs).order_by('-contentID')[fromRecord:pageNumber]
         
         #Check for the no of records fetched.
         if not contentQuerySet:
@@ -105,7 +105,6 @@ def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs, objUser):
         return arrSubjectCodeIDs
     
     # If subjectCodeIDs parameter is NOT passed, then fetch the subject set in profile info of that user
-    #objUser = user.objects.get(userID = userID)
     objUserSubjectList = userSubject.objects.filter(user = objUser)
     
     # Initialize the array for storing subject code ids
@@ -135,7 +134,6 @@ def getSearchContentApplicableGradeCodeIDs(gradeCodeIDs, objUser):
         return arrGradeCodeIDs
     
     # If gradeCodeIDs parameter is NOT passed, then fetch the grade set in profile info of that user
-    #objUser = user.objects.get(userID = userID)
     objUserGradeList = userGrade.objects.filter(user = objUser)
     
     # Initialize the array for storing grade code ids
