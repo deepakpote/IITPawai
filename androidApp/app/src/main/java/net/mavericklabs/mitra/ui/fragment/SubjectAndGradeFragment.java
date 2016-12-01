@@ -21,10 +21,18 @@ import android.widget.ListView;
 
 import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.ui.adapter.SubjectAndGradeFragmentListAdapter;
+import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by root on 13/11/16.
@@ -33,6 +41,7 @@ import butterknife.ButterKnife;
 public class SubjectAndGradeFragment extends DialogFragment {
 
     private OnDialogFragmentDismissedListener onDialogFragmentDismissedListener;
+    private List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> objects;
 
     @BindView(R.id.subject_or_grade_list_view)
     ListView subjectOrGradeListView;
@@ -71,40 +80,23 @@ public class SubjectAndGradeFragment extends DialogFragment {
         ButterKnife.bind(this,view);
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.grade_s);
-        Logger.d("activity is : " + getActivity());
-        String[] gradeList = {"Grade 1" , "Grade 2"};
-        subjectOrGradeListView.setAdapter(new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_multiple_choice,gradeList));
+
+        objects = (List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject>) getArguments().getSerializable("item_list");
+        subjectOrGradeListView.setAdapter(new SubjectAndGradeFragmentListAdapter(getContext(),android.R.layout.simple_list_item_multiple_choice,objects));
         subjectOrGradeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 CheckedTextView textView = (CheckedTextView) view.findViewById(android.R.id.text1);
-                Logger.d("on item selected called.." + textView.isChecked());
                 if (!textView.isChecked()) {
                     textView.setChecked(true);
+                    objects.get(i).setChecked(true);
                 } else {
                     textView.setChecked(false);
+                    objects.get(i).setChecked(false);
                 }
-            }
-        });
-        subjectOrGradeListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                CheckedTextView textView = (CheckedTextView) view.findViewById(android.R.id.text1);
-                Logger.d("on item selected called.." + textView.isChecked());
-                if (textView.isChecked()) {
-                    textView.setChecked(true);
-                } else {
-                    textView.setChecked(false);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
     }
-
 
 
     @Override
@@ -117,7 +109,14 @@ public class SubjectAndGradeFragment extends DialogFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if(id == R.id.action_next_fragment) {
-            onDialogFragmentDismissedListener.onDialogFragmentDismissed();
+            List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> checkedItems = new ArrayList<>();
+            for (SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject object : objects) {
+                if(object.isChecked()) {
+                    checkedItems.add(object);
+                }
+            }
+
+            onDialogFragmentDismissedListener.onDialogFragmentDismissed(checkedItems);
             dismiss();
             return true;
         }

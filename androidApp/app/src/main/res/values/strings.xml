@@ -50,6 +50,7 @@
     <string name="subject">Subject</string>
     <string name="grade">Grade</string>
     <string name="required_field">* Required</string>
+    <string name="menu_edit">Edit</string>
     <string name="home">Home</string>
     <string name="teaching_aids">Teaching Aids</string>
     <string name="self_learning">Self Learning</string>

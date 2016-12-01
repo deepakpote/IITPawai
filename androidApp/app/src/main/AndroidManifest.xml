@@ -46,14 +46,14 @@
         <activity
             android:name=".ui.activity.EditProfileActivity"
             android:label="My Profile" >
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             </activity>
         <activity android:name=".ui.activity.AlmostDoneActivity" />
 
-        <activity android:name=".ui.activity.ContentDetailsActivity"></activity>
+        <activity android:name=".ui.activity.ContentDetailsActivity"/>
     </application>
 
 </manifest>
