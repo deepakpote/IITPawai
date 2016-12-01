@@ -23,6 +23,8 @@
 
 package net.mavericklabs.mitra.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import net.mavericklabs.mitra.utils.Constants;
 
 import java.io.Serializable;
@@ -32,14 +34,64 @@ import java.io.Serializable;
  */
 
 public class Content implements Serializable{
-    private String title;
-    private Constants.FileType fileType;
-    private Constants.Type type;
 
-    public Content(String title, Constants.FileType fileType, Constants.Type type) {
+    @SerializedName("contentID")
+    private String contentID;
+
+    @SerializedName("contentTitle")
+    private String title;
+
+    @SerializedName("contentType")
+    private String contentTypeCodeID;
+
+    @SerializedName("subject")
+    private String subject;
+
+    @SerializedName("grade")
+    private String grade;
+
+    @SerializedName("requirement")
+    private String requirement;
+
+    @SerializedName("instruction")
+    private String instruction;
+
+    @SerializedName("fileType")
+    private String fileType;
+
+    @SerializedName("fileName")
+    private String fileName;
+
+    @SerializedName("author")
+    private int author;
+
+    @SerializedName("objectives")
+    private String objectives;
+
+    @SerializedName("language")
+    private String language;
+
+    public Content(String contentID, String title, String contentTypeCodeID, String subject, String grade, String requirement, String instruction, String fileType, String fileName, int author, String objectives, String language) {
+        this.contentID = contentID;
         this.title = title;
+        this.contentTypeCodeID = contentTypeCodeID;
+        this.subject = subject;
+        this.grade = grade;
+        this.requirement = requirement;
+        this.instruction = instruction;
         this.fileType = fileType;
-        this.type = type;
+        this.fileName = fileName;
+        this.author = author;
+        this.objectives = objectives;
+        this.language = language;
+    }
+
+    public String getContentID() {
+        return contentID;
+    }
+
+    public void setContentID(String contentID) {
+        this.contentID = contentID;
     }
 
     public String getTitle() {
@@ -50,19 +102,83 @@ public class Content implements Serializable{
         this.title = title;
     }
 
-    public Constants.FileType getFileType() {
+    public String getContentTypeCodeID() {
+        return contentTypeCodeID;
+    }
+
+    public void setContentTypeCodeID(String contentTypeCodeID) {
+        this.contentTypeCodeID = contentTypeCodeID;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
+    }
+
+    public String getRequirement() {
+        return requirement;
+    }
+
+    public void setRequirement(String requirement) {
+        this.requirement = requirement;
+    }
+
+    public String getInstruction() {
+        return instruction;
+    }
+
+    public void setInstruction(String instruction) {
+        this.instruction = instruction;
+    }
+
+    public String getFileType() {
         return fileType;
     }
 
-    public void setFileType(Constants.FileType fileType) {
+    public void setFileType(String fileType) {
         this.fileType = fileType;
     }
 
-    public Constants.Type getType() {
-        return type;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setType(Constants.Type type) {
-        this.type = type;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public int getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(int author) {
+        this.author = author;
+    }
+
+    public String getObjectives() {
+        return objectives;
+    }
+
+    public void setObjectives(String objectives) {
+        this.objectives = objectives;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

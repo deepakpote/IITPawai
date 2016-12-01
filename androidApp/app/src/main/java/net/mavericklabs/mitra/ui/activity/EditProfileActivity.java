@@ -240,6 +240,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                             if(response.body().getData() != null) {
                                 RegisterUserResponse serverResponse = response.body().getData().get(0);
                                 String token = serverResponse.getToken();
+                                UserDetailUtils.saveUserId(serverResponse.getUserID(), getApplicationContext());
                                 UserDetailUtils.saveToken(token,getApplicationContext());
                                 Intent verifyOtp = new Intent(EditProfileActivity.this,HomeActivity.class);
                                 startActivity(verifyOtp);

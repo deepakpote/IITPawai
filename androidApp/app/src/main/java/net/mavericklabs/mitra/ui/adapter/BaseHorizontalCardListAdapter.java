@@ -45,7 +45,10 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
 
     @Override
     public int getItemViewType(int position) {
-        return contents.get(position).getFileType().ordinal();
+        if(contents.get(position).getFileType().equals(Constants.FileTypeVideo))
+            return 0;
+
+        return 1;
     }
 
     @Override
@@ -65,7 +68,7 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
         holder.contentView.setLayoutParams(layoutParams);
 
         //Load Video
-        if(holder.getItemViewType() == Constants.FileType.VIDEO.ordinal()) {
+        if(holder.getItemViewType() == 0) {
             holder.youTubeThumbnailView.setVisibility(View.VISIBLE);
             holder.fileIcon.setVisibility(View.GONE);
             final YouTubeThumbnailLoader.OnThumbnailLoadedListener onThumbnailLoadedListener = new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
@@ -103,11 +106,11 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
 
         holder.videoTitle.setText(getObject(holder).getTitle());
 
-        if(getObject(holder).getType() == Constants.Type.TEACHING_AIDS) {
-            holder.details.setText("Subject | Grade");
-        } else {
-            holder.details.setText("Topic | Language");
-        }
+//        if(getObject(holder).getType() == Constants.Type.TEACHING_AIDS) {
+//            holder.details.setText("Subject | Grade");
+//        } else {
+//            holder.details.setText("Topic | Language");
+//        }
 
     }
 

@@ -23,6 +23,7 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -38,17 +39,30 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.ContentRequest;
+import net.mavericklabs.mitra.api.model.RegisterUserResponse;
+import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Requirements;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.RequirementsListAdapter;
+import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ContentDetailsActivity extends AppCompatActivity {
 
@@ -95,8 +109,12 @@ public class ContentDetailsActivity extends AppCompatActivity {
             content = (Content) bundle.getSerializable("content");
         }
 
+        RealmResults<CommonCode> contentTypeResult =
+                Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
+                        CommonCodeGroup.CONTENT_TYPES).findAll();
+
         if(content != null) {
-            if(content.getType() == Constants.Type.TEACHING_AIDS) {
+            if(content.getContentTypeCodeID().equals(contentTypeResult.get(0).getCodeID())) {
 
                 requirementsLayout.setVisibility(View.VISIBLE);
                 List<Requirements> requirementsList = new ArrayList<>();
@@ -121,18 +139,37 @@ public class ContentDetailsActivity extends AppCompatActivity {
             }
         }
 
+//        ContentRequest contentRequest = new ContentRequest(1, fileType, language, subject, grade);
+//        RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+//            @Override
+//            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+//                Logger.d(" Succes");
+//                if(response.isSuccessful()) {
+//                    if(response.body().getData() != null) {
+//                        List<Content> contents = response.body().getData();
+//                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
+//                        contentRecyclerView.setLayoutManager(linearLayoutManager);
+//                        similarContentsAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
+//                        contentRecyclerView.setAdapter(similarContentsAdapter);
+//
+//
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+//                Logger.d(" on fail");
+//            }
+//        });
 
 
-        List<Content> contents = new ArrayList<>();
-        contents.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
-        contents.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.SELF_LEARNING));
-        contents.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.SELF_LEARNING));
-        contents.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
+//        List<Content> contents = new ArrayList<>();
+//        contents.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
+//        contents.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.SELF_LEARNING));
+//        contents.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.SELF_LEARNING));
+//        contents.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
-        contentRecyclerView.setLayoutManager(linearLayoutManager);
-        similarContentsAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
-        contentRecyclerView.setAdapter(similarContentsAdapter);
 
 
     }

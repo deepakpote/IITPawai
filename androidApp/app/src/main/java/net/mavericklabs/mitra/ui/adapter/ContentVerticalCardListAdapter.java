@@ -29,6 +29,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,7 @@ import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
+import net.mavericklabs.mitra.utils.Logger;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -73,7 +75,11 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
 
     @Override
     public int getItemViewType(int position) {
-        return contents.get(position).getFileType().ordinal();
+        Logger.d(" position " + position + " content " + contents.get(position).getFileType());
+        if(contents.get(position).getFileType().equals(Constants.FileTypeVideo))
+            return 0;
+
+        return 1;
     }
 
     @Override
@@ -94,7 +100,7 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
 
 
         //Load Video
-        if(holder.getItemViewType() == Constants.FileType.VIDEO.ordinal()) {
+        if(holder.getItemViewType() == 0) {
             holder.youTubeThumbnailView.setVisibility(View.VISIBLE);
             holder.fileIcon.setVisibility(View.GONE);
             final YouTubeThumbnailLoader.OnThumbnailLoadedListener onThumbnailLoadedListener = new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
@@ -114,7 +120,10 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
                 @Override
                 public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
                     thumbnailViewToLoaderMap.put(youTubeThumbnailView, youTubeThumbnailLoader);
-                    youTubeThumbnailLoader.setVideo("AZ2ZPmEfjvU");
+                    String fileName = contents.get(holder.getAdapterPosition()).getFileName();
+                    String videoID = fileName.substring(fileName.lastIndexOf('/') + 1);
+                    Logger.d(" video " + videoID);
+                    youTubeThumbnailLoader.setVideo(videoID);
                     youTubeThumbnailLoader.setOnThumbnailLoadedListener(onThumbnailLoadedListener);
                 }
 
@@ -131,11 +140,11 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
         }
 
         holder.videoTitle.setText(contents.get(holder.getAdapterPosition()).getTitle());
-        if(getObject(holder).getType() == Constants.Type.TEACHING_AIDS) {
-            holder.details.setText("Subject | Grade");
-        } else {
-            holder.details.setText("Topic | Language");
-        }
+//        if(getObject(holder).getType() == Constants.Type.TEACHING_AIDS) {
+//            holder.details.setText("Subject | Grade");
+//        } else {
+//            holder.details.setText("Topic | Language");
+//        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

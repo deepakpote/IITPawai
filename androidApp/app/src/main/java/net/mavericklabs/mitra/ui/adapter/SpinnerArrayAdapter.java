@@ -34,7 +34,6 @@ import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.CommonCode;
-import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.List;
 
@@ -44,7 +43,7 @@ import java.util.List;
 
 public class SpinnerArrayAdapter extends ArrayAdapter<CommonCode> {
     private Context context;
-    List<CommonCode> codes;
+    private List<CommonCode> codes;
 
     public SpinnerArrayAdapter(Context context, int resource, List<CommonCode> objects) {
         super(context, resource, objects);
@@ -88,7 +87,7 @@ public class SpinnerArrayAdapter extends ArrayAdapter<CommonCode> {
         return row;
     }
 
-    static class CodeHolder
+    private static class CodeHolder
     {
         TextView textView;
     }
