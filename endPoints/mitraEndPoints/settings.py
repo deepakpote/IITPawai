@@ -82,7 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mitraDev',
         'USER': 'root',
-        'PASSWORD': 'root',
+        'PASSWORD': 'softcorner',
         'HOST': '127.0.0.1',
         'PORT': '3306'
     }
