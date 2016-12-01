@@ -85,7 +85,6 @@ public class SelectLanguageActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void setLocale(String lang) {
 
         Call<BaseModel<CommonCode>> codeNameListCall = RestClient.getApiService("").getCodeNameList();
