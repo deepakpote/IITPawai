@@ -10,7 +10,7 @@ class content(models.Model):
     contentTitle = models.CharField(null = False, unique = True, max_length = 255)
     contentType = models.ForeignKey('commons.code', db_column='contentTypeCodeID', related_name='content_contentTypeCodeID')
     subject = models.ForeignKey('commons.code', db_column='subjectCodeID', related_name='content_subjectCodeID')
-    grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='content_gradeCodeID',null = True)
+    grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='content_gradeCodeID')
     
     requirement = models.TextField(null = True)
     instruction = models.TextField(null = True)
