@@ -1,6 +1,5 @@
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework import viewsets,permissions
 from contents.serializers import contentSerializer
@@ -9,8 +8,6 @@ from contents.models import content
 from commons.models import code
 from users.models import userSubject, user, userGrade
 from mitraEndPoints import constants
-import datetime
-from pip._vendor.pyparsing import empty
 
 class ContentViewSet(viewsets.ModelViewSet):
     """
