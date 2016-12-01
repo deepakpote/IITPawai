@@ -86,7 +86,7 @@ user authentication model
 """                 
 class userAuth(models.Model):
     userAuthID = models.AutoField(primary_key = True)
-    loginID = models.CharField(null = False, unique = True, max_length = 15)
+    loginID = models.CharField(null = False, unique = True, max_length = 255)
     password = models.CharField(max_length = 255, null = True)
     authToken = models.CharField(max_length = 255, null = True)
     lastLoggedInOn = models.DateTimeField(auto_now=True)

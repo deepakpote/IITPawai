@@ -25,6 +25,7 @@ class code(models.Model):
     codeNameEn = models.CharField(max_length = 255, null = True)
     codeNameMr = models.CharField(max_length = 255, null = True)
     displayOrder = models.IntegerField(null = True, blank = True)
+    comment = models.CharField(max_length = 255,null = True)
     createdBy = models.ForeignKey('users.user', related_name='code_createdBy', db_column = 'createdBy')
     createdOn = models.DateTimeField(auto_now_add=True)
     modifiedBy = models.ForeignKey('users.user', related_name='code_modifiedBy', db_column = 'modifiedBy')
