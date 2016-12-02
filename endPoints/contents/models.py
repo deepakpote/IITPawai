@@ -11,6 +11,7 @@ class content(models.Model):
     contentType = models.ForeignKey('commons.code', db_column='contentTypeCodeID', related_name='content_contentTypeCodeID')
     subject = models.ForeignKey('commons.code', db_column='subjectCodeID', related_name='content_subjectCodeID')
     grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='content_gradeCodeID')
+    topic = models.ForeignKey('commons.code', db_column='topicCodeID', related_name='content_topicCodeID', null = True)
     
     requirement = models.TextField(null = True)
     instruction = models.TextField(null = True)

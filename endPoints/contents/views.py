@@ -6,7 +6,7 @@ from contents.serializers import contentSerializer
 
 from contents.models import content
 from commons.models import code
-from users.models import userSubject, user, userGrade
+from users.models import userSubject, user, userGrade, userTopic
 from mitraEndPoints import constants
 
 class ContentViewSet(viewsets.ModelViewSet):
@@ -95,6 +95,79 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         #Return the response
         return Response({"response_message": constants.messages.success, "data": response})
+    
+    """
+    API to search the self learning content
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def searchSelfLearning(self,request):
+        # get inputs
+#       contentType = request.data.get('contentTypeCodeID')
+        userID = request.data.get('userID') 
+        fileTypeCodeID = request.data.get('fileTypeCodeID')
+        languageCodeID = request.data.get('languageCodeID')
+        
+        topicCodeIDs = request.data.get('topicCodeIDs') 
+        pageNumber = request.data.get('pageNumber')
+                
+        # Check if userID/languageID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+         
+        # If userID parameter is passed, then check user is exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.self_learning_search_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+            
+        # Check if fileTypeCodeID is passed in post param
+        if not fileTypeCodeID:
+            return Response({"response_message": constants.messages.self_learning_search_filetype_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED)  
+         
+        # Check if languageCodeID is passed in post param    
+        if not languageCodeID:
+            return Response({"response_message": constants.messages.self_learning_search_language_cannot_be_empty,
+                            "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED) 
+         
+        #declare count for from which record number to fetch the records.
+        fromRecord = 0
+            
+        #If pageNumber param is not set then fetch the default no of rows from the content
+        if not pageNumber or pageNumber == 0:
+            pageNumber = constants.contentSearchRecords.default
+        else:
+            fromRecord = constants.contentSearchRecords.default
+            pageNumber = content.objects.all().count()
+        
+        #Get the applicable topic list for the respective user.    
+        arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs , objUser)  
+        
+        #Get the query set using filter on filetype, topic & language     
+        contentQuerySet = content.objects.filter(language = languageCodeID,
+                                                  fileType = fileTypeCodeID, 
+                                                  topic__in = arrTopicCodeIDs).order_by('-contentID')[fromRecord:pageNumber]
+        
+        #Check for the no of records fetched.
+        if not contentQuerySet:
+            return Response({"response_message": constants.messages.self_learning_search_no_records_found,
+                    "data": []},
+                    status = status.HTTP_404_NOT_FOUND) 
+        
+        #Set query string to the contentSerializer
+        objContentserializer = contentSerializer(contentQuerySet, many = True)
+        
+        #Set serializer data to the response 
+        response = objContentserializer.data
+        
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": response})
         
         
         
@@ -155,4 +228,33 @@ def getSearchContentApplicableGradeCodeIDs(gradeCodeIDs, objUser):
         
     if len(arrGradeCodeIDs) > 0:
         return arrGradeCodeIDs
+    
+def getSearchContentApplicableTopicCodeIDs(topicCodeIDs, objUser):
+    # If topicCodeIDs parameter is passed, split it into an array
+    if topicCodeIDs:
+        arrTopicCodeIDs = topicCodeIDs.split(',')
+        return arrTopicCodeIDs
+    
+    # If topicCodeIDs parameter is NOT passed, then fetch the topic set in profile info of that user
+    objUserTopicList = userTopic.objects.filter(user = objUser)
+    
+    # Initialize the array for storing topic code ids
+    arrTopicCodeIDs = []
+    
+    # Iterate through the grade list to build the array of topic code ids
+    for objUserTopic in objUserTopicList:
+        arrTopicCodeIDs.append(objUserTopic.topic.codeID)
+    
+    if len(arrTopicCodeIDs) > 0:
+        return arrTopicCodeIDs
+    
+    # If no topic are found, under user profile, 
+    # then the content must be searched across all the 
+    # Topic available in the system
+    objCodeList = code.objects.filter(codeGroup = constants.mitraCodeGroup.topic)
+    for objCode in objCodeList:
+        arrTopicCodeIDs.append(objCode.codeID)
+        
+    if len(arrTopicCodeIDs) > 0:
+        return arrTopicCodeIDs
     

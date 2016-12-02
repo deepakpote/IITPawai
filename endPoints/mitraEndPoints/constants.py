@@ -13,7 +13,13 @@ class messages():
     teaching_aid_search_language_cannot_be_empty = 100113
     teaching_aid_search_no_records_found = 100114
     teaching_aid_search_user_not_exists = 100115
-
+    
+    self_learning_search_filetype_cannot_be_empty = 100116
+    self_learning_search_language_cannot_be_empty = 100117
+    self_learning_search_no_records_found = 100118
+    self_learning_search_user_not_exists = 100119
+    
+    
 class sms():
     authId = "MAOTGWZJI2NDAXNJHMMZ"
     authToken = "NjM3MzAxYzc2ZGQ1MTJjOTY5NjgyNDhhNzUxMDZi"
@@ -23,6 +29,7 @@ class sms():
 class mitraCodeGroup():
     subject = 103 
     grade = 104   
+    topic = 105
     
 class contentSearchRecords():
     default = 20
