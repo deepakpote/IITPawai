@@ -9,4 +9,5 @@ public interface Constants {
 
     //TODO : How to handle this?
     String FileTypeVideo = "108100";
+    String ContentTypeTeachingAids = "107100";
 }

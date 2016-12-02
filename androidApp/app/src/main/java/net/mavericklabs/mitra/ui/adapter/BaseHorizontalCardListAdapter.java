@@ -17,6 +17,7 @@ import com.google.android.youtube.player.YouTubeThumbnailView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
 
@@ -88,7 +89,10 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
                 @Override
                 public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
                     thumbnailViewToLoaderMap.put(youTubeThumbnailView, youTubeThumbnailLoader);
-                    youTubeThumbnailLoader.setVideo("AZ2ZPmEfjvU");
+                    String fileName = contents.get(holder.getAdapterPosition()).getFileName();
+                    String videoID = fileName.substring(fileName.lastIndexOf('/') + 1);
+
+                    youTubeThumbnailLoader.setVideo(videoID);
                     youTubeThumbnailLoader.setOnThumbnailLoadedListener(onThumbnailLoadedListener);
                 }
 
@@ -106,11 +110,17 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
 
         holder.videoTitle.setText(getObject(holder).getTitle());
 
-//        if(getObject(holder).getType() == Constants.Type.TEACHING_AIDS) {
-//            holder.details.setText("Subject | Grade");
-//        } else {
-//            holder.details.setText("Topic | Language");
-//        }
+        if(getObject(holder).getContentTypeCodeID().equals(Constants.ContentTypeTeachingAids)) {
+            String subjectCode = contents.get(holder.getAdapterPosition()).getSubject();
+            String subject = CommonCodeUtils.getObjectFromCode(subjectCode).getCodeNameForCurrentLocale();
+
+            String gradeCode = contents.get(holder.getAdapterPosition()).getGrade();
+            String grade = CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale();
+
+            holder.details.setText(subject +  " | "  + context.getResources().getString(R.string.grade) + " " + grade);
+        } else {
+            holder.details.setText("Topic | Language");
+        }
 
     }
 

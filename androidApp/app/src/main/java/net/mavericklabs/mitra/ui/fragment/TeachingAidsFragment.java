@@ -35,6 +35,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -126,13 +127,6 @@ public class TeachingAidsFragment extends Fragment{
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        if(teachingAidsAdapter != null) {
-//            teachingAidsAdapter.releaseLoaders();
-//        }
-//
-//        if(selfLearningAdapter != null) {
-//            selfLearningAdapter.releaseLoaders();
-//        }
     }
 
     public static class TeachingAidsContentFragment extends Fragment {
@@ -147,6 +141,7 @@ public class TeachingAidsFragment extends Fragment{
         RecyclerView contentRecyclerView;
 
 
+        ContentVerticalCardListAdapter adapter;
         public TeachingAidsContentFragment() {
         }
 
@@ -169,29 +164,69 @@ public class TeachingAidsFragment extends Fragment{
             ButterKnife.bind(this, rootView);
 
             int tabNumber = getArguments().getInt("tabNumber");
+            final String fileType = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
 
-            List<CommonCode> subjects = new ArrayList<>(CommonCodeUtils.getSubjects());
-            List<CommonCode> grades = new ArrayList<>(CommonCodeUtils.getGrades());
+            final List<CommonCode> subjects = new ArrayList<>(CommonCodeUtils.getSubjects());
+            final List<CommonCode> grades = new ArrayList<>(CommonCodeUtils.getGrades());
 
             //Header - not a valid value
-            subjects.add(0, new CommonCode("0", "0","Subject", "Subject", 0));
-            grades.add(0,new CommonCode("0","0","Grade","Grade",0));
+            subjects.add(0, new CommonCode("", "","Subject", "Subject", 0));
+            grades.add(0,new CommonCode("","","Grade","Grade",0));
 
 
             SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
                     subjects);
             adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
             subjectSpinner.setAdapter(adapter);
+            subjectSpinner.setSelection(0 ,false);
+
+            subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    CommonCode grade = (CommonCode) gradeSpinner.getSelectedItem();
+                    searchTeachingAids(fileType, "101100", subjects.get(i).getCodeID(), grade.getCodeID());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
 
             SpinnerArrayAdapter gradeAdapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
                     grades);
             adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
             gradeSpinner.setAdapter(gradeAdapter);
+            gradeSpinner.setSelection(0 ,false);
 
-            String fileType = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
+            gradeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    CommonCode subject = (CommonCode) subjectSpinner.getSelectedItem();
+                    searchTeachingAids(fileType, "101100", grades.get(i).getCodeID() , subject.getCodeID());
+                }
 
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+            searchTeachingAids(fileType, "101100", "", "");
+            return rootView;
+        }
+
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            if(adapter != null) {
+                adapter.releaseLoaders();
+            }
+        }
+
+        private void searchTeachingAids(String fileType, String language, String subject, String grade) {
+            Logger.d(" searching ");
             ContentRequest contentRequest = new ContentRequest(UserDetailUtils.getUserId(getContext()),
-                    fileType, "101100", "", "");
+                    fileType, language, subject, grade);
             RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
                 @Override
                 public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
@@ -202,7 +237,7 @@ public class TeachingAidsFragment extends Fragment{
                             Logger.d(" contents " + contents.size());
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                             contentRecyclerView.setLayoutManager(linearLayoutManager);
-                            ContentVerticalCardListAdapter adapter = new ContentVerticalCardListAdapter(getContext(), contents);
+                            adapter = new ContentVerticalCardListAdapter(getContext(), contents);
                             contentRecyclerView.setAdapter(adapter);
 
                         }
@@ -214,18 +249,6 @@ public class TeachingAidsFragment extends Fragment{
                     Logger.d(" on fail");
                 }
             });
-
-            //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-
-        @Override
-        public void onDestroyView() {
-            super.onDestroyView();
-//            if(adapter != null) {
-//                adapter.releaseLoaders();
-//            }
         }
     }
 

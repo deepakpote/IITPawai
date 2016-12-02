@@ -43,8 +43,10 @@ import com.google.android.youtube.player.YouTubeThumbnailView;
 
 import net.mavericklabs.mitra.R;
 
+import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
+import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
 import net.mavericklabs.mitra.utils.Logger;
@@ -75,7 +77,6 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
 
     @Override
     public int getItemViewType(int position) {
-        Logger.d(" position " + position + " content " + contents.get(position).getFileType());
         if(contents.get(position).getFileType().equals(Constants.FileTypeVideo))
             return 0;
 
@@ -120,11 +121,14 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
                 @Override
                 public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
                     thumbnailViewToLoaderMap.put(youTubeThumbnailView, youTubeThumbnailLoader);
-                    String fileName = contents.get(holder.getAdapterPosition()).getFileName();
-                    String videoID = fileName.substring(fileName.lastIndexOf('/') + 1);
-                    Logger.d(" video " + videoID);
-                    youTubeThumbnailLoader.setVideo(videoID);
-                    youTubeThumbnailLoader.setOnThumbnailLoadedListener(onThumbnailLoadedListener);
+                    Content content = contents.get(holder.getAdapterPosition());
+                    if(content != null) {
+                        String fileName = content.getFileName();
+                        String videoID = fileName.substring(fileName.lastIndexOf('/') + 1);
+                        Logger.d(" video " + videoID);
+                        youTubeThumbnailLoader.setVideo(videoID);
+                        youTubeThumbnailLoader.setOnThumbnailLoadedListener(onThumbnailLoadedListener);
+                    }
                 }
 
                 @Override
@@ -140,11 +144,17 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
         }
 
         holder.videoTitle.setText(contents.get(holder.getAdapterPosition()).getTitle());
-//        if(getObject(holder).getType() == Constants.Type.TEACHING_AIDS) {
-//            holder.details.setText("Subject | Grade");
-//        } else {
-//            holder.details.setText("Topic | Language");
-//        }
+        if(getObject(holder).getContentTypeCodeID().equals(Constants.ContentTypeTeachingAids)) {
+            String subjectCode = contents.get(holder.getAdapterPosition()).getSubject();
+            String subject = CommonCodeUtils.getObjectFromCode(subjectCode).getCodeNameForCurrentLocale();
+
+            String gradeCode = contents.get(holder.getAdapterPosition()).getGrade();
+            String grade = CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale();
+
+            holder.details.setText(subject +  " | "  + context.getResources().getString(R.string.grade) + " " + grade);
+        } else {
+            holder.details.setText("Topic | Language");
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -65,4 +65,12 @@ public class CommonCodeUtils {
 
     }
 
+    public static CommonCode getObjectFromCode(String code) {
+        RealmResults<CommonCode> contentTypeResult =
+                Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeID",
+                        code).findAll();
+        return contentTypeResult.get(0);
+
+    }
+
 }
