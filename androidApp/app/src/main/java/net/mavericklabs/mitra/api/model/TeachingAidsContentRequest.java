@@ -33,7 +33,7 @@ import java.io.Serializable;
  * Created by vishakha on 10/11/16.
  */
 
-public class ContentRequest implements Serializable{
+public class TeachingAidsContentRequest implements Serializable{
 
     @SerializedName("userID")
     private String userID;
@@ -53,7 +53,7 @@ public class ContentRequest implements Serializable{
     @SerializedName("pageNumber")
     private int pageNumber;
 
-    public ContentRequest(String userID, String fileType, String language, String subject, String grade) {
+    public TeachingAidsContentRequest(String userID, String fileType, String language, String subject, String grade) {
         this.userID = userID;
         this.fileType = fileType;
         this.language = language;

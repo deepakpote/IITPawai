@@ -1,7 +1,8 @@
 package net.mavericklabs.mitra.api;
 
 import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.ContentRequest;
+import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
+import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.NewUser;
@@ -34,5 +35,8 @@ public interface Api {
     Call<BaseModel<CommonCode>> getCodeNameList();
 
     @POST("content/searchTeachingAid/")
-    Call<BaseModel<Content>> searchTeachingAids(@Body ContentRequest contentRequest);
+    Call<BaseModel<Content>> searchTeachingAids(@Body TeachingAidsContentRequest contentRequest);
+
+    @POST("content/searchSelfLearning/")
+    Call<BaseModel<Content>> searchSelfLearning(@Body SelfLearningContentRequest contentRequest);
 }

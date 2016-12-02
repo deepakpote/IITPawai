@@ -35,9 +35,17 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
+import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
+import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.HttpUtils;
+import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +53,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SelfLearningFragment extends Fragment {
 
@@ -84,22 +95,12 @@ public class SelfLearningFragment extends Fragment {
         subjectSpinner.setAdapter(subjectAdapter);
         subjectSpinner.setPrompt(topics.get(0));
 
-
-        List<Content> contents = new ArrayList<>();
-//        contents.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
-//        contents.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.SELF_LEARNING));
-//        contents.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.SELF_LEARNING));
-//        contents.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        contentRecyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new ContentVerticalCardListAdapter(getContext(), contents);
-        contentRecyclerView.setAdapter(adapter);
-
         ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_dropdown_item, languages);
         gradeSpinner.setAdapter(gradeAdapter);
         gradeSpinner.setPrompt(languages.get(0));
+
+        searchSelfLearning("108100", "101100", "", 0);
 
     }
 
@@ -109,6 +110,57 @@ public class SelfLearningFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         adapter.releaseLoaders();
+    }
+
+    private void searchSelfLearning(String fileType, String language, String topic, final int pageNumber) {
+        Logger.d(" searching ");
+        SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(UserDetailUtils.getUserId(getContext()),
+                fileType, language, topic);
+        contentRequest.setPageNumber(pageNumber);
+        RestClient.getApiService("").searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+            @Override
+            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+
+                if(response.isSuccessful()) {
+                    Logger.d(" Succes");
+                    if(response.body().getData() != null) {
+                        List<Content> contents = response.body().getData();
+                        Logger.d(" contents " + contents.size());
+
+                        if(pageNumber == 0) {
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+                            contentRecyclerView.setLayoutManager(linearLayoutManager);
+                            adapter = new ContentVerticalCardListAdapter(getContext(), contents);
+                            contentRecyclerView.setAdapter(adapter);
+                        } else {
+                            ContentVerticalCardListAdapter adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+                            List<Content> originalContents = adapter.getContents();
+                            Logger.d(" original contents " + originalContents.size());
+                            originalContents.addAll(contents);
+                            adapter = new ContentVerticalCardListAdapter(getContext(), originalContents);
+                            contentRecyclerView.swapAdapter(adapter, false);
+                        }
+
+                        return;
+
+                    }
+                }
+
+                if(pageNumber == 0) {
+                    String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessage(response)).getCodeNameForCurrentLocale();
+                    Logger.d(" error " + error);
+                    contentRecyclerView.setVisibility(View.GONE);
+                    //errorView.setVisibility(View.VISIBLE);
+                    //errorView.setText(error);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+                Logger.d(" on fail");
+            }
+        });
     }
 
 }

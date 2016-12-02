@@ -50,6 +50,9 @@ public class Content implements Serializable{
     @SerializedName("grade")
     private String grade;
 
+    @SerializedName("topic")
+    private String topic;
+
     @SerializedName("requirement")
     private String requirement;
 
@@ -180,5 +183,13 @@ public class Content implements Serializable{
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 }

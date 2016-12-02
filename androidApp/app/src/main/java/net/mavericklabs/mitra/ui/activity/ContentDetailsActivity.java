@@ -44,7 +44,7 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.ContentRequest;
+import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Requirements;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
@@ -165,7 +165,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
         //TODO similar resources - get resources with same file type, language, subject, grade - confirm
 
-        ContentRequest contentRequest = new ContentRequest(UserDetailUtils.getUserId(getApplicationContext()),
+        TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(UserDetailUtils.getUserId(getApplicationContext()),
                 content.getFileType(), content.getLanguage(), content.getSubject(), content.getGrade());
         RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
