@@ -6,6 +6,14 @@ class messages():
     registration_user_validation_failed = 100104
     login_token_cannot_be_empty = 100105
     login_user_token_invalid = 100106
+    user_not_registered = 100110
+    registered_user = 100111
+    authentication_type_cannot_be_empty = 100112
+
+class authenticationTypes():
+    registration = "110100"
+    signIn = "110101"
+    otpValidityHours = 18.5
 
 class sms():
     authId = "MAOTGWZJI2NDAXNJHMMZ"
