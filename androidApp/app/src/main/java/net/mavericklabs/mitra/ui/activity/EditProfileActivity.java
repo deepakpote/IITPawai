@@ -30,6 +30,7 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.RegisterUser;
 import net.mavericklabs.mitra.api.model.RegisterUserResponse;
+import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.CommonCode;
@@ -219,15 +220,18 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             if(isValidInformation()) {
                 String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
                 RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(), getSelectedUserTypeId());
+                final DbUser dbUser = new DbUser(nameEditText.getText().toString(),getSelectedUserTypeId(),getSelectedDistrictID());
 
                 if(!selectedGradesList.isEmpty()) {
                     List<String> gradeCodeList = getGradeCodeList();
+                    dbUser.setGrades(gradeCodeList);
                     String grades = StringUtils.stringify(gradeCodeList);
                     user.setGradeCodeIds(grades);
                 }
 
                 if(!selectedSubjectsList.isEmpty()) {
                     List<String> subjectCodeList = getSubjectCodeList();
+                    dbUser.setSubjects(subjectCodeList);
                     String subjects = StringUtils.stringify(subjectCodeList);
                     user.setSubjectCodeIds(subjects);
                 }
@@ -235,10 +239,19 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                 RestClient.getApiService("").registerUser(user).enqueue(new Callback<BaseModel<RegisterUserResponse>>() {
                     @Override
                     public void onResponse(Call<BaseModel<RegisterUserResponse>> call, Response<BaseModel<RegisterUserResponse>> response) {
-                        Logger.d(" Succes");
                         if(response.isSuccessful()) {
                             if(response.body().getData() != null) {
+
                                 RegisterUserResponse serverResponse = response.body().getData().get(0);
+
+                                //write current user to database
+                                Realm realm = Realm.getDefaultInstance();
+                                realm.beginTransaction();
+                                realm.copyToRealm(dbUser);
+                                realm.commitTransaction();
+                                
+
+                                //store token in shared preferences
                                 String token = serverResponse.getToken();
                                 UserDetailUtils.saveToken(token,getApplicationContext());
                                 Intent verifyOtp = new Intent(EditProfileActivity.this,HomeActivity.class);
