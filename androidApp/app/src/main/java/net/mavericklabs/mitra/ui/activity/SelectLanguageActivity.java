@@ -23,6 +23,7 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -85,7 +86,6 @@ public class SelectLanguageActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void setLocale(String lang) {
 
         Call<BaseModel<CommonCode>> codeNameListCall = RestClient.getApiService("").getCodeNameList();
@@ -120,7 +120,13 @@ public class SelectLanguageActivity extends AppCompatActivity {
         Resources res = getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
         Configuration conf = res.getConfiguration();
-        conf.setLocale(myLocale);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            conf.setLocale(myLocale);
+        } else {
+            conf.locale = myLocale;
+        }
+
+        //Deprecated api - but still works. workaround is complicated
         res.updateConfiguration(conf, dm);
 
         Intent intent = new Intent(SelectLanguageActivity.this,ChooseSignInOrRegisterActivity.class);
