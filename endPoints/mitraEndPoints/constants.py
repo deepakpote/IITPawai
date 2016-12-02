@@ -9,8 +9,8 @@ class messages():
     user_userid_cannot_be_empty = 100107    
     teaching_aid_search_contenttype_cannot_be_empty = 100108
     teaching_aid_search_filetype_cannot_be_empty = 100109
-    user_not_registered = 100110
-    registered_user = 100111
+    sign_in_user_not_registered = 100110
+    registration_user_already_registered = 100111
     authentication_type_cannot_be_empty = 100112
     teaching_aid_search_language_cannot_be_empty = 100113
     teaching_aid_search_no_records_found = 100114
@@ -21,8 +21,8 @@ class messages():
     self_learning_search_user_not_exists = 100119
 
 class authenticationTypes():
-    registration = "110100"
-    signIn = "110101"
+    registration = 110100
+    signIn = 110101
     otpValidityHours = 18.5
 
 class sms():
@@ -30,6 +30,7 @@ class sms():
     authToken = "NjM3MzAxYzc2ZGQ1MTJjOTY5NjgyNDhhNzUxMDZi"
     srcPhoneNumber = "+919822365522"
     registrationMessage = "Thank you for registering with MITRA. Your OTP Code is : "
+    signInMessage = "Your MITRA Sign In OTP is : "
 
 class mitraCodeGroup():
     subject = 103 
@@ -38,4 +39,7 @@ class mitraCodeGroup():
     
 class contentSearchRecords():
     default = 20
-        
+
+class language():
+    english = 101100
+    marathi = 101101
