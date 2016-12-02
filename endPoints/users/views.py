@@ -31,6 +31,8 @@ class UserViewSet(viewsets.ModelViewSet):
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def requestOtp(self,request):
         phoneNumber = request.data.get('phoneNumber')
+        authenticationType = request.data.get('authenticationType')
+        
         if not phoneNumber:
             return Response({"response_message": constants.messages.registration_phone_number_cannot_be_empty, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
@@ -41,28 +43,33 @@ class UserViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_401_UNAUTHORIZED)
         
         # Check if the user is an existing user
-        authenticationType = request.data.get('authenticationType')
         if not authenticationType:
             return Response ({"response_message": constants.messages.authentication_type_cannot_be_empty, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
         
         # Check if the authentication type is 'Registration' or 'SignIn'
-        userList = user.objects.filter(phoneNumber=phoneNumber).first()
+        isPhoneNumberRegistered = user.objects.filter(phoneNumber=phoneNumber).exists()
+        
+        if(isPhoneNumberRegistered and authenticationType == constants.authenticationTypes.registration):
+            return Response({"response_message": constants.messages.registration_user_already_registered, "data": []},
+                            status=status.HTTP_401_UNAUTHORIZED)
             
-        if (not userList and authenticationType == constants.authenticationTypes.signIn):
-            return Response({"response_message": constants.messages.user_not_registered, "data": []},
+        if (not isPhoneNumberRegistered and authenticationType == constants.authenticationTypes.signIn):
+            return Response({"response_message": constants.messages.sign_in_user_not_registered, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
         
-        if(userList and authenticationType == constants.authenticationTypes.registration):
-            return Response({"response_message": constants.messages.registered_user, "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
-            
         generatedOTP = random.randint(100000, 999999)
         objOtp = otp(phoneNumber = phoneNumber, otp = generatedOTP)
         objOtp.save()
         
+        if authenticationType == constants.authenticationTypes.registration:
+            otpMessage = constants.sms.registrationMessage
+        else:
+            otpMessage = constants.sms.signInMessage
+        
         # Send OTP SMS Call
-        sendOtpSms(phoneNumber, generatedOTP, 101100)
+        sendOtpSms(phoneNumber, generatedOTP, constants.language.english, otpMessage)
+        
         # make call to plivo here
         return Response({"response_message": constants.messages.success, "data":[]})
 
@@ -73,6 +80,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def verifyOtp(self,request):
         # get inputs
         phoneNumber = request.data.get('phoneNumber')
+        authenticationType = request.data.get('authenticationType')
         otp_string = request.data.get('otp')
         
         # Check if phone # is passed in post param
@@ -87,19 +95,43 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.registration_phone_number_is_invalid, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
         
+        # Check if user with given phone number exists or not
+        isPhoneNumberRegistered = user.objects.filter(phoneNumber=phoneNumber).exists()
+        if authenticationType == constants.authenticationTypes.registration:
+            if isPhoneNumberRegistered:
+                return Response({"response_message": constants.messages.registration_user_already_registered, "data": []},
+                            status=status.HTTP_401_UNAUTHORIZED)
+        
+        # If verification is for Sign In, then check if the user with given phone number is registered or not 
+        else:
+            if not isPhoneNumberRegistered:
+                return Response({"response_message": constants.messages.sign_in_user_not_registered, "data": []},
+                            status=status.HTTP_401_UNAUTHORIZED)
+                
+        
         # Check if the OTP is generated in the last 24 hours    
         currentDate = timezone.now()
-        otpList = otp.objects.filter(phoneNumber=phoneNumber, otp=otp_string).first()
+        otpList = otp.objects.filter(phoneNumber=phoneNumber, otp=otp_string).order_by('-createdOn').first()
         if not otpList:
             return Response({"response_message": constants.messages.registration_otp_is_invalid, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
-        else:
-            if(otpList.createdOn >= (currentDate - timedelta(hours=constants.authenticationTypes.otpValidityHours))):
-                return Response({"response_message": constants.messages.success, "data": []})
-            else:
-                return Response({"response_message": constants.messages.registration_otp_is_invalid, "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
-
+        
+        # If OTP is generated before 24 hours, return error
+        if(otpList.createdOn < (currentDate - timedelta(hours=constants.authenticationTypes.otpValidityHours))):
+            return Response({"response_message": constants.messages.registration_otp_is_invalid, "data": []},
+                        status=status.HTTP_401_UNAUTHORIZED)
+        
+        # For registration call, do not send auth token
+        if authenticationType == constants.authenticationTypes.registration:
+            return Response({"response_message": constants.messages.success, "data": []})
+        
+        # For sign-in call, send auth token in response
+        else:   
+            objSignedInUser = user.objects.get(phoneNumber = phoneNumber)
+            objToken = token.objects.get(user = objSignedInUser)
+            response = { 'token' : objToken.token }
+            return Response({"response_message": constants.messages.success, "data": [response]})
+        
     """
     API to register user
     """
@@ -224,7 +256,7 @@ class UserViewSet(viewsets.ModelViewSet):
 #     def myinfo(self,request):
 #         print request.user
 #         return Response(UserSerializer(request.user).data)
-def sendOtpSms(recepientPhoneNumber, generatedOtp, languageCodeID):
+def sendOtpSms(recepientPhoneNumber, generatedOtp, languageCodeID, otpMessage):
     
     print ("Entered SMS OTP")
     #Verify the Plivo account
@@ -234,7 +266,7 @@ def sendOtpSms(recepientPhoneNumber, generatedOtp, languageCodeID):
     params = {
         'src': constants.sms.srcPhoneNumber, # Sender's phone number with country code
         'dst' : recepientPhoneNumber, # Receiver's phone Number with country code
-        'text' : constants.sms.registrationMessage + str(generatedOtp), # Your SMS Text Message - English
+        'text' : otpMessage + str(generatedOtp), # Your SMS Text Message - English
         'url' : "http://example.com/report/", # The URL to which with the status of the message is sent
         'method' : 'POST' # The method used to call the url
     }
