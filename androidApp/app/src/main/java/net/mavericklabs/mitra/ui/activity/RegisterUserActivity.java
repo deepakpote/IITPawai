@@ -66,7 +66,9 @@ public class RegisterUserActivity extends AppCompatActivity {
         }
         if (id == R.id.action_next) {
             if (isValidPhoneNumber()) {
-                Call<BaseModel<GenericListDataModel>> requestOtp = RestClient.getApiService("").requestOtp(new NewUser(StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString())));
+                Call<BaseModel<GenericListDataModel>> requestOtp = RestClient.getApiService("").
+                        requestOtp(new NewUser(StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString()),
+                                        NewUser.TYPE_REGISTER));
                 requestOtp.enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {

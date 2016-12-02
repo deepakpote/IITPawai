@@ -11,10 +11,18 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.GenericListDataModel;
+import net.mavericklabs.mitra.api.model.NewUser;
+import net.mavericklabs.mitra.utils.StringUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SignInUserActivity extends AppCompatActivity {
 
@@ -57,13 +65,28 @@ public class SignInUserActivity extends AppCompatActivity {
         }
         if (id == R.id.action_next) {
             if (isValidPhoneNumber()) {
-                Intent verifyOtp = new Intent(SignInUserActivity.this,VerifyOtpActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("phone_number",phoneNumberEditText.getText().toString());
-                verifyOtp.putExtras(bundle);
-                startActivity(verifyOtp);
+                Call<BaseModel<GenericListDataModel>> requestOtp = RestClient.getApiService("").
+                        requestOtp(new NewUser(StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString()),
+                                                NewUser.TYPE_SIGN_IN));
+                requestOtp.enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+                    @Override
+                    public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                        if(response.isSuccessful()) {
+                            Intent verifyOtp = new Intent(SignInUserActivity.this,VerifyOtpActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("phone_number", StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString()));
+                            verifyOtp.putExtras(bundle);
+                            startActivity(verifyOtp);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+
+                    }
+                });
             } else {
-                Toast.makeText(getApplicationContext(), R.string.error_10_digit_phone_number,Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"Please enter 10 digit phone number",Toast.LENGTH_LONG).show();
             }
             return true;
         }
