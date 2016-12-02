@@ -45,6 +45,7 @@ public class SignInUserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in_user);
         ButterKnife.bind(this);
 
+        phoneNumberEditText.setSelection(3);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -75,6 +76,7 @@ public class SignInUserActivity extends AppCompatActivity {
                             Intent verifyOtp = new Intent(SignInUserActivity.this,VerifyOtpActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putString("phone_number", StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString()));
+                            bundle.putBoolean("is_from_sign_in",true);
                             verifyOtp.putExtras(bundle);
                             startActivity(verifyOtp);
                         }

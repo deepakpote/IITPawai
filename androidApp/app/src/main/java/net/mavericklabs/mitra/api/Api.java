@@ -2,6 +2,7 @@ package net.mavericklabs.mitra.api;
 
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.ContentRequest;
+import net.mavericklabs.mitra.api.model.Token;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.NewUser;
@@ -26,7 +27,7 @@ public interface Api {
     Call<BaseModel<GenericListDataModel>> requestOtp(@Body NewUser user);
 
     @POST("user/verifyOtp/")
-    Call<BaseModel<GenericListDataModel>> verifyOtp(@Body VerifyUserOtp verifyUserOtp);
+    Call<BaseModel<Token>> verifyOtp(@Body VerifyUserOtp verifyUserOtp);
 
     @POST("user/register/")
     Call<BaseModel<RegisterUserResponse>> registerUser(@Body RegisterUser user);

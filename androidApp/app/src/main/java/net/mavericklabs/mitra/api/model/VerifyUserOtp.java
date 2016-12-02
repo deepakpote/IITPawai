@@ -14,9 +14,13 @@ public class VerifyUserOtp {
     @SerializedName("otp")
     private String otp;
 
-    public VerifyUserOtp(String mobileNumber, String otp) {
+    @SerializedName("authenticationType")
+    private String authenticationType;
+
+    public VerifyUserOtp(String mobileNumber, String otp, String authenticationType) {
         this.mobileNumber = mobileNumber;
         this.otp = otp;
+        this.authenticationType = authenticationType;
     }
 
     public String getMobileNumber() {
