@@ -97,14 +97,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="32dp"
                     android:layout_marginRight="32dp"
-                    android:text="VIEW"
+                    android:text="@string/view"
                     android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/save"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="SAVE"
+                    android:text="@string/save"
                     android:textStyle="bold" />
             </LinearLayout>
 

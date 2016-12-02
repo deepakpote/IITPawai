@@ -7,33 +7,51 @@
 
         <ImageView
             android:id="@+id/profile_photo_image_view"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="24dp"
-            android:src="@drawable/scert_logo"
+            android:scaleType="centerCrop"
             />
 
-        <EditText
-            android:id="@+id/name_edit_text"
+        <RelativeLayout
+            android:id="@+id/name_edit_text_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/profile_photo_image_view"
-            android:layout_marginTop="16dp"
-            android:hint="@string/name"
-            android:drawableRight="@android:drawable/ic_menu_manage"
-            android:drawableEnd="@android:drawable/ic_menu_manage"
-            />
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            >
+
+            <EditText
+                android:id="@+id/name_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:inputType="textCapWords"
+                android:hint="@string/name"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/name_edit_text"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:text="@string/required_field"
+                android:textColor="@color/color_teal"
+                />
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/name_edit_text"
-            android:layout_marginTop="16dp"
+            android:layout_below="@+id/name_edit_text_layout"
+            android:layout_marginTop="20dp"
             android:id="@+id/i_am_layout"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
-            >
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:padding="4dp">
 
             <TextView
                 android:id="@+id/i_am_text_view"
@@ -61,19 +79,32 @@
             android:layout_height="1dp"
             android:layout_below="@id/i_am_layout"
             android:background="@color/secondary_text"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/i_am_underline"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="@string/required_field"
+            android:textColor="@color/color_teal"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/i_am_layout"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="40dp"
             android:id="@+id/district_layout"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
-            >
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:padding="4dp">
 
             <TextView
                 android:id="@+id/district_text_view"
@@ -101,8 +132,21 @@
             android:layout_height="1dp"
             android:layout_below="@id/district_layout"
             android:background="@color/secondary_text"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/district_underline"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="@string/required_field"
+            android:textColor="@color/color_teal"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             />
 
         <EditText
@@ -110,8 +154,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/district_underline"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="36dp"
             android:hint="@string/udise"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             />
 
         <ImageView
@@ -145,6 +191,7 @@
             android:layout_centerHorizontal="true"
             />
 
+        <!-- more layout -->
         <LinearLayout
             android:id="@+id/more_layout"
             android:layout_width="match_parent"
@@ -166,16 +213,18 @@
                 android:text="@string/i_teach"
                 android:textColor="@color/primary_text"
                 android:layout_gravity="center"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="32dp"
                 android:layout_marginBottom="24dp"
                 android:textSize="16sp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
                 />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
                 >
 
                 <RelativeLayout
@@ -198,7 +247,7 @@
                         android:layout_centerVertical="true"
                         android:text="@string/subject_s"
                         android:textColor="@color/secondary_text"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         />
 
                     <ImageView
@@ -224,9 +273,10 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
                 >
 
                 <RelativeLayout
@@ -250,7 +300,7 @@
                         android:text="@string/grade_s"
                         android:textColor="@color/secondary_text"
                         android:layout_centerVertical="true"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         />
 
                     <ImageView
@@ -284,7 +334,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/i_am_interested_in_learning"
+                android:text="@string/interested_in_learning"
                 android:layout_marginBottom="16dp"
                 android:textColor="@color/primary_text"
                 android:textSize="16sp"
@@ -297,8 +347,8 @@
                 android:drawableRight="@drawable/ic_add_accent_18dp"
                 android:hint="@string/topics"
                 android:layout_marginBottom="16dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
                 />
 
             <EditText
@@ -307,8 +357,8 @@
                 android:drawableEnd="@drawable/ic_add_accent_18dp"
                 android:drawableRight="@drawable/ic_add_accent_18dp"
                 android:hint="@string/skills"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
                 />
 
         </LinearLayout>

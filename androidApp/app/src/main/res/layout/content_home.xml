@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="64dp"
     android:layout_marginLeft="@dimen/activity_horizontal_margin"
     android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="16dp"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="net.mavericklabs.mitra.ui.activity.HomeActivity"
-    tools:showIn="@layout/app_bar_home">
+    tools:context="net.mavericklabs.mitra.ui.activity.HomeActivity">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,47 +22,46 @@
 
             <Button
                 android:id="@+id/teaching_aids_solid_button"
+                style="@style/ColoredButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Discover Teaching Aids"
-                style="@style/ColoredButton"
                 android:layout_margin="8dp"
-                android:background="@color/color_teal_dark"/>
+                android:background="@color/color_teal_dark"
+                android:text="@string/discover_teaching_aids" />
 
             <Button
                 android:id="@+id/self_learning_solid_button"
+                style="@style/ColoredButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Learn Something New"
-                style="@style/ColoredButton"
                 android:layout_margin="8dp"
-                android:background="@color/color_teal"/>
+                android:background="@color/color_teal"
+                android:text="@string/learn_something_new" />
 
             <Button
                 android:id="@+id/trainings_solid_button"
+                style="@style/ColoredButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="View Available Trainings"
-                style="@style/ColoredButton"
                 android:layout_margin="8dp"
-                android:background="@color/color_teal_light"/>
+                android:background="@color/color_teal_light"
+                android:text="@string/view_available_trainings" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/default_grey"
+                android:layout_marginBottom="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp">
-            </View>
+                android:background="@color/default_grey"/>
 
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Popular Teaching Aids"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"
-                    android:textSize="20sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/popular_teaching_aids"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -74,38 +73,38 @@
                     android:layout_height="wrap_content">
 
                 </android.support.v7.widget.RecyclerView>
-                
+
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:layout_marginEnd="8dp"/>
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp" />
             </RelativeLayout>
 
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/default_grey"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp">
-                </View>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/default_grey"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Popular Self Learning"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"
-                    android:textSize="20sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/popular_self_learning"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/popularSelfLearningRecyclerView"
                     android:layout_width="match_parent"
@@ -116,15 +115,52 @@
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:layout_marginEnd="8dp"/>
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp" />
 
             </RelativeLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/default_grey"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/news_and_circulars"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/see_all"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:textColor="@color/colorAccent"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"/>
+
+            </RelativeLayout>
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/news_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
 
 
 

@@ -23,6 +23,7 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -32,21 +33,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.Logger;
 
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SelectLanguageActivity extends AppCompatActivity {
 
@@ -80,13 +86,47 @@ public class SelectLanguageActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void setLocale(String lang) {
+
+        Call<BaseModel<CommonCode>> codeNameListCall = RestClient.getApiService("").getCodeNameList();
+
+        codeNameListCall.enqueue(new Callback<BaseModel<CommonCode>>() {
+            @Override
+            public void onResponse(Call<BaseModel<CommonCode>> call, Response<BaseModel<CommonCode>> response) {
+                if(response.isSuccessful()) {
+                    Logger.d(" is successful");
+                    Realm realm = Realm.getDefaultInstance();
+                    RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
+                            .where(CommonCode.class).findAll();
+                    if(commonCodes.isEmpty()) {
+                        List<CommonCode> responseList = response.body().getData();
+                        realm.beginTransaction();
+                        realm.copyToRealm(responseList);
+                        realm.commitTransaction();
+                        for (CommonCode commonCode : responseList) {
+                            Logger.d(" " + commonCode.getCodeID() + " " + commonCode.getCodeNameEnglish());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<CommonCode>> call, Throwable t) {
+                Logger.d(" on failure ");
+            }
+        });
+
         Locale myLocale = new Locale(lang);
         Resources res = getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
         Configuration conf = res.getConfiguration();
-        conf.setLocale(myLocale);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            conf.setLocale(myLocale);
+        } else {
+            conf.locale = myLocale;
+        }
+
+        //Deprecated api - but still works. workaround is complicated
         res.updateConfiguration(conf, dm);
 
         Intent intent = new Intent(SelectLanguageActivity.this,ChooseSignInOrRegisterActivity.class);

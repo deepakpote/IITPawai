@@ -25,12 +25,7 @@ package net.mavericklabs.mitra.utils;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Intent;
 import android.view.View;
-
-import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.ui.activity.HomeActivity;
-import net.mavericklabs.mitra.ui.activity.TeachingAidsActivity;
 
 /**
  * Created by vishakha on 11/11/16.

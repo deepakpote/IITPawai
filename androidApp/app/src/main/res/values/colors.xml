@@ -3,11 +3,14 @@
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#FF9100</color>
+    <color name="colorAccentTransparent">#FFD180</color>
+    <color name="colorAccent_light">#FFD180</color>
+    <color name="colorAccent_dark">#FF6D00</color>
     <color name="colorToolbarText">#FFFFFF</color>
     <color name="colorTransparentWhite">#BFFFFFFF</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="primary_text">#D8000000</color>
-    <color name="secondary_text">#35000000</color>
+    <color name="secondary_text">#89000000</color>
     <color name="chip_background">#1F000000</color>
     <color name="color_teal">#009688</color>
     <color name="color_teal_light">#B2DFDB</color>
