@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.ui.fragment.EventCalendarFragment;
 import net.mavericklabs.mitra.ui.fragment.HomeFragment;
 import net.mavericklabs.mitra.ui.fragment.MyResourcesFragment;
 import net.mavericklabs.mitra.ui.fragment.ProfileFragment;
@@ -140,9 +141,10 @@ public class HomeActivity extends AppCompatActivity {
                 fragmentClass = MyResourcesFragment.class;
                 break;
 
-//            case R.id.action_trainings:
-//                fragmentClass = EventCalendarFragment.class;
-//                break;
+            case R.id.nav_training_calendar:
+                tabLayout.setVisibility(View.GONE);
+                fragmentClass = EventCalendarFragment.class;
+                break;
 
             default:
                 fragmentClass = HomeFragment.class;

@@ -28,7 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by root on 9/11/16.
+ * Created by amoghpalnitkar on 9/11/16.
  */
 
 public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHorizontalCardListAdapter.CardViewHolder> {

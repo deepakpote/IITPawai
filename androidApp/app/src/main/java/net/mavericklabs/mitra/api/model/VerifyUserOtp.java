@@ -3,7 +3,7 @@ package net.mavericklabs.mitra.api.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by root on 18/11/16.
+ * Created by amoghpalnitkar on 18/11/16.
  */
 
 public class VerifyUserOtp {

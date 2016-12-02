@@ -14,13 +14,13 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by root on 18/11/16.
+ * Created by amoghpalnitkar on 18/11/16.
  */
 
 public class RestClient {
     //private static final String BASE_URL = "http://192.168.0.199:8000/";
     //private static String accessToken = "";
-    private static final String BASE_URL = "http://192.168.0.103:8000/";
+    private static final String BASE_URL = "http://192.168.0.100:8000/";
     private static OkHttpClient client;
     private static Gson gson;
 

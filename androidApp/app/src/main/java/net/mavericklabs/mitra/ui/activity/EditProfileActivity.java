@@ -191,8 +191,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         List<CommonCode> districts = new ArrayList<>(districtList);
 
         //Header - not a valid value
-        districts.add(0, new CommonCode("0", "0","SELECT", "SELECT", 0));
-        userTypeList.add(0,new CommonCode("0","0","SELECT","SELECT",0));
+        districts.add(0, new CommonCode("0", "0",getString(R.string.select), getString(R.string.select), 0));
+        userTypeList.add(0,new CommonCode("0","0",getString(R.string.select),getString(R.string.select),0));
 
         SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(EditProfileActivity.this,R.layout.custom_spinner_item_header,userTypeList);
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);

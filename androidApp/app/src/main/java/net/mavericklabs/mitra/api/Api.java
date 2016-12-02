@@ -12,11 +12,12 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 /**
- * Created by root on 18/11/16.
+ * Created by amoghpalnitkar on 18/11/16.
  */
 
 public interface Api {
@@ -29,6 +30,10 @@ public interface Api {
 
     @POST("user/register/")
     Call<BaseModel<RegisterUserResponse>> registerUser(@Body RegisterUser user);
+
+    @POST("user/login/")
+    Call<BaseModel<GenericListDataModel>> loginUser(@Field("phoneNumber") String phoneNumber,
+                                                    @Field("token") String token);
 
     @GET("code/")
     Call<BaseModel<CommonCode>> getCodeNameList();

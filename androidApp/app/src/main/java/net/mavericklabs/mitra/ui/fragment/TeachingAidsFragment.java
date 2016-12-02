@@ -52,7 +52,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by root on 14/11/16.
+ * Created by amoghpalnitkar on 14/11/16.
  */
 
 public class TeachingAidsFragment extends Fragment{

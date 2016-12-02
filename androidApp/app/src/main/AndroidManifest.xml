@@ -15,18 +15,18 @@
         <activity
             android:name=".ui.activity.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity
             android:name=".ui.activity.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar" >
-             <!--<intent-filter>-->
-             <!--<action android:name="android.intent.action.MAIN" />-->
-             <!--<category android:name="android.intent.category.LAUNCHER" />-->
-             <!--</intent-filter>-->
+             <intent-filter>
+             <action android:name="android.intent.action.MAIN" />
+             <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.SelectLanguageActivity"
@@ -36,22 +36,24 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.activity.RegisterUserActivity"
-            android:label="Register" />
+            android:label="@string/register_title" />
         <activity
             android:name=".ui.activity.SignInUserActivity"
-            android:label="Sign In" />
+            android:label="@string/sign_in_title" />
         <activity
             android:name=".ui.activity.VerifyOtpActivity"
-            android:label="Phone Verification" />
+            android:label="@string/phone_verification_title" />
         <activity
             android:name=".ui.activity.EditProfileActivity"
-            android:label="My Profile" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:label="@string/my_profile_title" >
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
             </activity>
-        <activity android:name=".ui.activity.AlmostDoneActivity" />
+        <activity android:name=".ui.activity.AlmostDoneActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
 
         <activity android:name=".ui.activity.ContentDetailsActivity"/>
     </application>

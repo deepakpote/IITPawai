@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
 import static android.R.attr.resource;
 
 /**
- * Created by root on 27/11/16.
+ * Created by amoghpalnitkar on 27/11/16.
  */
 
 public class SubjectAndGradeFragmentListAdapter extends ArrayAdapter<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> {

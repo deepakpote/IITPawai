@@ -1,6 +1,7 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -21,7 +22,7 @@ public class SignInUserActivity extends AppCompatActivity {
     Button signIn;
 
     @BindView(R.id.phone_number_edit_text)
-    EditText phoneNumberEditText;
+    TextInputEditText phoneNumberEditText;
 
     @OnClick(R.id.register_button)
     void register () {
