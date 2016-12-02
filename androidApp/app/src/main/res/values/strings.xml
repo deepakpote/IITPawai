@@ -77,5 +77,6 @@
     <string name="sign_in_title">Sign In</string>
     <string name="phone_verification_title">Phone Verification</string>
     <string name="done">Done</string>
+    <string name="designation_and_district">%1$s from %2$s district</string>
 
 </resources>

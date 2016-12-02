@@ -30,6 +30,8 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.RegisterUser;
 import net.mavericklabs.mitra.api.model.RegisterUserResponse;
+import net.mavericklabs.mitra.database.model.DbGrade;
+import net.mavericklabs.mitra.database.model.DbSubject;
 import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.R;
@@ -55,6 +57,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -224,14 +227,30 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
                 if(!selectedGradesList.isEmpty()) {
                     List<String> gradeCodeList = getGradeCodeList();
-                    dbUser.setGrades(gradeCodeList);
+
+                    //format grades to store into database
+                    RealmList<DbGrade> dbGrades = new RealmList<>();
+                    for(String commonCode : gradeCodeList) {
+                        dbGrades.add(new DbGrade(commonCode));
+                    }
+                    dbUser.setGrades(dbGrades);
+
+                    //format grades to be sent to server
                     String grades = StringUtils.stringify(gradeCodeList);
                     user.setGradeCodeIds(grades);
                 }
 
                 if(!selectedSubjectsList.isEmpty()) {
                     List<String> subjectCodeList = getSubjectCodeList();
-                    dbUser.setSubjects(subjectCodeList);
+
+                    //format subject to store into database
+                    RealmList<DbSubject> dbSubjects = new RealmList<>();
+                    for(String commonCode : subjectCodeList) {
+                        dbSubjects.add(new DbSubject(commonCode));
+                    }
+                    dbUser.setSubjects(dbSubjects);
+
+                    //format subject to be sent to server
                     String subjects = StringUtils.stringify(subjectCodeList);
                     user.setSubjectCodeIds(subjects);
                 }
@@ -243,6 +262,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                             if(response.body().getData() != null) {
 
                                 RegisterUserResponse serverResponse = response.body().getData().get(0);
+                                dbUser.setId(serverResponse.getUserID());
 
                                 //write current user to database
                                 Realm realm = Realm.getDefaultInstance();
@@ -251,10 +271,12 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                                 realm.commitTransaction();
                                 
 
-                                //store token in shared preferences
+                                //store userId,token in shared preferences
                                 String token = serverResponse.getToken();
                                 UserDetailUtils.saveUserId(serverResponse.getUserID(), getApplicationContext());
                                 UserDetailUtils.saveToken(token,getApplicationContext());
+
+                                //move to next activity
                                 Intent verifyOtp = new Intent(EditProfileActivity.this,HomeActivity.class);
                                 startActivity(verifyOtp);
                                 finishAffinity();

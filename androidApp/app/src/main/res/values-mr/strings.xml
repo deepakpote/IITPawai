@@ -39,4 +39,5 @@
     <string name="sign_in_title">प्रवेश करा</string>
     <string name="phone_verification_title">मोबाईल क्रमांक पडताळणी</string>
     <string name="done">Done</string>
+    <string name="designation_and_district">%1$s from %2$s district</string>
 </resources>

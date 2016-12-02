@@ -2,6 +2,7 @@ package net.mavericklabs.mitra.database.model;
 
 import java.util.List;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -17,8 +18,12 @@ public class DbUser extends RealmObject {
     private String userType;
     private String district;
     private String Udise;
-    private List<String> subjects;
-    private List<String> grades;
+    private RealmList<DbSubject> subjects;
+    private RealmList<DbGrade> grades;
+
+    public DbUser() {
+        //default constructor required.
+    }
 
     public DbUser(String name, String userType, String district) {
         this.name = name;
@@ -66,19 +71,19 @@ public class DbUser extends RealmObject {
         Udise = udise;
     }
 
-    public List<String> getSubjects() {
+    public RealmList<DbSubject> getSubjects() {
         return subjects;
     }
 
-    public void setSubjects(List<String> subjects) {
+    public void setSubjects(RealmList<DbSubject> subjects) {
         this.subjects = subjects;
     }
 
-    public List<String> getGrades() {
+    public RealmList<DbGrade> getGrades() {
         return grades;
     }
 
-    public void setGrades(List<String> grades) {
+    public void setGrades(RealmList<DbGrade> grades) {
         this.grades = grades;
     }
 }

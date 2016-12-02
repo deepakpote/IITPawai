@@ -28,10 +28,10 @@
                     android:layout_marginBottom="16dp"
                     />
                 <TextView
+                    android:id="@+id/user_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorWhite"
-                    android:text="Amogh Palnitkar"
                     android:textSize="18sp"
                     />
                 <TextView
@@ -42,9 +42,9 @@
                     />
 
                 <TextView
+                    android:id="@+id/designation_and_district_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Teacher from ahmednagar district"
                     android:textColor="@color/colorWhite"
                     android:layout_marginTop="16dp"
                     />
