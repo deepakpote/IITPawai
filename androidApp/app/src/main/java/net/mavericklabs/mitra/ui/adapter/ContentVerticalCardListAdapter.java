@@ -75,6 +75,10 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
         thumbnailViewToLoaderMap = new HashMap<>();
     }
 
+    public List<Content> getContents() {
+        return contents;
+    }
+
     @Override
     public int getItemViewType(int position) {
         if(contents.get(position).getFileType().equals(Constants.FileTypeVideo))

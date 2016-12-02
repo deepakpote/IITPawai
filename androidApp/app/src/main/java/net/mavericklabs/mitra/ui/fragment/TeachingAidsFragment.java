@@ -37,6 +37,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -63,6 +64,8 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
 
 /**
  * Created by root on 14/11/16.
@@ -145,6 +148,9 @@ public class TeachingAidsFragment extends Fragment{
         @BindView(R.id.error_view)
         TextView errorView;
 
+//        @BindView(R.id.load_more)
+//        Button loadMore;
+
         ContentVerticalCardListAdapter adapter;
         public TeachingAidsContentFragment() {
         }
@@ -188,7 +194,7 @@ public class TeachingAidsFragment extends Fragment{
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     CommonCode grade = (CommonCode) gradeSpinner.getSelectedItem();
-                    searchTeachingAids(fileType, "101100", subjects.get(i).getCodeID(), grade.getCodeID());
+                    searchTeachingAids(fileType, "101100", subjects.get(i).getCodeID(), grade.getCodeID(), 0);
                 }
 
                 @Override
@@ -207,7 +213,7 @@ public class TeachingAidsFragment extends Fragment{
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     CommonCode subject = (CommonCode) subjectSpinner.getSelectedItem();
-                    searchTeachingAids(fileType, "101100", grades.get(i).getCodeID() , subject.getCodeID());
+                    searchTeachingAids(fileType, "101100", grades.get(i).getCodeID() , subject.getCodeID(), 0);
                 }
 
                 @Override
@@ -215,7 +221,38 @@ public class TeachingAidsFragment extends Fragment{
 
                 }
             });
-            searchTeachingAids(fileType, "101100", "", "");
+            searchTeachingAids(fileType, "101100", "", "", 0);
+
+//            loadMore.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    CommonCode subject = (CommonCode) subjectSpinner.getSelectedItem();
+//                    CommonCode grade = (CommonCode) gradeSpinner.getSelectedItem();
+//                    searchTeachingAids(fileType, "101100", subject.getCodeID(), grade.getCodeID(), 1);
+//                }
+//            });
+
+            contentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+                }
+
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
+                    int childCount = recyclerView.getChildCount();
+
+                    if(lastVisibleItem == childCount) {
+                        CommonCode subject = (CommonCode) subjectSpinner.getSelectedItem();
+                        CommonCode grade = (CommonCode) gradeSpinner.getSelectedItem();
+                        searchTeachingAids(fileType, "101100", subject.getCodeID(), grade.getCodeID(), 1);
+                    }
+                }
+            });
+
             return rootView;
         }
 
@@ -227,10 +264,11 @@ public class TeachingAidsFragment extends Fragment{
             }
         }
 
-        private void searchTeachingAids(String fileType, String language, String subject, String grade) {
+        private void searchTeachingAids(String fileType, String language, String subject, String grade, final int pageNumber) {
             Logger.d(" searching ");
             ContentRequest contentRequest = new ContentRequest(UserDetailUtils.getUserId(getContext()),
                     fileType, language, subject, grade);
+            contentRequest.setPageNumber(pageNumber);
             RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
                 @Override
                 public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
@@ -240,20 +278,33 @@ public class TeachingAidsFragment extends Fragment{
                         if(response.body().getData() != null) {
                             List<Content> contents = response.body().getData();
                             Logger.d(" contents " + contents.size());
-                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-                            contentRecyclerView.setLayoutManager(linearLayoutManager);
-                            adapter = new ContentVerticalCardListAdapter(getContext(), contents);
-                            contentRecyclerView.setAdapter(adapter);
+
+                            if(pageNumber == 0) {
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+                                contentRecyclerView.setLayoutManager(linearLayoutManager);
+                                adapter = new ContentVerticalCardListAdapter(getContext(), contents);
+                                contentRecyclerView.setAdapter(adapter);
+                            } else {
+                                ContentVerticalCardListAdapter adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+                                List<Content> originalContents = adapter.getContents();
+                                Logger.d(" original contents " + originalContents.size());
+                                originalContents.addAll(contents);
+                                adapter = new ContentVerticalCardListAdapter(getContext(), originalContents);
+                                contentRecyclerView.swapAdapter(adapter, false);
+                            }
+
                             return;
 
                         }
                     }
 
-                    String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessage(response)).getCodeNameForCurrentLocale();
-                    Logger.d(" error " + error);
-                    contentRecyclerView.setVisibility(View.GONE);
-                    errorView.setVisibility(View.VISIBLE);
-                    errorView.setText(error);
+                    if(pageNumber == 0) {
+                        String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessage(response)).getCodeNameForCurrentLocale();
+                        Logger.d(" error " + error);
+                        contentRecyclerView.setVisibility(View.GONE);
+                        errorView.setVisibility(View.VISIBLE);
+                        errorView.setText(error);
+                    }
 
                 }
 

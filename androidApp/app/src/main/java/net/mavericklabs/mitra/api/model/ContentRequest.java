@@ -50,8 +50,8 @@ public class ContentRequest implements Serializable{
     @SerializedName("gradeCodeID")
     private String grade;
 
-    //@SerializedName("pageNumber")
-    //private int pageNumber;
+    @SerializedName("pageNumber")
+    private int pageNumber;
 
     public ContentRequest(String userID, String fileType, String language, String subject, String grade) {
         this.userID = userID;
@@ -101,11 +101,11 @@ public class ContentRequest implements Serializable{
         this.grade = grade;
     }
 
-//    public int getPageNumber() {
-//        return pageNumber;
-//    }
-//
-//    public void setPageNumber(int pageNumber) {
-//        this.pageNumber = pageNumber;
-//    }
+    public int getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
+    }
 }
