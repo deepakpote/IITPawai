@@ -12,7 +12,7 @@ import net.mavericklabs.mitra.utils.Logger;
 import java.util.List;
 
 /**
- * Created by root on 11/11/16.
+ * Created by amoghpalnitkar on 11/11/16.
  */
 
 public class ProfileActivitySubjectsAdapter extends RecyclerView.Adapter<ChipViewHolder> {

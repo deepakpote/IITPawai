@@ -3,6 +3,8 @@ package net.mavericklabs.mitra.api;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
+import net.mavericklabs.mitra.api.model.Token;
+
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.NewUser;
@@ -13,11 +15,12 @@ import net.mavericklabs.mitra.model.Content;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 /**
- * Created by root on 18/11/16.
+ * Created by amoghpalnitkar on 18/11/16.
  */
 
 public interface Api {
@@ -26,10 +29,14 @@ public interface Api {
     Call<BaseModel<GenericListDataModel>> requestOtp(@Body NewUser user);
 
     @POST("user/verifyOtp/")
-    Call<BaseModel<GenericListDataModel>> verifyOtp(@Body VerifyUserOtp verifyUserOtp);
+    Call<BaseModel<Token>> verifyOtp(@Body VerifyUserOtp verifyUserOtp);
 
     @POST("user/register/")
     Call<BaseModel<RegisterUserResponse>> registerUser(@Body RegisterUser user);
+
+    @POST("user/login/")
+    Call<BaseModel<GenericListDataModel>> loginUser(@Field("phoneNumber") String phoneNumber,
+                                                    @Field("token") String token);
 
     @GET("code/")
     Call<BaseModel<CommonCode>> getCodeNameList();

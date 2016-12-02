@@ -15,9 +15,14 @@ import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
+import net.mavericklabs.mitra.api.model.NewUser;
+import net.mavericklabs.mitra.api.model.Token;
 import net.mavericklabs.mitra.api.model.VerifyUserOtp;
+import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
+
+import org.json.JSONArray;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +44,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
     EditText otpEditText;
 
     private String phoneNumber = "";
+    private boolean isFromSignIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +55,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
         if (getIntent().getExtras() != null) {
             Bundle bundle = getIntent().getExtras();
             phoneNumber = bundle.getString("phone_number");
+            isFromSignIn = bundle.getBoolean("is_from_sign_in");
             String formattedNumber;
             if (SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber,"in");
@@ -76,22 +83,36 @@ public class VerifyOtpActivity extends AppCompatActivity {
         }
         if (id == R.id.action_next) {
             if (isValidOtp()) {
-                VerifyUserOtp verifyUserOtp = new VerifyUserOtp(phoneNumber,otpEditText.getText().toString());
-                RestClient.getApiService("").verifyOtp(verifyUserOtp).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+                String authenticationType;
+                if(isFromSignIn) {
+                    authenticationType = NewUser.TYPE_SIGN_IN;
+                } else {
+                    authenticationType = NewUser.TYPE_REGISTER;
+                }
+                VerifyUserOtp verifyUserOtp = new VerifyUserOtp(phoneNumber,otpEditText.getText().toString(), authenticationType);
+                RestClient.getApiService("").verifyOtp(verifyUserOtp).enqueue(new Callback<BaseModel<Token>>() {
                     @Override
-                    public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                    public void onResponse(Call<BaseModel<Token>> call, Response<BaseModel<Token>> response) {
                         if(response.isSuccessful()) {
-                            UserDetailUtils.saveMobileNumber(phoneNumber,getApplicationContext());
-                            Intent almostDone = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
-                            MitraSharedPreferences.saveToPreferences(getApplicationContext(), "OTP", otpEditText.getText().toString());
-                            startActivity(almostDone);
+                            if(isFromSignIn) {
+                                String token = response.body().getData().get(0).getToken();
+                                UserDetailUtils.saveToken(token,getApplicationContext());
+                                Intent home = new Intent(VerifyOtpActivity.this,HomeActivity.class);
+                                startActivity(home);
+                                finishAffinity();
+                            } else {
+                                UserDetailUtils.saveMobileNumber(phoneNumber,getApplicationContext());
+                                Intent almostDone = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
+                                MitraSharedPreferences.saveToPreferences(getApplicationContext(), "OTP", otpEditText.getText().toString());
+                                startActivity(almostDone);
+                            }
                         } else {
                             Toast.makeText(getApplicationContext(), R.string.error_please_enter_6_digit_otp,Toast.LENGTH_LONG).show();
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                    public void onFailure(Call<BaseModel<Token>> call, Throwable t) {
 
                     }
                 });

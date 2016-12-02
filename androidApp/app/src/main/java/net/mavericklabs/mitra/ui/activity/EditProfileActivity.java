@@ -30,6 +30,9 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.RegisterUser;
 import net.mavericklabs.mitra.api.model.RegisterUserResponse;
+import net.mavericklabs.mitra.database.model.DbGrade;
+import net.mavericklabs.mitra.database.model.DbSubject;
+import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.CommonCode;
@@ -54,6 +57,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -191,8 +195,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         List<CommonCode> districts = new ArrayList<>(districtList);
 
         //Header - not a valid value
-        districts.add(0, new CommonCode("0", "0","SELECT", "SELECT", 0));
-        userTypeList.add(0,new CommonCode("0","0","SELECT","SELECT",0));
+        districts.add(0, new CommonCode("0", "0",getString(R.string.select), getString(R.string.select), 0));
+        userTypeList.add(0,new CommonCode("0","0",getString(R.string.select),getString(R.string.select),0));
 
         SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(EditProfileActivity.this,R.layout.custom_spinner_item_header,userTypeList);
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
@@ -219,15 +223,34 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             if(isValidInformation()) {
                 String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
                 RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(), getSelectedUserTypeId());
+                final DbUser dbUser = new DbUser(nameEditText.getText().toString(),getSelectedUserTypeId(),getSelectedDistrictID());
 
                 if(!selectedGradesList.isEmpty()) {
                     List<String> gradeCodeList = getGradeCodeList();
+
+                    //format grades to store into database
+                    RealmList<DbGrade> dbGrades = new RealmList<>();
+                    for(String commonCode : gradeCodeList) {
+                        dbGrades.add(new DbGrade(commonCode));
+                    }
+                    dbUser.setGrades(dbGrades);
+
+                    //format grades to be sent to server
                     String grades = StringUtils.stringify(gradeCodeList);
                     user.setGradeCodeIds(grades);
                 }
 
                 if(!selectedSubjectsList.isEmpty()) {
                     List<String> subjectCodeList = getSubjectCodeList();
+
+                    //format subject to store into database
+                    RealmList<DbSubject> dbSubjects = new RealmList<>();
+                    for(String commonCode : subjectCodeList) {
+                        dbSubjects.add(new DbSubject(commonCode));
+                    }
+                    dbUser.setSubjects(dbSubjects);
+
+                    //format subject to be sent to server
                     String subjects = StringUtils.stringify(subjectCodeList);
                     user.setSubjectCodeIds(subjects);
                 }
@@ -235,13 +258,25 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                 RestClient.getApiService("").registerUser(user).enqueue(new Callback<BaseModel<RegisterUserResponse>>() {
                     @Override
                     public void onResponse(Call<BaseModel<RegisterUserResponse>> call, Response<BaseModel<RegisterUserResponse>> response) {
-                        Logger.d(" Succes");
                         if(response.isSuccessful()) {
                             if(response.body().getData() != null) {
+
                                 RegisterUserResponse serverResponse = response.body().getData().get(0);
+                                dbUser.setId(serverResponse.getUserID());
+
+                                //write current user to database
+                                Realm realm = Realm.getDefaultInstance();
+                                realm.beginTransaction();
+                                realm.copyToRealm(dbUser);
+                                realm.commitTransaction();
+                                
+
+                                //store userId,token in shared preferences
                                 String token = serverResponse.getToken();
                                 UserDetailUtils.saveUserId(serverResponse.getUserID(), getApplicationContext());
                                 UserDetailUtils.saveToken(token,getApplicationContext());
+
+                                //move to next activity
                                 Intent verifyOtp = new Intent(EditProfileActivity.this,HomeActivity.class);
                                 startActivity(verifyOtp);
                                 finishAffinity();

@@ -1,6 +1,7 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -26,7 +27,7 @@ public class RegisterUserActivity extends AppCompatActivity {
 
 
     @BindView(R.id.phone_number_edit_text)
-    EditText phoneNumberEditText;
+    TextInputEditText phoneNumberEditText;
 
     @OnClick(R.id.sign_in_button)
     void register () {
@@ -65,7 +66,9 @@ public class RegisterUserActivity extends AppCompatActivity {
         }
         if (id == R.id.action_next) {
             if (isValidPhoneNumber()) {
-                Call<BaseModel<GenericListDataModel>> requestOtp = RestClient.getApiService("").requestOtp(new NewUser(StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString())));
+                Call<BaseModel<GenericListDataModel>> requestOtp = RestClient.getApiService("").
+                        requestOtp(new NewUser(StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString()),
+                                        NewUser.TYPE_REGISTER));
                 requestOtp.enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {

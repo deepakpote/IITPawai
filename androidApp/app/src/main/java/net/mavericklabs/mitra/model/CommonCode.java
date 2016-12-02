@@ -107,8 +107,6 @@ public class CommonCode extends RealmObject{
 
     public String getCodeNameForCurrentLocale() {
         String currentLocale = Locale.getDefault().getLanguage();
-        //Logger.d(" current locale " + currentLocale);
-
         if(currentLocale.equals("en")) {
             return codeNameEnglish;
         } else if(currentLocale.equals("mr")) {

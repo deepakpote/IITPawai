@@ -10,12 +10,25 @@
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
         >
-        <Spinner
-            android:id="@+id/month_year_spinner"
+        <TextView
+            android:id="@+id/month_year_selector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:textSize="18sp"
+            android:text="Dec 2016"
+            />
+        <ImageView
+            android:id="@+id/drop_down_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_expand_more_black_18dp"
+            android:layout_toRightOf="@id/month_year_selector"
+            android:layout_toEndOf="@id/month_year_selector"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_centerVertical="true"
             />
         <TextView
             android:layout_width="wrap_content"

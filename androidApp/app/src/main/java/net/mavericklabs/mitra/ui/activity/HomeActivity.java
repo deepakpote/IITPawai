@@ -19,8 +19,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.ui.fragment.EventCalendarFragment;
 import net.mavericklabs.mitra.ui.fragment.HomeFragment;
 import net.mavericklabs.mitra.ui.fragment.MyResourcesFragment;
 import net.mavericklabs.mitra.ui.fragment.ProfileFragment;
@@ -32,6 +36,8 @@ import net.mavericklabs.mitra.utils.Logger;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -73,6 +79,9 @@ public class HomeActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         tabLayout = (TabLayout) findViewById(R.id.tabs_my_resources);
 
+        RealmResults<DbUser> user = Realm.getDefaultInstance()
+                .where(DbUser.class).findAll();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setupFAB();
@@ -93,6 +102,10 @@ public class HomeActivity extends AppCompatActivity {
 
         selectDrawerItem(navigationView.getMenu().getItem(0));
         View headerView = navigationView.getHeaderView(0);
+        TextView userNameTextView = (TextView) headerView.findViewById(R.id.nav_header_user_name);
+        if(user.size() ==1) {
+            userNameTextView.setText(user.get(0).getName());
+        }
         headerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -142,9 +155,10 @@ public class HomeActivity extends AppCompatActivity {
                 fragmentClass = MyResourcesFragment.class;
                 break;
 
-//            case R.id.action_trainings:
-//                fragmentClass = EventCalendarFragment.class;
-//                break;
+            case R.id.nav_training_calendar:
+                tabLayout.setVisibility(View.GONE);
+                fragmentClass = EventCalendarFragment.class;
+                break;
 
             default:
                 fragmentClass = HomeFragment.class;

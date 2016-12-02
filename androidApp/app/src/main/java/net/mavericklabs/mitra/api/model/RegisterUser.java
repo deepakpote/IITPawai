@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by root on 18/11/16.
+ * Created by amoghpalnitkar on 18/11/16.
  */
 
 public class RegisterUser {
