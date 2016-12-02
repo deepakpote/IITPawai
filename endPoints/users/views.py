@@ -12,7 +12,8 @@ from commons.models import code
 from mitraEndPoints import constants
 import random
 import plivo
-import datetime
+from datetime import datetime, timedelta
+from django.utils import timezone
 
  
 class UserViewSet(viewsets.ModelViewSet):
@@ -39,6 +40,23 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.registration_phone_number_is_invalid, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
         
+        # Check if the user is an existing user
+        authenticationType = request.data.get('authenticationType')
+        if not authenticationType:
+            return Response ({"response_message": constants.messages.authentication_type_cannot_be_empty, "data": []},
+                            status=status.HTTP_401_UNAUTHORIZED)
+        
+        # Check if the authentication type is 'Registration' or 'SignIn'
+        userList = user.objects.filter(phoneNumber=phoneNumber).first()
+            
+        if (not userList and authenticationType == constants.authenticationTypes.signIn):
+            return Response({"response_message": constants.messages.user_not_registered, "data": []},
+                            status=status.HTTP_401_UNAUTHORIZED)
+        
+        if(userList and authenticationType == constants.authenticationTypes.registration):
+            return Response({"response_message": constants.messages.registered_user, "data": []},
+                            status=status.HTTP_401_UNAUTHORIZED)
+            
         generatedOTP = random.randint(100000, 999999)
         objOtp = otp(phoneNumber = phoneNumber, otp = generatedOTP)
         objOtp.save()
@@ -68,13 +86,19 @@ class UserViewSet(viewsets.ModelViewSet):
         if not objOtp.is_valid():
             return Response({"response_message": constants.messages.registration_phone_number_is_invalid, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
-
+        
+        # Check if the OTP is generated in the last 24 hours    
+        currentDate = timezone.now()
         otpList = otp.objects.filter(phoneNumber=phoneNumber, otp=otp_string).first()
         if not otpList:
             return Response({"response_message": constants.messages.registration_otp_is_invalid, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
         else:
-            return Response({"response_message": constants.messages.success, "data": []})
+            if(otpList.createdOn >= (currentDate - timedelta(hours=constants.authenticationTypes.otpValidityHours))):
+                return Response({"response_message": constants.messages.success, "data": []})
+            else:
+                return Response({"response_message": constants.messages.registration_otp_is_invalid, "data": []},
+                            status=status.HTTP_401_UNAUTHORIZED)
 
     """
     API to register user
