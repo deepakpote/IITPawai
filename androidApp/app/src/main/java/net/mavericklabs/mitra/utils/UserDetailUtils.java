@@ -20,7 +20,9 @@ public class UserDetailUtils {
 
     public static String getUserId(Context context){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return preferences.getString("user_id", "");
+        //TODO
+        return "4";
+        //return preferences.getString("user_id", "");
     }
 
     public static void saveToken(String id , Context context){

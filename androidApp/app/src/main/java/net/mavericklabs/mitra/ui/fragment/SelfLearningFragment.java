@@ -109,7 +109,9 @@ public class SelfLearningFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        adapter.releaseLoaders();
+        if(adapter != null) {
+            adapter.releaseLoaders();
+        }
     }
 
     private void searchSelfLearning(String fileType, String language, String topic, final int pageNumber) {
