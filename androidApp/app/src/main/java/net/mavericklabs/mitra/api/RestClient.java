@@ -52,7 +52,7 @@ public class RestClient {
         return retrofit.create(Api.class);
     }
 
-    private static Retrofit getRetrofitInstance() {
+    public static Retrofit getRetrofitInstance() {
         return new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(client)

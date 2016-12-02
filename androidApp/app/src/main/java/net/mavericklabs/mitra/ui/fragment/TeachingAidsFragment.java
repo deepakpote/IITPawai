@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
@@ -49,6 +50,7 @@ import net.mavericklabs.mitra.ui.activity.EditProfileActivity;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
@@ -140,6 +142,8 @@ public class TeachingAidsFragment extends Fragment{
         @BindView(R.id.content_recycler_view)
         RecyclerView contentRecyclerView;
 
+        @BindView(R.id.error_view)
+        TextView errorView;
 
         ContentVerticalCardListAdapter adapter;
         public TeachingAidsContentFragment() {
@@ -230,8 +234,9 @@ public class TeachingAidsFragment extends Fragment{
             RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
                 @Override
                 public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
-                    Logger.d(" Succes");
+
                     if(response.isSuccessful()) {
+                        Logger.d(" Succes");
                         if(response.body().getData() != null) {
                             List<Content> contents = response.body().getData();
                             Logger.d(" contents " + contents.size());
@@ -239,9 +244,17 @@ public class TeachingAidsFragment extends Fragment{
                             contentRecyclerView.setLayoutManager(linearLayoutManager);
                             adapter = new ContentVerticalCardListAdapter(getContext(), contents);
                             contentRecyclerView.setAdapter(adapter);
+                            return;
 
                         }
                     }
+
+                    String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessage(response)).getCodeNameForCurrentLocale();
+                    Logger.d(" error " + error);
+                    contentRecyclerView.setVisibility(View.GONE);
+                    errorView.setVisibility(View.VISIBLE);
+                    errorView.setText(error);
+
                 }
 
                 @Override
