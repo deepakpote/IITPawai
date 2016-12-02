@@ -122,12 +122,14 @@ public class HomeActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.nav_home :
+                AnimationUtils.fadeOutView(tabLayout);
                 tabLayout.setVisibility(View.GONE);
                 fragmentClass = HomeFragment.class;
                 break;
 
             case R.id.nav_teaching_aids :
-                tabLayout.setVisibility(View.VISIBLE);
+                AnimationUtils.fadeInView(tabLayout, null);
+                //tabLayout.setVisibility(View.VISIBLE);
                 fragmentClass = TeachingAidsFragment.class;
                 break;
 

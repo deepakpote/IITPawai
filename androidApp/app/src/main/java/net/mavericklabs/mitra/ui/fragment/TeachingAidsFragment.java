@@ -35,14 +35,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.ContentRequest;
+import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.ui.activity.EditProfileActivity;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
-import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
+import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +60,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by amoghpalnitkar on 14/11/16.
@@ -88,7 +101,11 @@ public class TeachingAidsFragment extends Fragment{
         Logger.d("My resources on view created ");
 
         tabLayout = (TabLayout) getActivity().findViewById(R.id.tabs_my_resources);
-        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        if(CommonCodeUtils.getFileTypeCount() > 4) {
+            tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        } else {
+            tabLayout.setTabMode(TabLayout.MODE_FIXED);
+        }
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -112,13 +129,6 @@ public class TeachingAidsFragment extends Fragment{
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        if(teachingAidsAdapter != null) {
-//            teachingAidsAdapter.releaseLoaders();
-//        }
-//
-//        if(selfLearningAdapter != null) {
-//            selfLearningAdapter.releaseLoaders();
-//        }
     }
 
     public static class TeachingAidsContentFragment extends Fragment {
@@ -132,8 +142,10 @@ public class TeachingAidsFragment extends Fragment{
         @BindView(R.id.content_recycler_view)
         RecyclerView contentRecyclerView;
 
-        private ContentVerticalCardListAdapter adapter;
+        @BindView(R.id.error_view)
+        TextView errorView;
 
+        ContentVerticalCardListAdapter adapter;
         public TeachingAidsContentFragment() {
         }
 
@@ -141,9 +153,10 @@ public class TeachingAidsFragment extends Fragment{
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static TeachingAidsContentFragment newInstance(int sectionNumber) {
+        public static TeachingAidsContentFragment newInstance(int tabNumber) {
             TeachingAidsContentFragment fragment = new TeachingAidsContentFragment();
             Bundle args = new Bundle();
+            args.putInt("tabNumber", tabNumber);
             fragment.setArguments(args);
             return fragment;
         }
@@ -154,41 +167,101 @@ public class TeachingAidsFragment extends Fragment{
             View rootView = inflater.inflate(R.layout.fragment_teaching_aids_list, container, false);
             ButterKnife.bind(this, rootView);
 
-            //Temp
-            List<String> subjects = Arrays.asList("Subject", "English", "Marathi", "Maths");
-            List<String> grades = Arrays.asList("Grade", "1", "2", "3");
+            int tabNumber = getArguments().getInt("tabNumber");
+            final String fileType = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
 
-            ArrayAdapter<String> subjectAdapter = new ArrayAdapter<>(getContext(),
-                    android.R.layout.simple_spinner_dropdown_item, subjects);
-            subjectSpinner.setAdapter(subjectAdapter);
-            subjectSpinner.setPrompt(subjects.get(0));
+            final List<CommonCode> subjects = new ArrayList<>(CommonCodeUtils.getSubjects());
+            final List<CommonCode> grades = new ArrayList<>(CommonCodeUtils.getGrades());
+
+            //Header - not a valid value
+            subjects.add(0, new CommonCode("", "","Subject", "Subject", 0));
+            grades.add(0,new CommonCode("","","Grade","Grade",0));
 
 
-            List<Content> contents = new ArrayList<>();
-            contents.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
-            contents.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.TEACHING_AIDS));
-            contents.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.TEACHING_AIDS));
-            contents.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
+            SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
+                    subjects);
+            adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
+            subjectSpinner.setAdapter(adapter);
+            subjectSpinner.setSelection(0 ,false);
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-            contentRecyclerView.setLayoutManager(linearLayoutManager);
-            adapter = new ContentVerticalCardListAdapter(getContext(), contents);
-            contentRecyclerView.setAdapter(adapter);
+            subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    CommonCode grade = (CommonCode) gradeSpinner.getSelectedItem();
+                    searchTeachingAids(fileType, "101100", subjects.get(i).getCodeID(), grade.getCodeID());
+                }
 
-            ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(getContext(),
-                    android.R.layout.simple_spinner_dropdown_item, grades);
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+
+            SpinnerArrayAdapter gradeAdapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
+                    grades);
+            adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
             gradeSpinner.setAdapter(gradeAdapter);
-            gradeSpinner.setPrompt(grades.get(0));
+            gradeSpinner.setSelection(0 ,false);
 
-            //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            gradeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    CommonCode subject = (CommonCode) subjectSpinner.getSelectedItem();
+                    searchTeachingAids(fileType, "101100", grades.get(i).getCodeID() , subject.getCodeID());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+            searchTeachingAids(fileType, "101100", "", "");
             return rootView;
         }
 
         @Override
         public void onDestroyView() {
             super.onDestroyView();
-            adapter.releaseLoaders();
+            if(adapter != null) {
+                adapter.releaseLoaders();
+            }
+        }
+
+        private void searchTeachingAids(String fileType, String language, String subject, String grade) {
+            Logger.d(" searching ");
+            ContentRequest contentRequest = new ContentRequest(UserDetailUtils.getUserId(getContext()),
+                    fileType, language, subject, grade);
+            RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+                @Override
+                public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+
+                    if(response.isSuccessful()) {
+                        Logger.d(" Succes");
+                        if(response.body().getData() != null) {
+                            List<Content> contents = response.body().getData();
+                            Logger.d(" contents " + contents.size());
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+                            contentRecyclerView.setLayoutManager(linearLayoutManager);
+                            adapter = new ContentVerticalCardListAdapter(getContext(), contents);
+                            contentRecyclerView.setAdapter(adapter);
+                            return;
+
+                        }
+                    }
+
+                    String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessage(response)).getCodeNameForCurrentLocale();
+                    Logger.d(" error " + error);
+                    contentRecyclerView.setVisibility(View.GONE);
+                    errorView.setVisibility(View.VISIBLE);
+                    errorView.setText(error);
+
+                }
+
+                @Override
+                public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+                    Logger.d(" on fail");
+                }
+            });
         }
     }
 
@@ -203,30 +276,18 @@ public class TeachingAidsFragment extends Fragment{
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a TeachingAidsContentFragment (defined as a static inner class below).
-            return TeachingAidsFragment.TeachingAidsContentFragment.newInstance(position + 1);
+            return TeachingAidsFragment.TeachingAidsContentFragment.newInstance(position);
         }
 
         @Override
         public int getCount() {
             // Show 5 total pages.
-            return 5;
+            return CommonCodeUtils.getFileTypeCount();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "Video";
-                case 1:
-                    return "Audio";
-                case 2:
-                    return "PPT";
-                case 3:
-                    return "Worksheet";
-                case 4:
-                    return "Genie";
-            }
-            return null;
+            return CommonCodeUtils.getFileTypeAtPosition(position).getCodeNameForCurrentLocale();
         }
 
     }

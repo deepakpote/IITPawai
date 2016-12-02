@@ -253,6 +253,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
                                 //store token in shared preferences
                                 String token = serverResponse.getToken();
+                                UserDetailUtils.saveUserId(serverResponse.getUserID(), getApplicationContext());
                                 UserDetailUtils.saveToken(token,getApplicationContext());
                                 Intent verifyOtp = new Intent(EditProfileActivity.this,HomeActivity.class);
                                 startActivity(verifyOtp);
