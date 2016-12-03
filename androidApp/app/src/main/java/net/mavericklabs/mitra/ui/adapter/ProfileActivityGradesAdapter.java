@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.ui.adapter.viewholder.ChipViewHolder;
 import net.mavericklabs.mitra.utils.Logger;
 
@@ -17,9 +18,9 @@ import java.util.List;
 
 public class ProfileActivityGradesAdapter extends RecyclerView.Adapter<ChipViewHolder> {
 
-    private List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> selectedGrades;
+    private List<BaseObject> selectedGrades;
 
-    public ProfileActivityGradesAdapter(List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> selectedGrades) {
+    public ProfileActivityGradesAdapter(List<BaseObject> selectedGrades) {
         this.selectedGrades = selectedGrades;
     }
 

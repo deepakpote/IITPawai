@@ -20,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RestClient {
     //private static final String BASE_URL = "http://192.168.0.199:8000/";
     //private static String accessToken = "";
-    private static final String BASE_URL = "http://192.168.0.104:8000/";
+    private static final String BASE_URL = "http://192.168.0.116:8000/";
     private static OkHttpClient client;
     private static Gson gson;
 

@@ -1,5 +1,6 @@
 package net.mavericklabs.mitra.listener;
 
+import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.ui.adapter.SubjectAndGradeFragmentListAdapter;
 
 import java.util.List;
@@ -9,5 +10,5 @@ import java.util.List;
  */
 
 public interface OnDialogFragmentDismissedListener {
-    void onDialogFragmentDismissed(List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> objectList);
+    void onDialogFragmentDismissed(List<BaseObject> objectList);
 }
