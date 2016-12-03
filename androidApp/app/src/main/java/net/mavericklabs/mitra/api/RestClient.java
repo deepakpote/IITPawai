@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -20,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RestClient {
     //private static final String BASE_URL = "http://192.168.0.199:8000/";
     //private static String accessToken = "";
-    private static final String BASE_URL = "http://192.168.0.116:8000/";
+    private static final String BASE_URL = "http://192.168.0.102:8000/";
     private static OkHttpClient client;
     private static Gson gson;
 
@@ -42,6 +43,8 @@ public class RestClient {
                         return chain.proceed(request);
                     }
                 })
+                .readTimeout(1, TimeUnit.MINUTES)
+                .connectTimeout(1, TimeUnit.MINUTES)
                 .build();
 
         gson = new GsonBuilder()
