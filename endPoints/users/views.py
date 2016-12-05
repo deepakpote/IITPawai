@@ -52,11 +52,11 @@ class UserViewSet(viewsets.ModelViewSet):
         
         if(isPhoneNumberRegistered and authenticationType == constants.authenticationTypes.registration):
             return Response({"response_message": constants.messages.registration_user_already_registered, "data": []},
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_200_OK)
             
         if (not isPhoneNumberRegistered and authenticationType == constants.authenticationTypes.signIn):
             return Response({"response_message": constants.messages.sign_in_user_not_registered, "data": []},
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_200_OK)
         
         generatedOTP = random.randint(100000, 999999)
         objOtp = otp(phoneNumber = phoneNumber, otp = generatedOTP)
@@ -105,13 +105,13 @@ class UserViewSet(viewsets.ModelViewSet):
         if authenticationType == constants.authenticationTypes.registration:
             if isPhoneNumberRegistered:
                 return Response({"response_message": constants.messages.registration_user_already_registered, "data": []},
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_200_OK)
         
         # If verification is for Sign In, then check if the user with given phone number is registered or not 
         if authenticationType == constants.authenticationTypes.signIn:
             if not isPhoneNumberRegistered:
                 return Response({"response_message": constants.messages.sign_in_user_not_registered, "data": []},
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_200_OK)
                 
         
         # Check if the OTP is generated in the last 24 hours    
