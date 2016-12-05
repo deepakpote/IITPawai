@@ -42,21 +42,21 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.registration_phone_number_is_invalid, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
         
-        # Check if the user is an existing user
+        # Check if authentication type is not empty
         if not authenticationType:
             return Response ({"response_message": constants.messages.authentication_type_cannot_be_empty, "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
         
         # Check if the authentication type is 'Registration' or 'SignIn'
         isPhoneNumberRegistered = user.objects.filter(phoneNumber=phoneNumber).exists()
         
         if(isPhoneNumberRegistered and authenticationType == constants.authenticationTypes.registration):
             return Response({"response_message": constants.messages.registration_user_already_registered, "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
+                            status=status.HTTP_400_BAD_REQUEST)
             
         if (not isPhoneNumberRegistered and authenticationType == constants.authenticationTypes.signIn):
             return Response({"response_message": constants.messages.sign_in_user_not_registered, "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
+                            status=status.HTTP_400_BAD_REQUEST)
         
         generatedOTP = random.randint(100000, 999999)
         objOtp = otp(phoneNumber = phoneNumber, otp = generatedOTP)
@@ -95,18 +95,23 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.registration_phone_number_is_invalid, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
         
+        # Check if authentication type is not empty
+        if not authenticationType:
+            return Response ({"response_message": constants.messages.authentication_type_cannot_be_empty, "data": []},
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
+        
         # Check if user with given phone number exists or not
         isPhoneNumberRegistered = user.objects.filter(phoneNumber=phoneNumber).exists()
         if authenticationType == constants.authenticationTypes.registration:
             if isPhoneNumberRegistered:
                 return Response({"response_message": constants.messages.registration_user_already_registered, "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
+                            status=status.HTTP_400_BAD_REQUEST)
         
         # If verification is for Sign In, then check if the user with given phone number is registered or not 
-        else:
+        if authenticationType == constants.authenticationTypes.signIn:
             if not isPhoneNumberRegistered:
                 return Response({"response_message": constants.messages.sign_in_user_not_registered, "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
+                            status=status.HTTP_400_BAD_REQUEST)
                 
         
         # Check if the OTP is generated in the last 24 hours    
@@ -126,10 +131,11 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.success, "data": []})
         
         # For sign-in call, send auth token in response
-        else:   
+        if authenticationType == constants.authenticationTypes.signIn:   
             objSignedInUser = user.objects.get(phoneNumber = phoneNumber)
             objToken = token.objects.get(user = objSignedInUser)
-            response = { 'token' : objToken.token }
+            response = { 'userID' : objSignedInUser.userID,
+                        'token' : objToken.token }
             return Response({"response_message": constants.messages.success, "data": [response]})
         
     """
