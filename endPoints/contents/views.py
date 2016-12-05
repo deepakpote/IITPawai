@@ -173,7 +173,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     API to save the content response: Like
     """
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
-    def saveLike(self,request):
+    def like(self,request):
         # get inputs
         userID = request.data.get('userID') 
         contentID = request.data.get('contentID')
