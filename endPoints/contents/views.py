@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework import viewsets,permissions
 from contents.serializers import contentSerializer
 
-from contents.models import content
+from contents.models import content , contentResponse
 from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic
 from mitraEndPoints import constants
@@ -168,7 +168,56 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         #Return the response
         return Response({"response_message": constants.messages.success, "data": response})
+    
+    """
+    API to save the content response: Like
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def saveLike(self,request):
+        # get inputs
+        userID = request.data.get('userID') 
+        contentID = request.data.get('contentID')
+        hasLiked = request.data.get('hasLiked')
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+         
+        # If userID parameter is passed, then check user is exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.save_like_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+            
+        # Check if contentID is passed in post param
+        if not contentID:
+            return Response({"response_message": constants.messages.save_like_contentid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
         
+        # If contentID parameter is passed, then check content exists or not
+        try:
+            objContent = content.objects.get(contentID = contentID)
+        except content.DoesNotExist:
+            return Response({"response_message": constants.messages.save_like_content_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+            
+        # Check hasLiked param is passed or not.
+        if not hasLiked:
+            return Response({"response_message": constants.messages.save_like_hasLiked_cannot_be_empty,
+                            "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED) 
+                      
+        # Save content like response.
+        SaveContentLikeResponse(hasLiked , objContent , objUser)
+
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": []})
         
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs, objUser):
@@ -257,4 +306,27 @@ def getSearchContentApplicableTopicCodeIDs(topicCodeIDs, objUser):
         
     if len(arrTopicCodeIDs) > 0:
         return arrTopicCodeIDs
+    
+"""
+Function to save content response for Like.
+"""
+def SaveContentLikeResponse(hasLiked , objContent , objUser):
+    
+    if hasLiked == 'true' or hasLiked == 'True':
+        valueHasLiked = True
+    else:
+        valueHasLiked = False
+        
+    # If any response for content exists or not.
+    try:
+        objContentResponse = contentResponse.objects.get(content = objContent)
+    except contentResponse.DoesNotExist:
+        #If not exists then make entry for content response
+        contentResponse(user = objUser , content = objContent , hasLiked = valueHasLiked).save()
+        return 
+    # If response exists then update the response.
+    objContentResponse.hasLiked =  valueHasLiked
+    objContentResponse.save()
+            
+    return
     

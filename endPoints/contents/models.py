@@ -32,3 +32,18 @@ class content(models.Model):
     class Meta:
         db_table = 'con_Content'
         get_latest_by = 'contentTitle' 
+        
+"""
+content response model
+"""                 
+class contentResponse(models.Model):
+    contentResponseID = models.AutoField(primary_key = True)
+    user = models.ForeignKey('users.user', db_column = 'userID', null = False, related_name="contentResponse_userID")
+    content = models.ForeignKey('content', db_column = 'contentID', null = False, related_name="contentResponse_contentID")
+    
+    hasLiked = models.NullBooleanField(null = True , default=None,)
+    downloadCount = models.IntegerField(null = True)
+    sharedCount = models.IntegerField(null = True)
+     
+    class Meta:
+        db_table = 'con_ContentResponse'
