@@ -19,6 +19,12 @@ class messages():
     self_learning_search_language_cannot_be_empty = 100117
     self_learning_search_no_records_found = 100118
     self_learning_search_user_not_exists = 100119
+    
+    save_like_user_not_exists = 100120
+    save_like_contentid_cannot_be_empty = 100121
+    save_like_content_not_exists = 100122
+    save_like_hasLiked_cannot_be_empty = 100123
+    save_like_hasLike_value_must_be_boolean = 100124
 
 class authenticationTypes():
     registration = 110100
