@@ -15,14 +15,15 @@ class listAttendeeSerializer(serializers.ListField):
 
 # nested object serializer for event
 class eventSerializer(serializers.Serializer):
+	id = serializers.CharField(required=True)
 	summary = serializers.CharField()
 	location = serializers.CharField()
 	description = serializers.CharField()
 	end=eventTimeSerializer()
 	start=eventTimeSerializer()
-	recurrence=serializers.ListField(serializers.CharField())
-	attendees=listAttendeeSerializer()
-	reminders=remindersSerializer()
+	#recurrence=serializers.ListField(serializers.CharField(),required=False)
+	#attendees=listAttendeeSerializer(required=False)
+	#reminders=remindersSerializer(required=False)
 
 # object serializer for query filter parameters
 class eventQuerySerializer(serializers.Serializer):
