@@ -78,6 +78,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         #Get the query set using filter on filetype, subject, grade     
         contentQuerySet = content.objects.filter(language = languageCodeID,
                                                   fileType = fileTypeCodeID, 
+                                                  contentType = constants.mitraCode.teachingAids,
                                                   subject__in = arrSubjectCodeIDs, 
                                                   grade__in = arrGradeCodeIDs).order_by('-contentID')[fromRecord:pageNumber]
         
@@ -102,9 +103,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def searchSelfLearning(self,request):
         # get inputs
-#       contentType = request.data.get('contentTypeCodeID')
         userID = request.data.get('userID') 
-        fileTypeCodeID = request.data.get('fileTypeCodeID')
         languageCodeID = request.data.get('languageCodeID')
         
         topicCodeIDs = request.data.get('topicCodeIDs') 
@@ -123,13 +122,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.self_learning_search_user_not_exists,
                              "data": []},
                             status = status.HTTP_404_NOT_FOUND)
-            
-        # Check if fileTypeCodeID is passed in post param
-        if not fileTypeCodeID:
-            return Response({"response_message": constants.messages.self_learning_search_filetype_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED)  
-         
+             
         # Check if languageCodeID is passed in post param    
         if not languageCodeID:
             return Response({"response_message": constants.messages.self_learning_search_language_cannot_be_empty,
@@ -151,7 +144,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         #Get the query set using filter on filetype, topic & language     
         contentQuerySet = content.objects.filter(language = languageCodeID,
-                                                  fileType = fileTypeCodeID, 
+                                                  contentType = constants.mitraCode.selfLearning, 
                                                   topic__in = arrTopicCodeIDs).order_by('-contentID')[fromRecord:pageNumber]
         
         #Check for the no of records fetched.
