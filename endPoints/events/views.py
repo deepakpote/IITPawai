@@ -20,8 +20,6 @@ class EventViewSet(viewsets.ViewSet):
     
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def listEvents(self, request):
-        reqData = {str(key):request.data[key] for key in request.data.keys()}
-        print(reqData) 
         queryParameters=eventQuerySerializer(data=request.data)
         
         if not queryParameters.is_valid():

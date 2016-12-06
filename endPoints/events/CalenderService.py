@@ -14,12 +14,10 @@ import datetime
 class EventsCalender:
 	# If modifying these scopes, delete your previously saved credentials
 	# at ~/.credentials/GoogleCalenderCredentials.json
-	SCOPES = 'https://www.googleapis.com/auth/calendar'
-	CLIENT_SECRET_FILE = 'client_secret.json'
-	APPLICATION_NAME = 'Google Calender'
+	SCOPES = 'https://www.googleapis.com/auth/calendar.readOnly'
 	CALENDER_ID = 'primary'
 	
-	credential_dir = os.path.join(os.path.expanduser('~'), '.credentials')
+	CREDENTIAL_DIR = os.path.join(os.path.expanduser('~'), '.credentials')
 
 	""" Init calender service and returnes service object """
 	def __init__(self):
@@ -28,27 +26,12 @@ class EventsCalender:
 		self.__service = discovery.build('calendar', 'v3', http=http)
 		
 	
-	"""Gets valid user credentials from storage.
-	If nothing has been stored, or if the stored credentials are invalid,
-	the OAuth2 flow is completed to obtain the new credentials.
-
-	Returns:
-		Credentials, the obtained credential.
+	""" 
+		returns Credentials from stored credential file
 	"""
 	def __get_credentials(self):
-		if not os.path.exists(EventsCalender.credential_dir):
-			os.makedirs(EventsCalender.credential_dir)
-		credential_path = os.path.join(EventsCalender.credential_dir,
-				           'GoogleCalenderCredentials.json')
-
-		store = Storage(credential_path)
+		store = Storage(os.path.join(EventsCalender.CREDENTIAL_DIR,'GoogleCalenderCredentials.json'))
 		credentials = store.get()
-		if not credentials or credentials.invalid:
-			flow = client.flow_from_clientsecrets(EventsCalender.CLIENT_SECRET_FILE, EventsCalender.SCOPES)
-			flow.user_agent = EventsCalender.APPLICATION_NAME
-			credentials = tools.run_flow(flow, store, None)
-			print('Storing credentials to ' + credential_path)
-		
 		return credentials
 	
 	# Gets list of events from server

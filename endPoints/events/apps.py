@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class GooglecalenderConfig(AppConfig):
-    name = 'googleCalender'
+class EventsConfig(AppConfig):
+    name = 'events'
