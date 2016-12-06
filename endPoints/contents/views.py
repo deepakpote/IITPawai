@@ -78,7 +78,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         #Get the query set using filter on filetype, subject, grade     
         contentQuerySet = content.objects.filter(language = languageCodeID,
                                                   fileType = fileTypeCodeID, 
-                                                  contentType = constants.mitraCode.TeachingAids,
+                                                  contentType = constants.mitraCode.teachingAids,
                                                   subject__in = arrSubjectCodeIDs, 
                                                   grade__in = arrGradeCodeIDs).order_by('-contentID')[fromRecord:pageNumber]
         
@@ -144,7 +144,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         #Get the query set using filter on filetype, topic & language     
         contentQuerySet = content.objects.filter(language = languageCodeID,
-                                                  contentType = constants.mitraCode.SelfLearning, 
+                                                  contentType = constants.mitraCode.selfLearning, 
                                                   topic__in = arrTopicCodeIDs).order_by('-contentID')[fromRecord:pageNumber]
         
         #Check for the no of records fetched.
