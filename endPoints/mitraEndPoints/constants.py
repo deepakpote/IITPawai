@@ -42,12 +42,11 @@ class mitraCodeGroup():
     subject = 103 
     grade = 104   
     topic = 105
-    ContentTypes = 107
     
 class mitraCode():
-    TeachingAids = 107100
-    SelfLearning = 107101
-    Trainings = 107102
+    teachingAids = 107100
+    selfLearning = 107101
+    trainings = 107102
     
 class contentSearchRecords():
     default = 20
