@@ -44,6 +44,7 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Requirements;
@@ -145,9 +146,19 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
                 details.setText(subject +  " | "  + getResources().getString(R.string.grade) + " " + grade);
 
+                loadSimilarTeachingAids();
+
             } else {
                 requirementsLayout.setVisibility(View.GONE);
-                details.setText(" Topic | Language");
+                String topicCode = content.getTopic();
+                String topic = CommonCodeUtils.getObjectFromCode(topicCode).getCodeNameForCurrentLocale();
+
+                String languageCode = content.getLanguage();
+                String language = CommonCodeUtils.getObjectFromCode(languageCode).getCodeNameForCurrentLocale();
+
+                details.setText(topic +  " | " + language);
+
+                loadSimilarSelfLearning();
             }
 
             //TODO : set author name
@@ -163,6 +174,9 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
         }
 
+    }
+
+    private void loadSimilarTeachingAids() {
         //TODO similar resources - get resources with same file type, language, subject, grade - confirm
 
         TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(UserDetailUtils.getUserId(getApplicationContext()),
@@ -189,11 +203,33 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                 Logger.d(" on fail");
             }
         });
+    }
 
+    private void loadSimilarSelfLearning() {
+        //TODO similar resources - get resources with same file type, language, subject, grade - confirm
+        SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(UserDetailUtils.getUserId(getApplicationContext()),
+                content.getLanguage(), content.getTopic());
+        RestClient.getApiService("").searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+            @Override
+            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                Logger.d(" Succes");
+                if(response.isSuccessful()) {
+                    if(response.body().getData() != null) {
+                        List<Content> contents = response.body().getData();
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
+                        contentRecyclerView.setLayoutManager(linearLayoutManager);
+                        similarContentsAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
+                        contentRecyclerView.setAdapter(similarContentsAdapter);
 
+                    }
+                }
+            }
 
-
-
+            @Override
+            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+                Logger.d(" on fail");
+            }
+        });
     }
 
     @Override

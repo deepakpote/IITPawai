@@ -268,7 +268,6 @@ public class TeachingAidsFragment extends Fragment{
                             if(pageNumber == 0) {
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                                 contentRecyclerView.setLayoutManager(linearLayoutManager);
-                                contents.addAll(contents);
                                 adapter = new ContentVerticalCardListAdapter(getContext(), contents);
                                 contentRecyclerView.setAdapter(adapter);
                             } else {
