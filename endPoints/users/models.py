@@ -17,7 +17,7 @@ class user(models.Model):
     userName = models.CharField(max_length = 100, null = False)
     photoUrl = models.CharField(max_length = 255, null = True, blank = True)
     udiseCode = models.CharField(max_length = 255, null = True, blank = True)
-    emailID = models.EmailField(max_length = 100, null = True, blank = True)
+    emailID = models.EmailField(unique = True , max_length = 100, null = True, blank = True)
     
     # For district and language, set null = true, so as to allow inserting of admin user - with blank values for these 2 fields. Later on update these 2 fields for admin
     # Further set blank = false, so as to NOT allow blank inputs
