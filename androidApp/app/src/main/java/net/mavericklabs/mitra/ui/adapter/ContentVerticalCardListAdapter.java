@@ -75,6 +75,10 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
         thumbnailViewToLoaderMap = new HashMap<>();
     }
 
+    public List<Content> getContents() {
+        return contents;
+    }
+
     @Override
     public int getItemViewType(int position) {
         if(contents.get(position).getFileType().equals(Constants.FileTypeVideo))
@@ -153,7 +157,14 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
 
             holder.details.setText(subject +  " | "  + context.getResources().getString(R.string.grade) + " " + grade);
         } else {
-            holder.details.setText("Topic | Language");
+
+            String topicCode = contents.get(holder.getAdapterPosition()).getTopic();
+            String topic = CommonCodeUtils.getObjectFromCode(topicCode).getCodeNameForCurrentLocale();
+
+            String languageCode = contents.get(holder.getAdapterPosition()).getLanguage();
+            String language = CommonCodeUtils.getObjectFromCode(languageCode).getCodeNameForCurrentLocale();
+
+            holder.details.setText(topic +  " | " + language);
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

@@ -46,6 +46,7 @@ import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.ui.fragment.GradeFragment;
 import net.mavericklabs.mitra.ui.fragment.SubjectFragment;
 import net.mavericklabs.mitra.utils.CommonCodeGroup;
+import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
@@ -55,6 +56,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -232,8 +234,18 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
             if(isValidInformation()) {
                 String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
-                RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(), getSelectedUserTypeId());
+                Logger.d(" language " + Locale.getDefault().getLanguage() + " " + Locale.getDefault().getDisplayLanguage());
+
+                //Get the current language name in English
+                String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
+                String languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+
+
+                RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(),
+                        getSelectedUserTypeId(), languageCode);
                 final DbUser dbUser = new DbUser(nameEditText.getText().toString(),getSelectedUserTypeId(),getSelectedDistrictID());
+
+                dbUser.setPreferredLanguage(languageCode);
 
                 if(!selectedGradesList.isEmpty()) {
                     List<String> gradeCodeList = getGradeCodeList();
