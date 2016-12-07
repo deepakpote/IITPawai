@@ -32,10 +32,6 @@ public interface Api {
     @POST("user/register/")
     Call<BaseModel<RegisterUserResponse>> registerUser(@Body RegisterUser user);
 
-    @POST("user/login/")
-    Call<BaseModel<GenericListDataModel>> loginUser(@Field("phoneNumber") String phoneNumber,
-                                                    @Field("token") String token);
-
     @GET("code/")
     Call<BaseModel<CommonCode>> getCodeNameList();
 
