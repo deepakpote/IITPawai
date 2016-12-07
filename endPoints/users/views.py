@@ -213,6 +213,56 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({"response_message": constants.messages.success, "data": [response]})
     
     """
+    API to update user profile.
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def updateProfile(self,request):
+        # Get input data
+        userID = request.data.get('userID') 
+        phoneNumber = request.data.get('phoneNumber') 
+        emailID = request.data.get('emailID') 
+        userName = request.data.get('userName')
+        udiseCode = request.data.get('udiseCode')
+        userTypeCodeID = request.data.get('userTypeCodeID')
+        preferredLanguageCodeID = request.data.get('preferredLanguageCodeID') 
+        districtCodeID = request.data.get('districtCodeID') 
+        
+        # validate user information
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.update_profile_user_not_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
+        
+        # If user valid, update the details.
+        user.objects.filter(userID = userID).update(userName = userName , 
+                                                               phoneNumber = phoneNumber ,
+                                                               udiseCode = udiseCode , 
+                                                               userType = userTypeCodeID , 
+                                                               preferredLanguage = preferredLanguageCodeID , 
+                                                               district = districtCodeID ,
+                                                               modifiedBy = userID)
+        
+        #Save user subject
+        subjectCodeIDs = request.data.get('subjectCodeIDs')
+        userSubjectSave(subjectCodeIDs, objUser)
+        
+        # Save user skill
+        skillCodeIDs = request.data.get('skillCodeIDs')
+        userSkillSave(skillCodeIDs, objUser)
+         
+        # save user grade.
+        gradeCodeIDs = request.data.get('gradeCodeIDs')
+        userGradeSave(gradeCodeIDs, objUser)
+         
+        # save user topics
+        topicCodeIDs  = request.data.get('topicCodeIDs')
+        userTopicSave(topicCodeIDs, objUser)
+#         
+        return Response({"response_message": constants.messages.success, "data": []})
+    
+    """
     API to login
     """
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
@@ -306,6 +356,9 @@ def userSubjectSave(subjectCodeIDs, objUser):
     if not subjectCodeIDs:
         return
     
+    # Delete all the subjects of respective user from userSubject.
+    userSubject.objects.filter(user = objUser).delete()
+    
     # save the user subject.
     subjectCodeList = subjectCodeIDs.split(',')
     for subjectCodeID in subjectCodeList:
@@ -319,6 +372,9 @@ Function to save the user skills.
 def userSkillSave(skillCodeIDs, userObj):
     if not skillCodeIDs:
         return
+    
+    # Delete all the skills of respective user from userSkill.
+    userSkill.objects.filter(user = userObj).delete()
         
     # save the user skills.
     skillCodeList = skillCodeIDs.split(',')
@@ -334,6 +390,9 @@ def userTopicSave(topicCodeIDs, userObj):
     if not topicCodeIDs:
         return
     
+    # Delete all the topics of respective user from userTopic.
+    userTopic.objects.filter(user = userObj).delete()
+        
     # save the user topics.
     topicCodeList = topicCodeIDs.split(',')
     for topicCodeID in topicCodeList:
@@ -347,6 +406,9 @@ Function to save the user grades.
 def userGradeSave(gradeCodeIDs , userObj):
     if not gradeCodeIDs:
         return 
+    
+    # Delete all the grades of respective user from userGrade.
+    userGrade.objects.filter(user = userObj).delete()
     
     # save the user Grade.
     gradeCodeList = gradeCodeIDs.split(',')
@@ -367,4 +429,5 @@ def userDeviceSave(objUser, fcmDeviceID):
     
     # If the given userID and device ID combination does NOT exists, then, save
     device(user = objUser, fcmDeviceID = fcmDeviceID).save()
-    
+    return
+
