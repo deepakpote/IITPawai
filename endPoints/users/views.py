@@ -205,6 +205,63 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({"response_message": constants.messages.success, "data": [response]})
     
     """
+    API to update user profile.
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def updateProfile(self,request):
+        # Get input data
+        userID = request.data.get('userID') 
+        phoneNumber = request.data.get('phoneNumber') 
+        emailID = request.data.get('emailID') 
+        userName = request.data.get('userName')
+        photoUrl = request.data.get('photoUrl')
+        udiseCode = request.data.get('udiseCode')
+        userTypeCodeID = request.data.get('userTypeCodeID')
+        preferredLanguageCodeID = request.data.get('preferredLanguageCodeID') 
+        districtCodeID = request.data.get('districtCodeID') 
+        
+        # validate user information
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.teaching_aid_search_user_not_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
+            
+        print 'udiseCode',udiseCode
+        
+        # If user valid, update the details.
+        user.objects.filter(userID = userID).update(userName = userName , 
+                                                               emailID = emailID ,
+                                                               photoUrl = photoUrl , 
+                                                               udiseCode = udiseCode , 
+                                                               userType = userTypeCodeID , 
+                                                               preferredLanguage = preferredLanguageCodeID , 
+                                                               district = districtCodeID ,
+                                                               modifiedBy = userID)
+        
+        # delete all previous user subjects/topics/grades/skills
+        deleteUserProfileDetails(objUser)
+        
+        #Save user subject
+        subjectCodeIDs = request.data.get('subjectCodeIDs')
+        userSubjectSave(subjectCodeIDs, objUser)
+        
+        # Save user skill
+        skillCodeIDs = request.data.get('skillCodeIDs')
+        userSkillSave(skillCodeIDs, objUser)
+         
+        # save user grade.
+        gradeCodeIDs = request.data.get('gradeCodeIDs')
+        userGradeSave(gradeCodeIDs, objUser)
+         
+        # save user topics
+        topicCodeIDs  = request.data.get('topicCodeIDs')
+        userTopicSave(topicCodeIDs, objUser)
+#         
+        return Response({"response_message": constants.messages.success, "data": []})
+    
+    """
     API to login
     """
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
@@ -336,6 +393,18 @@ def userGradeSave(gradeCodeIDs , userObj):
     for gradeCodeID in gradeCodeList:
          objCode = code.objects.get(codeID = gradeCodeID)
          userGrade(grade = objCode, user = userObj).save()
+
+    return
+
+"""
+Function to delete all user details from userSubject/userGrade/userTopic/userSkill tables
+"""
+def deleteUserProfileDetails(userObj):
+    #Delete all details from userSubject/userGrade/userTopic/userSkill for specific user.
+    userSubject.objects.filter(user = userObj).delete()
+    userGrade.objects.filter(user = userObj).delete()
+    userSkill.objects.filter(user = userObj).delete()
+    userTopic.objects.filter(user = userObj).delete()
 
     return
 
