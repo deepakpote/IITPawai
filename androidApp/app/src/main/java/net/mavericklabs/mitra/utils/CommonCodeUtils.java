@@ -87,4 +87,12 @@ public class CommonCodeUtils {
 
     }
 
+    public static String getLanguageCode(String language) {
+        RealmResults<CommonCode> contentTypeResult =
+                Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeNameEnglish",
+                        language).equalTo("codeGroupID", CommonCodeGroup.LANGUAGE) .findAll();
+        return contentTypeResult.get(0).getCodeID();
+
+    }
+
 }

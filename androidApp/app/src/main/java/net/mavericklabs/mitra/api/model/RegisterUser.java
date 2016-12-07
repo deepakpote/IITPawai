@@ -31,12 +31,16 @@ public class RegisterUser {
     @SerializedName("gradeCodeIDs")
     private String gradeCodeIds;
 
-    public RegisterUser(String userName, String otp, String phoneNumber, String districtCode, String userType) {
+    @SerializedName("preferredLanguage")
+    private String preferredLanguage;
+
+    public RegisterUser(String userName, String otp, String phoneNumber, String districtCode, String userType, String preferredLanguage) {
         this.name = userName;
         this.otp = otp;
         this.phoneNumber = phoneNumber;
         this.district = districtCode;
         this.userType = userType;
+        this.preferredLanguage = preferredLanguage;
     }
 
     public String getName() {
@@ -93,5 +97,13 @@ public class RegisterUser {
 
     public void setGradeCodeIds(String gradeCodeIds) {
         this.gradeCodeIds = gradeCodeIds;
+    }
+
+    public String getPreferredLanguage() {
+        return preferredLanguage;
+    }
+
+    public void setPreferredLanguage(String preferredLanguage) {
+        this.preferredLanguage = preferredLanguage;
     }
 }

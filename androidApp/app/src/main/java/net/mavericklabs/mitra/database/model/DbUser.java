@@ -18,6 +18,7 @@ public class DbUser extends RealmObject {
     private String userType;
     private String district;
     private String Udise;
+    private String preferredLanguage;
     private RealmList<DbSubject> subjects;
     private RealmList<DbGrade> grades;
 
@@ -85,5 +86,13 @@ public class DbUser extends RealmObject {
 
     public void setGrades(RealmList<DbGrade> grades) {
         this.grades = grades;
+    }
+
+    public String getPreferredLanguage() {
+        return preferredLanguage;
+    }
+
+    public void setPreferredLanguage(String preferredLanguage) {
+        this.preferredLanguage = preferredLanguage;
     }
 }
