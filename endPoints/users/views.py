@@ -214,7 +214,6 @@ class UserViewSet(viewsets.ModelViewSet):
         phoneNumber = request.data.get('phoneNumber') 
         emailID = request.data.get('emailID') 
         userName = request.data.get('userName')
-        photoUrl = request.data.get('photoUrl')
         udiseCode = request.data.get('udiseCode')
         userTypeCodeID = request.data.get('userTypeCodeID')
         preferredLanguageCodeID = request.data.get('preferredLanguageCodeID') 
@@ -231,15 +230,11 @@ class UserViewSet(viewsets.ModelViewSet):
         # If user valid, update the details.
         user.objects.filter(userID = userID).update(userName = userName , 
                                                                emailID = emailID ,
-                                                               photoUrl = photoUrl , 
                                                                udiseCode = udiseCode , 
                                                                userType = userTypeCodeID , 
                                                                preferredLanguage = preferredLanguageCodeID , 
                                                                district = districtCodeID ,
                                                                modifiedBy = userID)
-        
-        # delete all previous user subjects/topics/grades/skills
-        deleteUserProfileDetails(objUser)
         
         #Save user subject
         subjectCodeIDs = request.data.get('subjectCodeIDs')
