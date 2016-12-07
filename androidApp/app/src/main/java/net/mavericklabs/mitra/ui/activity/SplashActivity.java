@@ -29,7 +29,7 @@ public class SplashActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("");
         }
-        Logger.d("" + FirebaseInstanceId.getInstance().getToken());
+
         Thread timerThread = new Thread() {
             public void run() {
                 try {

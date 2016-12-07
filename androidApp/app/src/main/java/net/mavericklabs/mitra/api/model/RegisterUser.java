@@ -31,10 +31,17 @@ public class RegisterUser {
     @SerializedName("gradeCodeIDs")
     private String gradeCodeIds;
 
+<<<<<<< HEAD
     @SerializedName("preferredLanguage")
     private String preferredLanguage;
 
     public RegisterUser(String userName, String otp, String phoneNumber, String districtCode, String userType, String preferredLanguage) {
+=======
+    @SerializedName("fcmDeviceID")
+    private String fcmDeviceId;
+
+    public RegisterUser(String userName, String otp, String phoneNumber, String districtCode, String userType) {
+>>>>>>> 7aaa0db... added fcm token in register call
         this.name = userName;
         this.otp = otp;
         this.phoneNumber = phoneNumber;
@@ -99,11 +106,20 @@ public class RegisterUser {
         this.gradeCodeIds = gradeCodeIds;
     }
 
+<<<<<<< HEAD
     public String getPreferredLanguage() {
         return preferredLanguage;
     }
 
     public void setPreferredLanguage(String preferredLanguage) {
         this.preferredLanguage = preferredLanguage;
+=======
+    public String getFcmDeviceId() {
+        return fcmDeviceId;
+    }
+
+    public void setFcmDeviceId(String fcmDeviceId) {
+        this.fcmDeviceId = fcmDeviceId;
+>>>>>>> 7aaa0db... added fcm token in register call
     }
 }
