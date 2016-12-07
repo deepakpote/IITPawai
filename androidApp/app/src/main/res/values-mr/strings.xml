@@ -42,4 +42,5 @@
     <string name="designation_and_district">%1$s from %2$s district</string>
     <string name="otp_sent">OTP sent successfully</string>
     <string name="edit_your_phone_number">Are you sure you want to edit your phone number?</string>
+    <string name="loading">Loading..</string>
 </resources>

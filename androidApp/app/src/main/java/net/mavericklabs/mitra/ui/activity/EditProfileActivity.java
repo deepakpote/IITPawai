@@ -1,5 +1,6 @@
 package net.mavericklabs.mitra.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -126,6 +127,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         bundle.putSerializable("grades_list", (Serializable) gradesList);
         gradeFragment.setArguments(bundle);
 
+        fragmentTransaction.setCustomAnimations(R.anim.anim_in, R.anim.anim_out, R.anim.anim_in, R.anim.anim_out);
         fragmentTransaction.add(android.R.id.content,gradeFragment,"ADD_GRADES");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
@@ -143,6 +145,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         Fragment subjectFragment = new SubjectFragment();
         subjectFragment.setArguments(bundle);
+
+        fragmentTransaction.setCustomAnimations(R.anim.anim_in, R.anim.anim_out, R.anim.anim_in, R.anim.anim_out);
         fragmentTransaction.add(android.R.id.content,subjectFragment,"ADD_SUBJECT");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
@@ -261,9 +265,16 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                     user.setSubjectCodeIds(subjects);
                 }
 
+                final ProgressDialog progressDialog = new ProgressDialog(EditProfileActivity.this,
+                        R.style.ProgressDialog);
+                progressDialog.setMessage(getString(R.string.loading));
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
                 RestClient.getApiService("").registerUser(user).enqueue(new Callback<BaseModel<RegisterUserResponse>>() {
                     @Override
                     public void onResponse(Call<BaseModel<RegisterUserResponse>> call, Response<BaseModel<RegisterUserResponse>> response) {
+                        progressDialog.dismiss();
                         if(response.isSuccessful()) {
                             if(response.body().getData() != null) {
 
@@ -292,6 +303,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
                     @Override
                     public void onFailure(Call<BaseModel<RegisterUserResponse>> call, Throwable t) {
+                        progressDialog.dismiss();
                         Logger.d(" on fail");
                     }
                 });

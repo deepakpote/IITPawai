@@ -1,5 +1,6 @@
 package net.mavericklabs.mitra.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.NewUser;
 import net.mavericklabs.mitra.utils.StringUtils;
+import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,13 +71,22 @@ public class RegisterUserActivity extends AppCompatActivity {
                 Call<BaseModel<GenericListDataModel>> requestOtp = RestClient.getApiService("").
                         requestOtp(new NewUser(StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString()),
                                         NewUser.TYPE_REGISTER));
+                final ProgressDialog progressDialog = new ProgressDialog(RegisterUserActivity.this,
+                                                            R.style.ProgressDialog);
+                progressDialog.setMessage(getString(R.string.loading));
+                progressDialog.setCancelable(false);
+                progressDialog.show();
                 requestOtp.enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
                         if(response.isSuccessful()) {
+                            progressDialog.dismiss();
                             Intent verifyOtp = new Intent(RegisterUserActivity.this,VerifyOtpActivity.class);
+                            String phoneNumber = StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString());
+                            UserDetailUtils.saveMobileNumber(phoneNumber,getApplicationContext());
+                            UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),false);
                             Bundle bundle = new Bundle();
-                            bundle.putString("phone_number", StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString()));
+                            bundle.putString("phone_number", phoneNumber);
                             verifyOtp.putExtras(bundle);
                             startActivity(verifyOtp);
                         }
@@ -83,7 +94,7 @@ public class RegisterUserActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
-
+                        progressDialog.dismiss();
                     }
                 });
             } else {
