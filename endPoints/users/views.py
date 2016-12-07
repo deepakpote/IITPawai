@@ -340,7 +340,7 @@ def userSubjectSave(subjectCodeIDs, objUser):
         return
     
     # Delete all the subjects of respective user from userSubject.
-    userSubject.objects.filter(user = userObj).delete()
+    userSubject.objects.filter(user = objUser).delete()
     
     # save the user subject.
     subjectCodeList = subjectCodeIDs.split(',')
