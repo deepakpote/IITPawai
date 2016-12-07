@@ -2,6 +2,7 @@ package net.mavericklabs.mitra.api;
 
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.ContentRequest;
+import net.mavericklabs.mitra.api.model.LikeRequest;
 import net.mavericklabs.mitra.api.model.Token;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
@@ -41,4 +42,7 @@ public interface Api {
 
     @POST("content/searchTeachingAid/")
     Call<BaseModel<Content>> searchTeachingAids(@Body ContentRequest contentRequest);
+
+    @POST("content/like/")
+    Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);
 }

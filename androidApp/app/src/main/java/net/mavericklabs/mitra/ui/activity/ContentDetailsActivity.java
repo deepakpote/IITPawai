@@ -23,7 +23,9 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
+import android.media.Image;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
@@ -45,6 +47,8 @@ import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.ContentRequest;
+import net.mavericklabs.mitra.api.model.GenericListDataModel;
+import net.mavericklabs.mitra.api.model.LikeRequest;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Requirements;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
@@ -59,6 +63,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -89,9 +94,56 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
     @BindView(R.id.requirements_layout)
     LinearLayout requirementsLayout;
 
+    @BindView(R.id.like_icon)
+    ImageView likeIcon;
+
+    @OnClick(R.id.like_icon)
+    void likeContent() {
+        //TODO get isliked value from content
+        if(isLiked) {
+            likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_grey_24dp));
+            isLiked = false;
+        } else {
+            likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_accent_24dp));
+            isLiked = true;
+        }
+        String userId = UserDetailUtils.getUserId(getApplicationContext());
+        RestClient.getApiService("").likeContent(new LikeRequest(userId,content.getContentID(),isLiked))
+                .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+                    @Override
+                    public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                        if(response.isSuccessful()) {
+                            Logger.d("content liked..");
+                        } else {
+                            Logger.d("is liked " + isLiked);
+                            if(isLiked) {
+                                likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_grey_24dp));
+                                isLiked = false;
+                            } else {
+                                likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_accent_24dp));
+                                isLiked = true;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                        Logger.d("is liked " + isLiked);
+                        if(isLiked) {
+                            likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_grey_24dp));
+                            isLiked = false;
+                        } else {
+                            likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_accent_24dp));
+                            isLiked = true;
+                        }
+                    }
+                });
+    }
+
     BaseHorizontalCardListAdapter similarContentsAdapter;
     private Content content;
     private YouTubePlayer player;
+    private boolean isLiked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
