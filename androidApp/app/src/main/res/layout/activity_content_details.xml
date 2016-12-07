@@ -72,6 +72,7 @@
                             android:id="@+id/content_image_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:src="@drawable/pdf_512"
                             android:background="@color/default_grey" />
 
                     </RelativeLayout>

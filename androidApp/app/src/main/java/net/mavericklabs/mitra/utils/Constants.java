@@ -9,5 +9,8 @@ public interface Constants {
 
     //TODO : How to handle this?
     String FileTypeVideo = "108100";
+    String FileTypeAudio = "108101";
+    String FileTypePPT = "108102";
+    String FileTypeWorksheet = "108103";
     String ContentTypeTeachingAids = "107100";
 }

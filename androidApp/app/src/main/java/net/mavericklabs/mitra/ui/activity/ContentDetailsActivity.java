@@ -23,6 +23,8 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -128,6 +130,23 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
             } else {
                 //Show file Icon
                 contentImageView.setVisibility(View.VISIBLE);
+                contentImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(content.getFileType().equals(Constants.FileTypePPT) ||
+                                content.getFileType().equals(Constants.FileTypeWorksheet)) {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.pdf995.com/samples/pdf.pdf"));
+                            startActivity(browserIntent);
+                        }
+
+                        if(content.getFileType().equals(Constants.FileTypeAudio)) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.setDataAndType(Uri.parse(content.getFileName()), "audio/mp3");
+                            startActivity(intent);
+                        }
+                    }
+                });
             }
 
             if(content.getContentTypeCodeID().equals(Constants.ContentTypeTeachingAids)) {
