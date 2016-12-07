@@ -224,11 +224,9 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             objUser = user.objects.get(userID = userID)
         except user.DoesNotExist:
-            return Response({"response_message": constants.messages.teaching_aid_search_user_not_exists,
+            return Response({"response_message": constants.messages.update_profile_user_not_exists,
                          "data": []},
                         status = status.HTTP_404_NOT_FOUND)
-            
-        print 'udiseCode',udiseCode
         
         # If user valid, update the details.
         user.objects.filter(userID = userID).update(userName = userName , 
