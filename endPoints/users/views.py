@@ -229,7 +229,7 @@ class UserViewSet(viewsets.ModelViewSet):
         
         # If user valid, update the details.
         user.objects.filter(userID = userID).update(userName = userName , 
-                                                               emailID = emailID ,
+                                                               phoneNumber = phoneNumber ,
                                                                udiseCode = udiseCode , 
                                                                userType = userTypeCodeID , 
                                                                preferredLanguage = preferredLanguageCodeID , 
