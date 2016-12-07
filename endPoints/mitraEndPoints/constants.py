@@ -25,7 +25,9 @@ class messages():
     save_like_content_not_exists = 100122
     save_like_hasLiked_cannot_be_empty = 100123
     save_like_hasLike_value_must_be_boolean = 100124
-
+    registration_fcm_device_id_cannot_be_empty = 100127
+    signin_fcm_device_id_cannot_be_empty = 100128
+    
 class authenticationTypes():
     registration = 110100
     signIn = 110101

@@ -82,6 +82,19 @@ class token(models.Model):
         db_table = 'usr_Token'
 
 """
+FCM device model
+"""
+class device(models.Model):
+    deviceID = models.AutoField(primary_key=True)
+    user = models.ForeignKey('user', related_name='device_user', db_column = 'userID')
+    fcmDeviceID =  models.CharField(null = False, max_length = 255, unique=True)
+    createdOn = models.DateTimeField(auto_now=False, auto_now_add = True)
+
+    class Meta:
+        db_table = 'usr_device'
+
+
+"""
 user authentication model
 """                 
 class userAuth(models.Model):
