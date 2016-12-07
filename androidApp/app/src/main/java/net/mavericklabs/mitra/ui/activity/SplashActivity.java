@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
@@ -27,7 +29,7 @@ public class SplashActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("");
         }
-
+        Logger.d("" + FirebaseInstanceId.getInstance().getToken());
         Thread timerThread = new Thread() {
             public void run() {
                 try {
