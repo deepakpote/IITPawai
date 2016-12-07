@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
@@ -89,6 +90,9 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
     @BindView(R.id.requirements_layout)
     LinearLayout requirementsLayout;
+
+    @BindView(R.id.loading_panel)
+    RelativeLayout loadingPanel;
 
     BaseHorizontalCardListAdapter similarContentsAdapter;
     private Content content;
@@ -185,6 +189,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 Logger.d(" Succes");
+                loadingPanel.setVisibility(View.GONE);
                 if(response.isSuccessful()) {
                     if(response.body().getData() != null) {
                         List<Content> contents = response.body().getData();
@@ -212,6 +217,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
         RestClient.getApiService("").searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                loadingPanel.setVisibility(View.GONE);
                 Logger.d(" Succes");
                 if(response.isSuccessful()) {
                     if(response.body().getData() != null) {

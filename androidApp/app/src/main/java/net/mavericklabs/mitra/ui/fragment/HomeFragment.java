@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
@@ -74,6 +75,13 @@ public class HomeFragment extends Fragment{
     @BindView(R.id.trainings_solid_button)
     Button trainingsSolidButton;
 
+    @BindView(R.id.teaching_aids_loading_panel)
+    RelativeLayout teachingAidsLoadingPanel;
+
+    @BindView(R.id.self_learning_loading_panel)
+    RelativeLayout selfLearningLoadingPanel;
+
+
     private BaseHorizontalCardListAdapter teachingAidsAdapter, selfLearningAdapter;
 
     public HomeFragment() {
@@ -117,6 +125,7 @@ public class HomeFragment extends Fragment{
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 Logger.d(" Succes");
+                teachingAidsLoadingPanel.setVisibility(View.GONE);
                 if(response.isSuccessful()) {
                     if(response.body().getData() != null) {
                         List<Content> contents = response.body().getData();
@@ -144,6 +153,7 @@ public class HomeFragment extends Fragment{
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 Logger.d(" Succes");
+                selfLearningLoadingPanel.setVisibility(View.GONE);
                 if(response.isSuccessful()) {
                     if(response.body().getData() != null) {
                         List<Content> contents = response.body().getData();

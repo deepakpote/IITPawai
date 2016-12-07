@@ -67,6 +67,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <include layout="@layout/custom_loading_panel"
+            android:id="@+id/loading_panel"/>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/content_recycler_view"
             android:layout_marginTop="8dp"

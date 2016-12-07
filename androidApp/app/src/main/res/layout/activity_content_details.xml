@@ -170,20 +170,30 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical">
+                android:layout_marginTop="16dp">
 
                 <TextView
+                    android:id="@+id/similar_resources_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/similar_resources"
-                    android:textSize="20sp"/>
+                    android:textSize="20sp" />
+
+                <include layout="@layout/custom_loading_panel"
+                    android:id="@+id/loading_panel"
+                    android:layout_below="@id/similar_resources_title"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="8dp"
+                    />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/similar_contents_recycler_view"
+                    android:layout_below="@id/similar_resources_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -191,7 +201,7 @@
 
                 </android.support.v7.widget.RecyclerView>
 
-            </LinearLayout>
+            </RelativeLayout>
 
 
         </LinearLayout>

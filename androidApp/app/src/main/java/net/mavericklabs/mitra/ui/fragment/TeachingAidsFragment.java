@@ -36,6 +36,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -144,6 +145,10 @@ public class TeachingAidsFragment extends Fragment{
 
         @BindView(R.id.error_view)
         TextView errorView;
+
+        @BindView(R.id.loading_panel)
+        RelativeLayout loadingPanel;
+
 
 //        @BindView(R.id.load_more)
 //        Button loadMore;
@@ -258,7 +263,7 @@ public class TeachingAidsFragment extends Fragment{
             RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
                 @Override
                 public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
-
+                    loadingPanel.setVisibility(View.GONE);
                     if(response.isSuccessful()) {
                         Logger.d(" Succes");
                         if(response.body().getData() != null) {
