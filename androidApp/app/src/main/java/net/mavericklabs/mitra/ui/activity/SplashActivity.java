@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
@@ -33,17 +35,30 @@ public class SplashActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
-                    //TODO check if user has entered phone number already
                     String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
                     if(StringUtils.isEmpty(phoneNumber)) {
                         Intent selectLanguage = new Intent(SplashActivity.this,SelectLanguageActivity.class);
                         startActivity(selectLanguage);
                         finishAffinity();
                     } else {
-                        //TODO go to main activity
-                        Intent selectLanguage = new Intent(SplashActivity.this,SelectLanguageActivity.class);
-                        startActivity(selectLanguage);
-                        finishAffinity();
+                        if(!UserDetailUtils.isVerifiedMobileNumber(getApplicationContext())) {
+                            Intent verifyOtp = new Intent(SplashActivity.this,VerifyOtpActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("phone_number",phoneNumber);
+                            boolean signIn= MitraSharedPreferences.readFromPreferences(
+                                                                    getApplicationContext(),
+                                                                    "sign_in",Boolean.FALSE);
+                            Logger.d("sign in value : " + signIn);
+                            bundle.putBoolean("is_from_sign_in",signIn);
+                            verifyOtp.putExtras(bundle);
+                            startActivity(verifyOtp);
+                            finishAffinity();
+                        } else {
+                            //TODO check if he has entered his info
+                            Intent selectLanguage = new Intent(SplashActivity.this,SelectLanguageActivity.class);
+                            startActivity(selectLanguage);
+                            finishAffinity();
+                        }
                     }
                 }
             }

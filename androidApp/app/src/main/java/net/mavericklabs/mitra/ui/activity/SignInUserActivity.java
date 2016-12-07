@@ -1,5 +1,6 @@
 package net.mavericklabs.mitra.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.NewUser;
 import net.mavericklabs.mitra.utils.StringUtils;
+import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,13 +71,22 @@ public class SignInUserActivity extends AppCompatActivity {
                 Call<BaseModel<GenericListDataModel>> requestOtp = RestClient.getApiService("").
                         requestOtp(new NewUser(StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString()),
                                                 NewUser.TYPE_SIGN_IN));
+                final ProgressDialog progressDialog = new ProgressDialog(SignInUserActivity.this,
+                        R.style.ProgressDialog);
+                progressDialog.setMessage(getString(R.string.loading));
+                progressDialog.setCancelable(false);
+                progressDialog.show();
                 requestOtp.enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                        progressDialog.dismiss();
                         if(response.isSuccessful()) {
+                            String phoneNumber = StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString());
+                            UserDetailUtils.saveMobileNumber(phoneNumber,getApplicationContext());
+                            UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),false);
                             Intent verifyOtp = new Intent(SignInUserActivity.this,VerifyOtpActivity.class);
                             Bundle bundle = new Bundle();
-                            bundle.putString("phone_number", StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString()));
+                            bundle.putString("phone_number", phoneNumber);
                             bundle.putBoolean("is_from_sign_in",true);
                             verifyOtp.putExtras(bundle);
                             startActivity(verifyOtp);
@@ -84,7 +95,7 @@ public class SignInUserActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
-
+                        progressDialog.dismiss();
                     }
                 });
             } else {

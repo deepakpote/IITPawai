@@ -1,5 +1,6 @@
 package net.mavericklabs.mitra.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -109,6 +110,8 @@ public class VerifyOtpActivity extends AppCompatActivity {
             Bundle bundle = getIntent().getExtras();
             phoneNumber = bundle.getString("phone_number");
             isFromSignIn = bundle.getBoolean("is_from_sign_in");
+            MitraSharedPreferences.saveToPreferences(getApplicationContext(),"sign_in",Boolean.valueOf(isFromSignIn));
+            Logger.d("sign in.." + isFromSignIn);
             String formattedNumber;
             if (SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber,"in");
@@ -144,18 +147,27 @@ public class VerifyOtpActivity extends AppCompatActivity {
                     authenticationType = NewUser.TYPE_REGISTER;
                 }
                 VerifyUserOtp verifyUserOtp = new VerifyUserOtp(phoneNumber,otpEditText.getText().toString(), authenticationType);
+
+                final ProgressDialog progressDialog = new ProgressDialog(VerifyOtpActivity.this,
+                        R.style.ProgressDialog);
+                progressDialog.setMessage(getString(R.string.loading));
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
                 RestClient.getApiService("").verifyOtp(verifyUserOtp).enqueue(new Callback<BaseModel<Token>>() {
                     @Override
                     public void onResponse(Call<BaseModel<Token>> call, Response<BaseModel<Token>> response) {
+                        progressDialog.dismiss();
                         if(response.isSuccessful()) {
                             if(isFromSignIn) {
                                 String token = response.body().getData().get(0).getToken();
                                 UserDetailUtils.saveToken(token,getApplicationContext());
+                                UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),true);
                                 Intent home = new Intent(VerifyOtpActivity.this,HomeActivity.class);
                                 startActivity(home);
                                 finishAffinity();
                             } else {
-                                UserDetailUtils.saveMobileNumber(phoneNumber,getApplicationContext());
+                                UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),true);
                                 Intent almostDone = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
                                 MitraSharedPreferences.saveToPreferences(getApplicationContext(), "OTP", otpEditText.getText().toString());
                                 startActivity(almostDone);
@@ -167,7 +179,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<BaseModel<Token>> call, Throwable t) {
-
+                        progressDialog.dismiss();
                     }
                 });
             } else {
