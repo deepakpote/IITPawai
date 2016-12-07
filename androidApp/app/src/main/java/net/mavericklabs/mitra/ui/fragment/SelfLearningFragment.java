@@ -28,6 +28,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
+import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
@@ -53,6 +55,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -136,29 +140,16 @@ public class SelfLearningFragment extends Fragment {
             }
         });
 
-        searchSelfLearning("101100", "", 0);
+        String language = "";
 
-        contentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
+        RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
+                .where(DbUser.class).findAll();
+        if(dbUser.size() == 1) {
+            DbUser user = dbUser.get(0);
+            language = user.getPreferredLanguage();
+        }
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
-                int childCount = recyclerView.getChildCount();
-
-                if(lastVisibleItem == childCount) {
-                    CommonCode topic = (CommonCode) topicSpinner.getSelectedItem();
-                    CommonCode language = (CommonCode) languageSpinner.getSelectedItem();
-                    searchSelfLearning(language.getCodeID(), topic.getCodeID(), 1);
-                }
-            }
-        });
-
+        searchSelfLearning(language, "", 0);
     }
 
 
@@ -173,6 +164,16 @@ public class SelfLearningFragment extends Fragment {
 
     private void searchSelfLearning(String language, String topic, final int pageNumber) {
         Logger.d(" searching ");
+        Logger.d("sent language " + language);
+        if(language.isEmpty()) {
+            RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
+                    .where(DbUser.class).findAll();
+            if(dbUser.size() == 1) {
+                DbUser user = dbUser.get(0);
+                language = user.getPreferredLanguage();
+                Logger.d(" language " + language);
+            }
+        }
         SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(UserDetailUtils.getUserId(getContext()),
                  language, topic);
         contentRequest.setPageNumber(pageNumber);
@@ -199,6 +200,32 @@ public class SelfLearningFragment extends Fragment {
                             adapter = new ContentVerticalCardListAdapter(getContext(), originalContents);
                             contentRecyclerView.swapAdapter(adapter, false);
                         }
+
+                        contentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                            @Override
+                            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                                super.onScrollStateChanged(recyclerView, newState);
+                                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                                    Logger.d(" scrolled idle");
+                                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                                    int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
+                                    int childCount = contentRecyclerView.getAdapter().getItemCount();
+
+                                    Logger.d(" lastVisibleItem " + lastVisibleItem  + " childCount " + childCount);
+                                    if(lastVisibleItem == childCount - 1) {
+                                        CommonCode topic = (CommonCode) topicSpinner.getSelectedItem();
+                                        CommonCode language = (CommonCode) languageSpinner.getSelectedItem();
+                                        searchSelfLearning(language.getCodeID(), topic.getCodeID(), 1);
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                super.onScrolled(recyclerView, dx, dy);
+
+                            }
+                        });
 
                         return;
 

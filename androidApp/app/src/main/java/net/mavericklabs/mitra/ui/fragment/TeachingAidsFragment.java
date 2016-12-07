@@ -43,6 +43,7 @@ import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
+import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
@@ -57,6 +58,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -145,6 +148,8 @@ public class TeachingAidsFragment extends Fragment{
 //        @BindView(R.id.load_more)
 //        Button loadMore;
 
+        private String language;
+
         ContentVerticalCardListAdapter adapter;
         public TeachingAidsContentFragment() {
         }
@@ -184,11 +189,19 @@ public class TeachingAidsFragment extends Fragment{
             subjectSpinner.setAdapter(adapter);
             subjectSpinner.setSelection(0 ,false);
 
+            RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
+                    .where(DbUser.class).findAll();
+            if(dbUser.size() == 1) {
+                DbUser user = dbUser.get(0);
+                language = user.getPreferredLanguage();
+                Logger.d(" language " + language);
+            }
+
             subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     CommonCode grade = (CommonCode) gradeSpinner.getSelectedItem();
-                    searchTeachingAids(fileType, "101100", subjects.get(i).getCodeID(), grade.getCodeID(), 0);
+                    searchTeachingAids(fileType, language, subjects.get(i).getCodeID(), grade.getCodeID(), 0);
                 }
 
                 @Override
@@ -207,7 +220,7 @@ public class TeachingAidsFragment extends Fragment{
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     CommonCode subject = (CommonCode) subjectSpinner.getSelectedItem();
-                    searchTeachingAids(fileType, "101100", grades.get(i).getCodeID() , subject.getCodeID(), 0);
+                    searchTeachingAids(fileType, language, grades.get(i).getCodeID() , subject.getCodeID(), 0);
                 }
 
                 @Override
@@ -215,7 +228,7 @@ public class TeachingAidsFragment extends Fragment{
 
                 }
             });
-            searchTeachingAids(fileType, "101100", "", "", 0);
+            searchTeachingAids(fileType, language, "", "", 0);
 
 //            loadMore.setOnClickListener(new View.OnClickListener() {
 //                @Override
@@ -225,27 +238,6 @@ public class TeachingAidsFragment extends Fragment{
 //                    searchTeachingAids(fileType, "101100", subject.getCodeID(), grade.getCodeID(), 1);
 //                }
 //            });
-
-            contentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-                }
-
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                    int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
-                    int childCount = recyclerView.getChildCount();
-
-                    if(lastVisibleItem == childCount) {
-                        CommonCode subject = (CommonCode) subjectSpinner.getSelectedItem();
-                        CommonCode grade = (CommonCode) gradeSpinner.getSelectedItem();
-                        searchTeachingAids(fileType, "101100", subject.getCodeID(), grade.getCodeID(), 1);
-                    }
-                }
-            });
 
             return rootView;
         }
@@ -258,7 +250,7 @@ public class TeachingAidsFragment extends Fragment{
             }
         }
 
-        private void searchTeachingAids(String fileType, String language, String subject, String grade, final int pageNumber) {
+        private void searchTeachingAids(final String fileType, final String language, String subject, String grade, final int pageNumber) {
             Logger.d(" searching ");
             TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(UserDetailUtils.getUserId(getContext()),
                     fileType, language, subject, grade);
@@ -276,6 +268,7 @@ public class TeachingAidsFragment extends Fragment{
                             if(pageNumber == 0) {
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                                 contentRecyclerView.setLayoutManager(linearLayoutManager);
+                                contents.addAll(contents);
                                 adapter = new ContentVerticalCardListAdapter(getContext(), contents);
                                 contentRecyclerView.setAdapter(adapter);
                             } else {
@@ -286,6 +279,30 @@ public class TeachingAidsFragment extends Fragment{
                                 adapter = new ContentVerticalCardListAdapter(getContext(), originalContents);
                                 contentRecyclerView.swapAdapter(adapter, false);
                             }
+
+                            contentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                                @Override
+                                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                                    super.onScrollStateChanged(recyclerView, newState);
+                                    if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                                        Logger.d(" scrolled idle");
+                                        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                                        int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
+                                        int childCount = contentRecyclerView.getAdapter().getItemCount();
+
+                                        if(lastVisibleItem == childCount - 1) {
+                                            CommonCode subject = (CommonCode) subjectSpinner.getSelectedItem();
+                                            CommonCode grade = (CommonCode) gradeSpinner.getSelectedItem();
+                                            searchTeachingAids(fileType, language, subject.getCodeID(), grade.getCodeID(), 1);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                    super.onScrolled(recyclerView, dx, dy);
+                                }
+                            });
 
                             return;
 
