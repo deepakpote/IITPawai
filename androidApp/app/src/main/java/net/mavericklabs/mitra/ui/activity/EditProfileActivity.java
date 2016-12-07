@@ -41,7 +41,6 @@ import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivityGradesAdapter;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivitySubjectsAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
-import net.mavericklabs.mitra.ui.adapter.SubjectAndGradeFragmentListAdapter;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.ui.fragment.GradeFragment;
 import net.mavericklabs.mitra.ui.fragment.SubjectFragment;
@@ -231,7 +230,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         if (id == R.id.action_next) {
 
             if(isValidInformation()) {
-                String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
+                String phoneNumber = UserDetailUtils.getEmailAddress(getApplicationContext());
                 RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(), getSelectedUserTypeId());
                 final DbUser dbUser = new DbUser(nameEditText.getText().toString(),getSelectedUserTypeId(),getSelectedDistrictID());
 

@@ -35,26 +35,26 @@ public class UserDetailUtils {
         return preferences.getString("token", "");
     }
 
-    public static void saveMobileNumber(String mobileNumber , Context context){
+    public static void saveEmailAddress(String mobileNumber , Context context){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("ph_number",mobileNumber);
+        editor.putString("email",mobileNumber);
         editor.apply();
     }
 
-    public static String getMobileNumber(Context context){
+    public static String getEmailAddress(Context context){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getString("ph_number", "");
     }
 
-    public static void setVerifiedMobileNumber(Context context, boolean value) {
+    public static void setVerifiedEmailAddress(Context context, boolean value) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("verified",value);
         editor.apply();
     }
 
-    public static boolean isVerifiedMobileNumber(Context context) {
+    public static boolean isVerifiedEmailAddress(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getBoolean("verified", false);
     }

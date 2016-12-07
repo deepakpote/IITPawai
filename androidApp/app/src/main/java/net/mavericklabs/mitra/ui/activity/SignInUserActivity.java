@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
@@ -31,8 +31,8 @@ public class SignInUserActivity extends AppCompatActivity {
     @BindView(R.id.register_button)
     Button signIn;
 
-    @BindView(R.id.phone_number_edit_text)
-    TextInputEditText phoneNumberEditText;
+    @BindView(R.id.email_edit_text)
+    TextInputEditText emailEditText;
 
     @OnClick(R.id.register_button)
     void register () {
@@ -47,7 +47,6 @@ public class SignInUserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in_user);
         ButterKnife.bind(this);
 
-        phoneNumberEditText.setSelection(3);
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -69,7 +68,7 @@ public class SignInUserActivity extends AppCompatActivity {
         if (id == R.id.action_next) {
             if (isValidPhoneNumber()) {
                 Call<BaseModel<GenericListDataModel>> requestOtp = RestClient.getApiService("").
-                        requestOtp(new NewUser(StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString()),
+                        requestOtp(new NewUser(StringUtils.removeAllWhitespace(emailEditText.getText().toString()),
                                                 NewUser.TYPE_SIGN_IN));
                 final ProgressDialog progressDialog = new ProgressDialog(SignInUserActivity.this,
                         R.style.ProgressDialog);
@@ -81,12 +80,12 @@ public class SignInUserActivity extends AppCompatActivity {
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
                         progressDialog.dismiss();
                         if(response.isSuccessful()) {
-                            String phoneNumber = StringUtils.removeAllWhitespace(phoneNumberEditText.getText().toString());
-                            UserDetailUtils.saveMobileNumber(phoneNumber,getApplicationContext());
-                            UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),false);
+                            String email = StringUtils.removeAllWhitespace(emailEditText.getText().toString());
+                            UserDetailUtils.saveEmailAddress(email,getApplicationContext());
+                            UserDetailUtils.setVerifiedEmailAddress(getApplicationContext(),false);
                             Intent verifyOtp = new Intent(SignInUserActivity.this,VerifyOtpActivity.class);
                             Bundle bundle = new Bundle();
-                            bundle.putString("phone_number", phoneNumber);
+                            bundle.putString("email", email);
                             bundle.putBoolean("is_from_sign_in",true);
                             verifyOtp.putExtras(bundle);
                             startActivity(verifyOtp);
@@ -99,7 +98,7 @@ public class SignInUserActivity extends AppCompatActivity {
                     }
                 });
             } else {
-                Toast.makeText(getApplicationContext(),"Please enter 10 digit phone number",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.error_email_address,Toast.LENGTH_LONG).show();
             }
             return true;
         }
@@ -107,6 +106,6 @@ public class SignInUserActivity extends AppCompatActivity {
     }
 
     private boolean isValidPhoneNumber() {
-        return phoneNumberEditText.getText().length() == 13;
+        return Patterns.EMAIL_ADDRESS.matcher(emailEditText.getText()).matches();
     }
 }

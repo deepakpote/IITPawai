@@ -35,13 +35,13 @@ public class SplashActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
-                    String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
+                    String phoneNumber = UserDetailUtils.getEmailAddress(getApplicationContext());
                     if(StringUtils.isEmpty(phoneNumber)) {
                         Intent selectLanguage = new Intent(SplashActivity.this,SelectLanguageActivity.class);
                         startActivity(selectLanguage);
                         finishAffinity();
                     } else {
-                        if(!UserDetailUtils.isVerifiedMobileNumber(getApplicationContext())) {
+                        if(!UserDetailUtils.isVerifiedEmailAddress(getApplicationContext())) {
                             Intent verifyOtp = new Intent(SplashActivity.this,VerifyOtpActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putString("phone_number",phoneNumber);
