@@ -6,10 +6,16 @@
     android:layout_height="match_parent"
     tools:context="net.mavericklabs.mitra.ui.activity.AlmostDoneActivity">
 
+    <include
+        layout="@layout/centered_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
+        android:layout_below="@+id/toolbar"
         android:src="@drawable/sign_in_or_regsiter_background"
         android:id="@+id/background_image"
         android:clickable="true"

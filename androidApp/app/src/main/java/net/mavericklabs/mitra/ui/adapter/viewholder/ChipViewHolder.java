@@ -10,7 +10,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by root on 11/11/16.
+ * Created by amoghpalnitkar on 11/11/16.
  */
 
 public class ChipViewHolder extends RecyclerView.ViewHolder{

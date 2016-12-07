@@ -30,15 +30,20 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.RegisterUser;
 import net.mavericklabs.mitra.api.model.RegisterUserResponse;
+import net.mavericklabs.mitra.database.model.DbGrade;
+import net.mavericklabs.mitra.database.model.DbSubject;
+import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivityGradesAdapter;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivitySubjectsAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.ui.adapter.SubjectAndGradeFragmentListAdapter;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
-import net.mavericklabs.mitra.ui.fragment.SubjectAndGradeFragment;
+import net.mavericklabs.mitra.ui.fragment.GradeFragment;
+import net.mavericklabs.mitra.ui.fragment.SubjectFragment;
 import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
@@ -54,6 +59,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -81,8 +87,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     private Context context;
     private String otp;
     private SpinnerArrayAdapter districtAdapter;
-    private List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> selectedGradesList = new ArrayList<>();
-    private List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> selectedSubjectsList = new ArrayList<>();
+    private List<BaseObject> selectedGradesList = new ArrayList<>();
+    private List<BaseObject> selectedSubjectsList = new ArrayList<>();
     private boolean isGradeFragmentOpen;
     private boolean isSubjectFragmentOpen;
 
@@ -113,11 +119,13 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         isGradeFragmentOpen = true;
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment gradeFragment = new SubjectAndGradeFragment();
+
+        Fragment gradeFragment = new GradeFragment();
         Bundle bundle = new Bundle();
-        List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> gradesList = getGradesList();
-        bundle.putSerializable("item_list", (Serializable) gradesList);
+        List<BaseObject> gradesList = getGradesList();
+        bundle.putSerializable("grades_list", (Serializable) gradesList);
         gradeFragment.setArguments(bundle);
+
         fragmentTransaction.add(android.R.id.content,gradeFragment,"ADD_GRADES");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
@@ -128,10 +136,12 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         isSubjectFragmentOpen = true;
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> subjectsList = getSubjectsList();
+
+        List<BaseObject> subjectsList = getSubjectsList();
         Bundle bundle = new Bundle();
-        bundle.putSerializable("item_list", (Serializable) subjectsList);
-        Fragment subjectFragment = new SubjectAndGradeFragment();
+        bundle.putSerializable("subjects_list", (Serializable) subjectsList);
+
+        Fragment subjectFragment = new SubjectFragment();
         subjectFragment.setArguments(bundle);
         fragmentTransaction.add(android.R.id.content,subjectFragment,"ADD_SUBJECT");
         fragmentTransaction.addToBackStack(null);
@@ -191,8 +201,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         List<CommonCode> districts = new ArrayList<>(districtList);
 
         //Header - not a valid value
-        districts.add(0, new CommonCode("0", "0","SELECT", "SELECT", 0));
-        userTypeList.add(0,new CommonCode("0","0","SELECT","SELECT",0));
+        districts.add(0, new CommonCode("0", "0",getString(R.string.select), getString(R.string.select), 0));
+        userTypeList.add(0,new CommonCode("0","0",getString(R.string.select),getString(R.string.select),0));
 
         SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(EditProfileActivity.this,R.layout.custom_spinner_item_header,userTypeList);
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
@@ -219,15 +229,34 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             if(isValidInformation()) {
                 String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
                 RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(), getSelectedUserTypeId());
+                final DbUser dbUser = new DbUser(nameEditText.getText().toString(),getSelectedUserTypeId(),getSelectedDistrictID());
 
                 if(!selectedGradesList.isEmpty()) {
                     List<String> gradeCodeList = getGradeCodeList();
+
+                    //format grades to store into database
+                    RealmList<DbGrade> dbGrades = new RealmList<>();
+                    for(String commonCode : gradeCodeList) {
+                        dbGrades.add(new DbGrade(commonCode));
+                    }
+                    dbUser.setGrades(dbGrades);
+
+                    //format grades to be sent to server
                     String grades = StringUtils.stringify(gradeCodeList);
                     user.setGradeCodeIds(grades);
                 }
 
                 if(!selectedSubjectsList.isEmpty()) {
                     List<String> subjectCodeList = getSubjectCodeList();
+
+                    //format subject to store into database
+                    RealmList<DbSubject> dbSubjects = new RealmList<>();
+                    for(String commonCode : subjectCodeList) {
+                        dbSubjects.add(new DbSubject(commonCode));
+                    }
+                    dbUser.setSubjects(dbSubjects);
+
+                    //format subject to be sent to server
                     String subjects = StringUtils.stringify(subjectCodeList);
                     user.setSubjectCodeIds(subjects);
                 }
@@ -235,12 +264,25 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                 RestClient.getApiService("").registerUser(user).enqueue(new Callback<BaseModel<RegisterUserResponse>>() {
                     @Override
                     public void onResponse(Call<BaseModel<RegisterUserResponse>> call, Response<BaseModel<RegisterUserResponse>> response) {
-                        Logger.d(" Succes");
                         if(response.isSuccessful()) {
                             if(response.body().getData() != null) {
+
                                 RegisterUserResponse serverResponse = response.body().getData().get(0);
+                                dbUser.setId(serverResponse.getUserID());
+
+                                //write current user to database
+                                Realm realm = Realm.getDefaultInstance();
+                                realm.beginTransaction();
+                                realm.copyToRealm(dbUser);
+                                realm.commitTransaction();
+                                
+
+                                //store userId,token in shared preferences
                                 String token = serverResponse.getToken();
+                                UserDetailUtils.saveUserId(serverResponse.getUserID(), getApplicationContext());
                                 UserDetailUtils.saveToken(token,getApplicationContext());
+
+                                //move to next activity
                                 Intent verifyOtp = new Intent(EditProfileActivity.this,HomeActivity.class);
                                 startActivity(verifyOtp);
                                 finishAffinity();
@@ -263,7 +305,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
     private List<String> getSubjectCodeList() {
         List<String> subjectCodeList = new ArrayList<>();
-        for (SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject subjectObject : selectedSubjectsList) {
+        for (BaseObject subjectObject : selectedSubjectsList) {
             subjectCodeList.add(subjectObject.getCommonCode().getCodeID());
         }
         return subjectCodeList;
@@ -271,18 +313,18 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
     private List<String> getGradeCodeList() {
         List<String> gradeCodeList = new ArrayList<>();
-        for(SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject gradeObject : selectedGradesList) {
+        for(BaseObject gradeObject : selectedGradesList) {
             gradeCodeList.add(gradeObject.getCommonCode().getCodeID());
         }
         return gradeCodeList;
     }
 
     @Override
-    public void onDialogFragmentDismissed(List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> checkedItemsList) {
+    public void onDialogFragmentDismissed(List<BaseObject> checkedItemsList) {
         if(isGradeFragmentOpen) {
             isGradeFragmentOpen = false;
             selectedGradesList.clear();
-            for(SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject checkedItem : checkedItemsList) {
+            for(BaseObject checkedItem : checkedItemsList) {
                 selectedGradesList.add(checkedItem);
             }
             if(!selectedGradesList.isEmpty()) {
@@ -292,7 +334,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         } else if (isSubjectFragmentOpen) {
             isSubjectFragmentOpen = false;
             selectedSubjectsList.clear();
-            for(SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject checkedItem : checkedItemsList) {
+            for(BaseObject checkedItem : checkedItemsList) {
                 selectedSubjectsList.add(checkedItem);
             }
             if(!selectedSubjectsList.isEmpty()) {
@@ -358,14 +400,14 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     }
 
 
-    private List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> getGradesList() {
-        List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> objectList = new ArrayList<>();
+    private List<BaseObject> getGradesList() {
+        List<BaseObject> objectList = new ArrayList<>();
         RealmResults<CommonCode> gradeListResult = Realm.getDefaultInstance().where(CommonCode.class)
                 .equalTo("codeGroupID", CommonCodeGroup.GRADES).findAll();
         List<CommonCode>  gradeList = new ArrayList<>(gradeListResult);
         for(CommonCode commonCode : gradeList) {
-            SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject object= new SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject(commonCode,false);
-            for(SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject selectedItem : selectedGradesList) {
+            BaseObject object= new BaseObject(commonCode,false);
+            for(BaseObject selectedItem : selectedGradesList) {
                 if(object.getCommonCode().getCodeID().equals(selectedItem.getCommonCode().getCodeID())) {
                     object.setChecked(true);
                 }
@@ -376,16 +418,16 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         return objectList;
     }
 
-    private List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> getSubjectsList() {
-        List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> objectList = new ArrayList<>();
+    private List<BaseObject> getSubjectsList() {
+        List<BaseObject> objectList = new ArrayList<>();
         RealmResults<CommonCode> subjectListResult = Realm.getDefaultInstance().where(CommonCode.class)
                 .equalTo("codeGroupID", CommonCodeGroup.SUBJECTS).findAll();
 
         List<CommonCode>  subjectsList = new ArrayList<>(subjectListResult);
 
         for(CommonCode commonCode : subjectsList) {
-            SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject object= new SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject(commonCode,false);
-            for(SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject selectedItem : selectedSubjectsList) {
+            BaseObject object= new BaseObject(commonCode,false);
+            for(BaseObject selectedItem : selectedSubjectsList) {
                 if(object.getCommonCode().getCodeID().equals(selectedItem.getCommonCode().getCodeID())) {
                     object.setChecked(true);
                 }

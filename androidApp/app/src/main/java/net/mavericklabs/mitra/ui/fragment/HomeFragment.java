@@ -26,7 +26,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * Created by root on 14/11/16.
+ * Created by amoghpalnitkar on 14/11/16.
  */
 
 public class HomeFragment extends Fragment{
@@ -84,17 +84,17 @@ public class HomeFragment extends Fragment{
 
         //Dummy data
 
-        List<Content> contentsTeachingAids = new ArrayList<>();
-        contentsTeachingAids.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
-        contentsTeachingAids.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.TEACHING_AIDS));
-        contentsTeachingAids.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.TEACHING_AIDS));
-        contentsTeachingAids.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
-
-        List<Content> contentsSelfLearning = new ArrayList<>();
-        contentsSelfLearning.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
-        contentsSelfLearning.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.SELF_LEARNING));
-        contentsSelfLearning.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.SELF_LEARNING));
-        contentsSelfLearning.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
+//        List<Content> contentsTeachingAids = new ArrayList<>();
+//        contentsTeachingAids.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
+//        contentsTeachingAids.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.TEACHING_AIDS));
+//        contentsTeachingAids.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.TEACHING_AIDS));
+//        contentsTeachingAids.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
+//
+//        List<Content> contentsSelfLearning = new ArrayList<>();
+//        contentsSelfLearning.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
+//        contentsSelfLearning.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.SELF_LEARNING));
+//        contentsSelfLearning.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.SELF_LEARNING));
+//        contentsSelfLearning.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
 
         List<News> news = new ArrayList<>();
         news.add(new News("Title 1", "Details 1"));
@@ -102,15 +102,15 @@ public class HomeFragment extends Fragment{
         news.add(new News("Title 3", "Details 3"));
         news.add(new News("Title 4", "Details 4"));
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
-        popularVideosRecyclerView.setLayoutManager(linearLayoutManager);
-        teachingAidsAdapter = new BaseHorizontalCardListAdapter(getContext(), contentsTeachingAids);
-        popularVideosRecyclerView.setAdapter(teachingAidsAdapter);
-
-        LinearLayoutManager manager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
-        popularSelfLearningRecyclerView.setLayoutManager(manager);
-        selfLearningAdapter = new BaseHorizontalCardListAdapter(getContext(), contentsSelfLearning);
-        popularSelfLearningRecyclerView.setAdapter(selfLearningAdapter);
+//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+//        popularVideosRecyclerView.setLayoutManager(linearLayoutManager);
+//        teachingAidsAdapter = new BaseHorizontalCardListAdapter(getContext(), contentsTeachingAids);
+//        popularVideosRecyclerView.setAdapter(teachingAidsAdapter);
+//
+//        LinearLayoutManager manager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+//        popularSelfLearningRecyclerView.setLayoutManager(manager);
+//        selfLearningAdapter = new BaseHorizontalCardListAdapter(getContext(), contentsSelfLearning);
+//        popularSelfLearningRecyclerView.setAdapter(selfLearningAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         newsRecyclerView.setLayoutManager(layoutManager);

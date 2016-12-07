@@ -23,8 +23,8 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,20 +37,33 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.ContentRequest;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Requirements;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.RequirementsListAdapter;
+import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class ContentDetailsActivity extends AppCompatActivity {
+public class ContentDetailsActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener {
 
     @BindView(R.id.similar_contents_recycler_view)
     RecyclerView contentRecyclerView;
@@ -64,18 +77,21 @@ public class ContentDetailsActivity extends AppCompatActivity {
     @BindView(R.id.requirements_grid_view)
     RecyclerView requirementsGridView;
 
+    @BindView(R.id.author_name)
+    TextView authorName;
+
     @BindView(R.id.details)
     TextView details;
 
     @BindView(R.id.description)
     TextView description;
 
-
     @BindView(R.id.requirements_layout)
     LinearLayout requirementsLayout;
 
     BaseHorizontalCardListAdapter similarContentsAdapter;
     private Content content;
+    private YouTubePlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +112,20 @@ public class ContentDetailsActivity extends AppCompatActivity {
         }
 
         if(content != null) {
-            if(content.getType() == Constants.Type.TEACHING_AIDS) {
+            //Load Video
+            if(content.getFileType().equals(Constants.FileTypeVideo)) {
+
+                YouTubePlayerSupportFragment frag =
+                        (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
+                frag.initialize(Constants.youtubeDeveloperKey, this);
+
+                contentImageView.setVisibility(View.GONE);
+            } else {
+                //Show file Icon
+                contentImageView.setVisibility(View.VISIBLE);
+            }
+
+            if(content.getContentTypeCodeID().equals(Constants.ContentTypeTeachingAids)) {
 
                 requirementsLayout.setVisibility(View.VISIBLE);
                 List<Requirements> requirementsList = new ArrayList<>();
@@ -108,31 +137,61 @@ public class ContentDetailsActivity extends AppCompatActivity {
                 requirementsGridView.setLayoutManager(gridLayoutManager);
                 requirementsGridView.setAdapter(new RequirementsListAdapter(getApplicationContext(), requirementsList));
 
-                details.setText(" Subject | Grade");
+                String subjectCode = content.getSubject();
+                String subject = CommonCodeUtils.getObjectFromCode(subjectCode).getCodeNameForCurrentLocale();
+
+                String gradeCode = content.getGrade();
+                String grade = CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale();
+
+                details.setText(subject +  " | "  + getResources().getString(R.string.grade) + " " + grade);
 
             } else {
                 requirementsLayout.setVisibility(View.GONE);
                 details.setText(" Topic | Language");
             }
 
+            //TODO : set author name
+            authorName.setText("Author ");
+            description.setText(content.getInstruction());
+
             if(getSupportActionBar() != null) {
+                Logger.d(" action bar is not null");
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setTitle(content.getTitle());
             }
+
+
         }
 
+        //TODO similar resources - get resources with same file type, language, subject, grade - confirm
+
+        ContentRequest contentRequest = new ContentRequest(UserDetailUtils.getUserId(getApplicationContext()),
+                content.getFileType(), content.getLanguage(), content.getSubject(), content.getGrade());
+        RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+            @Override
+            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                Logger.d(" Succes");
+                if(response.isSuccessful()) {
+                    if(response.body().getData() != null) {
+                        List<Content> contents = response.body().getData();
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
+                        contentRecyclerView.setLayoutManager(linearLayoutManager);
+                        similarContentsAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
+                        contentRecyclerView.setAdapter(similarContentsAdapter);
 
 
-        List<Content> contents = new ArrayList<>();
-        contents.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
-        contents.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.SELF_LEARNING));
-        contents.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.SELF_LEARNING));
-        contents.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.SELF_LEARNING));
+                    }
+                }
+            }
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
-        contentRecyclerView.setLayoutManager(linearLayoutManager);
-        similarContentsAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
-        contentRecyclerView.setAdapter(similarContentsAdapter);
+            @Override
+            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+                Logger.d(" on fail");
+            }
+        });
+
+
+
 
 
     }
@@ -142,7 +201,6 @@ public class ContentDetailsActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -151,5 +209,35 @@ public class ContentDetailsActivity extends AppCompatActivity {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored) {
+        if (!wasRestored) {
+            player = youTubePlayer;
+            String fileName = content.getFileName();
+            String videoID = fileName.substring(fileName.lastIndexOf('/') + 1);
+            player.cueVideo(videoID);
+        }
+    }
+
+    @Override
+    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+        Logger.d(" error " + youTubeInitializationResult.name());
+        if (youTubeInitializationResult.equals(YouTubeInitializationResult.SERVICE_VERSION_UPDATE_REQUIRED)) {
+            //handle failure
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(player != null) {
+            player.release();
+        }
+
+        if(similarContentsAdapter != null) {
+            similarContentsAdapter.releaseLoaders();
+        }
     }
 }

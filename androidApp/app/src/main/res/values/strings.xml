@@ -27,7 +27,7 @@
     <string name="enter_your_phone_number">Enter your phone number</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="do_not_have_an_account">Do not have an account?</string>
-    <string name="didn_t_not_receive_otp">Didn\'t not receive OTP?</string>
+    <string name="didn_t_not_receive_otp">Didn\'t receive OTP?</string>
     <string name="resend_otp">Resend OTP</string>
     <string name="enter_phone_number">Enter phone number</string>
     <string name="error_please_enter_6_digit_otp">Please enter 6 digit OTP</string>
@@ -70,5 +70,15 @@
     <string name="view">VIEW</string>
     <string name="save">SAVE</string>
     <string name="classroom_requirements">Classroom requirements</string>
+    <string name="select">SELECT</string>
+    <string name="default_language">English is your default language. To change visit settings > language</string>
+    <string name="my_profile_title">My Profile</string>
+    <string name="register_title">Register</string>
+    <string name="sign_in_title">Sign In</string>
+    <string name="phone_verification_title">Phone Verification</string>
+    <string name="done">Done</string>
+    <string name="designation_and_district">%1$s from %2$s district</string>
+    <string name="otp_sent">OTP sent successfully</string>
+    <string name="edit_your_phone_number">Are you sure you want to edit your phone number?</string>
 
 </resources>

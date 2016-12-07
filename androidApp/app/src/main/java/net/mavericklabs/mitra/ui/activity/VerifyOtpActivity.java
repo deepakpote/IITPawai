@@ -1,12 +1,15 @@
 package net.mavericklabs.mitra.ui.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -15,12 +18,21 @@ import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
+import net.mavericklabs.mitra.api.model.NewUser;
+import net.mavericklabs.mitra.api.model.RegisterUser;
+import net.mavericklabs.mitra.api.model.Token;
 import net.mavericklabs.mitra.api.model.VerifyUserOtp;
+import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
+import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
+
+import org.json.JSONArray;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnTouch;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,7 +50,54 @@ public class VerifyOtpActivity extends AppCompatActivity {
     @BindView(R.id.otp_edit_text)
     EditText otpEditText;
 
+    @OnTouch(R.id.entered_phone_number_edit_text)
+    boolean editPhoneNumber(MotionEvent event) {
+        if(event.getAction() == MotionEvent.ACTION_UP) {
+
+            AlertDialog dialog = new AlertDialog.Builder(VerifyOtpActivity.this)
+                                        .setMessage(R.string.edit_your_phone_number)
+                                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                VerifyOtpActivity.super.onBackPressed();
+                                            }
+                                        })
+                                        .setNegativeButton("No",null)
+                                        .create();
+            dialog.show();
+            return true;
+        }
+        return false;
+    }
+
+    @OnClick(R.id.resend_otp_button)
+    void resendOtp() {
+        Call<BaseModel<GenericListDataModel>> requestOtp;
+        if(isFromSignIn) {
+            requestOtp = RestClient.getApiService("").
+                    requestOtp(new NewUser(StringUtils.removeAllWhitespace(phoneNumber),
+                            NewUser.TYPE_SIGN_IN));
+        } else {
+            requestOtp = RestClient.getApiService("").
+                    requestOtp(new NewUser(StringUtils.removeAllWhitespace(phoneNumber),
+                            NewUser.TYPE_REGISTER));
+        }
+        requestOtp.enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+            @Override
+            public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                if(response.isSuccessful()) {
+                    Toast.makeText(getApplicationContext(), R.string.otp_sent,Toast.LENGTH_LONG).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                //TODO show error
+            }
+        });
+    }
+
     private String phoneNumber = "";
+    private boolean isFromSignIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +108,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
         if (getIntent().getExtras() != null) {
             Bundle bundle = getIntent().getExtras();
             phoneNumber = bundle.getString("phone_number");
+            isFromSignIn = bundle.getBoolean("is_from_sign_in");
             String formattedNumber;
             if (SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber,"in");
@@ -56,6 +116,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
                 formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber);
             }
             enteredPhoneNumberEditText.setText(formattedNumber);
+            enteredPhoneNumberEditText.setKeyListener(null);
         }
 
         otpEditText.requestFocus();
@@ -76,22 +137,36 @@ public class VerifyOtpActivity extends AppCompatActivity {
         }
         if (id == R.id.action_next) {
             if (isValidOtp()) {
-                VerifyUserOtp verifyUserOtp = new VerifyUserOtp(phoneNumber,otpEditText.getText().toString());
-                RestClient.getApiService("").verifyOtp(verifyUserOtp).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+                String authenticationType;
+                if(isFromSignIn) {
+                    authenticationType = NewUser.TYPE_SIGN_IN;
+                } else {
+                    authenticationType = NewUser.TYPE_REGISTER;
+                }
+                VerifyUserOtp verifyUserOtp = new VerifyUserOtp(phoneNumber,otpEditText.getText().toString(), authenticationType);
+                RestClient.getApiService("").verifyOtp(verifyUserOtp).enqueue(new Callback<BaseModel<Token>>() {
                     @Override
-                    public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                    public void onResponse(Call<BaseModel<Token>> call, Response<BaseModel<Token>> response) {
                         if(response.isSuccessful()) {
-                            UserDetailUtils.saveMobileNumber(phoneNumber,getApplicationContext());
-                            Intent almostDone = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
-                            MitraSharedPreferences.saveToPreferences(getApplicationContext(), "OTP", otpEditText.getText().toString());
-                            startActivity(almostDone);
+                            if(isFromSignIn) {
+                                String token = response.body().getData().get(0).getToken();
+                                UserDetailUtils.saveToken(token,getApplicationContext());
+                                Intent home = new Intent(VerifyOtpActivity.this,HomeActivity.class);
+                                startActivity(home);
+                                finishAffinity();
+                            } else {
+                                UserDetailUtils.saveMobileNumber(phoneNumber,getApplicationContext());
+                                Intent almostDone = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
+                                MitraSharedPreferences.saveToPreferences(getApplicationContext(), "OTP", otpEditText.getText().toString());
+                                startActivity(almostDone);
+                            }
                         } else {
                             Toast.makeText(getApplicationContext(), R.string.error_please_enter_6_digit_otp,Toast.LENGTH_LONG).show();
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                    public void onFailure(Call<BaseModel<Token>> call, Throwable t) {
 
                     }
                 });
@@ -101,6 +176,11 @@ public class VerifyOtpActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        //do nothing..
     }
 
     private boolean isValidOtp() {

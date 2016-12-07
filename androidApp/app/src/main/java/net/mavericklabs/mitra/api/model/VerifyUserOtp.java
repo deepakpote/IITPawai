@@ -3,7 +3,7 @@ package net.mavericklabs.mitra.api.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by root on 18/11/16.
+ * Created by amoghpalnitkar on 18/11/16.
  */
 
 public class VerifyUserOtp {
@@ -14,9 +14,13 @@ public class VerifyUserOtp {
     @SerializedName("otp")
     private String otp;
 
-    public VerifyUserOtp(String mobileNumber, String otp) {
+    @SerializedName("authenticationType")
+    private String authenticationType;
+
+    public VerifyUserOtp(String mobileNumber, String otp, String authenticationType) {
         this.mobileNumber = mobileNumber;
         this.otp = otp;
+        this.authenticationType = authenticationType;
     }
 
     public String getMobileNumber() {

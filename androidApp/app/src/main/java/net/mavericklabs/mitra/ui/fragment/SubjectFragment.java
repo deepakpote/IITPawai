@@ -1,6 +1,5 @@
 package net.mavericklabs.mitra.ui.fragment;
 
-
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -15,15 +14,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 
-import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
+import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.ui.adapter.SubjectAndGradeFragmentListAdapter;
-import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.ArrayList;
@@ -31,26 +28,22 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
- * Created by root on 13/11/16.
+ * Created by amoghpalnitkar on 12/3/16.
  */
 
-public class SubjectAndGradeFragment extends DialogFragment {
-
+public class SubjectFragment extends DialogFragment {
     private OnDialogFragmentDismissedListener onDialogFragmentDismissedListener;
-    private List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> objects;
+    private List<BaseObject> objects;
 
     @BindView(R.id.subject_or_grade_list_view)
-    ListView subjectOrGradeListView;
+    ListView subjectListView;
 
 
-    public SubjectAndGradeFragment() {
-        //mandatory constructor
+    public SubjectFragment() {
+
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -79,11 +72,11 @@ public class SubjectAndGradeFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.grade_s);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.subject_s);
 
-        objects = (List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject>) getArguments().getSerializable("item_list");
-        subjectOrGradeListView.setAdapter(new SubjectAndGradeFragmentListAdapter(getContext(),android.R.layout.simple_list_item_multiple_choice,objects));
-        subjectOrGradeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        objects = (List<BaseObject>) getArguments().getSerializable("subjects_list");
+        subjectListView.setAdapter(new SubjectAndGradeFragmentListAdapter(getContext(),android.R.layout.simple_list_item_multiple_choice,objects));
+        subjectListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 CheckedTextView textView = (CheckedTextView) view.findViewById(android.R.id.text1);
@@ -109,8 +102,8 @@ public class SubjectAndGradeFragment extends DialogFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if(id == R.id.action_next_fragment) {
-            List<SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject> checkedItems = new ArrayList<>();
-            for (SubjectAndGradeFragmentListAdapter.SubjectAndGradeObject object : objects) {
+            List<BaseObject> checkedItems = new ArrayList<>();
+            for (BaseObject object : objects) {
                 if(object.isChecked()) {
                     checkedItems.add(object);
                 }

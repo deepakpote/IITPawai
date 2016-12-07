@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -53,16 +55,11 @@ public class ChooseSignInOrRegisterActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("");
         }
-        String defaultLanguage = getDefaultLanguage();
-        Snackbar snackbar = Snackbar.make(relativeLayout, defaultLanguage + " is your default language. To change visit settings > language",
+        Snackbar snackbar = Snackbar.make(relativeLayout, getString(R.string.default_language),
                 Snackbar.LENGTH_LONG);
         View view = snackbar.getView();
         TextView textView = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
         snackbar.show();
-    }
-
-    private String getDefaultLanguage() {
-        return "ENGLISH";
     }
 }

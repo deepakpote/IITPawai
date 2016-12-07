@@ -84,7 +84,7 @@ public class MyResourcesTeachingAidsFragment extends Fragment {
         //Temp
         List<String> subjects = Arrays.asList("Subject", "English", "Marathi", "Maths");
         List<String> grades = Arrays.asList("Grade", "1", "2", "3");
-        List<String> types = Arrays.asList("Type", Constants.FileType.VIDEO.toString(), Constants.FileType.PDF.toString());
+        //List<String> types = Arrays.asList("Type", Constants.FileType.VIDEO.toString(), Constants.FileType.PDF.toString());
 
         ArrayAdapter<String> subjectAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_dropdown_item, subjects);
@@ -93,10 +93,10 @@ public class MyResourcesTeachingAidsFragment extends Fragment {
 
 
         List<Content> contents = new ArrayList<>();
-        contents.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
-        contents.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.TEACHING_AIDS));
-        contents.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.TEACHING_AIDS));
-        contents.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
+//        contents.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
+//        contents.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.TEACHING_AIDS));
+//        contents.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.TEACHING_AIDS));
+//        contents.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         contentRecyclerView.setLayoutManager(linearLayoutManager);
@@ -108,10 +108,10 @@ public class MyResourcesTeachingAidsFragment extends Fragment {
         gradeSpinner.setAdapter(gradeAdapter);
         gradeSpinner.setPrompt(grades.get(0));
 
-        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_dropdown_item, types);
-        typeSpinner.setAdapter(typeAdapter);
-        typeSpinner.setPrompt(grades.get(0));
+//        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(getContext(),
+//                android.R.layout.simple_spinner_dropdown_item, types);
+//        typeSpinner.setAdapter(typeAdapter);
+//        typeSpinner.setPrompt(grades.get(0));
 
         return rootView;
     }

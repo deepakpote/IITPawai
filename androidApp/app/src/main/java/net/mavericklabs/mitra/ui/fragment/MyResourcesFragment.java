@@ -42,7 +42,7 @@ import net.mavericklabs.mitra.utils.Logger;
 import butterknife.ButterKnife;
 
 /**
- * Created by root on 14/11/16.
+ * Created by amoghpalnitkar on 14/11/16.
  */
 
 public class MyResourcesFragment extends Fragment{

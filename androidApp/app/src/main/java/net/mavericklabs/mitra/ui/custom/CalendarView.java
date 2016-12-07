@@ -1,25 +1,32 @@
 package net.mavericklabs.mitra.ui.custom;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.Logger;
 
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,12 +34,13 @@ import java.util.HashSet;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
- * Created by root on 15/11/16.
+ * Created by amoghpalnitkar on 15/11/16.
  */
 
-public class CalendarView extends RelativeLayout{
+public class CalendarView extends RelativeLayout {
 
     @BindView(R.id.calendar_topbar)
     RelativeLayout topBarLayout;
@@ -43,8 +51,11 @@ public class CalendarView extends RelativeLayout{
     @BindView(R.id.calendar_grid)
     GridView datesGrid;
 
-    @BindView(R.id.month_year_spinner)
-    Spinner monthYearSpinner;
+    @BindView(R.id.month_year_selector)
+    TextView monthYearSelector;
+
+    @BindView(R.id.drop_down_image_view)
+    ImageView dropDownImageView;
 
     //days of the week times number of rows to show
     private final int DAYS_COUNT = 7 * 5;
@@ -77,9 +88,24 @@ public class CalendarView extends RelativeLayout{
         View view = layoutInflater.inflate(R.layout.layout_calendar,this);
         ButterKnife.bind(this,view);
 
-        String[] choices = {"Nov","Dec"};
-        monthYearSpinner.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item,choices));
-        currentDate.setTime(new Date());
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        String currentMonth = new DateFormatSymbols().getMonths()[calendar.get(Calendar.MONTH)];
+        monthYearSelector.setText(currentMonth.substring(0,3) + " " + calendar.get(Calendar.YEAR));
+        monthYearSelector.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePickerDialog();
+            }
+        });
+
+        dropDownImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePickerDialog();
+            }
+        });
         updateCalendar();
     }
 
@@ -103,16 +129,41 @@ public class CalendarView extends RelativeLayout{
         datesGrid.setAdapter(new CalendarAdapter(getContext(),cells,null));
     }
 
-    private class CalendarAdapter extends ArrayAdapter<Date>
-    {
+    private void showDatePickerDialog() {
+        LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogLayout = layoutInflater.inflate(R.layout.dialog_date_picker,null);
+        final DatePicker datePicker = (DatePicker) dialogLayout.findViewById(R.id.date_picker);
+        Button doneButton = (Button) dialogLayout.findViewById(R.id.done_button);
+        if(datePicker != null) {
+            ((ViewGroup)((ViewGroup)(datePicker.getChildAt(0))).getChildAt(0)).getChildAt(0).setVisibility(GONE);
+        }
+        final AlertDialog datePickerDialog = new AlertDialog.Builder(getContext())
+                .setView(dialogLayout)
+                .create();
+        datePickerDialog.show();
+        doneButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int month = datePicker.getMonth();
+                int year = datePicker.getYear();
+                currentDate.set(year,month,1);
+                String monthName = new DateFormatSymbols().getMonths()[month];
+                String substring = monthName.substring(0,3);
+                monthYearSelector.setText(substring + " " + year);
+                datePickerDialog.dismiss();
+                updateCalendar();
+            }
+        });
+    }
+
+    private class CalendarAdapter extends ArrayAdapter<Date> {
         // days with events
         private HashSet<Date> eventDays;
 
         // for view inflation
         private LayoutInflater inflater;
 
-        CalendarAdapter(Context context, ArrayList<Date> days, HashSet<Date> eventDays)
-        {
+        CalendarAdapter(Context context, ArrayList<Date> days, HashSet<Date> eventDays) {
             super(context, android.R.layout.simple_list_item_1, days);
             this.eventDays = eventDays;
             inflater = LayoutInflater.from(context);
@@ -126,7 +177,6 @@ public class CalendarView extends RelativeLayout{
             Date date = getItem(position);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
-            Logger.d("date is : " + calendar.get(Calendar.DATE));
             int day = calendar.get(Calendar.DATE);
             int month = calendar.get(Calendar.MONTH);
             int year = calendar.get(Calendar.YEAR);
@@ -163,7 +213,7 @@ public class CalendarView extends RelativeLayout{
                 // if this day is outside current month, grey it out
                 ((TextView)view).setTextColor(getResources().getColor(R.color.default_grey));
             } else if (day == todayCalendar.get(Calendar.DATE)) {
-                // if it is today, set it to blue/bold
+                // if it is today, set it to accent/bold
                 ((TextView)view).setTypeface(null, Typeface.BOLD);
                 ((TextView)view).setTextColor(getResources().getColor(R.color.colorAccent));
             }

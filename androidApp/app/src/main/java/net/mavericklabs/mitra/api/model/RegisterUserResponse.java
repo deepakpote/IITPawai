@@ -3,7 +3,7 @@ package net.mavericklabs.mitra.api.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by root on 18/11/16.
+ * Created by amoghpalnitkar on 18/11/16.
  */
 
 public class RegisterUserResponse {
@@ -13,9 +13,13 @@ public class RegisterUserResponse {
     @SerializedName("token")
     private String token;
 
-    public RegisterUserResponse(String name, String token) {
+    @SerializedName("userID")
+    private String userID;
+
+    public RegisterUserResponse(String name, String token, String userID) {
         this.name = name;
         this.token = token;
+        this.userID = userID;
     }
 
     public String getName() {
@@ -32,5 +36,13 @@ public class RegisterUserResponse {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }
