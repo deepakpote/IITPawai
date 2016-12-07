@@ -39,7 +39,8 @@ class EventsCalender:
 	# returns:Array of events in dict format (validated using eventSerializer)		
 	def listEvents(self,**kwargs):
 		eventsResult = self.__service.events().list(calendarId=EventsCalender.CALENDER_ID,**kwargs).execute()
-		return [eventData.data for eventData in [eventSerializer(data=event) for event in eventsResult.get('items', [])] if eventData.is_valid()]
+		objSerializer=eventSerializer(data=eventsResult.get('items', []),many=True)
+		return objSerializer.data if objSerializer.is_valid() else {}
 	
 	# Adds new event in calender 
 	# input : event data dict
