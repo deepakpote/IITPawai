@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
@@ -235,6 +236,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                 RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(), getSelectedUserTypeId());
                 final DbUser dbUser = new DbUser(nameEditText.getText().toString(),getSelectedUserTypeId(),getSelectedDistrictID());
 
+
+                //set the fcm token
+                String token = FirebaseInstanceId.getInstance().getToken();
+                user.setFcmDeviceId(token);
+
                 if(!selectedGradesList.isEmpty()) {
                     List<String> gradeCodeList = getGradeCodeList();
 
@@ -308,7 +314,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                     }
                 });
             } else {
-                Toast.makeText(getApplicationContext(),"Please enter required fields.",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.error_enter_required_fields,Toast.LENGTH_LONG).show();
             }
             return true;
         }

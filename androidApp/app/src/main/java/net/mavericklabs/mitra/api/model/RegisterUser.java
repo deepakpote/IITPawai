@@ -31,6 +31,9 @@ public class RegisterUser {
     @SerializedName("gradeCodeIDs")
     private String gradeCodeIds;
 
+    @SerializedName("fcmDeviceID")
+    private String fcmDeviceId;
+
     public RegisterUser(String userName, String otp, String phoneNumber, String districtCode, String userType) {
         this.name = userName;
         this.otp = otp;
@@ -93,5 +96,13 @@ public class RegisterUser {
 
     public void setGradeCodeIds(String gradeCodeIds) {
         this.gradeCodeIds = gradeCodeIds;
+    }
+
+    public String getFcmDeviceId() {
+        return fcmDeviceId;
+    }
+
+    public void setFcmDeviceId(String fcmDeviceId) {
+        this.fcmDeviceId = fcmDeviceId;
     }
 }
