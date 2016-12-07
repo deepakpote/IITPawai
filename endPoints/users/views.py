@@ -344,6 +344,9 @@ def userSubjectSave(subjectCodeIDs, objUser):
     if not subjectCodeIDs:
         return
     
+    # Delete all the subjects of respective user from userSubject.
+    userSubject.objects.filter(user = userObj).delete()
+    
     # save the user subject.
     subjectCodeList = subjectCodeIDs.split(',')
     for subjectCodeID in subjectCodeList:
@@ -357,6 +360,9 @@ Function to save the user skills.
 def userSkillSave(skillCodeIDs, userObj):
     if not skillCodeIDs:
         return
+    
+    # Delete all the skills of respective user from userSkill.
+    userSkill.objects.filter(user = userObj).delete()
         
     # save the user skills.
     skillCodeList = skillCodeIDs.split(',')
@@ -372,6 +378,9 @@ def userTopicSave(topicCodeIDs, userObj):
     if not topicCodeIDs:
         return
     
+    # Delete all the topics of respective user from userTopic.
+    userTopic.objects.filter(user = userObj).delete()
+        
     # save the user topics.
     topicCodeList = topicCodeIDs.split(',')
     for topicCodeID in topicCodeList:
@@ -386,6 +395,9 @@ def userGradeSave(gradeCodeIDs , userObj):
     if not gradeCodeIDs:
         return 
     
+    # Delete all the grades of respective user from userGrade.
+    userGrade.objects.filter(user = userObj).delete()
+    
     # save the user Grade.
     gradeCodeList = gradeCodeIDs.split(',')
     for gradeCodeID in gradeCodeList:
@@ -393,16 +405,3 @@ def userGradeSave(gradeCodeIDs , userObj):
          userGrade(grade = objCode, user = userObj).save()
 
     return
-
-"""
-Function to delete all user details from userSubject/userGrade/userTopic/userSkill tables
-"""
-def deleteUserProfileDetails(userObj):
-    #Delete all details from userSubject/userGrade/userTopic/userSkill for specific user.
-    userSubject.objects.filter(user = userObj).delete()
-    userGrade.objects.filter(user = userObj).delete()
-    userSkill.objects.filter(user = userObj).delete()
-    userTopic.objects.filter(user = userObj).delete()
-
-    return
-
