@@ -31,24 +31,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
-import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
+import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
+import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
-import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -60,13 +60,16 @@ import retrofit2.Response;
 public class SelfLearningFragment extends Fragment {
 
     @BindView(R.id.subject_spinner)
-    Spinner subjectSpinner;
+    Spinner topicSpinner;
 
     @BindView(R.id.grade_spinner)
-    Spinner gradeSpinner;
+    Spinner languageSpinner;
 
     @BindView(R.id.content_recycler_view)
     RecyclerView contentRecyclerView;
+
+    @BindView(R.id.error_view)
+    TextView errorView;
 
     private ContentVerticalCardListAdapter adapter;
 
@@ -86,21 +89,75 @@ public class SelfLearningFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
 
-        //Temp
-        List<String> topics = Arrays.asList("Topic", "English", "Marathi", "Maths");
-        List<String> languages = Arrays.asList("Language", "1", "2", "3");
+        final List<CommonCode> topics = new ArrayList<>(CommonCodeUtils.getTopics());
+        final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getLanguages());
 
-        ArrayAdapter<String> subjectAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_dropdown_item, topics);
-        subjectSpinner.setAdapter(subjectAdapter);
-        subjectSpinner.setPrompt(topics.get(0));
+        //Header - not a valid value
+        topics.add(0, new CommonCode("", "","Topic", "Topic", 0));
+        languages.add(0,new CommonCode("","","Language","Language",0));
 
-        ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_dropdown_item, languages);
-        gradeSpinner.setAdapter(gradeAdapter);
-        gradeSpinner.setPrompt(languages.get(0));
+        SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(),
+                R.layout.custom_spinner_item_header,
+                topics);
+        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
+        topicSpinner.setAdapter(adapter);
+        topicSpinner.setSelection(0 ,false);
 
-        searchSelfLearning("108100", "101100", "", 0);
+
+        topicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                CommonCode language = (CommonCode) languageSpinner.getSelectedItem();
+                searchSelfLearning(language.getCodeID(), topics.get(i).getCodeID(), 0);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        SpinnerArrayAdapter languageAdapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
+                languages);
+        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
+        languageSpinner.setAdapter(languageAdapter);
+        languageSpinner.setSelection(0 ,false);
+
+        languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                CommonCode topic = (CommonCode) topicSpinner.getSelectedItem();
+                searchSelfLearning(languages.get(i).getCodeID() , topic.getCodeID(), 0);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        searchSelfLearning("101100", "", 0);
+
+        contentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
+                int childCount = recyclerView.getChildCount();
+
+                if(lastVisibleItem == childCount) {
+                    CommonCode topic = (CommonCode) topicSpinner.getSelectedItem();
+                    CommonCode language = (CommonCode) languageSpinner.getSelectedItem();
+                    searchSelfLearning(language.getCodeID(), topic.getCodeID(), 1);
+                }
+            }
+        });
 
     }
 
@@ -114,10 +171,10 @@ public class SelfLearningFragment extends Fragment {
         }
     }
 
-    private void searchSelfLearning(String fileType, String language, String topic, final int pageNumber) {
+    private void searchSelfLearning(String language, String topic, final int pageNumber) {
         Logger.d(" searching ");
         SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(UserDetailUtils.getUserId(getContext()),
-                fileType, language, topic);
+                 language, topic);
         contentRequest.setPageNumber(pageNumber);
         RestClient.getApiService("").searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
@@ -152,8 +209,8 @@ public class SelfLearningFragment extends Fragment {
                     String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessage(response)).getCodeNameForCurrentLocale();
                     Logger.d(" error " + error);
                     contentRecyclerView.setVisibility(View.GONE);
-                    //errorView.setVisibility(View.VISIBLE);
-                    //errorView.setText(error);
+                    errorView.setVisibility(View.VISIBLE);
+                    errorView.setText(error);
                 }
 
             }

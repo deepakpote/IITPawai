@@ -65,6 +65,20 @@ public class CommonCodeUtils {
 
     }
 
+    public static List<CommonCode> getTopics() {
+        return Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
+                CommonCodeGroup.TOPICS).findAll();
+
+
+    }
+
+    public static List<CommonCode> getLanguages() {
+        return Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
+                CommonCodeGroup.LANGUAGE).findAll();
+
+
+    }
+
     public static CommonCode getObjectFromCode(String code) {
         RealmResults<CommonCode> contentTypeResult =
                 Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeID",
