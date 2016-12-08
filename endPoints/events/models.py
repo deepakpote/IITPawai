@@ -6,11 +6,13 @@ from django.utils import timezone
 from users.models import user 
 
 """
-# event model
+# user event model
 """
-class eventModel(models.Model):
+class userEvent(models.Model):
     eventID = models.CharField(primary_key = True,max_length=255)
-    #refUser = models.ForeignKey('users.user', db_column = 'refUser', null = False, blank = False, related_name='event_refUser')
+    userID = models.CharField(max_length=255)
+    #userID = models.ForeignKey('users.user', on_delete = models.CASCADE, null = False, blank = False,db_column ='userID',related_name = 'userEvent_userID')
     
     class Meta:
+        unique_together = ("eventID", "userID")
         db_table = 'usr_event'

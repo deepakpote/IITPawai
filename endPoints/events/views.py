@@ -6,14 +6,14 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework import status
 
 from mitraEndPoints import constants
-from events.serializers import eventQuerySerializer,eventSerializer,eventModelSerializer
+from events.serializers import eventQuerySerializer,eventSerializer,userEventModelSerializer
 from events.CalenderService import EventsCalender
 
 class EventViewSet(viewsets.ViewSet):
     """
     API endpoint to fetch list of events from calender
     """
-    serializer_class = eventQuerySerializer
+    serializer_class = userEventModelSerializer
     calender = EventsCalender()
     
     http_method_names = ['get', 'post']
@@ -33,17 +33,27 @@ class EventViewSet(viewsets.ViewSet):
         return Response({"response_message": constants.messages.success, "data":lstEvents})
     
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
-    def addEvent(self, request):
+    def addEvent(self, request):        
         objEventSerializer=eventSerializer(data=request.data)
-        
         if not objEventSerializer.is_valid():
-            return Response({"response_message": constants.messages.event_query_parameters_not_valid, 
+            return Response({"response_message": constants.messages.add_event_parameters_not_valid, 
                              "data": []
                             },
                             status=status.HTTP_401_UNAUTHORIZED
                             )
         
         result=EventViewSet.calender.addEvent(objEventSerializer.data)
-        objEventModelSerializer=eventModelSerializer()
-        objEventModelSerializer.create(result)
         return Response({"response_message": constants.messages.success, "data":result})
+    
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def attendEvent(self, request):        
+        objUserEventSerializer=userEventModelSerializer(data=request.data)
+        if not objUserEventSerializer.is_valid():
+            return Response({"response_message": constants.messages.attend_event_parameters_not_valid, 
+                             "data": []
+                            },
+                            status=status.HTTP_401_UNAUTHORIZED
+                            )
+        
+        objUserEvent=objUserEventSerializer.create(objUserEventSerializer.data)
+        return Response({"response_message": constants.messages.success, "data":[]})
