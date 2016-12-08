@@ -15,6 +15,9 @@ import plivo
 from datetime import datetime, timedelta
 from django.utils import timezone
 
+from rest_framework.renderers import JSONRenderer
+import json
+
  
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -253,7 +256,54 @@ class UserViewSet(viewsets.ModelViewSet):
             objuserAuth.save()
         
         return Response({"response_message": constants.messages.success, "data": []})
+
+    """
+    APT to get user details
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def detail(self,request):
+        """ Get user details
+            args:
+                request : passed userid as parameter to the request object
+            returns:
+                Response: response_message and user details
+        """
+        userID = request.data.get("userID")
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+         
+        # get user info
+        userInfo = user.objects.filter(userID = userID)
+
+        # If userID parameter is passed, then check user is exists or not
+        if not userInfo:
+            return Response({"response_message": constants.messages.user_userprofile_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+
+        #Set query string to the userSerializer
+        objuserSerializer =userSerializer(userInfo, many = True)
     
+        #Set serializer data to the response 
+        response = objuserSerializer.data
+        jsondata = JSONRenderer().render(response)
+
+        userDetail= json.loads(jsondata)
+
+        userSubjectCodeID = getUserSubjectCode(userInfo)
+        userGradeCodeID = getUserGradeCode(userInfo)
+        userTopicCodeID = getUsertopicCode(userInfo)
+        userSkillCodeID = getUserSkillCode(userInfo)
+
+        userDetail[0]["subjectCodeIDs"] = userSubjectCodeID if userSubjectCodeID else None
+        userDetail[0]["gradeCodeIDs"] = userGradeCodeID if userGradeCodeID else None
+        userDetail[0]["topicCodeIDs"] = userTopicCodeID if userTopicCodeID else None
+        userDetail[0]["skillCodeIDs"] = userSkillCodeID if userSkillCodeID else None
+
+        return Response({"response_message": constants.messages.success, "data": userDetail})
+
 #     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])
 #     def opentoAll(self,request):
 #         return Response({"hello"})
@@ -338,4 +388,82 @@ def userGradeSave(gradeCodeIDs , userObj):
          userGrade(grade = objCode, user = userObj).save()
 
     return
+
+"""
+Function to get the subjetcode of user
+"""
+def getUserSubjectCode(userInfo):
+    """ get the subjectCodeID based on the user
+        Args:
+            userInfo(obj): user information 
+        returns: 
+            userSubjectCodeID(str):Comma seprated string of userSubjectCodeIDs
+
+    """
+    objUserSubjectList = userSubject.objects.filter(user = userInfo)
+    arrSubjectCodeIDs = []
+    userSubjectCodeID = None
+
+    for objUserSubject in objUserSubjectList:
+        arrSubjectCodeIDs.append(str(objUserSubject.subject.codeID))
+
+    userSubjectCodeID = ",".join(arrSubjectCodeIDs)
+
+    return userSubjectCodeID
+
+# Function to get the gradecode of the user
+def getUserGradeCode(userInfo):
+    """ get the gradeCodeID based on the user 
+        Args:
+            userInfo(obj): user information 
+        returns:
+            userGradeCodeID(str): Comma seprated string of userGradeCodeIDs
+    """
+    objUserGradeList = userGrade.objects.filter(user = userInfo)
+    arrGradeCodeIDs = []
+    userGradeCodeID = None
+
+    for objUserGrade in objUserGradeList:
+        arrGradeCodeIDs.append(str(objUserGrade.grade.codeID))
+
+    userGradeCodeID = ",".join(arrGradeCodeIDs)
+
+    return userGradeCodeID
+
+def getUsertopicCode(userInfo):
+    """ get the topicCodeID based on the user 
+        Args:
+            userInfo(obj): user information 
+        returns:
+            userTopicCodeID(str):Comma seprated string of userTopicCodeIDs
+    """
+    objUserTopicList = userTopic.objects.filter(user = userInfo) 
+    arrTopicCodeIDs = []
+    userTopicCodeID = None
+
+    for objUserTopic in objUserTopicList:
+        arrTopicCodeIDs.append(str(objUserTopic.topic.codeID))
+
+    userTopicCodeID = ",".join(arrTopicCodeIDs)
+
+    return userTopicCodeID
+
+def getUserSkillCode(userInfo):
+    """ get the skill codeID based on the user
+        Args:
+            userInfo(obj): user information 
+        returns:
+            userSkillCodeID(str):Comma seprated string of userTopicCodeIDs
+    """
+ 
+    objUserSkillList = userSkill.objects.filter(user = userInfo)
+    arrSkillCodeIDs = []
+    userSkillCodeID = None
+
+    for objUserSkill in objUserSkillList:
+        arrSkillCodeIDs.append(str(objUserSkill.skill.codeID))
+
+    userSkillCodeID = ",".join(arrSkillCodeIDs)
+
+    return userSkillCodeID
 
