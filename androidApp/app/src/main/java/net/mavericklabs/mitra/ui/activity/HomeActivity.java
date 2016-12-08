@@ -72,6 +72,12 @@ public class HomeActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private boolean isFabExpanded = false;
 
+    public int DRAWER_ITEM_HOME = 0;
+    public int DRAWER_ITEM_TEACHING_AIDS = 1;
+    public int DRAWER_ITEM_SELF_LEARNING = 2;
+    public int DRAWER_ITEM_TRAINING_CALENDAR = 3;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,7 +106,7 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 });
 
-        selectDrawerItem(navigationView.getMenu().getItem(0));
+        selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_HOME));
         View headerView = navigationView.getHeaderView(0);
         TextView userNameTextView = (TextView) headerView.findViewById(R.id.nav_header_user_name);
         if(user.size() ==1) {
@@ -200,7 +206,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Go to teaching aids
-                selectDrawerItem(navigationView.getMenu().getItem(1));
+                selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_TEACHING_AIDS));
                 collapseFab();
             }
         });
@@ -209,7 +215,16 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Go to self learning
-                selectDrawerItem(navigationView.getMenu().getItem(2));
+                selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_SELF_LEARNING));
+                collapseFab();
+            }
+        });
+
+        trainingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Go to self learning
+                selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_TRAINING_CALENDAR));
                 collapseFab();
             }
         });
