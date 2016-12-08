@@ -20,7 +20,9 @@ import android.widget.ListView;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.model.BaseObject;
+import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.adapter.SubjectAndGradeFragmentListAdapter;
+import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by amoghpalnitkar on 12/3/16.
@@ -36,6 +40,7 @@ import butterknife.ButterKnife;
 public class SubjectFragment extends DialogFragment {
     private OnDialogFragmentDismissedListener onDialogFragmentDismissedListener;
     private List<BaseObject> objects;
+    private List<String> selectedSubjectCodeIds;
 
     @BindView(R.id.subject_or_grade_list_view)
     ListView subjectListView;
@@ -74,7 +79,8 @@ public class SubjectFragment extends DialogFragment {
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.subject_s);
 
-        objects = (List<BaseObject>) getArguments().getSerializable("subjects_list");
+        selectedSubjectCodeIds = getArguments().getStringArrayList("selected_subject_code_ids");
+        objects = getSubjectsList();
         subjectListView.setAdapter(new SubjectAndGradeFragmentListAdapter(getContext(),android.R.layout.simple_list_item_multiple_choice,objects));
         subjectListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -108,7 +114,7 @@ public class SubjectFragment extends DialogFragment {
                     checkedItems.add(object);
                 }
             }
-
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
             onDialogFragmentDismissedListener.onDialogFragmentDismissed(checkedItems);
             dismiss();
             return true;
@@ -125,6 +131,26 @@ public class SubjectFragment extends DialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("My Profile");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
+    }
+
+
+    private List<BaseObject> getSubjectsList() {
+        List<BaseObject> objectList = new ArrayList<>();
+        RealmResults<CommonCode> subjectListResult = Realm.getDefaultInstance().where(CommonCode.class)
+                .equalTo("codeGroupID", CommonCodeGroup.SUBJECTS).findAll();
+
+        List<CommonCode>  subjectsList = new ArrayList<>(subjectListResult);
+
+        for(CommonCode commonCode : subjectsList) {
+            BaseObject object= new BaseObject(commonCode,false);
+            for(String selectedSubjectCodeId : selectedSubjectCodeIds) {
+                if(object.getCommonCode().getCodeID().equals(selectedSubjectCodeId)) {
+                    object.setChecked(true);
+                }
+            }
+            objectList.add(object);
+        }
+        return objectList;
     }
 }

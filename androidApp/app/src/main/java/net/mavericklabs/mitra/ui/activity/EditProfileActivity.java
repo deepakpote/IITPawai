@@ -127,8 +127,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         Fragment gradeFragment = new GradeFragment();
         Bundle bundle = new Bundle();
-        List<BaseObject> gradesList = getGradesList();
-        bundle.putSerializable("grades_list", (Serializable) gradesList);
+        ArrayList<String> selectedCodeIds = getSelectedGradeCodeIds();
+        bundle.putStringArrayList("selected_grade_code_ids",selectedCodeIds);
         gradeFragment.setArguments(bundle);
 
         fragmentTransaction.setCustomAnimations(R.anim.anim_in, R.anim.anim_out, R.anim.anim_in, R.anim.anim_out);
@@ -137,17 +137,24 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         fragmentTransaction.commit();
     }
 
+    private ArrayList<String> getSelectedGradeCodeIds() {
+        ArrayList<String> selectedIds = new ArrayList<>();
+        for(BaseObject grade : selectedGradesList) {
+            selectedIds.add(grade.getCommonCode().getCodeID());
+        }
+        return selectedIds;
+    }
+
     @OnClick(R.id.add_subjects)
     void showAddSubjectsMenu() {
         isSubjectFragmentOpen = true;
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        List<BaseObject> subjectsList = getSubjectsList();
         Bundle bundle = new Bundle();
-        bundle.putSerializable("subjects_list", (Serializable) subjectsList);
-
         Fragment subjectFragment = new SubjectFragment();
+        ArrayList<String> selectedCodeIds = getSelectedSubjectCodeIds();
+        bundle.putStringArrayList("selected_subject_code_ids",selectedCodeIds);
         subjectFragment.setArguments(bundle);
 
         fragmentTransaction.setCustomAnimations(R.anim.anim_in, R.anim.anim_out, R.anim.anim_in, R.anim.anim_out);
@@ -155,6 +162,15 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
+
+    private ArrayList<String> getSelectedSubjectCodeIds() {
+        ArrayList<String> selectedIds = new ArrayList<>();
+        for(BaseObject subject : selectedSubjectsList) {
+            selectedIds.add(subject.getCommonCode().getCodeID());
+        }
+        return selectedIds;
+    }
+
 
     @OnClick(R.id.more_or_less_button)
     void expandOrCollapse() {
@@ -484,43 +500,5 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         CommonCode district = (CommonCode) districtSpinner.getSelectedItem();
         Logger.d(" name  " + district.getCodeNameEnglish() + " " + district.getCodeID());
         return district.getCodeID();
-    }
-
-
-    private List<BaseObject> getGradesList() {
-        List<BaseObject> objectList = new ArrayList<>();
-        RealmResults<CommonCode> gradeListResult = Realm.getDefaultInstance().where(CommonCode.class)
-                .equalTo("codeGroupID", CommonCodeGroup.GRADES).findAll();
-        List<CommonCode>  gradeList = new ArrayList<>(gradeListResult);
-        for(CommonCode commonCode : gradeList) {
-            BaseObject object= new BaseObject(commonCode,false);
-            for(BaseObject selectedItem : selectedGradesList) {
-                if(object.getCommonCode().getCodeID().equals(selectedItem.getCommonCode().getCodeID())) {
-                    object.setChecked(true);
-                }
-            }
-            Logger.d("object added to grade list : " + object.getCommonCode().getCodeNameForCurrentLocale());
-            objectList.add(object);
-        }
-        return objectList;
-    }
-
-    private List<BaseObject> getSubjectsList() {
-        List<BaseObject> objectList = new ArrayList<>();
-        RealmResults<CommonCode> subjectListResult = Realm.getDefaultInstance().where(CommonCode.class)
-                .equalTo("codeGroupID", CommonCodeGroup.SUBJECTS).findAll();
-
-        List<CommonCode>  subjectsList = new ArrayList<>(subjectListResult);
-
-        for(CommonCode commonCode : subjectsList) {
-            BaseObject object= new BaseObject(commonCode,false);
-            for(BaseObject selectedItem : selectedSubjectsList) {
-                if(object.getCommonCode().getCodeID().equals(selectedItem.getCommonCode().getCodeID())) {
-                    object.setChecked(true);
-                }
-            }
-            objectList.add(object);
-        }
-        return objectList;
     }
 }
