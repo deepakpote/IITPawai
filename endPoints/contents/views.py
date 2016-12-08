@@ -217,10 +217,102 @@ class ContentViewSet(viewsets.ModelViewSet):
                             status = status.HTTP_401_UNAUTHORIZED) 
                                
         # Save content like response.
-        saveContentLikeResponse(objContent, objUser, objCommon.getBoolValue(hasLiked))
+        saveContentResponse(objContent, objUser, constants.mitraCode.like , objCommon.getBoolValue(hasLiked))
 
         #Return the response
         return Response({"response_message": constants.messages.success, "data": []})
+    
+    """
+    API to save the content response: Download
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def download(self,request):
+        # get inputs
+        userID = request.data.get('userID') 
+        contentID = request.data.get('contentID')
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if contentID is passed in post param
+        if not contentID:
+            return Response({"response_message": constants.messages.save_download_response__contentid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+               
+        # If contentID parameter is passed, then check content exists or not
+        try:
+            objContent = content.objects.get(contentID = contentID)
+        except content.DoesNotExist:
+            return Response({"response_message": constants.messages.save_download_response_content_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.save_download_response_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+                               
+        # Save content download response and return file name of that content.
+        contentFileName = saveContentResponse(objContent, objUser, constants.mitraCode.download , None)
+
+        # set file name to the response.
+        response = { 'fileName' : contentFileName }
+        
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": [response]})
+    
+    """
+    API to save the content response: Share
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def share(self,request):
+        # get inputs
+        userID = request.data.get('userID') 
+        contentID = request.data.get('contentID')
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if contentID is passed in post param
+        if not contentID:
+            return Response({"response_message": constants.messages.save_content_share_response__contentid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+               
+        # If contentID parameter is passed, then check content exists or not
+        try:
+            objContent = content.objects.get(contentID = contentID)
+        except content.DoesNotExist:
+            return Response({"response_message": constants.messages.save_content_share_response_content_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.save_content_share_response_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+                               
+        # Save content share response and return file name of that content.
+        contentFileName = saveContentResponse(objContent, objUser, constants.mitraCode.share , None)
+
+        #set the file name to the response.
+        response = { 'fileName' : contentFileName }
+        
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": [response]})
         
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs, objUser):
@@ -311,21 +403,57 @@ def getSearchContentApplicableTopicCodeIDs(topicCodeIDs, objUser):
         return arrTopicCodeIDs
     
 """
-Function to save content response for Like.
+Common function to save content response for Like/download/share.
 """
-def saveContentLikeResponse(objContent , objUser, hasLiked):
-    
-    if hasLiked != None:
-        # If any response for content exists or not.
+def saveContentResponse(objContent , objUser, contentResponseType , hasLiked):
+    #If content response for like.
+    if contentResponseType == constants.mitraCode.like:
+        if hasLiked != None:
+            # If any response for content exists or not.
+            try:
+                objContentResponse = contentResponse.objects.get(content = objContent)
+            except contentResponse.DoesNotExist:
+                #If not exists then make entry for content response
+                contentResponse(user = objUser , content = objContent , hasLiked = hasLiked ).save()
+                return 
+            # If response exists then update the response.
+            objContentResponse.hasLiked =  hasLiked
+            objContentResponse.save()
+                
+        return
+    # Content response for download.
+    elif contentResponseType == constants.mitraCode.download :
+        
         try:
             objContentResponse = contentResponse.objects.get(content = objContent)
         except contentResponse.DoesNotExist:
-            #If not exists then make entry for content response
-            contentResponse(user = objUser , content = objContent , hasLiked = hasLiked ).save()
-            return 
+        #If not exists then make entry for content response
+            contentResponse(user = objUser , content = objContent , downloadCount = 1 ).save()
+            # Get the content file name.
+            objConfileName = content.objects.filter(contentID = objContent.contentID)
+            return objConfileName[0].fileName
         # If response exists then update the response.
-        objContentResponse.hasLiked =  hasLiked
+        objContentResponse.downloadCount += 1
         objContentResponse.save()
-            
-    return
+        # Get the content file name.
+        objConfileName = content.objects.filter(contentID = objContent.contentID)
+        return objConfileName[0].fileName
+    
+    # Content response for share.
+    elif contentResponseType == constants.mitraCode.share :
+                
+        try:
+            objContentResponse = contentResponse.objects.get(content = objContent)
+        except contentResponse.DoesNotExist:
+        #If not exists then make entry for content response
+            contentResponse(user = objUser , content = objContent , sharedCount = 1 ).save()
+            # Get the content file name.
+            objConfileName = content.objects.filter(contentID = objContent.contentID)
+            return objConfileName[0].fileName
+        # If response exists then update the response.
+        objContentResponse.sharedCount += 1
+        objContentResponse.save()
+        # Get the content file name.
+        objConfileName = content.objects.filter(contentID = objContent.contentID)
+        return objConfileName[0].fileName
     
