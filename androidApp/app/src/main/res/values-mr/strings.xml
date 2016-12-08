@@ -45,4 +45,5 @@
     <string name="loading">Loading..</string>
     <string name="error_email_address">Please enter valid email address</string>
     <string name="error_enter_required_fields">Please enter required fields.</string>
+    <string name="notification">Notification</string>
 </resources>
