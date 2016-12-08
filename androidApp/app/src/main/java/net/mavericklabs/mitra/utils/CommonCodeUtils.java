@@ -51,6 +51,11 @@ public class CommonCodeUtils {
 
     }
 
+    public static List<CommonCode> getFileTypes() {
+        return  Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
+                        CommonCodeGroup.FILE_TYPES).findAll();
+    }
+
     public static List<CommonCode> getSubjects() {
         return Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
                         CommonCodeGroup.SUBJECTS).findAll();

@@ -162,38 +162,4 @@ public class MyResourcesFragment extends Fragment{
         }
     }
 
-//    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-//
-//        public SectionsPagerAdapter(FragmentManager fm) {
-//            super(fm);
-//        }
-//
-//        @Override
-//        public Fragment getItem(int position) {
-//            Logger.d(" get item - fragment " + position);
-//            if(position == 0) {
-//                return MyResourcesTeachingAidsFragment.newInstance();
-//            }
-//            return MyResourcesSelfLearningFragment.newInstance();
-//
-//        }
-//
-//        @Override
-//        public int getCount() {
-//            // Show 2 total pages.
-//            return 2;
-//        }
-//
-//        @Override
-//        public CharSequence getPageTitle(int position) {
-//            switch (position) {
-//                case 0:
-//                    return "Teaching Aids";
-//                case 1:
-//                    return "Self Learning";
-//
-//            }
-//            return null;
-//        }
-//    }
 }
