@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework import viewsets,permissions
 from users.serializers import userSerializer, otpSerializer
 
-from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth
+from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth, device
 from commons.models import code
 from mitraEndPoints import constants
 import random
@@ -149,6 +149,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # Get input data
         phoneNumber = request.data.get('phoneNumber')
         otp_string = request.data.get('otp')
+        fcmDeviceID = request.data.get('fcmDeviceID')
 
         # validate user information
         objUserSerializer = userSerializer(data = request.data)#, context={'request': request})
@@ -162,6 +163,10 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.registration_otp_is_invalid, "data":[]},
                             status=status.HTTP_401_UNAUTHORIZED)
         
+        # validate FCM device id. This is later on used for sending push notifications
+        if not fcmDeviceID:
+            return Response({"response_message": constants.messages.registration_fcm_device_id_cannot_be_empty, "data":[]},
+                            status=status.HTTP_401_UNAUTHORIZED)
         
         # If user information is valid, save it
         objUserSerializer.save()
@@ -201,11 +206,64 @@ class UserViewSet(viewsets.ModelViewSet):
         # Save the auth generated token
         objToken = token(user=objUserSerializer.instance, token = token_string).save()
         
+        #Finally save the user device id, required for push notifications
+        userDeviceSave(objUserSerializer.instance, fcmDeviceID)
+        
         # Add user data, along with the generated token to the response
         #response = objUserSerializer.data
         response = { 'userID' : objCreatedUser.userID }  #objCreatedUser.userID
         response['token'] = token_string
         return Response({"response_message": constants.messages.success, "data": [response]})
+    
+    """
+    API to update user profile.
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def updateProfile(self,request):
+        # Get input data
+        userID = request.data.get('userID') 
+        phoneNumber = request.data.get('phoneNumber') 
+        emailID = request.data.get('emailID') 
+        userName = request.data.get('userName')
+        udiseCode = request.data.get('udiseCode')
+        userTypeCodeID = request.data.get('userTypeCodeID')
+        preferredLanguageCodeID = request.data.get('preferredLanguageCodeID') 
+        districtCodeID = request.data.get('districtCodeID') 
+        
+        # validate user information
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.update_profile_user_not_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
+        
+        # If user valid, update the details.
+        user.objects.filter(userID = userID).update(userName = userName , 
+                                                               phoneNumber = phoneNumber ,
+                                                               udiseCode = udiseCode , 
+                                                               userType = userTypeCodeID , 
+                                                               preferredLanguage = preferredLanguageCodeID , 
+                                                               district = districtCodeID ,
+                                                               modifiedBy = userID)
+        
+        #Save user subject
+        subjectCodeIDs = request.data.get('subjectCodeIDs')
+        userSubjectSave(subjectCodeIDs, objUser)
+        
+        # Save user skill
+        skillCodeIDs = request.data.get('skillCodeIDs')
+        userSkillSave(skillCodeIDs, objUser)
+         
+        # save user grade.
+        gradeCodeIDs = request.data.get('gradeCodeIDs')
+        userGradeSave(gradeCodeIDs, objUser)
+         
+        # save user topics
+        topicCodeIDs  = request.data.get('topicCodeIDs')
+        userTopicSave(topicCodeIDs, objUser)
+#         
+        return Response({"response_message": constants.messages.success, "data": []})
     
     """
     API to login
@@ -215,6 +273,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # get inputs
         phoneNumber = request.data.get('phoneNumber')
         authtoken = request.data.get('token')
+        fcmDeviceID = request.data.get('fcmDeviceID')
         
         # Check if phoneNumber is passed in post param
         if not phoneNumber:
@@ -226,8 +285,13 @@ class UserViewSet(viewsets.ModelViewSet):
         if not authtoken:
             return Response({"response_message": constants.messages.login_token_cannot_be_empty,
                              "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED)            
-                  
+                             status = status.HTTP_401_UNAUTHORIZED) 
+        
+        # validate FCM device id. This is later on used for sending push notifications
+        if not fcmDeviceID:
+            return Response({"response_message": constants.messages.signin_fcm_device_id_cannot_be_empty, "data":[]},
+                            status=status.HTTP_401_UNAUTHORIZED)           
+                 
         # Check if phone number exists.
         objUser = user.objects.filter(phoneNumber = phoneNumber).first()
         if not objUser:
@@ -254,6 +318,9 @@ class UserViewSet(viewsets.ModelViewSet):
 #             objuserAuth.lastLoggedInOn = datetime.datetime.now()
 #             objuserAuth.modifiedOn = datetime.datetime.now()
             objuserAuth.save()
+        
+        #Finally save the user device id, required for push notifications
+        userDeviceSave(objUser, fcmDeviceID)
         
         return Response({"response_message": constants.messages.success, "data": []})
 
@@ -339,6 +406,9 @@ def userSubjectSave(subjectCodeIDs, objUser):
     if not subjectCodeIDs:
         return
     
+    # Delete all the subjects of respective user from userSubject.
+    userSubject.objects.filter(user = objUser).delete()
+    
     # save the user subject.
     subjectCodeList = subjectCodeIDs.split(',')
     for subjectCodeID in subjectCodeList:
@@ -352,6 +422,9 @@ Function to save the user skills.
 def userSkillSave(skillCodeIDs, userObj):
     if not skillCodeIDs:
         return
+    
+    # Delete all the skills of respective user from userSkill.
+    userSkill.objects.filter(user = userObj).delete()
         
     # save the user skills.
     skillCodeList = skillCodeIDs.split(',')
@@ -367,6 +440,9 @@ def userTopicSave(topicCodeIDs, userObj):
     if not topicCodeIDs:
         return
     
+    # Delete all the topics of respective user from userTopic.
+    userTopic.objects.filter(user = userObj).delete()
+        
     # save the user topics.
     topicCodeList = topicCodeIDs.split(',')
     for topicCodeID in topicCodeList:
@@ -380,6 +456,9 @@ Function to save the user grades.
 def userGradeSave(gradeCodeIDs , userObj):
     if not gradeCodeIDs:
         return 
+    
+    # Delete all the grades of respective user from userGrade.
+    userGrade.objects.filter(user = userObj).delete()
     
     # save the user Grade.
     gradeCodeList = gradeCodeIDs.split(',')
@@ -466,4 +545,17 @@ def getUserSkillCode(userInfo):
     userSkillCodeID = ",".join(arrSkillCodeIDs)
 
     return userSkillCodeID
+"""
+Save user's device ID for push notifications
+"""
+def userDeviceSave(objUser, fcmDeviceID):
+    # Check if the given userID and device ID combination already exists
+    isDeviceAlreadyRegistrered = device.objects.filter(user = objUser, fcmDeviceID = fcmDeviceID).exists()
+    if isDeviceAlreadyRegistrered:
+        return
+    
+    # If the given userID and device ID combination does NOT exists, then, save
+    device(user = objUser, fcmDeviceID = fcmDeviceID).save()
+    return
+
 
