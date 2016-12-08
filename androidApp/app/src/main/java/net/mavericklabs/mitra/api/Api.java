@@ -3,6 +3,7 @@ package net.mavericklabs.mitra.api;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
+import net.mavericklabs.mitra.api.model.LikeRequest;
 import net.mavericklabs.mitra.api.model.Token;
 
 import net.mavericklabs.mitra.model.CommonCode;
@@ -46,4 +47,7 @@ public interface Api {
 
     @POST("content/searchSelfLearning/")
     Call<BaseModel<Content>> searchSelfLearning(@Body SelfLearningContentRequest contentRequest);
+
+    @POST("content/like/")
+    Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);
 }

@@ -22,7 +22,6 @@ public class RestClient {
     //private static final String BASE_URL = "http://192.168.0.199:8000/";
     //private static String accessToken = "";
     private static final String BASE_URL = "http://192.168.0.100:8000/";
-
     private static OkHttpClient client;
     private static Gson gson;
 
