@@ -355,21 +355,18 @@ class UserViewSet(viewsets.ModelViewSet):
     
         #Set serializer data to the response 
         response = objuserSerializer.data
-        jsondata = JSONRenderer().render(response)
-
-        userDetail= json.loads(jsondata)
 
         userSubjectCodeID = getUserSubjectCode(userInfo)
         userGradeCodeID = getUserGradeCode(userInfo)
         userTopicCodeID = getUsertopicCode(userInfo)
         userSkillCodeID = getUserSkillCode(userInfo)
 
-        userDetail[0]["subjectCodeIDs"] = userSubjectCodeID if userSubjectCodeID else None
-        userDetail[0]["gradeCodeIDs"] = userGradeCodeID if userGradeCodeID else None
-        userDetail[0]["topicCodeIDs"] = userTopicCodeID if userTopicCodeID else None
-        userDetail[0]["skillCodeIDs"] = userSkillCodeID if userSkillCodeID else None
+        response[0]["subjectCodeIDs"] = userSubjectCodeID if userSubjectCodeID else None
+        response[0]["gradeCodeIDs"] = userGradeCodeID if userGradeCodeID else None
+        response[0]["topicCodeIDs"] = userTopicCodeID if userTopicCodeID else None
+        response[0]["skillCodeIDs"] = userSkillCodeID if userSkillCodeID else None
 
-        return Response({"response_message": constants.messages.success, "data": userDetail})
+        return Response({"response_message": constants.messages.success, "data": response})
 
 #     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])
 #     def opentoAll(self,request):
