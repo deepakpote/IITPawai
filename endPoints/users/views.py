@@ -15,9 +15,6 @@ import plivo
 from datetime import datetime, timedelta
 from django.utils import timezone
 
-from rest_framework.renderers import JSONRenderer
-import json
-
  
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -342,8 +339,7 @@ class UserViewSet(viewsets.ModelViewSet):
                              status = status.HTTP_401_UNAUTHORIZED)
          
         # get user info
-        userInfo = user.objects.filter(userID = userID)
-
+        userInfo = user.objects.filter(userID = userID).first()
         # If userID parameter is passed, then check user is exists or not
         if not userInfo:
             return Response({"response_message": constants.messages.user_userprofile_user_not_exists,
@@ -351,20 +347,20 @@ class UserViewSet(viewsets.ModelViewSet):
                             status = status.HTTP_404_NOT_FOUND)
 
         #Set query string to the userSerializer
-        objuserSerializer =userSerializer(userInfo, many = True)
+        objUserSerializer = userSerializer(userInfo)
     
         #Set serializer data to the response 
-        response = objuserSerializer.data
+        response = objUserSerializer.data
 
         userSubjectCodeID = getUserSubjectCode(userInfo)
         userGradeCodeID = getUserGradeCode(userInfo)
         userTopicCodeID = getUsertopicCode(userInfo)
         userSkillCodeID = getUserSkillCode(userInfo)
 
-        response[0]["subjectCodeIDs"] = userSubjectCodeID if userSubjectCodeID else None
-        response[0]["gradeCodeIDs"] = userGradeCodeID if userGradeCodeID else None
-        response[0]["topicCodeIDs"] = userTopicCodeID if userTopicCodeID else None
-        response[0]["skillCodeIDs"] = userSkillCodeID if userSkillCodeID else None
+        response["subjectCodeIDs"] = userSubjectCodeID if userSubjectCodeID else None
+        response["gradeCodeIDs"] = userGradeCodeID if userGradeCodeID else None
+        response["topicCodeIDs"] = userTopicCodeID if userTopicCodeID else None
+        response["skillCodeIDs"] = userSkillCodeID if userSkillCodeID else None
 
         return Response({"response_message": constants.messages.success, "data": response})
 
