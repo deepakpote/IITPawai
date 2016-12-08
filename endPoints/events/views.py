@@ -6,7 +6,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework import status
 
 from mitraEndPoints import constants
-from events.serializers import eventQuerySerializer
+from events.serializers import eventQuerySerializer,eventSerializer,eventModelSerializer
 from events.CalenderService import EventsCalender
 
 class EventViewSet(viewsets.ViewSet):
@@ -31,3 +31,19 @@ class EventViewSet(viewsets.ViewSet):
         
         lstEvents=EventViewSet.calender.listEvents(**(queryParameters.data))
         return Response({"response_message": constants.messages.success, "data":lstEvents})
+    
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def addEvent(self, request):
+        objEventSerializer=eventSerializer(data=request.data)
+        
+        if not objEventSerializer.is_valid():
+            return Response({"response_message": constants.messages.event_query_parameters_not_valid, 
+                             "data": []
+                            },
+                            status=status.HTTP_401_UNAUTHORIZED
+                            )
+        
+        result=EventViewSet.calender.addEvent(objEventSerializer.data)
+        objEventModelSerializer=eventModelSerializer()
+        objEventModelSerializer.create(result)
+        return Response({"response_message": constants.messages.success, "data":result})

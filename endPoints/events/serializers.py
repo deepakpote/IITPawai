@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from events.models import eventModel
 
 class eventTimeSerializer(serializers.DictField):
 	dateTime=serializers.DateTimeField()
@@ -15,7 +16,7 @@ class listAttendeeSerializer(serializers.ListField):
 
 # nested object serializer for event
 class eventSerializer(serializers.Serializer):
-	id = serializers.CharField(required=True)
+	#id = serializers.CharField(required=True)
 	summary = serializers.CharField()
 	location = serializers.CharField()
 	description = serializers.CharField()
@@ -27,11 +28,21 @@ class eventSerializer(serializers.Serializer):
 
 # object serializer for query filter parameters
 class eventQuerySerializer(serializers.Serializer):
-	timeMin = serializers.CharField()
-	timeMax = serializers.CharField()
+	timeMin = serializers.DateTimeField()
+	timeMax = serializers.DateTimeField()
 	orderBy = serializers.CharField()
 	singleEvents = serializers.BooleanField()
 	maxResults = serializers.IntegerField()
 	#subjectCodeIDs = serializers.CharField()
 	#districtCodeIDs = serializers.CharField()
 	
+class eventModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = eventModel
+        fields = ('eventID')
+        depth = 1
+        
+    def create(self, validated_data):
+        objEvent = eventModel(eventID=validated_data['id'])
+        objEvent.save()
+        return objEvent
