@@ -29,12 +29,12 @@ class messages():
     update_profile_user_not_exists = 100125
     registration_fcm_device_id_cannot_be_empty = 100127
     signin_fcm_device_id_cannot_be_empty = 100128
-    save_download_response__contentid_cannot_be_empty = 100129
-    save_download_response_content_not_exists = 100130
-    save_download_response_user_not_exists = 100131
-    save_content_share_response__contentid_cannot_be_empty = 100132
-    save_content_share_response_content_not_exists = 100133
-    save_content_share_response_user_not_exists = 100134
+    download_response__contentid_cannot_be_empty = 100129
+    download_response_content_not_exists = 100130
+    download_response_user_not_exists = 100131
+    content_share_response__contentid_cannot_be_empty = 100132
+    content_share_response_content_not_exists = 100133
+    content_share_response_user_not_exists = 100134
     
 class authenticationTypes():
     registration = 110100

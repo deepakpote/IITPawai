@@ -239,7 +239,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             
         # Check if contentID is passed in post param
         if not contentID:
-            return Response({"response_message": constants.messages.save_download_response__contentid_cannot_be_empty,
+            return Response({"response_message": constants.messages.download_response__contentid_cannot_be_empty,
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED) 
                
@@ -247,7 +247,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         try:
             objContent = content.objects.get(contentID = contentID)
         except content.DoesNotExist:
-            return Response({"response_message": constants.messages.save_download_response_content_not_exists,
+            return Response({"response_message": constants.messages.download_response_content_not_exists,
                      "data": []},
                     status = status.HTTP_404_NOT_FOUND)
         
@@ -255,7 +255,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         try:
             objUser = user.objects.get(userID = userID)
         except user.DoesNotExist:
-            return Response({"response_message": constants.messages.save_download_response_user_not_exists,
+            return Response({"response_message": constants.messages.download_response_user_not_exists,
                              "data": []},
                             status = status.HTTP_404_NOT_FOUND)
                                
@@ -285,7 +285,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             
         # Check if contentID is passed in post param
         if not contentID:
-            return Response({"response_message": constants.messages.save_content_share_response__contentid_cannot_be_empty,
+            return Response({"response_message": constants.messages.content_share_response__contentid_cannot_be_empty,
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED) 
                
@@ -293,7 +293,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         try:
             objContent = content.objects.get(contentID = contentID)
         except content.DoesNotExist:
-            return Response({"response_message": constants.messages.save_content_share_response_content_not_exists,
+            return Response({"response_message": constants.messages.content_share_response_content_not_exists,
                      "data": []},
                     status = status.HTTP_404_NOT_FOUND)
         
@@ -301,7 +301,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         try:
             objUser = user.objects.get(userID = userID)
         except user.DoesNotExist:
-            return Response({"response_message": constants.messages.save_content_share_response_user_not_exists,
+            return Response({"response_message": constants.messages.content_share_response_user_not_exists,
                              "data": []},
                             status = status.HTTP_404_NOT_FOUND)
                                
@@ -427,7 +427,7 @@ def saveContentResponse(objContent , objUser, contentResponseType , hasLiked):
         try:
             objContentResponse = contentResponse.objects.get(content = objContent)
         except contentResponse.DoesNotExist:
-        #If not exists then make entry for content response
+            #If not exists then make entry for content response
             contentResponse(user = objUser , content = objContent , downloadCount = 1 ).save()
             # Get the content file name.
             objConfileName = content.objects.filter(contentID = objContent.contentID)
