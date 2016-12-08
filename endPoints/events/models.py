@@ -10,8 +10,8 @@ from users.models import user
 """
 class userEvent(models.Model):
     eventID = models.CharField(primary_key = True,max_length=255)
-    userID = models.CharField(max_length=255)
-    #userID = models.ForeignKey('users.user', on_delete = models.CASCADE, null = False, blank = False,db_column ='userID',related_name = 'userEvent_userID')
+    #userID = models.CharField(max_length=255)
+    userID = models.ForeignKey('users.user', null = False, blank = False, db_column ='userID', related_name = 'userEvent_userID')
     
     class Meta:
         unique_together = ("eventID", "userID")

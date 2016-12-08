@@ -17,7 +17,7 @@ class user(models.Model):
     userName = models.CharField(max_length = 100, null = False)
     photoUrl = models.CharField(max_length = 255, null = True, blank = True)
     udiseCode = models.CharField(max_length = 255, null = True, blank = True)
-    emailID = models.EmailField(max_length = 100, null = True, blank = True)
+    emailID = models.EmailField(unique = True , max_length = 100, null = True, blank = True)
     
     # For district and language, set null = true, so as to allow inserting of admin user - with blank values for these 2 fields. Later on update these 2 fields for admin
     # Further set blank = false, so as to NOT allow blank inputs
@@ -28,7 +28,7 @@ class user(models.Model):
     createdBy = models.ForeignKey('user', null = True, related_name='user_createdBy', db_column = 'createdBy')
     createdOn = models.DateTimeField(auto_now_add=True)
     modifiedBy = models.ForeignKey('user', null = True, related_name='user_modifiedBy', db_column = 'modifiedBy')
-    modifiedOn = models.DateTimeField(auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
 
     
     USERNAME_FIELD = 'phoneNumber'
@@ -82,19 +82,32 @@ class token(models.Model):
         db_table = 'usr_Token'
 
 """
+FCM device model
+"""
+class device(models.Model):
+    deviceID = models.AutoField(primary_key=True)
+    user = models.ForeignKey('user', related_name='device_user', db_column = 'userID')
+    fcmDeviceID =  models.CharField(null = False, max_length = 255, unique=True)
+    createdOn = models.DateTimeField(auto_now=False, auto_now_add = True)
+
+    class Meta:
+        db_table = 'usr_device'
+
+
+"""
 user authentication model
 """                 
 class userAuth(models.Model):
     userAuthID = models.AutoField(primary_key = True)
-    loginID = models.IntegerField(unique = True)
-    password = models.CharField(max_length = 256, null = True)
-    sessionToken = models.CharField(max_length = 256, null = True)
-    lastLoggedInOn = models.DateTimeField(auto_now_add=True)
+    loginID = models.CharField(null = False, unique = True, max_length = 255)
+    password = models.CharField(max_length = 255, null = True)
+    authToken = models.CharField(max_length = 255, null = True)
+    lastLoggedInOn = models.DateTimeField(auto_now=True)
      
     createdBy = models.ForeignKey('user', related_name='userAuth_createdBy', db_column = 'createdBy')
     createdOn = models.DateTimeField(auto_now_add=True)
     modifiedBy = models.ForeignKey('user', related_name='userAuth_modifiedBy', db_column = 'modifiedBy')
-    modifiedOn = models.DateTimeField(auto_now_add=True)
+    modifiedOn = models.DateTimeField(auto_now=True)
      
     class Meta:
         db_table = 'usr_userAuth'
@@ -155,7 +168,7 @@ class userGrade(models.Model):
 #      
 # class language(models.Model):
 #     languageID = models.AutoField(primary_key = True)
-#     languageName =  models.CharField(max_length = 256)
+#     languageName =  models.CharField(max_length = 255)
 #     resourceCode = models.CharField(max_length = 3)
 #     
 #     class Meta:

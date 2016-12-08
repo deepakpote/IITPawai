@@ -13,6 +13,9 @@ class TokenAuthentication(authentication.BaseAuthentication):
         assert authorization.split()[1].split('=')[0] == "token"
         token_string = authorization.split()[1].split('=')[1]
         print token_string
-        token = Token.objects.filter(token=token_string).first()
-        user = token.user
-        return user, None
+        token1 = token.objects.filter(token=token_string).first()
+        user = token1.user
+        if user:
+            return user, None
+        else:
+            return None

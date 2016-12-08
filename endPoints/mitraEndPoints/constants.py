@@ -4,13 +4,64 @@ class messages():
     registration_phone_number_is_invalid = 100102
     registration_otp_is_invalid = 100103
     registration_user_validation_failed = 100104
-    event_query_parameters_not_valid = 100105 # need to reassign 
-    add_event_parameters_not_valid = 100106 # need to reassign 
-    attend_event_parameters_not_valid = 100107 # need to reassign 
+
+    login_token_cannot_be_empty = 100105
+    login_user_token_invalid = 100106
+    user_userid_cannot_be_empty = 100107    
+    teaching_aid_search_contenttype_cannot_be_empty = 100108
+    teaching_aid_search_filetype_cannot_be_empty = 100109
+    sign_in_user_not_registered = 100110
+    registration_user_already_registered = 100111
+    authentication_type_cannot_be_empty = 100112
+    teaching_aid_search_language_cannot_be_empty = 100113
+    teaching_aid_search_no_records_found = 100114
+    teaching_aid_search_user_not_exists = 100115
+    self_learning_search_filetype_cannot_be_empty = 100116
+    self_learning_search_language_cannot_be_empty = 100117
+    self_learning_search_no_records_found = 100118
+    self_learning_search_user_not_exists = 100119
     
+    save_like_user_not_exists = 100120
+    save_like_contentid_cannot_be_empty = 100121
+    save_like_content_not_exists = 100122
+    save_like_hasLiked_cannot_be_empty = 100123
+    save_like_hasLike_value_must_be_boolean = 100124
+
+    update_profile_user_not_exists = 100125
+    user_userprofile_user_not_exists = 100126
+    registration_fcm_device_id_cannot_be_empty = 100127
+    signin_fcm_device_id_cannot_be_empty = 100128
+    
+    event_query_parameters_not_valid = 100135 
+    event_add_parameters_not_valid = 100136 
+    event_attend_parameters_not_valid = 100137 
+
+
+class authenticationTypes():
+    registration = 110100
+    signIn = 110101
+    otpValidityHours = 18.5
+
 class sms():
     authId = "MAOTGWZJI2NDAXNJHMMZ"
     authToken = "NjM3MzAxYzc2ZGQ1MTJjOTY5NjgyNDhhNzUxMDZi"
     srcPhoneNumber = "+919822365522"
     registrationMessage = "Thank you for registering with MITRA. Your OTP Code is : "
+    signInMessage = "Your MITRA Sign In OTP is : "
+
+class mitraCodeGroup():
+    subject = 103 
+    grade = 104   
+    topic = 105
     
+class mitraCode():
+    teachingAids = 107100
+    selfLearning = 107101
+    trainings = 107102
+    
+class contentSearchRecords():
+    default = 20
+
+class language():
+    english = 101100
+    marathi = 101101
