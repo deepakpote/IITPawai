@@ -85,6 +85,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     @BindView(R.id.district_spinner) Spinner districtSpinner;
     @BindView(R.id.profile_photo_image_view) ImageView profilePhotoImageView;
     @BindView(R.id.name_edit_text) EditText nameEditText;
+    @BindView(R.id.udise_edit_text) EditText udiseEditText;
 
     private Uri imageCaptureUri;
     private final int PICK_PROFILE = 0;
@@ -178,25 +179,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
 
-        RealmResults<CommonCode> subjectList = Realm.getDefaultInstance().where(CommonCode.class)
-                .equalTo("codeGroupID", CommonCodeGroup.SUBJECTS).findAll();
-
-        Logger.d("subjectList size: " + subjectList.size());
-
-
         otp = MitraSharedPreferences.readFromPreferences(getApplicationContext(), "OTP", "");
-        Logger.d(" otp "  + otp);
-
-        this.context = getApplicationContext();
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        subjectRecyclerView.setHasFixedSize(true);
-        subjectRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
-        subjectRecyclerView.setAdapter(new ProfileActivitySubjectsAdapter(selectedSubjectsList));
-
-        gradeRecyclerView.setHasFixedSize(true);
-        gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
-        gradeRecyclerView.setAdapter(new ProfileActivityGradesAdapter(selectedGradesList));
 
         RealmResults<CommonCode> iAmList = Realm.getDefaultInstance().where(CommonCode.class)
                 .equalTo("codeGroupID", CommonCodeGroup.USER_TYPE).findAll();
@@ -219,7 +202,78 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                 R.layout.custom_spinner_dropdown_item, districts);
         districtSpinner.setAdapter(districtAdapter);
 
+        RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
+                .where(DbUser.class).findAll();
+        if(dbUser.size() == 1) {
+            setDefaultValues(dbUser.get(0));
+        }
+
+        this.context = getApplicationContext();
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        subjectRecyclerView.setHasFixedSize(true);
+        subjectRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
+        subjectRecyclerView.setAdapter(new ProfileActivitySubjectsAdapter(selectedSubjectsList));
+
+        gradeRecyclerView.setHasFixedSize(true);
+        gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
+        gradeRecyclerView.setAdapter(new ProfileActivityGradesAdapter(selectedGradesList));
+
         Glide.with(this).load(R.drawable.placeholder_user).bitmapTransform(new CropCircleTransformation(getApplicationContext())).into(profilePhotoImageView);
+    }
+
+    private void setDefaultValues(DbUser dbUser) {
+        nameEditText.setText(dbUser.getName());
+        udiseEditText.setText(dbUser.getUdise());
+        String userTypeId = dbUser.getUserType();
+        userTypeSpinner.setSelection(getIndexForUserTypeSpinner(userTypeId));
+        String spinnerId = dbUser.getDistrict();
+        districtSpinner.setSelection(getIndexForDistrictSpinner(spinnerId));
+
+        RealmList<DbSubject> dbSubjects = dbUser.getSubjects();
+        List<BaseObject> subjectList = new ArrayList<>();
+        for(DbSubject subject : dbSubjects) {
+            subjectList.add(new BaseObject(CommonCodeUtils.
+                    getObjectFromCode(subject.getSubjectCommonCode()),
+                    false));
+        }
+        selectedSubjectsList = subjectList;
+        if(!selectedSubjectsList.isEmpty()) {
+            subjectPlaceholderTextView.setVisibility(View.GONE);
+        }
+
+        RealmList<DbGrade> dbGrades = dbUser.getGrades();
+        List<BaseObject> gradeList = new ArrayList<>();
+        for(DbGrade grade : dbGrades) {
+            gradeList.add(new BaseObject(CommonCodeUtils.getObjectFromCode(grade.getGradeCommonCode()),
+                    false));
+        }
+        selectedGradesList = gradeList;
+        if(!selectedGradesList.isEmpty()) {
+            gradePlaceholderTextView.setVisibility(View.GONE);
+        }
+    }
+
+    private int getIndexForDistrictSpinner(String spinnerId) {
+        int i;
+        for(i = 0 ; i < districtSpinner.getCount() ; i ++) {
+            String id =((CommonCode)districtSpinner.getItemAtPosition(i)).getCodeID();
+            if(id.equals(spinnerId)) {
+                break;
+            }
+        }
+        return i;
+    }
+
+    private int getIndexForUserTypeSpinner(String userTypeId) {
+        int i;
+        for(i = 0 ; i < userTypeSpinner.getCount() ; i ++) {
+            String id =((CommonCode)userTypeSpinner.getItemAtPosition(i)).getCodeID();
+            if(id.equals(userTypeId)) {
+                break;
+            }
+        }
+        return i;
     }
 
     @Override
@@ -246,6 +300,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                         getSelectedUserTypeId(), languageCode);
                 final DbUser dbUser = new DbUser(nameEditText.getText().toString(),getSelectedUserTypeId(),getSelectedDistrictID());
                 dbUser.setPreferredLanguage(languageCode);
+
+                if(!StringUtils.isEmpty(udiseEditText.getText().toString())) {
+                    user.setUdiseCode(udiseEditText.getText().toString());
+                    dbUser.setUdise(udiseEditText.getText().toString());
+                }
 
                 //set the fcm token
                 String token = FirebaseInstanceId.getInstance().getToken();

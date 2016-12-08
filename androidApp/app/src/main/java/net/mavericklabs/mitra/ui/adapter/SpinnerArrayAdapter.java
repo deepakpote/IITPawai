@@ -87,8 +87,7 @@ public class SpinnerArrayAdapter extends ArrayAdapter<CommonCode> {
         return row;
     }
 
-    private static class CodeHolder
-    {
+    private static class CodeHolder {
         TextView textView;
     }
 }

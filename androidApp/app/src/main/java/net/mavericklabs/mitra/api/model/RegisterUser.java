@@ -25,6 +25,9 @@ public class RegisterUser {
     @SerializedName("userType")
     private String userType;
 
+    @SerializedName("udiseCode")
+    private String udiseCode;
+
     @SerializedName("subjectCodeIDs")
     private String subjectCodeIds;
 
@@ -118,4 +121,14 @@ public class RegisterUser {
     public void setFcmDeviceId(String fcmDeviceId) {
         this.fcmDeviceId = fcmDeviceId;
     }
+
+
+    public String getUdiseCode() {
+        return udiseCode;
+    }
+
+    public void setUdiseCode(String udiseCode) {
+        this.udiseCode = udiseCode;
+    }
+
 }
