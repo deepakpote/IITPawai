@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ /*
+  ~  * ************************************************************************
+  ~  *
+  ~  *  MAVERICK LABS CONFIDENTIAL
+  ~  *  __________________
+  ~  *
+  ~  *   [2015] Maverick Labs
+  ~  *   All Rights Reserved.
+  ~  *
+  ~  *  NOTICE:  All information contained herein is, and remains
+  ~  *  the property of Maverick Labs and its suppliers,
+  ~  *  if any.  The intellectual and technical concepts contained
+  ~  *  herein are proprietary to Maverick Labs
+  ~  *  and its suppliers and may be covered by U.S. and Foreign Patents,
+  ~  *  patents in process, and are protected by trade secret or copyright law.
+  ~  *  Dissemination of this information or reproduction of this material
+  ~  *  is strictly forbidden unless prior written permission is obtained
+  ~  *  from Maverick Labs.
+  ~  * /
+  ~  */
+  -->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall">
+
+    <ImageView
+        android:id="@+id/event_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:layout_gravity="center"
+        />
+
+
+</FrameLayout>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ /*
+  ~  * ************************************************************************
+  ~  *
+  ~  *  MAVERICK LABS CONFIDENTIAL
+  ~  *  __________________
+  ~  *
+  ~  *   [2015] Maverick Labs
+  ~  *   All Rights Reserved.
+  ~  *
+  ~  *  NOTICE:  All information contained herein is, and remains
+  ~  *  the property of Maverick Labs and its suppliers,
+  ~  *  if any.  The intellectual and technical concepts contained
+  ~  *  herein are proprietary to Maverick Labs
+  ~  *  and its suppliers and may be covered by U.S. and Foreign Patents,
+  ~  *  patents in process, and are protected by trade secret or copyright law.
+  ~  *  Dissemination of this information or reproduction of this material
+  ~  *  is strictly forbidden unless prior written permission is obtained
+  ~  *  from Maverick Labs.
+  ~  * /
+  ~  */
+  -->
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp">
+
+            <TextView
+                android:id="@+id/training_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Name of Training"
+                style="@style/ColoredTitle"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Date | Place | Trainer"
+                android:layout_below="@id/training_title"
+                android:layout_marginLeft ="16dp"
+                android:layout_marginStart ="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Description \nLorem ipsum\ndolor sit"
+                android:layout_below="@id/details"
+                android:layout_marginLeft ="16dp"
+                android:layout_marginStart ="16dp"/>
+
+            <Button
+                android:id="@+id/attend_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Attend"
+                android:textColor="@color/colorAccent"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_below="@id/description"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Alternate Dates"
+                android:textColor="@color/colorAccent"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_below="@id/description"
+                android:layout_toRightOf="@id/attend_button"
+                android:layout_toEndOf="@id/attend_button"/>
+
+        </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>
