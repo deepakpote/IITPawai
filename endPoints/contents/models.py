@@ -19,7 +19,7 @@ class content(models.Model):
     fileType = models.ForeignKey('commons.code', db_column='fileTypeCodeID', related_name='content_fileTypeCodeID')
     fileName = models.CharField(null = False, max_length = 255)
     
-    author = models.ForeignKey('users.user', related_name='content_author', db_column = 'author')
+    author = models.CharField(null = False, max_length = 255)
     objectives = models.TextField(null = True)
     
     language = models.ForeignKey('commons.code', db_column='languageCodeID', related_name='content_languageCodeID')
