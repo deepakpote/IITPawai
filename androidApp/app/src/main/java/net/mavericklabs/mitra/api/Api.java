@@ -1,6 +1,7 @@
 package net.mavericklabs.mitra.api;
 
 import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.EventRequest;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.api.model.LikeRequest;
@@ -13,6 +14,7 @@ import net.mavericklabs.mitra.api.model.RegisterUser;
 import net.mavericklabs.mitra.api.model.RegisterUserResponse;
 import net.mavericklabs.mitra.api.model.VerifyUserOtp;
 import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.model.Event;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -50,4 +52,7 @@ public interface Api {
 
     @POST("content/like/")
     Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);
+
+    @POST("events/listEvents/")
+    Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);
 }
