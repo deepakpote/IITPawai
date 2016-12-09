@@ -19,10 +19,15 @@ import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
+import net.mavericklabs.mitra.api.model.LoginUser;
 import net.mavericklabs.mitra.api.model.NewUser;
 import net.mavericklabs.mitra.api.model.RegisterUser;
 import net.mavericklabs.mitra.api.model.Token;
 import net.mavericklabs.mitra.api.model.VerifyUserOtp;
+import net.mavericklabs.mitra.database.model.DbGrade;
+import net.mavericklabs.mitra.database.model.DbSubject;
+import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
@@ -30,10 +35,14 @@ import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import org.json.JSONArray;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTouch;
+import io.realm.Realm;
+import io.realm.RealmList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -157,22 +166,24 @@ public class VerifyOtpActivity extends AppCompatActivity {
                 RestClient.getApiService("").verifyOtp(verifyUserOtp).enqueue(new Callback<BaseModel<Token>>() {
                     @Override
                     public void onResponse(Call<BaseModel<Token>> call, Response<BaseModel<Token>> response) {
-                        progressDialog.dismiss();
                         if(response.isSuccessful()) {
                             if(isFromSignIn) {
                                 String token = response.body().getData().get(0).getToken();
+                                String userId = response.body().getData().get(0).getUserId();
                                 UserDetailUtils.saveToken(token,getApplicationContext());
+                                UserDetailUtils.saveUserId(userId,getApplicationContext());
                                 UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),true);
-                                Intent home = new Intent(VerifyOtpActivity.this,HomeActivity.class);
-                                startActivity(home);
-                                finishAffinity();
+                                fetchUserDetails(progressDialog);
                             } else {
+                                progressDialog.dismiss();
                                 UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),true);
                                 Intent almostDone = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
                                 MitraSharedPreferences.saveToPreferences(getApplicationContext(), "OTP", otpEditText.getText().toString());
                                 startActivity(almostDone);
                             }
+                            progressDialog.dismiss();
                         } else {
+                            progressDialog.dismiss();
                             Toast.makeText(getApplicationContext(), R.string.error_please_enter_6_digit_otp,Toast.LENGTH_LONG).show();
                         }
                     }
@@ -188,6 +199,56 @@ public class VerifyOtpActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void fetchUserDetails(final ProgressDialog progressDialog) {
+        String userId = UserDetailUtils.getUserId(getApplicationContext());
+        RestClient.getApiService("").getUserDetails(userId)
+                .enqueue(new Callback<BaseModel<LoginUser>>() {
+                    @Override
+                    public void onResponse(Call<BaseModel<LoginUser>> call, Response<BaseModel<LoginUser>> response) {
+                        if(response.isSuccessful()) {
+                            LoginUser user = response.body().getData().get(0);
+                            DbUser dbUser = new DbUser(user.getUserName(),user.getUserType(),user.getDistrict());
+                            dbUser.setPreferredLanguage(user.getPreferredLanguage());
+                            dbUser.setUdise(user.getUdiseCode());
+
+                            if(!StringUtils.isEmpty(user.getSubjectCodeIDs())) {
+                                List<String> subjectCodes = StringUtils.splitCommas(user.getSubjectCodeIDs());
+                                RealmList<DbSubject> dbSubjects = new RealmList<DbSubject>();
+                                for(String code : subjectCodes) {
+                                    dbSubjects.add(new DbSubject(code));
+                                }
+                                dbUser.setSubjects(dbSubjects);
+                            }
+
+                            if(!StringUtils.isEmpty(user.getGradeCodeIDs())) {
+                                List<String> gradeCodes = StringUtils.splitCommas(user.getGradeCodeIDs());
+                                RealmList<DbGrade> dbGrade = new RealmList<DbGrade>();
+                                for(String code : gradeCodes) {
+                                    dbGrade.add(new DbGrade(code));
+                                }
+                                dbUser.setGrades(dbGrade);
+                            }
+
+                            Realm realm = Realm.getDefaultInstance();
+                            realm.beginTransaction();
+
+                            realm.copyToRealm(dbUser);
+                            realm.commitTransaction();
+
+                            progressDialog.dismiss();
+                            Intent home = new Intent(VerifyOtpActivity.this,HomeActivity.class);
+                            startActivity(home);
+                        }
+                        progressDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onFailure(Call<BaseModel<LoginUser>> call, Throwable t) {
+                        progressDialog.dismiss();
+                    }
+                });
     }
 
     @Override

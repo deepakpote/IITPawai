@@ -10,6 +10,17 @@ public class Token {
     @SerializedName("token")
     private String token;
 
+    @SerializedName("userID")
+    private String userId;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public Token(String token) {
         this.token = token;
     }

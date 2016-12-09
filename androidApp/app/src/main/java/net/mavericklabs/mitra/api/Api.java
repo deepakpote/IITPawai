@@ -1,6 +1,7 @@
 package net.mavericklabs.mitra.api;
 
 import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.LoginUser;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.api.model.LikeRequest;
@@ -18,6 +19,7 @@ import net.mavericklabs.mitra.model.Content;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 
@@ -36,10 +38,6 @@ public interface Api {
     @POST("user/register/")
     Call<BaseModel<RegisterUserResponse>> registerUser(@Body RegisterUser user);
 
-    @POST("user/login/")
-    Call<BaseModel<GenericListDataModel>> loginUser(@Field("phoneNumber") String phoneNumber,
-                                                    @Field("token") String token);
-
     @GET("code/")
     Call<BaseModel<CommonCode>> getCodeNameList();
 
@@ -52,7 +50,12 @@ public interface Api {
     @POST("content/like/")
     Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);
 
-    @POST("user/savelanguage")
+    @POST("user/savelanguage/")
+    @FormUrlEncoded
     Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("userID") String userId,
                                                        @Field("preferredLanguage") String languageCode);
+
+    @POST("user/detail/")
+    @FormUrlEncoded
+    Call<BaseModel<LoginUser>> getUserDetails(@Field("userID") String userId);
 }
