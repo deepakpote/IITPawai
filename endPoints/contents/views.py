@@ -2,9 +2,9 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets,permissions
-from contents.serializers import contentSerializer
+from contents.serializers import contentSerializer 
 
-from contents.models import content , contentResponse
+from contents.models import content , contentResponse 
 from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic
 from mitraEndPoints import constants , utils
@@ -313,6 +313,52 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         #Return the response
         return Response({"response_message": constants.messages.success, "data": [response]})
+    
+    """
+    API to get the content response : Liked
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def getContentResponse(self,request):
+        # get inputs
+        userID = request.data.get('userID') 
+        contentID = request.data.get('contentID')
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if contentID is passed in post param
+        if not contentID:
+            return Response({"response_message": constants.messages.get_content_response_contentid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+               
+        # If contentID parameter is passed, then check content exists or not
+        try:
+            objContent = content.objects.get(contentID = contentID)
+        except content.DoesNotExist:
+            return Response({"response_message": constants.messages.get_content_response_content_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.get_content_response_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+                               
+        # Save content share response and return file name of that content.
+        objContentResponse = getContentResponseDetails(objContent, objUser)
+                    
+        #set the file name to the response.
+        response = { 'hasLiked' : objContentResponse.hasLiked }
+        
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": [response]})
         
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs, objUser):
@@ -456,4 +502,21 @@ def saveContentResponse(objContent , objUser, contentResponseType , hasLiked):
         # Get the content file name.
         objConfileName = content.objects.filter(contentID = objContent.contentID)
         return objConfileName[0].fileName
-    
+
+"""
+function to get the content response for Like/download/share.
+"""
+def getContentResponseDetails(objContent, objUser):
+        
+        #Check any response for the content exists or not.
+        try:
+            objContentResponse = contentResponse.objects.get(content = objContent , user = objUser)
+        except contentResponse.DoesNotExist:
+            #If not exists.It means no single response has been made for this content.
+            objContentResponse = contentResponse()
+            objContentResponse.hasLiked = False
+            objContentResponse.downloadCount = 0
+            objContentResponse.sharedCount = 0
+            return objContentResponse
+        # If response exists then return the response.
+        return objContentResponse
