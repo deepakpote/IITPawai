@@ -4,6 +4,7 @@ class messages():
     registration_phone_number_is_invalid = 100102
     registration_otp_is_invalid = 100103
     registration_user_validation_failed = 100104
+
     login_token_cannot_be_empty = 100105
     login_user_token_invalid = 100106
     user_userid_cannot_be_empty = 100107    
@@ -36,12 +37,21 @@ class messages():
     content_share_response__contentid_cannot_be_empty = 100132
     content_share_response_content_not_exists = 100133
     content_share_response_user_not_exists = 100134
+
     save_usercontent_contentid_cannot_be_empty = 100135
     save_usercontent_user_id_not_exists = 100136
     save_usercontent_content_id_not_exists = 100137
-
+    get_content_response_contentid_cannot_be_empty = 100138
+    get_content_response_content_not_exists = 100139
+    get_content_response_user_not_exists = 100140
     save_usercontent_user_id_allerady_exists = 100141
     
+    event_list_invalid_input = 100143 
+    event_add_invalid_input = 100144 
+    event_attend_eventid_cannot_be_empty = 100145 
+    event_attend_user_does_not_exists = 100146
+    event_attend_user_already_attending_event = 100147
+
 
 class authenticationTypes():
     registration = 110100
