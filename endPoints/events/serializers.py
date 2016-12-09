@@ -16,7 +16,7 @@ class listAttendeeSerializer(serializers.ListField):
 
 # nested object serializer for event
 class eventSerializer(serializers.Serializer):
-	#id = serializers.CharField(required=True)
+	id = serializers.CharField(required=True)
 	summary = serializers.CharField()
 	location = serializers.CharField()
 	description = serializers.CharField()
@@ -40,9 +40,9 @@ class eventQuerySerializer(serializers.Serializer):
 class userEventModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = userEvent
-        fields = ('eventID','userID')
+        fields = ('event','user')
         
     def create(self, validated_data):
-        objEvent = userEvent(eventID=validated_data['eventID'],userID=validated_data['userID'])
+        objEvent = userEvent(eventID=validated_data['event'],userID=validated_data['user'])
         objEvent.save()
         return objEvent

@@ -32,9 +32,11 @@ class messages():
     registration_fcm_device_id_cannot_be_empty = 100127
     signin_fcm_device_id_cannot_be_empty = 100128
     
-    event_query_parameters_not_valid = 100135 
-    event_add_parameters_not_valid = 100136 
-    event_attend_parameters_not_valid = 100137 
+    event_list_invalid_input = 100143 
+    event_add_invalid_input = 100144 
+    event_attend_eventid_cannot_be_empty = 100145 
+    event_attend_user_does_not_exists = 100146
+    event_attend_user_already_attending_event = 100147
 
 
 class authenticationTypes():
