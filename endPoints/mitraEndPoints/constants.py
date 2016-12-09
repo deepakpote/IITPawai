@@ -36,6 +36,11 @@ class messages():
     content_share_response__contentid_cannot_be_empty = 100132
     content_share_response_content_not_exists = 100133
     content_share_response_user_not_exists = 100134
+    save_usercontent_contentid_cannot_be_empty = 100135
+    save_usercontent_user_id_not_exists = 100136
+    save_usercontent_content_id_not_exists = 100137
+
+    save_usercontent_user_id_allerady_exists = 100141
     
 
 class authenticationTypes():

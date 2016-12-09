@@ -163,7 +163,19 @@ class userGrade(models.Model):
     modifiedOn = models.DateTimeField(auto_now=True)
  
     class Meta:
-        db_table = 'usr_userGrade'        
+        db_table = 'usr_userGrade'   
+"""
+user content model
+"""
+class userContent(models.Model):
+    userContentID = models.AutoField(primary_key=True)
+    content = models.ForeignKey('contents.content', db_column='contentID', related_name='userContent_contentID')
+    user = models.ForeignKey('user', db_column='userID', related_name='userContent_userID')
+    createdOn = models.DateTimeField(auto_now=False, auto_now_add=True)
+
+    class Meta:
+        db_table = 'usr_userContent'
+        unique_together = ('content', 'user')     
 
 #      
 # class language(models.Model):
