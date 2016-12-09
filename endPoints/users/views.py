@@ -362,7 +362,7 @@ class UserViewSet(viewsets.ModelViewSet):
         response["topicCodeIDs"] = userTopicCodeID if userTopicCodeID else None
         response["skillCodeIDs"] = userSkillCodeID if userSkillCodeID else None
 
-        return Response({"response_message": constants.messages.success, "data": response})
+        return Response({"response_message": constants.messages.success, "data": [response]})
     """
     API to save user content
     """
