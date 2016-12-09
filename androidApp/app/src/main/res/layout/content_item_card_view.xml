@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:background="@color/default_grey">
+            android:background="@drawable/gradient_background">
 
             <com.google.android.youtube.player.YouTubeThumbnailView
                 android:id="@+id/youtube_thumbnail"
@@ -53,12 +53,17 @@
                 android:visibility="gone"/>
 
             <ImageView
-                android:id="@+id/file_icon"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@drawable/pdf_512"
+                android:id="@+id/overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:visibility="gone"
+                android:background="@drawable/gradient_background"/>
+
+            <ImageView
+                android:id="@+id/file_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:contentDescription="pdf"/>
 
         </RelativeLayout>

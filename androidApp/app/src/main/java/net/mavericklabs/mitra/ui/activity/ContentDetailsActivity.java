@@ -24,6 +24,7 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.media.Image;
 import android.os.Bundle;
@@ -59,6 +60,7 @@ import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.RequirementsListAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.DisplayUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
@@ -103,6 +105,12 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
     @BindView(R.id.like_icon)
     ImageView likeIcon;
+
+    @BindView(R.id.youtube_layout)
+    RelativeLayout youTubeLayout;
+
+    @BindView(R.id.content_layout)
+    RelativeLayout contentLayout;
 
     @OnClick(R.id.like_icon)
     void likeContent() {
@@ -171,17 +179,23 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
         }
 
         if(content != null) {
+            DisplayUtils.displayFileIcon(content.getFileType(), contentImageView);
+
             //Load Video
             if(content.getFileType().equals(Constants.FileTypeVideo)) {
 
+                youTubeLayout.setVisibility(View.VISIBLE);
+                contentImageView.setVisibility(View.GONE);
+                contentLayout.setBackgroundColor(Color.BLACK);
                 YouTubePlayerSupportFragment frag =
                         (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
                 frag.initialize(Constants.youtubeDeveloperKey, this);
 
-                contentImageView.setVisibility(View.GONE);
             } else {
                 //Show file Icon
                 contentImageView.setVisibility(View.VISIBLE);
+                youTubeLayout.setVisibility(View.GONE);
+                contentLayout.setBackgroundResource(R.drawable.gradient_background);
                 contentImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
