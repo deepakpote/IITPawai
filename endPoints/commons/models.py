@@ -40,10 +40,9 @@ news model
 """                 
 class news(models.Model):
     newsID = models.AutoField(primary_key = True)
-    newsTitle = models.CharField(null = False, unique = True, max_length = 255)
-    description = models.TextField(null = True)
+    newsTitle = models.CharField(null = False , max_length = 255)
     author = models.CharField(null = False, max_length = 255)
-    image = models.CharField(null = True, max_length = 255)
+    imageURL = models.CharField(null = True, max_length = 255)
     content = models.TextField(null = True)
      
     createdBy = models.ForeignKey('users.user', related_name='news_createdBy', db_column = 'createdBy')
