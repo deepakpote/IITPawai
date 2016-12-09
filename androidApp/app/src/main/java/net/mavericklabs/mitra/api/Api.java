@@ -50,6 +50,11 @@ public interface Api {
     @POST("content/like/")
     Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);
 
+    @POST("user/contentSave/")
+    @FormUrlEncoded
+    Call<BaseModel<GenericListDataModel>> saveContent(@Field("userID") String userId,
+                                                      @Field("contentID") String contentId);
+
     @POST("user/savelanguage/")
     @FormUrlEncoded
     Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("userID") String userId,
