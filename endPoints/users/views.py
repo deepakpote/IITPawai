@@ -7,14 +7,14 @@ from rest_framework import status
 from rest_framework import viewsets,permissions
 from users.serializers import userSerializer, otpSerializer
 
-from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth, device
+from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth, device, userContent
 from commons.models import code
 from mitraEndPoints import constants
 import random
 import plivo
 from datetime import datetime, timedelta
 from django.utils import timezone
-
+from contents.models import content
  
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -363,7 +363,61 @@ class UserViewSet(viewsets.ModelViewSet):
         response["skillCodeIDs"] = userSkillCodeID if userSkillCodeID else None
 
         return Response({"response_message": constants.messages.success, "data": response})
+    """
+    API to save user content
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def contentSave(self,request):
+        """Save user content
+        args:
+            request : passed userID,contentID as parameter to request object
+        returns:
+            Response: Save the user content detail
 
+        """
+        userID = request.data.get("userID")
+        contentID = request.data.get("contentID")
+
+        # check userID is passed as parameter in post
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+
+        # check contentID is passed as parameter in post    
+        if not contentID:
+            return Response({"response_message": constants.messages.save_usercontent_contentid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+
+        # If contentID parameter is passed, then check content exists or not
+        try:
+            objContent = content.objects.get(contentID = contentID)
+        except content.DoesNotExist:
+            return Response({"response_message": constants.messages.save_usercontent_content_id_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.save_usercontent_user_id_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+
+        # If userIDis allready present in userContent
+        objUserContentUserInfo = userContent.objects.filter(user = objUser, content = objContent)
+        
+        if objUserContentUserInfo:
+            return Response({"response_message": constants.messages.save_usercontent_user_id_allready_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+
+        # Save user content detail
+        userContent(user = objUser,content = objContent).save()
+
+        return Response({"response_message": constants.messages.success, "data": []})
 #     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])
 #     def opentoAll(self,request):
 #         return Response({"hello"})
