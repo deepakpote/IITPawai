@@ -44,7 +44,7 @@ class messages():
     get_content_response_contentid_cannot_be_empty = 100138
     get_content_response_content_not_exists = 100139
     get_content_response_user_not_exists = 100140
-    save_usercontent_user_id_allerady_exists = 100141
+    save_usercontent_user_id_allready_exists = 100141
     
     event_list_invalid_input = 100143 
     event_add_invalid_input = 100144 

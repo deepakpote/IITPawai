@@ -408,12 +408,12 @@ class UserViewSet(viewsets.ModelViewSet):
 
         # If userIDis allready present in userContent
         objUserContentUserInfo = userContent.objects.filter(user = objUser, content = objContent)
-
+        
         if objUserContentUserInfo:
-            return Response({"response_message": constants.messages.save_usercontent_user_id_allerady_exists,
+            return Response({"response_message": constants.messages.save_usercontent_user_id_allready_exists,
                      "data": []},
                     status = status.HTTP_404_NOT_FOUND)
-    
+
         # Save user content detail
         userContent(user = objUser,content = objContent).save()
 
