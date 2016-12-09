@@ -89,7 +89,6 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
     private Uri imageCaptureUri;
     private final int PICK_PROFILE = 0;
-    private Context context;
     private String otp;
     private SpinnerArrayAdapter districtAdapter;
     private List<BaseObject> selectedGradesList = new ArrayList<>();
@@ -224,7 +223,6 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             setDefaultValues(dbUser.get(0));
         }
 
-        this.context = getApplicationContext();
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         subjectRecyclerView.setHasFixedSize(true);
@@ -324,7 +322,10 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
                 //set the fcm token
                 String token = FirebaseInstanceId.getInstance().getToken();
+                //TODO remove after debug
+                token = "qqqqwwwwweeee";
                 user.setFcmDeviceId(token);
+                Logger.d("fcm token set.." + token);
 
                 if(!selectedGradesList.isEmpty()) {
                     List<String> gradeCodeList = getGradeCodeList();

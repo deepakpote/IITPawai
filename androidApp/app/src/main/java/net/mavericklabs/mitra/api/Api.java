@@ -6,6 +6,7 @@ import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.api.model.LikeRequest;
 import net.mavericklabs.mitra.api.model.Token;
 
+import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.NewUser;
@@ -50,4 +51,8 @@ public interface Api {
 
     @POST("content/like/")
     Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);
+
+    @POST("user/savelanguage")
+    Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("userID") String userId,
+                                                       @Field("preferredLanguage") String languageCode);
 }

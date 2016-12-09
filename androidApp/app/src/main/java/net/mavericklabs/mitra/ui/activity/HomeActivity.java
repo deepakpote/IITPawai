@@ -30,6 +30,7 @@ import net.mavericklabs.mitra.ui.fragment.MyResourcesFragment;
 import net.mavericklabs.mitra.ui.fragment.NotificationFragment;
 import net.mavericklabs.mitra.ui.fragment.ProfileFragment;
 import net.mavericklabs.mitra.ui.fragment.SelfLearningFragment;
+import net.mavericklabs.mitra.ui.fragment.SettingsFragment;
 import net.mavericklabs.mitra.ui.fragment.TeachingAidsFragment;
 import net.mavericklabs.mitra.utils.AnimationUtils;
 import net.mavericklabs.mitra.utils.Logger;
@@ -160,9 +161,15 @@ public class HomeActivity extends AppCompatActivity {
                 tabLayout.setVisibility(View.GONE);
                 fragmentClass = EventCalendarFragment.class;
                 break;
-            case R.id.nav_notification:
+
+            //commenting for now. to be implemented in next release.
+//            case R.id.nav_notification:
+//                tabLayout.setVisibility(View.GONE);
+//                fragmentClass = NotificationFragment.class;
+//                break;
+            case R.id.nav_settings:
                 tabLayout.setVisibility(View.GONE);
-                fragmentClass = NotificationFragment.class;
+                fragmentClass = SettingsFragment.class;
                 break;
             default:
                 fragmentClass = HomeFragment.class;
