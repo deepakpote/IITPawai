@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from commons.models import code #district 
+from commons.models import code , news #district 
  
 # class districtSerializer(serializers.HyperlinkedModelSerializer):
 #     class Meta:
@@ -10,5 +10,10 @@ from commons.models import code #district
 class codeSerializer(serializers.ModelSerializer):
     class Meta:
         model = code
-        fields = ('codeID', 'codeGroup','codeNameEn','codeNameMr','displayOrder')        
+        fields = ('codeID', 'codeGroup','codeNameEn','codeNameMr','displayOrder')    
+        
+class newsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = news
+        fields = ('newsID', 'newsTitle','description','author','image','content','createdOn','modifiedOn')
 

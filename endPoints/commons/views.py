@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import list_route
 
-from commons.models import code #district,
-from commons.serializers import codeSerializer #districtSerializer
+from commons.models import code , news #district,
+from commons.serializers import codeSerializer , newsSerializer #districtSerializer
  
 #  
 # class DistrictViewSet(viewsets.ModelViewSet):
@@ -25,5 +25,17 @@ class CodeViewSet(viewsets.ModelViewSet):
     def list(self, request):
         queryset = code.objects.all()
         serializer = codeSerializer(queryset, many = True)
+        return Response({"response_message": "success", "data": serializer.data})
+    
+class NewsViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to read the news
+    """
+    queryset = news.objects.all().order_by('createdOn')
+    serializer_class = newsSerializer
+    
+    def list(self, request):
+        queryset = news.objects.all()
+        serializer = newsSerializer(queryset, many = True)
         return Response({"response_message": "success", "data": serializer.data})
     

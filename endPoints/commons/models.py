@@ -33,4 +33,24 @@ class code(models.Model):
     
     class Meta:
         db_table = 'com_Code'
-        get_latest_by = 'codeNameEn'        
+        get_latest_by = 'codeNameEn'  
+        
+"""
+news model
+"""                 
+class news(models.Model):
+    newsID = models.AutoField(primary_key = True)
+    newsTitle = models.CharField(null = False, unique = True, max_length = 255)
+    description = models.TextField(null = True)
+    author = models.CharField(null = False, max_length = 255)
+    image = models.CharField(null = True, max_length = 255)
+    content = models.TextField(null = True)
+     
+    createdBy = models.ForeignKey('users.user', related_name='news_createdBy', db_column = 'createdBy')
+    createdOn = models.DateTimeField(auto_now_add=True)
+    modifiedBy = models.ForeignKey('users.user', related_name='news_modifiedBy', db_column = 'modifiedBy')
+    modifiedOn = models.DateTimeField(auto_now=True)
+     
+    class Meta:
+        db_table = 'com_News'
+        get_latest_by = 'createdOn'
