@@ -74,9 +74,9 @@ class mitraCode():
     teachingAids = 107100
     selfLearning = 107101
     trainings = 107102
-    like = 110100
-    download = 110101
-    share = 110102
+    like = 111100
+    download = 111101
+    share = 111102
     
 class contentSearchRecords():
     default = 20
