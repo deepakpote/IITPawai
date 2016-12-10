@@ -172,6 +172,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
                                 String userId = response.body().getData().get(0).getUserId();
                                 UserDetailUtils.saveToken(token,getApplicationContext());
                                 UserDetailUtils.saveUserId(userId,getApplicationContext());
+                                Logger.d("User id saved.." + userId);
                                 UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),true);
                                 fetchUserDetails(progressDialog);
                             } else {
@@ -230,6 +231,8 @@ public class VerifyOtpActivity extends AppCompatActivity {
                                 }
                                 dbUser.setGrades(dbGrade);
                             }
+
+                            UserDetailUtils.setEnteredInformation(getApplicationContext(),Boolean.TRUE);
 
                             Realm realm = Realm.getDefaultInstance();
                             realm.beginTransaction();

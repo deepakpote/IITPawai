@@ -322,8 +322,6 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
                 //set the fcm token
                 String token = FirebaseInstanceId.getInstance().getToken();
-                //TODO remove after debug
-                token = "qqqqwwwwweeee";
                 user.setFcmDeviceId(token);
                 Logger.d("fcm token set.." + token);
 
@@ -369,6 +367,9 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                         progressDialog.dismiss();
                         if(response.isSuccessful()) {
                             if(response.body().getData() != null) {
+
+                                //set flag that user has entered his information
+                                UserDetailUtils.setEnteredInformation(getApplicationContext(),Boolean.TRUE);
 
                                 RegisterUserResponse serverResponse = response.body().getData().get(0);
                                 dbUser.setId(serverResponse.getUserID());

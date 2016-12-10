@@ -40,6 +40,8 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
+import static android.view.View.GONE;
+
 /**
  * Created by amoghpalnitkar on 14/11/16.
  */
@@ -60,6 +62,12 @@ public class ProfileFragment extends Fragment {
 
     @BindView(R.id.grade_recycler_view)
     RecyclerView gradeRecyclerView;
+
+    @BindView(R.id.no_subjects_text)
+    TextView noSubjectsTextView;
+
+    @BindView(R.id.no_grades_text)
+    TextView noGradesTextView;
 
     public ProfileFragment() {
         super();
@@ -97,6 +105,11 @@ public class ProfileFragment extends Fragment {
                                                     false));
             }
             subjectRecyclerView.setAdapter(new ProfileActivitySubjectsAdapter(subjectList));
+            if(subjectList.size() == 0) {
+                subjectRecyclerView.setVisibility(GONE);
+            } else {
+                noSubjectsTextView.setVisibility(GONE);
+            }
 
             gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                     LinearLayoutManager.HORIZONTAL,false));
@@ -107,6 +120,11 @@ public class ProfileFragment extends Fragment {
                                         false));
             }
             gradeRecyclerView.setAdapter(new ProfileActivityGradesAdapter(gradeList));
+            if(0 == gradeList.size()) {
+                gradeRecyclerView.setVisibility(GONE);
+            } else {
+                noGradesTextView.setVisibility(GONE);
+            }
         }
         Glide.with(this).
                 load(R.drawable.placeholder_user).
