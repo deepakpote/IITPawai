@@ -1,7 +1,6 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
@@ -42,7 +41,6 @@ import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivityGradesAdapter;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivitySubjectsAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
-import net.mavericklabs.mitra.ui.adapter.SubjectAndGradeFragmentListAdapter;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.ui.fragment.GradeFragment;
 import net.mavericklabs.mitra.ui.fragment.SubjectFragment;
@@ -54,7 +52,6 @@ import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -88,13 +85,14 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     @BindView(R.id.udise_edit_text) EditText udiseEditText;
 
     private Uri imageCaptureUri;
-    private final int PICK_PROFILE = 0;
+    private final int PICK_PROFILE_PHOTO = 0;
     private String otp;
     private SpinnerArrayAdapter districtAdapter;
     private List<BaseObject> selectedGradesList = new ArrayList<>();
     private List<BaseObject> selectedSubjectsList = new ArrayList<>();
     private boolean isGradeFragmentOpen;
     private boolean isSubjectFragmentOpen;
+    private String profilePhotoPath;
 
     @OnClick(R.id.profile_photo_image_view)
     void pickProfilePhoto() {
@@ -112,7 +110,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
             Intent chooserIntent = Intent.createChooser(pickIntent, "Choose profile photo");
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{intent});
-            startActivityForResult(chooserIntent, PICK_PROFILE);
+            startActivityForResult(chooserIntent, PICK_PROFILE_PHOTO);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -216,6 +214,9 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         districtAdapter = new SpinnerArrayAdapter(EditProfileActivity.this,
                 R.layout.custom_spinner_dropdown_item, districts);
         districtSpinner.setAdapter(districtAdapter);
+        Glide.with(this).load(R.drawable.placeholder_user)
+                .bitmapTransform(new CropCircleTransformation(getApplicationContext()))
+                .into(profilePhotoImageView);
 
         RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
                 .where(DbUser.class).findAll();
@@ -232,8 +233,6 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         gradeRecyclerView.setHasFixedSize(true);
         gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
         gradeRecyclerView.setAdapter(new ProfileActivityGradesAdapter(selectedGradesList));
-
-        Glide.with(this).load(R.drawable.placeholder_user).bitmapTransform(new CropCircleTransformation(getApplicationContext())).into(profilePhotoImageView);
     }
 
     private void setDefaultValues(DbUser dbUser) {
@@ -265,6 +264,16 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         selectedGradesList = gradeList;
         if(!selectedGradesList.isEmpty()) {
             gradePlaceholderTextView.setVisibility(View.GONE);
+        }
+
+        if(!StringUtils.isEmpty(dbUser.getProfilePhotoPath())) {
+            Glide.with(this).load(dbUser.getProfilePhotoPath())
+                    .bitmapTransform(new CropCircleTransformation(getApplicationContext()))
+                    .into(profilePhotoImageView);
+        } else {
+            Glide.with(this).load(R.drawable.placeholder_user).
+                    bitmapTransform(new CropCircleTransformation(getApplicationContext())).
+                    into(profilePhotoImageView);
         }
     }
 
@@ -318,6 +327,10 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                 if(!StringUtils.isEmpty(udiseEditText.getText().toString())) {
                     user.setUdiseCode(udiseEditText.getText().toString());
                     dbUser.setUdise(udiseEditText.getText().toString());
+                }
+
+                if(!StringUtils.isEmpty(profilePhotoPath)) {
+                    dbUser.setProfilePhotoPath(profilePhotoPath);
                 }
 
                 //set the fcm token
@@ -462,17 +475,19 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         }
 
         //else proceed
-        if (requestCode == PICK_PROFILE) {
+        if (requestCode == PICK_PROFILE_PHOTO) {
             Logger.d("data is : " + data);
             if(data != null) {
                 imageCaptureUri = data.getData();
                 if(imageCaptureUri != null) {
-                    Glide.with(this).load(imageCaptureUri).
+                    profilePhotoPath = imageCaptureUri.toString();
+                    Glide.with(this).load(imageCaptureUri.toString()).
                             bitmapTransform(new CropCircleTransformation(getApplicationContext())).
                             into(profilePhotoImageView);
                 }
             } else if(imageCaptureUri != null && imageCaptureUri.getPath() != null) {
                     File file = new File(imageCaptureUri.getPath());
+                profilePhotoPath = imageCaptureUri.getPath();
                     Glide.with(this).load(Uri.fromFile(file)).
                             bitmapTransform(new CropCircleTransformation(getApplicationContext())).
                             into(profilePhotoImageView);

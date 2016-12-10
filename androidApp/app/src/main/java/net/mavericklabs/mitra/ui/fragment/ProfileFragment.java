@@ -28,6 +28,7 @@ import net.mavericklabs.mitra.ui.adapter.ProfileActivityGradesAdapter;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivitySubjectsAdapter;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.StringUtils;
 
 import org.w3c.dom.Text;
 
@@ -125,10 +126,17 @@ public class ProfileFragment extends Fragment {
             } else {
                 noGradesTextView.setVisibility(GONE);
             }
+
+            if(!StringUtils.isEmpty(user.getProfilePhotoPath())) {
+                Glide.with(this).load(user.getProfilePhotoPath())
+                        .bitmapTransform(new CropCircleTransformation(getContext()))
+                        .into(profilePhotoImageView);
+            } else {
+                Glide.with(this).load(R.drawable.placeholder_user).
+                        bitmapTransform(new CropCircleTransformation(getContext())).
+                        into(profilePhotoImageView);
+            }
         }
-        Glide.with(this).
-                load(R.drawable.placeholder_user).
-                bitmapTransform(new CropCircleTransformation(getContext())).into(profilePhotoImageView);
     }
 
     @Override

@@ -19,6 +19,7 @@ public class DbUser extends RealmObject {
     private String district;
     private String Udise;
     private String preferredLanguage;
+    private String profilePhotoPath;
     private RealmList<DbSubject> subjects;
     private RealmList<DbGrade> grades;
 
@@ -94,5 +95,13 @@ public class DbUser extends RealmObject {
 
     public void setPreferredLanguage(String preferredLanguage) {
         this.preferredLanguage = preferredLanguage;
+    }
+
+    public String getProfilePhotoPath() {
+        return profilePhotoPath;
+    }
+
+    public void setProfilePhotoPath(String profilePhotoPath) {
+        this.profilePhotoPath = profilePhotoPath;
     }
 }
