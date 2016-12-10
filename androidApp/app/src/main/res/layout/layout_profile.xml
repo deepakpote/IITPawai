@@ -161,23 +161,11 @@
             android:layout_marginRight="16dp"
             />
 
-        <EditText
-            android:id="@+id/phone_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/udise_edit_text"
-            android:layout_marginTop="36dp"
-            android:hint="@string/phone_hint"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:inputType="number"
-            tools:ignore="TextFields" />
-
         <ImageView
             android:id="@+id/less_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/phone_edit_text"
+            android:layout_below="@+id/udise_edit_text"
             android:src="@drawable/ic_expand_less_black_18dp"
             android:layout_centerHorizontal="true"
             android:visibility="gone"
@@ -187,7 +175,7 @@
             android:id="@+id/more_or_less_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/phone_edit_text"
+            android:layout_below="@id/udise_edit_text"
             android:text="@string/more"
             android:layout_marginTop="16dp"
             style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
