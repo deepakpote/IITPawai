@@ -34,6 +34,9 @@ public class RegisterUser {
     @SerializedName("gradeCodeIDs")
     private String gradeCodeIds;
 
+    @SerializedName("topicCodeIDs")
+    private String topicCodeIds;
+
     @SerializedName("preferredLanguage")
     private String preferredLanguage;
 
@@ -131,4 +134,11 @@ public class RegisterUser {
         this.udiseCode = udiseCode;
     }
 
+    public String getTopicCodeIds() {
+        return topicCodeIds;
+    }
+
+    public void setTopicCodeIds(String topicCodeIds) {
+        this.topicCodeIds = topicCodeIds;
+    }
 }

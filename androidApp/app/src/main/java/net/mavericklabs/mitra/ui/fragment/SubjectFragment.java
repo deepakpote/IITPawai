@@ -23,6 +23,7 @@ import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.adapter.SubjectAndGradeFragmentListAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeGroup;
+import net.mavericklabs.mitra.utils.EditProfileDialogFragment;
 import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class SubjectFragment extends DialogFragment {
                 }
             }
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
-            onDialogFragmentDismissedListener.onDialogFragmentDismissed(checkedItems);
+            onDialogFragmentDismissedListener.onDialogFragmentDismissed(checkedItems, EditProfileDialogFragment.ADD_SUBJECT);
             dismiss();
             return true;
         }

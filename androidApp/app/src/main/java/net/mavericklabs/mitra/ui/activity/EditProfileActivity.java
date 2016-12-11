@@ -33,6 +33,7 @@ import net.mavericklabs.mitra.api.model.RegisterUser;
 import net.mavericklabs.mitra.api.model.RegisterUserResponse;
 import net.mavericklabs.mitra.database.model.DbGrade;
 import net.mavericklabs.mitra.database.model.DbSubject;
+import net.mavericklabs.mitra.database.model.DbTopic;
 import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.R;
@@ -44,8 +45,10 @@ import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.ui.fragment.GradeFragment;
 import net.mavericklabs.mitra.ui.fragment.SubjectFragment;
+import net.mavericklabs.mitra.ui.fragment.TopicFragment;
 import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.EditProfileDialogFragment;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
@@ -78,11 +81,13 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     @BindView(R.id.less_image) ImageView lessImage;
     @BindView(R.id.grade_placeholder_text) TextView gradePlaceholderTextView;
     @BindView(R.id.subject_placeholder_text) TextView subjectPlaceholderTextView;
+    @BindView(R.id.topic_placeholder_text) TextView topicPlaceholderTextView;
     @BindView(R.id.i_am_spinner) Spinner userTypeSpinner;
     @BindView(R.id.district_spinner) Spinner districtSpinner;
     @BindView(R.id.profile_photo_image_view) ImageView profilePhotoImageView;
     @BindView(R.id.name_edit_text) EditText nameEditText;
     @BindView(R.id.udise_edit_text) EditText udiseEditText;
+    @BindView(R.id.topic_recycler_view) RecyclerView topicRecyclerView;
 
     private Uri imageCaptureUri;
     private final int PICK_PROFILE_PHOTO = 0;
@@ -90,8 +95,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     private SpinnerArrayAdapter districtAdapter;
     private List<BaseObject> selectedGradesList = new ArrayList<>();
     private List<BaseObject> selectedSubjectsList = new ArrayList<>();
-    private boolean isGradeFragmentOpen;
-    private boolean isSubjectFragmentOpen;
+    private List<BaseObject> selectedTopicsList = new ArrayList<>();
     private String profilePhotoPath;
 
     @OnClick(R.id.profile_photo_image_view)
@@ -118,7 +122,6 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
     @OnClick(R.id.add_grades)
     void showAddGradesMenu() {
-        isGradeFragmentOpen = true;
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -134,17 +137,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         fragmentTransaction.commit();
     }
 
-    private ArrayList<String> getSelectedGradeCodeIds() {
-        ArrayList<String> selectedIds = new ArrayList<>();
-        for(BaseObject grade : selectedGradesList) {
-            selectedIds.add(grade.getCommonCode().getCodeID());
-        }
-        return selectedIds;
-    }
-
     @OnClick(R.id.add_subjects)
     void showAddSubjectsMenu() {
-        isSubjectFragmentOpen = true;
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -160,12 +154,21 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         fragmentTransaction.commit();
     }
 
-    private ArrayList<String> getSelectedSubjectCodeIds() {
-        ArrayList<String> selectedIds = new ArrayList<>();
-        for(BaseObject subject : selectedSubjectsList) {
-            selectedIds.add(subject.getCommonCode().getCodeID());
-        }
-        return selectedIds;
+    @OnClick(R.id.add_topic)
+    void showAddTopicsMenu() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        Bundle bundle = new Bundle();
+        Fragment topicFragment = new TopicFragment();
+        ArrayList<String> selectedCodeIds = getSelectedTopicCodeIds();
+        bundle.putStringArrayList("selected_topic_code_ids",selectedCodeIds);
+        topicFragment.setArguments(bundle);
+
+        fragmentTransaction.setCustomAnimations(R.anim.anim_in, R.anim.anim_out, R.anim.anim_in, R.anim.anim_out);
+        fragmentTransaction.add(android.R.id.content,topicFragment,"ADD_TOPIC");
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
 
@@ -233,6 +236,10 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         gradeRecyclerView.setHasFixedSize(true);
         gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
         gradeRecyclerView.setAdapter(new ProfileActivityGradesAdapter(selectedGradesList));
+
+        topicRecyclerView.setHasFixedSize(true);
+        topicRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
+        topicRecyclerView.setAdapter(new ProfileActivityGradesAdapter(selectedTopicsList));
     }
 
     private void setDefaultValues(DbUser dbUser) {
@@ -262,6 +269,18 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                     false));
         }
         selectedGradesList = gradeList;
+        if(!selectedGradesList.isEmpty()) {
+            gradePlaceholderTextView.setVisibility(View.GONE);
+        }
+
+        RealmList<DbTopic> dbTopics = dbUser.getTopics();
+        List<BaseObject> topicList = new ArrayList<>();
+        for(DbTopic topic : dbTopics) {
+            topicList.add(new BaseObject(CommonCodeUtils.getObjectFromCode(topic.getTopicCommonCode()),
+                    false));
+        }
+        selectedTopicsList = topicList;
+
         if(!selectedGradesList.isEmpty()) {
             gradePlaceholderTextView.setVisibility(View.GONE);
         }
@@ -368,6 +387,21 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                     user.setSubjectCodeIds(subjects);
                 }
 
+                if(!selectedTopicsList.isEmpty()) {
+                    List<String> topicCodeList = getTopicCodeList();
+
+                    //format subject to store into database
+                    RealmList<DbTopic> dbTopics = new RealmList<>();
+                    for(String commonCode : topicCodeList) {
+                        dbTopics.add(new DbTopic(commonCode));
+                    }
+                    dbUser.setTopics(dbTopics);
+
+                    //format subject to be sent to server
+                    String topics = StringUtils.stringify(topicCodeList);
+                    user.setTopicCodeIds(topics);
+                }
+
                 final ProgressDialog progressDialog = new ProgressDialog(EditProfileActivity.this,
                         R.style.ProgressDialog);
                 progressDialog.setMessage(getString(R.string.loading));
@@ -437,10 +471,17 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         return gradeCodeList;
     }
 
+    private List<String> getTopicCodeList() {
+        List<String> topicCodeList = new ArrayList<>();
+        for (BaseObject topicObject : selectedTopicsList) {
+            topicCodeList.add(topicObject.getCommonCode().getCodeID());
+        }
+        return topicCodeList;
+    }
+
     @Override
-    public void onDialogFragmentDismissed(List<BaseObject> checkedItemsList) {
-        if(isGradeFragmentOpen) {
-            isGradeFragmentOpen = false;
+    public void onDialogFragmentDismissed(List<BaseObject> checkedItemsList, int fragmentType) {
+        if(EditProfileDialogFragment.ADD_GRADE == fragmentType) {
             selectedGradesList.clear();
             for(BaseObject checkedItem : checkedItemsList) {
                 selectedGradesList.add(checkedItem);
@@ -449,8 +490,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                 gradePlaceholderTextView.setVisibility(View.GONE);
                 gradeRecyclerView.getAdapter().notifyDataSetChanged();
             }
-        } else if (isSubjectFragmentOpen) {
-            isSubjectFragmentOpen = false;
+        } else if (EditProfileDialogFragment.ADD_SUBJECT == fragmentType) {
             selectedSubjectsList.clear();
             for(BaseObject checkedItem : checkedItemsList) {
                 selectedSubjectsList.add(checkedItem);
@@ -458,6 +498,15 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             if(!selectedSubjectsList.isEmpty()) {
                 subjectPlaceholderTextView.setVisibility(View.GONE);
                 subjectRecyclerView.getAdapter().notifyDataSetChanged();
+            }
+        } else if(EditProfileDialogFragment.ADD_TOPIC == fragmentType) {
+            selectedTopicsList.clear();
+            for(BaseObject checkedItem : checkedItemsList) {
+                selectedTopicsList.add(checkedItem);
+            }
+            if(!selectedTopicsList.isEmpty()) {
+                topicPlaceholderTextView.setVisibility(View.GONE);
+                topicRecyclerView.getAdapter().notifyDataSetChanged();
             }
         }
     }
@@ -509,13 +558,35 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
     private String getSelectedUserTypeId() {
         CommonCode userType = (CommonCode) userTypeSpinner.getSelectedItem();
-        Logger.d(" name  " + userType.getCodeNameEnglish() + " " + userType.getCodeID());
         return userType.getCodeID();
     }
 
     private String getSelectedDistrictID() {
         CommonCode district = (CommonCode) districtSpinner.getSelectedItem();
-        Logger.d(" name  " + district.getCodeNameEnglish() + " " + district.getCodeID());
         return district.getCodeID();
+    }
+
+    private ArrayList<String> getSelectedGradeCodeIds() {
+        ArrayList<String> selectedIds = new ArrayList<>();
+        for(BaseObject grade : selectedGradesList) {
+            selectedIds.add(grade.getCommonCode().getCodeID());
+        }
+        return selectedIds;
+    }
+
+    private ArrayList<String> getSelectedSubjectCodeIds() {
+        ArrayList<String> selectedIds = new ArrayList<>();
+        for(BaseObject subject : selectedSubjectsList) {
+            selectedIds.add(subject.getCommonCode().getCodeID());
+        }
+        return selectedIds;
+    }
+
+    private ArrayList<String> getSelectedTopicCodeIds() {
+        ArrayList<String> selectedIds = new ArrayList<>();
+        for(BaseObject subject : selectedTopicsList) {
+            selectedIds.add(subject.getCommonCode().getCodeID());
+        }
+        return selectedIds;
     }
 }

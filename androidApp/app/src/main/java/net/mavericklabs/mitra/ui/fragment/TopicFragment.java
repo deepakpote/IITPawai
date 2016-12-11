@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,7 +25,6 @@ import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.adapter.SubjectAndGradeFragmentListAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.EditProfileDialogFragment;
-import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,20 +35,19 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
- * Created by amoghpalnitkar on 12/3/16.
+ * Created by amoghpalnitkar on 12/11/16.
  */
 
-public class GradeFragment extends DialogFragment {
-
+public class TopicFragment extends DialogFragment{
     private OnDialogFragmentDismissedListener onDialogFragmentDismissedListener;
     private List<BaseObject> objects;
-    private List<String> selectedGradeCodeIds;
+    private List<String> selectedTopicCodeIds;
 
     @BindView(R.id.subject_or_grade_list_view)
-    ListView gradeListView;
+    ListView topicListView;
 
 
-    public GradeFragment() {
+    public TopicFragment() {
 
     }
 
@@ -56,7 +55,6 @@ public class GradeFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnDialogFragmentDismissedListener) {
-            Logger.d("on attached is instanceof listener..");
             onDialogFragmentDismissedListener = ((OnDialogFragmentDismissedListener)context);
         }
     }
@@ -64,7 +62,6 @@ public class GradeFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Logger.d("on create view called..");
         return inflater.inflate(R.layout.fragment_subject_and_grade,container,false);
     }
 
@@ -79,14 +76,12 @@ public class GradeFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.grade_s);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.topic_s);
 
-        selectedGradeCodeIds = getArguments().getStringArrayList("selected_grade_code_ids");
-        objects = getGradesList();
-        gradeListView.setAdapter(new SubjectAndGradeFragmentListAdapter(getContext(),
-                                    android.R.layout.simple_list_item_multiple_choice,objects));
-
-        gradeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        selectedTopicCodeIds = getArguments().getStringArrayList("selected_topic_code_ids");
+        objects = getSubjectsList();
+        topicListView.setAdapter(new SubjectAndGradeFragmentListAdapter(getContext(),android.R.layout.simple_list_item_multiple_choice,objects));
+        topicListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 CheckedTextView textView = (CheckedTextView) view.findViewById(android.R.id.text1);
@@ -119,7 +114,7 @@ public class GradeFragment extends DialogFragment {
                 }
             }
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
-            onDialogFragmentDismissedListener.onDialogFragmentDismissed(checkedItems, EditProfileDialogFragment.ADD_GRADE);
+            onDialogFragmentDismissedListener.onDialogFragmentDismissed(checkedItems, EditProfileDialogFragment.ADD_TOPIC);
             dismiss();
             return true;
         }
@@ -132,27 +127,31 @@ public class GradeFragment extends DialogFragment {
         return super.onCreateDialog(savedInstanceState);
     }
 
-    private List<BaseObject> getGradesList() {
-        List<BaseObject> objectList = new ArrayList<>();
-        RealmResults<CommonCode> gradeListResult = Realm.getDefaultInstance().where(CommonCode.class)
-                .equalTo("codeGroupID", CommonCodeGroup.GRADES).findAll();
-        List<CommonCode>  gradeList = new ArrayList<>(gradeListResult);
-        for(CommonCode commonCode : gradeList) {
-            BaseObject object= new BaseObject(commonCode,false);
-            for(String selectedGradeCodeId : selectedGradeCodeIds) {
-                if(object.getCommonCode().getCodeID().equals(selectedGradeCodeId)) {
-                    object.setChecked(true);
-                }
-            }
-            Logger.d("object added to grade list : " + object.getCommonCode().getCodeNameForCurrentLocale());
-            objectList.add(object);
-        }
-        return objectList;
-    }
-
     @Override
     public void onDetach() {
         super.onDetach();
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
+    }
+
+
+    private List<BaseObject> getSubjectsList() {
+        List<BaseObject> objectList = new ArrayList<>();
+
+        //TODO fetch topics from db here
+        RealmResults<CommonCode> subjectListResult = Realm.getDefaultInstance().where(CommonCode.class)
+                .equalTo("codeGroupID", CommonCodeGroup.SUBJECTS).findAll();
+
+        List<CommonCode>  subjectsList = new ArrayList<>(subjectListResult);
+
+        for(CommonCode commonCode : subjectsList) {
+            BaseObject object= new BaseObject(commonCode,false);
+            for(String selectedSubjectCodeId : selectedTopicCodeIds) {
+                if(object.getCommonCode().getCodeID().equals(selectedSubjectCodeId)) {
+                    object.setChecked(true);
+                }
+            }
+            objectList.add(object);
+        }
+        return objectList;
     }
 }

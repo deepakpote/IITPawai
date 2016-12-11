@@ -10,5 +10,5 @@ import java.util.List;
  */
 
 public interface OnDialogFragmentDismissedListener {
-    void onDialogFragmentDismissed(List<BaseObject> objectList);
+    void onDialogFragmentDismissed(List<BaseObject> objectList, int sourceFragment);
 }
