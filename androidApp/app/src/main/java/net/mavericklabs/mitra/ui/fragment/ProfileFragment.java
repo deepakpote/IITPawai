@@ -20,6 +20,7 @@ import com.bumptech.glide.Glide;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.database.model.DbGrade;
 import net.mavericklabs.mitra.database.model.DbSubject;
+import net.mavericklabs.mitra.database.model.DbTopic;
 import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
@@ -28,6 +29,7 @@ import net.mavericklabs.mitra.ui.adapter.ProfileActivityGradesAdapter;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivitySubjectsAdapter;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 
 import org.w3c.dom.Text;
@@ -64,11 +66,17 @@ public class ProfileFragment extends Fragment {
     @BindView(R.id.grade_recycler_view)
     RecyclerView gradeRecyclerView;
 
+    @BindView(R.id.topic_recycler_view)
+    RecyclerView topicRecyclerView;
+
     @BindView(R.id.no_subjects_text)
     TextView noSubjectsTextView;
 
     @BindView(R.id.no_grades_text)
     TextView noGradesTextView;
+
+    @BindView(R.id.no_topics_text)
+    TextView noTopicsTextView;
 
     public ProfileFragment() {
         super();
@@ -125,6 +133,23 @@ public class ProfileFragment extends Fragment {
                 gradeRecyclerView.setVisibility(GONE);
             } else {
                 noGradesTextView.setVisibility(GONE);
+            }
+
+            RealmList<DbTopic> dbTopics = user.getTopics();
+            List<BaseObject> topicList = new ArrayList<>();
+            Logger.d("db topics size: " + dbTopics.size());
+            for(DbTopic topic : dbTopics) {
+                topicList.add(new BaseObject(CommonCodeUtils.
+                        getObjectFromCode(topic.getTopicCommonCode()),
+                        false));
+            }
+            Logger.d("db topics size: " + topicList.size());
+            topicRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            topicRecyclerView.setAdapter(new ProfileActivitySubjectsAdapter(topicList));
+            if(topicList.size() == 0) {
+                topicRecyclerView.setVisibility(GONE);
+            } else {
+                noTopicsTextView.setVisibility(GONE);
             }
 
             if(!StringUtils.isEmpty(user.getProfilePhotoPath())) {

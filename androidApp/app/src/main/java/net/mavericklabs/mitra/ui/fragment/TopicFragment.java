@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -79,7 +78,7 @@ public class TopicFragment extends DialogFragment{
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.topic_s);
 
         selectedTopicCodeIds = getArguments().getStringArrayList("selected_topic_code_ids");
-        objects = getSubjectsList();
+        objects = getTopicsList();
         topicListView.setAdapter(new SubjectAndGradeFragmentListAdapter(getContext(),android.R.layout.simple_list_item_multiple_choice,objects));
         topicListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -134,19 +133,17 @@ public class TopicFragment extends DialogFragment{
     }
 
 
-    private List<BaseObject> getSubjectsList() {
+    private List<BaseObject> getTopicsList() {
         List<BaseObject> objectList = new ArrayList<>();
+        RealmResults<CommonCode> topicResultList = Realm.getDefaultInstance().where(CommonCode.class)
+                .equalTo("codeGroupID", CommonCodeGroup.TOPICS).findAll();
 
-        //TODO fetch topics from db here
-        RealmResults<CommonCode> subjectListResult = Realm.getDefaultInstance().where(CommonCode.class)
-                .equalTo("codeGroupID", CommonCodeGroup.SUBJECTS).findAll();
-
-        List<CommonCode>  subjectsList = new ArrayList<>(subjectListResult);
+        List<CommonCode>  subjectsList = new ArrayList<>(topicResultList);
 
         for(CommonCode commonCode : subjectsList) {
             BaseObject object= new BaseObject(commonCode,false);
-            for(String selectedSubjectCodeId : selectedTopicCodeIds) {
-                if(object.getCommonCode().getCodeID().equals(selectedSubjectCodeId)) {
+            for(String selectedTopicCodeIds : this.selectedTopicCodeIds) {
+                if(object.getCommonCode().getCodeID().equals(selectedTopicCodeIds)) {
                     object.setChecked(true);
                 }
             }

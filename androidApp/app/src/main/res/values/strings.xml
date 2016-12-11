@@ -90,5 +90,8 @@
     <string name="cancel">Cancel</string>
     <string name="language_select_confirmation">Are you sure you want to select this as default language?</string>
     <string name="topic_s">Topic/s</string>
+    <string name="no_subjects">No Subjects</string>
+    <string name="no_grades">No Grades</string>
+    <string name="no_topics">No Topics</string>
 
 </resources>

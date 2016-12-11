@@ -26,6 +26,7 @@ import net.mavericklabs.mitra.api.model.Token;
 import net.mavericklabs.mitra.api.model.VerifyUserOtp;
 import net.mavericklabs.mitra.database.model.DbGrade;
 import net.mavericklabs.mitra.database.model.DbSubject;
+import net.mavericklabs.mitra.database.model.DbTopic;
 import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Logger;
@@ -230,6 +231,15 @@ public class VerifyOtpActivity extends AppCompatActivity {
                                     dbGrade.add(new DbGrade(code));
                                 }
                                 dbUser.setGrades(dbGrade);
+                            }
+
+                            if(!StringUtils.isEmpty(user.getTopicCodeIDs())) {
+                                List<String> topicCodes = StringUtils.splitCommas(user.getTopicCodeIDs());
+                                RealmList<DbTopic> dbTopic = new RealmList<>();
+                                for(String code : topicCodes) {
+                                    dbTopic.add(new DbTopic(code));
+                                }
+                                dbUser.setTopics(dbTopic);
                             }
 
                             UserDetailUtils.setEnteredInformation(getApplicationContext(),Boolean.TRUE);

@@ -281,8 +281,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         }
         selectedTopicsList = topicList;
 
-        if(!selectedGradesList.isEmpty()) {
-            gradePlaceholderTextView.setVisibility(View.GONE);
+        if(!selectedTopicsList.isEmpty()) {
+            topicPlaceholderTextView.setVisibility(View.GONE);
         }
 
         if(!StringUtils.isEmpty(dbUser.getProfilePhotoPath())) {
