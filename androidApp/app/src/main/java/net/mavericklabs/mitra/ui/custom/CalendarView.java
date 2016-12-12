@@ -25,6 +25,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.listener.OnMonthSelectedListener;
 import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.Logger;
 
@@ -63,6 +64,7 @@ public class CalendarView extends RelativeLayout {
     private final int DAYS_COUNT = 7 * 5;
     private Calendar currentDate = Calendar.getInstance();
     private CalendarAdapter adapter;
+    private OnMonthSelectedListener onMonthSelectedListener;
 
     public HashSet<Date> getEventDates() {
         return eventDates;
@@ -154,6 +156,10 @@ public class CalendarView extends RelativeLayout {
         datesGrid.setAdapter(adapter);
     }
 
+    public void setOnMonthSelectedListener(OnMonthSelectedListener listener) {
+        this.onMonthSelectedListener = listener;
+    }
+
     private void showDatePickerDialog() {
         LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogLayout = layoutInflater.inflate(R.layout.dialog_date_picker,null);
@@ -177,6 +183,9 @@ public class CalendarView extends RelativeLayout {
                 monthYearSelector.setText(substring + " " + year);
                 datePickerDialog.dismiss();
                 updateCalendar();
+                if(onMonthSelectedListener != null) {
+                    onMonthSelectedListener.onMonthSelected(currentDate.get(Calendar.MONTH), currentDate.get(Calendar.YEAR));
+                }
             }
         });
     }

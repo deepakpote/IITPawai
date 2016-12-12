@@ -22,6 +22,7 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.EventRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
+import net.mavericklabs.mitra.listener.OnMonthSelectedListener;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Event;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
@@ -48,7 +49,7 @@ import retrofit2.Response;
  * Created by amoghpalnitkar on 15/11/16.
  */
 
-public class EventCalendarFragment extends Fragment{
+public class EventCalendarFragment extends Fragment implements OnMonthSelectedListener{
 
     @BindView(R.id.calendar_view)
     CalendarView calendarView;
@@ -102,7 +103,7 @@ public class EventCalendarFragment extends Fragment{
                         final List<Event> events = response.body().getData();
                         for (Event event  : events) {
                             String startTime = event.getStartTime().getDateTime();
-                            Date date = DateUtils.convertToDate(startTime, "yyyy-MM-dd'T'HH:mm:ssXXX");
+                            Date date = DateUtils.convertToDate(startTime, "yyyy-MM-dd'T'HH:mm:ssZ");
 
                             calendar.setTime(date);
                             DateUtils.setTimeToBeginningOfDay(calendar);
@@ -114,6 +115,8 @@ public class EventCalendarFragment extends Fragment{
 
                         calendarView.setEventDates(eventDates);
                         calendarView.updateCalendar();
+
+                        calendarView.setOnMonthSelectedListener(EventCalendarFragment.this);
 
                         calendarView.getDatesGrid().setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
@@ -146,5 +149,25 @@ public class EventCalendarFragment extends Fragment{
                 Logger.d(" on fail");
             }
         });
+    }
+
+    @Override
+    public void onMonthSelected(int month, int year) {
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.YEAR, year);
+
+        DateUtils.setTimeToBeginningOfMonth(calendar);
+        Logger.d(" begin " + calendar.getTime());
+
+        String startTime = DateUtils.convertToServerFormatFromDate(calendar.getTime());
+
+        DateUtils.setTimeToEndOfMonth(calendar);
+        Logger.d(" end " + calendar.getTime());
+
+        String endTime = DateUtils.convertToServerFormatFromDate(calendar.getTime());
+        loadEvents(startTime, endTime);
+
     }
 }
