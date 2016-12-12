@@ -5,6 +5,7 @@ import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.EditUser;
 import net.mavericklabs.mitra.api.model.LoginUser;
 import net.mavericklabs.mitra.api.model.EventRequest;
+import net.mavericklabs.mitra.api.model.News;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.api.model.LikeRequest;
@@ -76,4 +77,7 @@ public interface Api {
 
     @POST("events/listEvents/")
     Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);
+
+    @GET("news/")
+    Call<BaseModel<News>> listNews();
 }
