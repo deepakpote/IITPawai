@@ -273,7 +273,7 @@ public class HomeActivity extends AppCompatActivity {
             drawer.closeDrawer(GravityCompat.START);
             return;
         } else {
-            MenuItem homeItem = navigationView.getMenu().getItem(0);
+            MenuItem homeItem = navigationView.getMenu().getItem(DRAWER_ITEM_HOME);
 
             if (!homeItem.isChecked()) {
                 // select home item
