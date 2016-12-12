@@ -45,12 +45,16 @@ class messages():
     get_content_response_content_not_exists = 100139
     get_content_response_user_not_exists = 100140
     save_usercontent_user_id_allready_exists = 100141
-    
+    usercontent_list_contenttype_codeid_cannnot_be_empty = 100142
     event_list_invalid_input = 100143 
     event_add_invalid_input = 100144 
     event_attend_eventid_cannot_be_empty = 100145 
     event_attend_user_does_not_exists = 100146
     event_attend_user_already_attending_event = 100147
+
+    usercontent_list_user_id_not_exists = 100148
+    usercontent_list_contenttype_code_id_does_not_exists = 100149
+
 
 
 class authenticationTypes():

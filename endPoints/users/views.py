@@ -15,6 +15,8 @@ import plivo
 from datetime import datetime, timedelta
 from django.utils import timezone
 from contents.models import content
+
+from contents.serializers import contentSerializer
  
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -418,6 +420,66 @@ class UserViewSet(viewsets.ModelViewSet):
         userContent(user = objUser,content = objContent).save()
 
         return Response({"response_message": constants.messages.success, "data": []})
+
+    """
+    API to get user content list
+    """
+    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
+    def contentList(self,request):
+        """ Get the usercontent list
+        args:
+            request: passed userID and contentTypeCodeID as parameter
+        returns:
+            Response: list of content
+
+        """
+        userID = request.data.get("userID")
+        contentTypeCodeID = request.data.get("contentTypeCodeID")
+
+
+        # check userID is passed as parameter 
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+
+        # check contentID is passed as parameter in post    
+        if not contentTypeCodeID:
+            return Response({"response_message": constants.messages.usercontent_list_contenttype_codeid_cannnot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.usercontent_list_user_id_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+
+        # If contentTypeCodeID parameter is passed, then check user exists or not in com_code
+        try:
+            objContentTypeCodeID = code.objects.get(codeID = contentTypeCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.usercontent_list_contenttype_code_id_does_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+        
+        # Get list of contentIDs of login user
+        objUserContent = list(userContent.objects.filter(user = objUser).values_list('content_id',flat = True))
+        
+        # Get the content details based on ContentTypeCodeID
+        objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, contentID__in = objUserContent)
+
+        # Set query string to contentSerializer
+        objContentSerializer = contentSerializer(objUserContentTypeCode, many = True)
+
+        #Set objContentSerializer data to response
+        response = objContentSerializer.data
+
+        return Response({"response_message": constants.messages.success, "data": response})
+
+
 #     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])
 #     def opentoAll(self,request):
 #         return Response({"hello"})
