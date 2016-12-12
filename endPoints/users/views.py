@@ -478,6 +478,41 @@ class UserViewSet(viewsets.ModelViewSet):
         response = objContentSerializer.data
 
         return Response({"response_message": constants.messages.success, "data": response})
+    
+    """
+    API to update user language.
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def saveLanguage(self,request):
+        # Get input data
+        userID = request.data.get('userID') 
+        preferredLanguageCodeID = request.data.get('preferredLanguageCodeID') 
+        
+        # check userID is passed as parameter 
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+
+        # check preferredLanguageCodeID is passed as parameter in post    
+        if not preferredLanguageCodeID:
+            return Response({"response_message": constants.messages.save_userlanguage_languagecode_id_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+      
+        # validate user information
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.save_userlanguage_user_not_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
+        
+        # If user valid, update the details.
+        user.objects.filter(userID = userID).update(preferredLanguage = preferredLanguageCodeID)
+        
+        # Return the success response.
+        return Response({"response_message": constants.messages.success, "data": []})
 
     """
     API to delete userContent
