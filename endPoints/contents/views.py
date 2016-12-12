@@ -6,7 +6,7 @@ from contents.serializers import contentSerializer
 
 from contents.models import content , contentResponse 
 from commons.models import code
-from users.models import userSubject, user, userGrade, userTopic
+from users.models import userSubject, user, userGrade, userTopic , userContent
 from mitraEndPoints import constants , utils
 
 class ContentViewSet(viewsets.ModelViewSet):
@@ -355,7 +355,8 @@ class ContentViewSet(viewsets.ModelViewSet):
         objContentResponse = getContentResponseDetails(objContent, objUser)
                     
         #set the file name to the response.
-        response = { 'hasLiked' : objContentResponse.hasLiked }
+        response = { 'hasLiked' : objContentResponse.hasLiked ,
+                     'hasSaved' : objContentResponse.hasSaved  }
         
         #Return the response
         return Response({"response_message": constants.messages.success, "data": [response]})
@@ -504,7 +505,7 @@ def saveContentResponse(objContent , objUser, contentResponseType , hasLiked):
         return objConfileName[0].fileName
 
 """
-function to get the content response for Like/download/share.
+function to get the content response for Like/download/share/Saved.
 """
 def getContentResponseDetails(objContent, objUser):
         
@@ -517,6 +518,8 @@ def getContentResponseDetails(objContent, objUser):
             objContentResponse.hasLiked = False
             objContentResponse.downloadCount = 0
             objContentResponse.sharedCount = 0
-            return objContentResponse
-        # If response exists then return the response.
+        
+        #Check any response for the user content exists or not.
+        objContentResponse.hasSaved = userContent.objects.filter(content = objContent , user = objUser).exists()
+
         return objContentResponse
