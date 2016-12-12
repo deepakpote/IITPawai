@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
@@ -54,6 +55,9 @@ public class EventCalendarFragment extends Fragment implements OnMonthSelectedLi
     @BindView(R.id.calendar_view)
     CalendarView calendarView;
 
+    @BindView(R.id.loading_panel)
+    RelativeLayout loadingPanel;
+
     public EventCalendarFragment() {
         super();
         //mandatory constructor
@@ -89,12 +93,13 @@ public class EventCalendarFragment extends Fragment implements OnMonthSelectedLi
     private void loadEvents(String timeMin, String timeMax) {
         final HashMap<Date, Event> dateEventHashMap = new HashMap<>();
         final Calendar calendar = Calendar.getInstance();
+        loadingPanel.setVisibility(View.VISIBLE);
         EventRequest contentRequest = new EventRequest(timeMin, timeMax, "startTime");
         RestClient.getApiService("").listEvents(contentRequest).enqueue(new Callback<BaseModel<Event>>() {
             @Override
             public void onResponse(Call<BaseModel<Event>> call, Response<BaseModel<Event>> response) {
                 Logger.d(" Succes");
-                //teachingAidsLoadingPanel.setVisibility(View.GONE);
+                loadingPanel.setVisibility(View.GONE);
                 if(response.isSuccessful()) {
                     if(response.body().getData() != null) {
                         //set event dates here
@@ -114,6 +119,7 @@ public class EventCalendarFragment extends Fragment implements OnMonthSelectedLi
                         }
 
                         calendarView.setEventDates(eventDates);
+                        calendarView.setTrainingsCount(eventDates.size());
                         calendarView.updateCalendar();
 
                         calendarView.setOnMonthSelectedListener(EventCalendarFragment.this);

@@ -57,14 +57,24 @@ public class CalendarView extends RelativeLayout {
     @BindView(R.id.month_year_selector)
     TextView monthYearSelector;
 
+    @BindView(R.id.count_trainings_this_month)
+    TextView trainingsCount;
+
     @BindView(R.id.drop_down_image_view)
     ImageView dropDownImageView;
 
     //days of the week times number of rows to show
     private final int DAYS_COUNT = 7 * 5;
     private Calendar currentDate = Calendar.getInstance();
+    private int currentSelectedMonth = currentDate.get(Calendar.MONTH);
+    private int currentSelectedYear = currentDate.get(Calendar.YEAR);
     private CalendarAdapter adapter;
     private OnMonthSelectedListener onMonthSelectedListener;
+
+
+    public void setTrainingsCount(int trainingsCount) {
+        this.trainingsCount.setText(" " + trainingsCount + " trainings this month");
+    }
 
     public HashSet<Date> getEventDates() {
         return eventDates;
@@ -164,6 +174,7 @@ public class CalendarView extends RelativeLayout {
         LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogLayout = layoutInflater.inflate(R.layout.dialog_date_picker,null);
         final DatePicker datePicker = (DatePicker) dialogLayout.findViewById(R.id.date_picker);
+        datePicker.updateDate(currentSelectedYear, currentSelectedMonth, 1);
         Button doneButton = (Button) dialogLayout.findViewById(R.id.done_button);
         if(datePicker != null) {
             ((ViewGroup)((ViewGroup)(datePicker.getChildAt(0))).getChildAt(0)).getChildAt(0).setVisibility(GONE);
@@ -175,12 +186,12 @@ public class CalendarView extends RelativeLayout {
         doneButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                int month = datePicker.getMonth();
-                int year = datePicker.getYear();
-                currentDate.set(year,month,1);
-                String monthName = new DateFormatSymbols().getMonths()[month];
+                currentSelectedMonth = datePicker.getMonth();
+                currentSelectedYear = datePicker.getYear();
+                currentDate.set(currentSelectedYear,currentSelectedMonth,1);
+                String monthName = new DateFormatSymbols().getMonths()[currentSelectedMonth];
                 String substring = monthName.substring(0,3);
-                monthYearSelector.setText(substring + " " + year);
+                monthYearSelector.setText(substring + " " + currentSelectedYear);
                 datePickerDialog.dismiss();
                 updateCalendar();
                 if(onMonthSelectedListener != null) {
@@ -281,10 +292,12 @@ public class CalendarView extends RelativeLayout {
             dateText.setTypeface(null, Typeface.NORMAL);
             dateText.setTextColor(Color.BLACK);
 
-            if (month != todayCalendar.get(Calendar.MONTH) || year != todayCalendar.get(Calendar.YEAR)) {
+            if (month != currentSelectedMonth || year != currentSelectedYear) {
                 // if this day is outside current month, grey it out
                 dateText.setTextColor(getResources().getColor(R.color.default_grey));
-            } else if (day == todayCalendar.get(Calendar.DATE)) {
+            } else if (day == todayCalendar.get(Calendar.DAY_OF_MONTH)
+                    && month == todayCalendar.get(Calendar.MONTH)
+                    && year == todayCalendar.get(Calendar.YEAR)) {
                 // if it is today, set it to accent/bold
                 dateText.setTypeface(null, Typeface.BOLD);
                 dateText.setTextColor(getResources().getColor(R.color.colorAccent));
