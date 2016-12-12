@@ -57,7 +57,8 @@ public class HomeFragment extends Fragment{
     void goToTeachingAids() {
         if(getActivity() instanceof HomeActivity) {
             HomeActivity homeActivity = (HomeActivity) getActivity();
-            homeActivity.selectDrawerItem(homeActivity.navigationView.getMenu().getItem(1));
+            homeActivity.selectDrawerItem(homeActivity.navigationView.getMenu()
+                    .getItem(homeActivity.DRAWER_ITEM_TEACHING_AIDS));
         }
     }
 
@@ -68,12 +69,22 @@ public class HomeFragment extends Fragment{
     void goToSelfLearning() {
         if(getActivity() instanceof HomeActivity) {
             HomeActivity homeActivity = (HomeActivity) getActivity();
-            homeActivity.selectDrawerItem(homeActivity.navigationView.getMenu().getItem(2));
+            homeActivity.selectDrawerItem(homeActivity.navigationView.getMenu()
+                    .getItem(homeActivity.DRAWER_ITEM_SELF_LEARNING));
         }
     }
 
     @BindView(R.id.trainings_solid_button)
     Button trainingsSolidButton;
+
+    @OnClick(R.id.trainings_solid_button)
+    void goToTrainingCalendar() {
+        if(getActivity() instanceof HomeActivity) {
+            HomeActivity homeActivity = (HomeActivity) getActivity();
+            homeActivity.selectDrawerItem(homeActivity.navigationView.getMenu()
+                    .getItem(homeActivity.DRAWER_ITEM_TRAINING_CALENDAR));
+        }
+    }
 
     @BindView(R.id.teaching_aids_loading_panel)
     RelativeLayout teachingAidsLoadingPanel;
