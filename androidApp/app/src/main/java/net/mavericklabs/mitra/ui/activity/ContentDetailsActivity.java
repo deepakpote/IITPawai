@@ -111,13 +111,11 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
     @BindView(R.id.like_icon)
     ImageView likeIcon;
 
-<<<<<<< HEAD
     @BindView(R.id.save_icon)
     ImageView saveIcon;
-=======
+
     @BindView(R.id.share_icon)
     ImageView shareIcon;
->>>>>>> e4d915a6396c0d7d9586ee27a16641e881bc0636
 
     @BindView(R.id.youtube_layout)
     RelativeLayout youTubeLayout;

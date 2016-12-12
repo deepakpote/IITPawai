@@ -85,6 +85,7 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
     private final Map<YouTubeThumbnailView, YouTubeThumbnailLoader> thumbnailViewToLoaderMap;
     private CardViewHolder toDownloadHolder;
     private Fragment callingFragment;
+    private boolean showDeleteOption = false;
 
     public ContentVerticalCardListAdapter(Context applicationContext, List<Content> contents, Fragment fragment) {
         this.context = applicationContext;
@@ -120,6 +121,19 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
         layoutParams.width = displayMetrics.widthPixels / 3;
         layoutParams.height = layoutParams.width - (DisplayUtils.dpToPx(16, context));
         holder.contentView.setLayoutParams(layoutParams);
+
+        if(showDeleteOption) {
+            holder.deleteResource.setVisibility(View.VISIBLE);
+
+            holder.deleteResource.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //call delete from saved resources
+                }
+            });
+        } else {
+            holder.deleteResource.setVisibility(View.GONE);
+        }
 
         DisplayUtils.displayFileIcon(getObject(holder).getFileType(), holder.fileIcon);
         //Load Video
@@ -290,6 +304,14 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
         return contents.size();
     }
 
+    public boolean showDeleteOption() {
+        return showDeleteOption;
+    }
+
+    public void setShowDeleteOption(boolean showDeleteOption) {
+        this.showDeleteOption = showDeleteOption;
+    }
+
     class CardViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.content_thumbnail)
         RelativeLayout contentView;
@@ -308,6 +330,9 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
 
         @BindView(R.id.save_button)
         TextView saveButton;
+
+        @BindView(R.id.delete_resource)
+        ImageView deleteResource;
 
         CardViewHolder(View itemView) {
             super(itemView);

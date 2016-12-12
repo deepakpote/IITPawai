@@ -200,7 +200,7 @@ public class MyResourcesSelfLearningFragment extends Fragment {
                         adapter = new ContentVerticalCardListAdapter(getContext(), contents, fragment);
                         contentRecyclerView.setAdapter(adapter);
 
-                        fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved, contents.size()));
+                        fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved, contents.size(), contents.size()));
 
                         return;
 
