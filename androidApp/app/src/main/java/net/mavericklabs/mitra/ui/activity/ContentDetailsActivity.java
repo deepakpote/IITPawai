@@ -201,7 +201,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                     public void onClick(View view) {
                         if(content.getFileType().equals(Constants.FileTypePPT) ||
                                 content.getFileType().equals(Constants.FileTypeWorksheet)) {
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.pdf995.com/samples/pdf.pdf"));
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(content.getFileName()));
                             startActivity(browserIntent);
                         }
 

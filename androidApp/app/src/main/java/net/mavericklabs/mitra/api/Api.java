@@ -2,6 +2,8 @@ package net.mavericklabs.mitra.api;
 
 import net.mavericklabs.mitra.api.model.Attend;
 import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.ContentDataResponse;
+import net.mavericklabs.mitra.api.model.ContentDataRequest;
 import net.mavericklabs.mitra.api.model.EventRequest;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
@@ -59,4 +61,10 @@ public interface Api {
 
     @POST("events/listEvents/")
     Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);
+
+    @POST("content/download/")
+    Call<BaseModel<ContentDataResponse>> download(@Body ContentDataRequest request);
+
+    @POST("content/share/")
+    Call<BaseModel<ContentDataResponse>> share(@Body ContentDataRequest request);
 }

@@ -155,6 +155,13 @@ public class TeachingAidsFragment extends Fragment{
 
         private String language;
 
+        @Override
+        public void onRequestPermissionsResult(int requestCode,
+                                               String permissions[], int[] grantResults) {
+            Logger.d("fragment -  on permission result");
+            adapter.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
         ContentVerticalCardListAdapter adapter;
         public TeachingAidsContentFragment() {
         }
@@ -273,14 +280,14 @@ public class TeachingAidsFragment extends Fragment{
                             if(pageNumber == 0) {
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                                 contentRecyclerView.setLayoutManager(linearLayoutManager);
-                                adapter = new ContentVerticalCardListAdapter(getContext(), contents);
+                                adapter = new ContentVerticalCardListAdapter(getContext(), contents, TeachingAidsContentFragment.this);
                                 contentRecyclerView.setAdapter(adapter);
                             } else {
                                 ContentVerticalCardListAdapter adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
                                 List<Content> originalContents = adapter.getContents();
                                 Logger.d(" original contents " + originalContents.size());
                                 originalContents.addAll(contents);
-                                adapter = new ContentVerticalCardListAdapter(getContext(), originalContents);
+                                adapter = new ContentVerticalCardListAdapter(getContext(), originalContents, TeachingAidsContentFragment.this);
                                 contentRecyclerView.swapAdapter(adapter, false);
                             }
 

@@ -86,6 +86,13 @@ public class SelfLearningFragment extends Fragment {
         //mandatory constructor
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        Logger.d("fragment -  on permission result");
+        adapter.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -144,10 +151,11 @@ public class SelfLearningFragment extends Fragment {
             }
         });
 
-        String language = "";
+        String language = "101100";
 
         RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
                 .where(DbUser.class).findAll();
+        Logger.d(" db user " + dbUser);
         if(dbUser.size() == 1) {
             DbUser user = dbUser.get(0);
             language = user.getPreferredLanguage();
@@ -194,14 +202,14 @@ public class SelfLearningFragment extends Fragment {
                         if(pageNumber == 0) {
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                             contentRecyclerView.setLayoutManager(linearLayoutManager);
-                            adapter = new ContentVerticalCardListAdapter(getContext(), contents);
+                            adapter = new ContentVerticalCardListAdapter(getContext(), contents, SelfLearningFragment.this);
                             contentRecyclerView.setAdapter(adapter);
                         } else {
                             ContentVerticalCardListAdapter adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
                             List<Content> originalContents = adapter.getContents();
                             Logger.d(" original contents " + originalContents.size());
                             originalContents.addAll(contents);
-                            adapter = new ContentVerticalCardListAdapter(getContext(), originalContents);
+                            adapter = new ContentVerticalCardListAdapter(getContext(), originalContents, SelfLearningFragment.this);
                             contentRecyclerView.swapAdapter(adapter, false);
                         }
 
