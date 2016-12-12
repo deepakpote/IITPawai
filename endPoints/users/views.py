@@ -472,12 +472,12 @@ class UserViewSet(viewsets.ModelViewSet):
         objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, contentID__in = objUserContent)
 
         # Set query string to contentSerializer
-        objContentSerializer = contentSerializer(objUserContentTypeCode, many= True)
+        objContentSerializer = contentSerializer(objUserContentTypeCode, many = True)
 
         #Set objContentSerializer data to response
         response = objContentSerializer.data
 
-        return Response({"response_message": constants.messages.success, "data": [response]})
+        return Response({"response_message": constants.messages.success, "data": response})
 
 
 #     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])
