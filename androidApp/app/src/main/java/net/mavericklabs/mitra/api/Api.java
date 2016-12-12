@@ -2,8 +2,13 @@ package net.mavericklabs.mitra.api;
 
 import net.mavericklabs.mitra.api.model.Attend;
 import net.mavericklabs.mitra.api.model.BaseModel;
+
 import net.mavericklabs.mitra.api.model.EditUser;
 import net.mavericklabs.mitra.api.model.LoginUser;
+
+import net.mavericklabs.mitra.api.model.ContentDataResponse;
+import net.mavericklabs.mitra.api.model.ContentDataRequest;
+
 import net.mavericklabs.mitra.api.model.EventRequest;
 import net.mavericklabs.mitra.api.model.SavedContentRequest;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
@@ -78,6 +83,13 @@ public interface Api {
     @POST("events/listEvents/")
     Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);
 
+
     @POST("user/contentList/")
     Call<BaseModel<Content>> getSavedContent(@Body SavedContentRequest contentRequest);
+
+    @POST("content/download/")
+    Call<BaseModel<ContentDataResponse>> download(@Body ContentDataRequest request);
+
+    @POST("content/share/")
+    Call<BaseModel<ContentDataResponse>> share(@Body ContentDataRequest request);
 }

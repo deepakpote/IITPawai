@@ -97,6 +97,13 @@ public class MyResourcesSelfLearningFragment extends Fragment {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        Logger.d("fragment -  on permission result");
+        adapter.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_resources_self_learning, container, false);
@@ -190,7 +197,7 @@ public class MyResourcesSelfLearningFragment extends Fragment {
 
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                         contentRecyclerView.setLayoutManager(linearLayoutManager);
-                        adapter = new ContentVerticalCardListAdapter(getContext(), contents);
+                        adapter = new ContentVerticalCardListAdapter(getContext(), contents, fragment);
                         contentRecyclerView.setAdapter(adapter);
 
                         fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved, contents.size()));

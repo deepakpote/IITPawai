@@ -105,6 +105,7 @@
                             android:src="@drawable/ic_bookmark_lightgrey_24dp" />
 
                         <ImageView
+                            android:id="@+id/share_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"

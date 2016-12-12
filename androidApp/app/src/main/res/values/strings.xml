@@ -100,4 +100,6 @@
         <item quantity="other">%1$d resources saved</item>
     </plurals>
 
+    <string name="share_title">Share via</string>
+
 </resources>

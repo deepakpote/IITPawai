@@ -23,11 +23,14 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -50,6 +53,8 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.ContentDataRequest;
+import net.mavericklabs.mitra.api.model.ContentDataResponse;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
@@ -106,14 +111,49 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
     @BindView(R.id.like_icon)
     ImageView likeIcon;
 
+<<<<<<< HEAD
     @BindView(R.id.save_icon)
     ImageView saveIcon;
+=======
+    @BindView(R.id.share_icon)
+    ImageView shareIcon;
+>>>>>>> e4d915a6396c0d7d9586ee27a16641e881bc0636
 
     @BindView(R.id.youtube_layout)
     RelativeLayout youTubeLayout;
 
     @BindView(R.id.content_layout)
     RelativeLayout contentLayout;
+
+    @OnClick(R.id.share_icon)
+    void shareContent() {
+        Logger.d(" share ");
+        String userId = UserDetailUtils.getUserId(getApplicationContext());
+        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService("")
+                .share(new ContentDataRequest(userId, content.getContentID()));
+
+        saveRequest.enqueue(new Callback<BaseModel<ContentDataResponse>>() {
+            @Override
+            public void onResponse(Call<BaseModel<ContentDataResponse>> call, Response<BaseModel<ContentDataResponse>> response) {
+                if(response.isSuccessful()) {
+                    List<ContentDataResponse> responseList = response.body().getData();
+                    Logger.d(" file " + responseList.get(0).getFileName());
+
+                    String shareBody = "Here is the share content body " + responseList.get(0).getFileName();
+                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                    sharingIntent.setType("text/plain");
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "MITRA " + content.getTitle());
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_title)));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<ContentDataResponse>> call, Throwable t) {
+                Logger.d(" on failure ");
+            }
+        });
+    }
 
     @OnClick(R.id.like_icon)
     void likeContent() {
@@ -248,7 +288,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                     public void onClick(View view) {
                         if(content.getFileType().equals(Constants.FileTypePPT) ||
                                 content.getFileType().equals(Constants.FileTypeWorksheet)) {
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.pdf995.com/samples/pdf.pdf"));
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(content.getFileName()));
                             startActivity(browserIntent);
                         }
 

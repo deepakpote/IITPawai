@@ -47,9 +47,13 @@ import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
+
 import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
+
+import net.mavericklabs.mitra.utils.Logger;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,6 +107,13 @@ public class MyResourcesTeachingAidsFragment extends Fragment {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        Logger.d("fragment -  on permission result");
+        contentAdapter.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_resources_teaching_aids, container, false);
@@ -134,6 +145,7 @@ public class MyResourcesTeachingAidsFragment extends Fragment {
             language = user.getPreferredLanguage();
             Logger.d(" language " + language);
         }
+
 
         subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -220,7 +232,7 @@ public class MyResourcesTeachingAidsFragment extends Fragment {
 
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                         contentRecyclerView.setLayoutManager(linearLayoutManager);
-                        contentAdapter = new ContentVerticalCardListAdapter(getContext(), contents);
+                        contentAdapter = new ContentVerticalCardListAdapter(getContext(), contents, fragment);
                         contentRecyclerView.setAdapter(contentAdapter);
                         fragment.subtitle0.setText(getResources().getQuantityString(R.plurals.resources_saved, contents.size()));
 
