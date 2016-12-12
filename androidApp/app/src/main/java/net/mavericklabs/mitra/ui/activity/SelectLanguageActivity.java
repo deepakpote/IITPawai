@@ -116,7 +116,7 @@ public class SelectLanguageActivity extends AppCompatActivity {
             }
         });
 
-        Locale myLocale = new Locale(lang);
+        Locale myLocale = new Locale(lang, Locale.UK.getCountry());
         Resources res = getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
         Configuration conf = res.getConfiguration();

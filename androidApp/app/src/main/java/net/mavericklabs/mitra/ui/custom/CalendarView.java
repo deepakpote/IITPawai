@@ -12,7 +12,9 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.GridView;
@@ -23,6 +25,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.listener.OnMonthSelectedListener;
 import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.Logger;
 
@@ -54,12 +57,34 @@ public class CalendarView extends RelativeLayout {
     @BindView(R.id.month_year_selector)
     TextView monthYearSelector;
 
+    @BindView(R.id.count_trainings_this_month)
+    TextView trainingsCount;
+
     @BindView(R.id.drop_down_image_view)
     ImageView dropDownImageView;
 
     //days of the week times number of rows to show
     private final int DAYS_COUNT = 7 * 5;
     private Calendar currentDate = Calendar.getInstance();
+    private int currentSelectedMonth = currentDate.get(Calendar.MONTH);
+    private int currentSelectedYear = currentDate.get(Calendar.YEAR);
+    private CalendarAdapter adapter;
+    private OnMonthSelectedListener onMonthSelectedListener;
+
+
+    public void setTrainingsCount(int trainingsCount) {
+        this.trainingsCount.setText(" " + trainingsCount + " trainings this month");
+    }
+
+    public HashSet<Date> getEventDates() {
+        return eventDates;
+    }
+
+    public void setEventDates(HashSet<Date> eventDates) {
+        this.eventDates = eventDates;
+    }
+
+    private HashSet<Date> eventDates;
 
     public CalendarView(Context context) {
         super(context);
@@ -109,7 +134,19 @@ public class CalendarView extends RelativeLayout {
         updateCalendar();
     }
 
-    private void updateCalendar() {
+    public GridView getDatesGrid() {
+        return datesGrid;
+    }
+
+    public CalendarAdapter getAdapter() {
+        return adapter;
+    }
+
+    public void setAdapter(CalendarAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    public void updateCalendar() {
         Calendar calendar = (Calendar) currentDate.clone();
         ArrayList<Date> cells = new ArrayList<>();
 
@@ -125,14 +162,19 @@ public class CalendarView extends RelativeLayout {
             cells.add(calendar.getTime());
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
+        adapter = new CalendarAdapter(getContext(),cells,eventDates);
+        datesGrid.setAdapter(adapter);
+    }
 
-        datesGrid.setAdapter(new CalendarAdapter(getContext(),cells,null));
+    public void setOnMonthSelectedListener(OnMonthSelectedListener listener) {
+        this.onMonthSelectedListener = listener;
     }
 
     private void showDatePickerDialog() {
         LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogLayout = layoutInflater.inflate(R.layout.dialog_date_picker,null);
         final DatePicker datePicker = (DatePicker) dialogLayout.findViewById(R.id.date_picker);
+        datePicker.updateDate(currentSelectedYear, currentSelectedMonth, 1);
         Button doneButton = (Button) dialogLayout.findViewById(R.id.done_button);
         if(datePicker != null) {
             ((ViewGroup)((ViewGroup)(datePicker.getChildAt(0))).getChildAt(0)).getChildAt(0).setVisibility(GONE);
@@ -144,29 +186,74 @@ public class CalendarView extends RelativeLayout {
         doneButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                int month = datePicker.getMonth();
-                int year = datePicker.getYear();
-                currentDate.set(year,month,1);
-                String monthName = new DateFormatSymbols().getMonths()[month];
+                currentSelectedMonth = datePicker.getMonth();
+                currentSelectedYear = datePicker.getYear();
+                currentDate.set(currentSelectedYear,currentSelectedMonth,1);
+                String monthName = new DateFormatSymbols().getMonths()[currentSelectedMonth];
                 String substring = monthName.substring(0,3);
-                monthYearSelector.setText(substring + " " + year);
+                monthYearSelector.setText(substring + " " + currentSelectedYear);
                 datePickerDialog.dismiss();
                 updateCalendar();
+                if(onMonthSelectedListener != null) {
+                    onMonthSelectedListener.onMonthSelected(currentDate.get(Calendar.MONTH), currentDate.get(Calendar.YEAR));
+                }
             }
         });
     }
 
-    private class CalendarAdapter extends ArrayAdapter<Date> {
+    public boolean isAnEventDay(Date date, HashSet<Date> eventDays) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH);
+        int year = calendar.get(Calendar.YEAR);
+
+        for (Date eventDate : eventDays) {
+            Calendar calendar1 = Calendar.getInstance();
+            calendar1.setTime(eventDate);
+            int eventYear = calendar1.get(Calendar.YEAR);
+            int eventMonth = calendar1.get(Calendar.MONTH);
+            int eventDay = calendar1.get(Calendar.DAY_OF_MONTH);
+
+//            Logger.d( " event day  " + eventDay + " current " + day);
+//            Logger.d( " event month  " + eventMonth + " current " + month);
+//            Logger.d( " event yr  " + eventYear + " current " + year);
+            if (eventDay == day && eventMonth == month && eventYear == year) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public class CalendarAdapter extends BaseAdapter {
         // days with events
         private HashSet<Date> eventDays;
+
+        private ArrayList<Date> calendarDates;
 
         // for view inflation
         private LayoutInflater inflater;
 
         CalendarAdapter(Context context, ArrayList<Date> days, HashSet<Date> eventDays) {
-            super(context, android.R.layout.simple_list_item_1, days);
             this.eventDays = eventDays;
+            this.calendarDates = days;
             inflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public int getCount() {
+            return calendarDates.size();
+        }
+
+        @Override
+        public Date getItem(int i) {
+            return calendarDates.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
         }
 
         @NonNull
@@ -177,7 +264,7 @@ public class CalendarView extends RelativeLayout {
             Date date = getItem(position);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
-            int day = calendar.get(Calendar.DATE);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
             int month = calendar.get(Calendar.MONTH);
             int year = calendar.get(Calendar.YEAR);
 
@@ -188,38 +275,36 @@ public class CalendarView extends RelativeLayout {
 
             // inflate item if it does not exist yet
             if (view == null) {
-                view = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+                view = inflater.inflate(R.layout.custom_calendar_date_item, parent, false);
             }
 
             // if this day has an event, specify event image
-            view.setBackgroundResource(0);
+            TextView dateText = (TextView) view.findViewById(R.id.date_text);
+            ImageView eventBackground = (ImageView) view.findViewById(R.id.event_background);
+
             if (eventDays != null) {
-                for (Date eventDate : eventDays) {
-                    if (eventDate.getDate() == day &&
-                            eventDate.getMonth() == month &&
-                            eventDate.getYear() == year) {
-                        // mark this day for event
-                        view.setBackgroundResource(R.drawable.background_training);
-                        break;
-                    }
+                if(isAnEventDay(date, eventDays)) {
+                    eventBackground.setImageResource(R.drawable.background_training);
                 }
             }
 
             // clear styling
-            ((TextView)view).setTypeface(null, Typeface.NORMAL);
-            ((TextView)view).setTextColor(Color.BLACK);
+            dateText.setTypeface(null, Typeface.NORMAL);
+            dateText.setTextColor(Color.BLACK);
 
-            if (month != todayCalendar.get(Calendar.MONTH) || year != todayCalendar.get(Calendar.YEAR)) {
+            if (month != currentSelectedMonth || year != currentSelectedYear) {
                 // if this day is outside current month, grey it out
-                ((TextView)view).setTextColor(getResources().getColor(R.color.default_grey));
-            } else if (day == todayCalendar.get(Calendar.DATE)) {
+                dateText.setTextColor(getResources().getColor(R.color.default_grey));
+            } else if (day == todayCalendar.get(Calendar.DAY_OF_MONTH)
+                    && month == todayCalendar.get(Calendar.MONTH)
+                    && year == todayCalendar.get(Calendar.YEAR)) {
                 // if it is today, set it to accent/bold
-                ((TextView)view).setTypeface(null, Typeface.BOLD);
-                ((TextView)view).setTextColor(getResources().getColor(R.color.colorAccent));
+                dateText.setTypeface(null, Typeface.BOLD);
+                dateText.setTextColor(getResources().getColor(R.color.colorAccent));
             }
 
             // set text
-            ((TextView)view).setText(String.valueOf(calendar.get(Calendar.DATE)));
+            dateText.setText(String.valueOf(calendar.get(Calendar.DATE)));
 
             return view;
         }
