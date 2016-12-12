@@ -1,5 +1,6 @@
 package net.mavericklabs.mitra.api;
 
+import net.mavericklabs.mitra.api.model.Attend;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.EventRequest;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
@@ -52,6 +53,9 @@ public interface Api {
 
     @POST("content/like/")
     Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);
+
+    @POST("events/attendEvent/")
+    Call<BaseModel<GenericListDataModel>> attendEvent(@Body Attend attend);
 
     @POST("events/listEvents/")
     Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);

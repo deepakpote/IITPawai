@@ -32,6 +32,9 @@ import java.io.Serializable;
  */
 
 public class Event implements Serializable{
+    @SerializedName("id")
+    private String id;
+
     @SerializedName("summary")
     private String summary;
 
@@ -47,7 +50,8 @@ public class Event implements Serializable{
     @SerializedName("start")
     private Time startTime;
 
-    public Event(String summary, String location, String description, Time endTime, Time startTime) {
+    public Event(String id, String summary, String location, String description, Time endTime, Time startTime) {
+        this.id = id;
         this.summary = summary;
         this.location = location;
         this.description = description;
@@ -93,5 +97,13 @@ public class Event implements Serializable{
 
     public void setStartTime(Time startTime) {
         this.startTime = startTime;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
