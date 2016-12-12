@@ -31,15 +31,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.SavedContentRequest;
+import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.HttpUtils;
+import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +58,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MyResourcesSelfLearningFragment extends Fragment {
@@ -60,7 +73,14 @@ public class MyResourcesSelfLearningFragment extends Fragment {
     @BindView(R.id.content_recycler_view)
     RecyclerView contentRecyclerView;
 
+    @BindView(R.id.error_view)
+    TextView errorView;
+
+    @BindView(R.id.loading_panel)
+    RelativeLayout loadingPanel;
+
     private ContentVerticalCardListAdapter adapter;
+    private MyResourcesFragment fragment;
 
     public MyResourcesSelfLearningFragment() {
     }
@@ -81,6 +101,8 @@ public class MyResourcesSelfLearningFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_resources_self_learning, container, false);
         ButterKnife.bind(this, rootView);
+
+        fragment = (MyResourcesFragment) getParentFragment();
 
         final List<CommonCode> topics = new ArrayList<>(CommonCodeUtils.getTopics());
         final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getLanguages());
@@ -146,16 +168,53 @@ public class MyResourcesSelfLearningFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        adapter.releaseLoaders();
+        if(adapter != null) {
+            adapter.releaseLoaders();
+        }
     }
 
     private void loadMySelfLearning(String language, String topic) {
-        List<Content> contents = new ArrayList<>();
+        loadingPanel.setVisibility(View.VISIBLE);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        contentRecyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new ContentVerticalCardListAdapter(getContext(), contents);
-        contentRecyclerView.setAdapter(adapter);
+        SavedContentRequest contentRequest = new SavedContentRequest(UserDetailUtils.getUserId(getContext()),
+                Constants.ContentTypeSelfLearning);
+        RestClient.getApiService("").getSavedContent(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+            @Override
+            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                loadingPanel.setVisibility(View.GONE);
+                if(response.isSuccessful()) {
+                    Logger.d(" Succes");
+                    if(response.body().getData() != null) {
+                        List<Content> contents = response.body().getData();
+                        Logger.d(" contents " + contents.size());
+
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+                        contentRecyclerView.setLayoutManager(linearLayoutManager);
+                        adapter = new ContentVerticalCardListAdapter(getContext(), contents);
+                        contentRecyclerView.setAdapter(adapter);
+
+                        fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved, contents.size()));
+
+                        return;
+
+                    }
+                }
+
+
+                    String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessage(response)).getCodeNameForCurrentLocale();
+                    Logger.d(" error " + error);
+                    contentRecyclerView.setVisibility(View.GONE);
+                    errorView.setVisibility(View.VISIBLE);
+                    errorView.setText(error);
+
+
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+                Logger.d(" on fail");
+            }
+        });
 
     }
 }

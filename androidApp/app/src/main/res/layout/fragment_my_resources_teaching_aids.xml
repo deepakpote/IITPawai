@@ -87,4 +87,14 @@
 
     </android.support.v7.widget.RecyclerView>
 
+    <include layout="@layout/custom_loading_panel"
+        android:id="@+id/loading_panel"/>
+
+    <TextView
+        android:id="@+id/error_view"
+        android:layout_marginTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
 </LinearLayout>

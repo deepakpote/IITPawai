@@ -13,4 +13,5 @@ public interface Constants {
     String FileTypePPT = "108102";
     String FileTypeWorksheet = "108103";
     String ContentTypeTeachingAids = "107100";
+    String ContentTypeSelfLearning = "107101";
 }

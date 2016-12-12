@@ -32,9 +32,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.SavedContentRequest;
 import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
@@ -42,7 +47,9 @@ import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +59,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MyResourcesTeachingAidsFragment extends Fragment {
@@ -67,9 +77,16 @@ public class MyResourcesTeachingAidsFragment extends Fragment {
     @BindView(R.id.content_recycler_view)
     RecyclerView contentRecyclerView;
 
+    @BindView(R.id.error_view)
+    TextView errorView;
+
+    @BindView(R.id.loading_panel)
+    RelativeLayout loadingPanel;
+
+
     private ContentVerticalCardListAdapter contentAdapter;
     private String language;
-    List<Content> contents = new ArrayList<>();
+    private MyResourcesFragment fragment;
 
     public MyResourcesTeachingAidsFragment() {
     }
@@ -99,6 +116,9 @@ public class MyResourcesTeachingAidsFragment extends Fragment {
         subjects.add(0, new CommonCode("", "","Subject", "Subject", 0));
         grades.add(0,new CommonCode("","","Grade","Grade",0));
         types.add(0,new CommonCode("","","Type","Type",0));
+
+        fragment = (MyResourcesFragment) getParentFragment();
+
 
 
         SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
@@ -179,13 +199,50 @@ public class MyResourcesTeachingAidsFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        contentAdapter.releaseLoaders();
+        if(contentAdapter != null) {
+            contentAdapter.releaseLoaders();
+        }
     }
 
     private void loadMyTeachingAids(final String fileType, final String language, String subject, String grade) {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        contentRecyclerView.setLayoutManager(linearLayoutManager);
-        contentAdapter = new ContentVerticalCardListAdapter(getContext(), contents);
-        contentRecyclerView.setAdapter(contentAdapter);
+        loadingPanel.setVisibility(View.VISIBLE);
+        SavedContentRequest contentRequest = new SavedContentRequest(UserDetailUtils.getUserId(getContext()),
+                Constants.ContentTypeTeachingAids);
+        RestClient.getApiService("").getSavedContent(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+            @Override
+            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                loadingPanel.setVisibility(View.GONE);
+                if(response.isSuccessful()) {
+                    Logger.d(" Succes");
+                    if(response.body().getData() != null) {
+                        List<Content> contents = response.body().getData();
+                        Logger.d(" contents " + contents.size());
+
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+                        contentRecyclerView.setLayoutManager(linearLayoutManager);
+                        contentAdapter = new ContentVerticalCardListAdapter(getContext(), contents);
+                        contentRecyclerView.setAdapter(contentAdapter);
+                        fragment.subtitle0.setText(getResources().getQuantityString(R.plurals.resources_saved, contents.size()));
+
+                        return;
+
+                    }
+                }
+
+
+                String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessage(response)).getCodeNameForCurrentLocale();
+                Logger.d(" error " + error);
+                contentRecyclerView.setVisibility(View.GONE);
+                errorView.setVisibility(View.VISIBLE);
+                errorView.setText(error);
+
+
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+                Logger.d(" on fail");
+            }
+        });
     }
 }

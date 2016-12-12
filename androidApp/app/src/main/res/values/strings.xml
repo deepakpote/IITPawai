@@ -95,4 +95,9 @@
     <string name="no_topics">No Topics</string>
     <string name="profile_updated">Profile updated successfully</string>
 
+    <plurals name="resources_saved">
+        <item quantity="one">%1$d resource saved</item>
+        <item quantity="other">%1$d resources saved</item>
+    </plurals>
+
 </resources>
