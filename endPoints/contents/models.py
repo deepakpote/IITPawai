@@ -41,7 +41,7 @@ class contentResponse(models.Model):
     user = models.ForeignKey('users.user', db_column = 'userID', null = False, related_name="contentResponse_userID")
     content = models.ForeignKey('content', db_column = 'contentID', null = False, related_name="contentResponse_contentID")
     
-    hasLiked = models.NullBooleanField(null = True , default=None,)
+    hasLiked = models.NullBooleanField(null = True , default = False,)
     downloadCount = models.IntegerField(null = True , default = 0)
     sharedCount = models.IntegerField(null = True , default = 0)
      
