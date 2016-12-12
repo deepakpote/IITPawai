@@ -1,6 +1,7 @@
 package net.mavericklabs.mitra.api;
 
 import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.EditUser;
 import net.mavericklabs.mitra.api.model.LoginUser;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
@@ -37,6 +38,9 @@ public interface Api {
 
     @POST("user/register/")
     Call<BaseModel<RegisterUserResponse>> registerUser(@Body RegisterUser user);
+
+    @POST("user/updateProfile/")
+    Call<BaseModel<GenericListDataModel>> updateUser(@Body EditUser user);
 
     @GET("code/")
     Call<BaseModel<CommonCode>> getCodeNameList();

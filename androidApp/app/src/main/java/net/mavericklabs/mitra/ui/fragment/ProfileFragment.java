@@ -144,7 +144,8 @@ public class ProfileFragment extends Fragment {
                         false));
             }
             Logger.d("db topics size: " + topicList.size());
-            topicRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            topicRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
+                                                LinearLayoutManager.HORIZONTAL,false));
             topicRecyclerView.setAdapter(new ProfileActivitySubjectsAdapter(topicList));
             if(topicList.size() == 0) {
                 topicRecyclerView.setVisibility(GONE);

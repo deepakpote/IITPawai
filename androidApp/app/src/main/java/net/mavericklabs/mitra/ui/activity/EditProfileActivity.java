@@ -29,6 +29,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.EditUser;
+import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.RegisterUser;
 import net.mavericklabs.mitra.api.model.RegisterUserResponse;
 import net.mavericklabs.mitra.database.model.DbGrade;
@@ -329,130 +331,135 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         int id = item.getItemId();
         if (id == R.id.action_next) {
 
-            if(isValidInformation()) {
-                String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
-                Logger.d(" language " + Locale.getDefault().getLanguage() + " " + Locale.getDefault().getDisplayLanguage());
-
-                //Get the current language name in English
-                String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
-                String languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
-
-
-                RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(),
-                        getSelectedUserTypeId(), languageCode);
-                final DbUser dbUser = new DbUser(nameEditText.getText().toString(),getSelectedUserTypeId(),getSelectedDistrictID());
-                dbUser.setPreferredLanguage(languageCode);
-
-                if(!StringUtils.isEmpty(udiseEditText.getText().toString())) {
-                    user.setUdiseCode(udiseEditText.getText().toString());
-                    dbUser.setUdise(udiseEditText.getText().toString());
+            if (isValidInformation()) {
+                RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
+                        .where(DbUser.class).findAll();
+                if (dbUser.size() == 1) {
+                    editUser();
+                } else {
+                    registerUser();
                 }
-
-                if(!StringUtils.isEmpty(profilePhotoPath)) {
-                    dbUser.setProfilePhotoPath(profilePhotoPath);
-                }
-
-                //set the fcm token
-                String token = FirebaseInstanceId.getInstance().getToken();
-                user.setFcmDeviceId(token);
-                Logger.d("fcm token set.." + token);
-
-                if(!selectedGradesList.isEmpty()) {
-                    List<String> gradeCodeList = getGradeCodeList();
-
-                    //format grades to store into database
-                    RealmList<DbGrade> dbGrades = new RealmList<>();
-                    for(String commonCode : gradeCodeList) {
-                        dbGrades.add(new DbGrade(commonCode));
-                    }
-                    dbUser.setGrades(dbGrades);
-
-                    //format grades to be sent to server
-                    String grades = StringUtils.stringify(gradeCodeList);
-                    user.setGradeCodeIds(grades);
-                }
-
-                if(!selectedSubjectsList.isEmpty()) {
-                    List<String> subjectCodeList = getSubjectCodeList();
-
-                    //format subject to store into database
-                    RealmList<DbSubject> dbSubjects = new RealmList<>();
-                    for(String commonCode : subjectCodeList) {
-                        dbSubjects.add(new DbSubject(commonCode));
-                    }
-                    dbUser.setSubjects(dbSubjects);
-
-                    //format subject to be sent to server
-                    String subjects = StringUtils.stringify(subjectCodeList);
-                    user.setSubjectCodeIds(subjects);
-                }
-
-                if(!selectedTopicsList.isEmpty()) {
-                    List<String> topicCodeList = getTopicCodeList();
-
-                    //format subject to store into database
-                    RealmList<DbTopic> dbTopics = new RealmList<>();
-                    for(String commonCode : topicCodeList) {
-                        dbTopics.add(new DbTopic(commonCode));
-                    }
-                    dbUser.setTopics(dbTopics);
-
-                    //format subject to be sent to server
-                    String topics = StringUtils.stringify(topicCodeList);
-                    user.setTopicCodeIds(topics);
-                }
-
-                final ProgressDialog progressDialog = new ProgressDialog(EditProfileActivity.this,
-                        R.style.ProgressDialog);
-                progressDialog.setMessage(getString(R.string.loading));
-                progressDialog.setCancelable(false);
-                progressDialog.show();
-
-                RestClient.getApiService("").registerUser(user).enqueue(new Callback<BaseModel<RegisterUserResponse>>() {
-                    @Override
-                    public void onResponse(Call<BaseModel<RegisterUserResponse>> call, Response<BaseModel<RegisterUserResponse>> response) {
-                        progressDialog.dismiss();
-                        if(response.isSuccessful()) {
-                            if(response.body().getData() != null) {
-
-                                //set flag that user has entered his information
-                                UserDetailUtils.setEnteredInformation(getApplicationContext(),Boolean.TRUE);
-
-                                RegisterUserResponse serverResponse = response.body().getData().get(0);
-                                dbUser.setId(serverResponse.getUserID());
-
-                                //write current user to database
-                                Realm realm = Realm.getDefaultInstance();
-                                realm.beginTransaction();
-                                realm.copyToRealm(dbUser);
-                                realm.commitTransaction();
-                                
-
-                                //store userId,token in shared preferences
-                                String token = serverResponse.getToken();
-                                UserDetailUtils.saveUserId(serverResponse.getUserID(), getApplicationContext());
-                                UserDetailUtils.saveToken(token,getApplicationContext());
-
-                                //move to next activity
-                                Intent verifyOtp = new Intent(EditProfileActivity.this,HomeActivity.class);
-                                startActivity(verifyOtp);
-                                finishAffinity();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<BaseModel<RegisterUserResponse>> call, Throwable t) {
-                        progressDialog.dismiss();
-                        Logger.d(" on fail");
-                    }
-                });
+                return true;
             } else {
                 Toast.makeText(getApplicationContext(), R.string.error_enter_required_fields,Toast.LENGTH_LONG).show();
             }
-            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void editUser() {
+        String userId = UserDetailUtils.getUserId(getApplicationContext());
+        String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
+        EditUser user = new EditUser(userId,nameEditText.getText().toString(),
+                                        phoneNumber,getSelectedUserTypeId(),getSelectedDistrictID());
+
+        //Get the current language name in English
+        String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
+        String languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+        user.setPreferredLanguageCodeID(languageCode);
+
+        //set udise
+        user.setUdiseCode(udiseEditText.getText().toString());
+
+
+        if(!selectedGradesList.isEmpty()) {
+            List<String> gradeCodeList = getGradeCodeList();
+            //format grades to be sent to server
+            String grades = StringUtils.stringify(gradeCodeList);
+            user.setGradeCodeIDs(grades);
+        }
+
+        if(!selectedSubjectsList.isEmpty()) {
+            List<String> subjectCodeList = getSubjectCodeList();
+            //format subject to be sent to server
+            String subjects = StringUtils.stringify(subjectCodeList);
+            user.setSubjectCodeIDs(subjects);
+        }
+
+        if(!selectedTopicsList.isEmpty()) {
+            List<String> topicCodeList = getTopicCodeList();
+            //format subject to be sent to server
+            String topics = StringUtils.stringify(topicCodeList);
+            user.setTopicCodeIDs(topics);
+        }
+
+        final ProgressDialog progressDialog = new ProgressDialog(EditProfileActivity.this,
+                R.style.ProgressDialog);
+        progressDialog.setMessage(getString(R.string.loading));
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        RestClient.getApiService("").updateUser(user).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+            @Override
+            public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                if(response.isSuccessful()){
+                    Realm realm = Realm.getDefaultInstance();
+                    final DbUser dbUser = realm.where(DbUser.class).findAll().first();
+                    realm.beginTransaction();
+
+                    dbUser.setName(nameEditText.getText().toString());
+                    dbUser.setUdise(udiseEditText.getText().toString());
+                    dbUser.setUserType(getSelectedUserTypeId());
+                    dbUser.setDistrict(getSelectedDistrictID());
+
+                    //format grades to store into database
+                    if(!selectedGradesList.isEmpty()) {
+                        RealmList<DbGrade> dbGrades = new RealmList<>();
+                        List<String> gradeCodeList = getGradeCodeList();
+                        for(String commonCode : gradeCodeList) {
+                            DbGrade dbGrade = realm.createObject(DbGrade.class);
+                            dbGrade.setGradeCommonCode(commonCode);
+                            dbGrades.add(dbGrade);
+                        }
+                        dbUser.setGrades(dbGrades);
+                    }
+
+                    if(!selectedSubjectsList.isEmpty()) {
+                        List<String> subjectCodeList = getSubjectCodeList();
+
+                        //format subject to store into database
+                        RealmList<DbSubject> dbSubjects = new RealmList<>();
+                        for (String commonCode : subjectCodeList) {
+                            DbSubject dbSubject = realm.createObject(DbSubject.class);
+                            dbSubject.setSubjectCommonCode(commonCode);
+                            dbSubjects.add(dbSubject);
+                        }
+                        dbUser.setSubjects(dbSubjects);
+                    }
+
+                    if(!selectedTopicsList.isEmpty()) {
+                        List<String> topicCodeList = getTopicCodeList();
+
+                        //format subject to store into database
+                        RealmList<DbTopic> dbTopics = new RealmList<>();
+                        for (String commonCode : topicCodeList) {
+                            DbTopic dbTopic = realm.createObject(DbTopic.class);
+                            dbTopic.setTopicCommonCode(commonCode);
+                            dbTopics.add(dbTopic);
+                        }
+                        dbUser.setTopics(dbTopics);
+                    }
+
+                    realm.commitTransaction();
+
+                    Toast.makeText(getApplicationContext(), R.string.profile_updated,Toast.LENGTH_LONG).show();
+                    progressDialog.dismiss();
+                    Intent home = new Intent(EditProfileActivity.this , HomeActivity.class);
+                    startActivity(home);
+                    finishAffinity();
+                } else {
+                    //TODO show error
+                    progressDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                //TODO show error
+                progressDialog.dismiss();
+            }
+        });
+
     }
 
     private List<String> getSubjectCodeList() {
@@ -588,5 +595,127 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             selectedIds.add(subject.getCommonCode().getCodeID());
         }
         return selectedIds;
+    }
+
+    private void registerUser() {
+
+        String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
+        Logger.d(" language " + Locale.getDefault().getLanguage() + " " + Locale.getDefault().getDisplayLanguage());
+
+        //Get the current language name in English
+        String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
+        String languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+
+        RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(),
+                getSelectedUserTypeId(), languageCode);
+        final DbUser dbUser = new DbUser(nameEditText.getText().toString(),getSelectedUserTypeId(),getSelectedDistrictID());
+        dbUser.setPreferredLanguage(languageCode);
+
+        if(!StringUtils.isEmpty(udiseEditText.getText().toString())) {
+            user.setUdiseCode(udiseEditText.getText().toString());
+            dbUser.setUdise(udiseEditText.getText().toString());
+        }
+
+        if(!StringUtils.isEmpty(profilePhotoPath)) {
+            dbUser.setProfilePhotoPath(profilePhotoPath);
+        }
+
+        //set the fcm token
+        String token = FirebaseInstanceId.getInstance().getToken();
+        //TODO remove dummy token
+        token = "qqqqwwwweee";
+        user.setFcmDeviceId(token);
+        Logger.d("fcm token set.." + token);
+
+        if(!selectedGradesList.isEmpty()) {
+            List<String> gradeCodeList = getGradeCodeList();
+
+            //format grades to store into database
+            RealmList<DbGrade> dbGrades = new RealmList<>();
+            for(String commonCode : gradeCodeList) {
+                dbGrades.add(new DbGrade(commonCode));
+            }
+            dbUser.setGrades(dbGrades);
+
+            //format grades to be sent to server
+            String grades = StringUtils.stringify(gradeCodeList);
+            user.setGradeCodeIds(grades);
+        }
+
+        if(!selectedSubjectsList.isEmpty()) {
+            List<String> subjectCodeList = getSubjectCodeList();
+
+            //format subject to store into database
+            RealmList<DbSubject> dbSubjects = new RealmList<>();
+            for(String commonCode : subjectCodeList) {
+                dbSubjects.add(new DbSubject(commonCode));
+            }
+            dbUser.setSubjects(dbSubjects);
+
+            //format subject to be sent to server
+            String subjects = StringUtils.stringify(subjectCodeList);
+            user.setSubjectCodeIds(subjects);
+        }
+
+        if(!selectedTopicsList.isEmpty()) {
+            List<String> topicCodeList = getTopicCodeList();
+
+            //format subject to store into database
+            RealmList<DbTopic> dbTopics = new RealmList<>();
+            for(String commonCode : topicCodeList) {
+                dbTopics.add(new DbTopic(commonCode));
+            }
+            dbUser.setTopics(dbTopics);
+
+            //format subject to be sent to server
+            String topics = StringUtils.stringify(topicCodeList);
+            user.setTopicCodeIds(topics);
+        }
+
+        final ProgressDialog progressDialog = new ProgressDialog(EditProfileActivity.this,
+                R.style.ProgressDialog);
+        progressDialog.setMessage(getString(R.string.loading));
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        RestClient.getApiService("").registerUser(user).enqueue(new Callback<BaseModel<RegisterUserResponse>>() {
+            @Override
+            public void onResponse(Call<BaseModel<RegisterUserResponse>> call, Response<BaseModel<RegisterUserResponse>> response) {
+                progressDialog.dismiss();
+                if(response.isSuccessful()) {
+                    if(response.body().getData() != null) {
+
+                        //set flag that user has entered his information
+                        UserDetailUtils.setEnteredInformation(getApplicationContext(),Boolean.TRUE);
+
+                        RegisterUserResponse serverResponse = response.body().getData().get(0);
+                        dbUser.setId(serverResponse.getUserID());
+
+                        //write current user to database
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+                        realm.copyToRealm(dbUser);
+                        realm.commitTransaction();
+
+
+                        //store userId,token in shared preferences
+                        String token = serverResponse.getToken();
+                        UserDetailUtils.saveUserId(serverResponse.getUserID(), getApplicationContext());
+                        UserDetailUtils.saveToken(token,getApplicationContext());
+
+                        //move to next activity
+                        Intent verifyOtp = new Intent(EditProfileActivity.this,HomeActivity.class);
+                        startActivity(verifyOtp);
+                        finishAffinity();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<RegisterUserResponse>> call, Throwable t) {
+                progressDialog.dismiss();
+                Logger.d(" on fail");
+            }
+        });
     }
 }
