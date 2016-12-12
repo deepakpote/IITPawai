@@ -56,8 +56,8 @@ class messages():
     usercontent_list_contenttype_code_id_does_not_exists = 100149
     usercontent_delete_contentid_cannot_be_empty = 100150
     usercontent_delete_userid_and_contentid_does_not_exists = 100151
-    save_userlanguage_languagecode_id_cannot_be_empty = 100152
-    save_userlanguage_user_not_exists = 100153
+    userlanguage_save_languagecode_id_cannot_be_empty = 100152
+    userlanguage_save_user_not_exists = 100153
 
 
 class authenticationTypes():
