@@ -479,6 +479,46 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return Response({"response_message": constants.messages.success, "data": response})
 
+    """
+    API to delete userContent
+    """
+    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
+    def contentDelete(self,request):
+        """ Delete userContent
+        args:
+            request: passed userID and contentID as parameter
+        returns:
+            response: user content deleteed successfully
+        """
+        print "i am in contentDelete"
+        userID = request.data.get("userID")
+        contentID = request.data.get("contentID")
+
+        # check userID is passed as parameter in post
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+
+        # check contentID is passed as parameter in post    
+        if not contentID:
+            return Response({"response_message": constants.messages.usercontent_delete_contentid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+
+        # If contentID and userID parameters are passed, then check content exists or not in userContent table
+        try:
+            objUserContentID = userContent.objects.get(content = contentID, user = userID)
+        except userContent.DoesNotExist:
+            return Response({"response_message": constants.messages.usercontent_delete_userid_and_contentid_does_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+
+        # Delete user content based on userID and contentID
+        userContent.objects.get(user = userID, content = contentID).delete()
+
+        return Response({"response_message": constants.messages.success, "data": []})
+
 
 #     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])
 #     def opentoAll(self,request):
