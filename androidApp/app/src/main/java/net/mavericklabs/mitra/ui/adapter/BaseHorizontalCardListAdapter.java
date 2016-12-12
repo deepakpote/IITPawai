@@ -72,10 +72,11 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
         layoutParams.height = layoutParams.width + (DisplayUtils.dpToPx(8, context));
         holder.contentView.setLayoutParams(layoutParams);
 
+        DisplayUtils.displayFileIcon(getObject(holder).getFileType(), holder.fileIcon);
+
         //Load Video
         if(holder.getItemViewType() == 0) {
             holder.youTubeThumbnailView.setVisibility(View.VISIBLE);
-            holder.fileIcon.setVisibility(View.GONE);
             final YouTubeThumbnailLoader.OnThumbnailLoadedListener onThumbnailLoadedListener = new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
                 @Override
                 public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
@@ -107,8 +108,6 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
             });
         } else {
             //Show file Icon
-
-            holder.fileIcon.setVisibility(View.VISIBLE);
             holder.youTubeThumbnailView.setVisibility(View.GONE);
         }
 

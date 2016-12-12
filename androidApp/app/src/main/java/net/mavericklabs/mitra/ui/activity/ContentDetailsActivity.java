@@ -24,6 +24,7 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.media.Image;
 import android.os.Bundle;
@@ -59,6 +60,7 @@ import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.RequirementsListAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.DisplayUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
@@ -104,6 +106,15 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
     @BindView(R.id.like_icon)
     ImageView likeIcon;
 
+    @BindView(R.id.save_icon)
+    ImageView saveIcon;
+
+    @BindView(R.id.youtube_layout)
+    RelativeLayout youTubeLayout;
+
+    @BindView(R.id.content_layout)
+    RelativeLayout contentLayout;
+
     @OnClick(R.id.like_icon)
     void likeContent() {
         //TODO get isliked value from content
@@ -147,10 +158,54 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                 });
     }
 
+    @OnClick(R.id.save_icon)
+    void saveContent() {
+        //TODO get issaved value from content
+        if(isSaved) {
+            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
+            isSaved = false;
+        } else {
+            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+            isSaved = true;
+        }
+        String userId = UserDetailUtils.getUserId(getApplicationContext());
+        RestClient.getApiService("").saveContent(userId,content.getContentID())
+                .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+                    @Override
+                    public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                        if(response.isSuccessful()) {
+                            Logger.d("content saved..");
+                        } else {
+                            Logger.d("is liked " + isSaved);
+                            if(isSaved) {
+                                saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
+                                isSaved = false;
+                            } else {
+                                saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+                                isSaved = true;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                        Logger.d("is liked " + isLiked);
+                        if(isSaved) {
+                            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
+                            isSaved = false;
+                        } else {
+                            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+                            isSaved = true;
+                        }
+                    }
+                });
+    }
+
     BaseHorizontalCardListAdapter similarContentsAdapter;
     private Content content;
     private YouTubePlayer player;
     private boolean isLiked;
+    private boolean isSaved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,17 +226,23 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
         }
 
         if(content != null) {
+            DisplayUtils.displayFileIcon(content.getFileType(), contentImageView);
+
             //Load Video
             if(content.getFileType().equals(Constants.FileTypeVideo)) {
 
+                youTubeLayout.setVisibility(View.VISIBLE);
+                contentImageView.setVisibility(View.GONE);
+                contentLayout.setBackgroundColor(Color.BLACK);
                 YouTubePlayerSupportFragment frag =
                         (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
                 frag.initialize(Constants.youtubeDeveloperKey, this);
 
-                contentImageView.setVisibility(View.GONE);
             } else {
                 //Show file Icon
                 contentImageView.setVisibility(View.VISIBLE);
+                youTubeLayout.setVisibility(View.GONE);
+                contentLayout.setBackgroundResource(R.drawable.gradient_background);
                 contentImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

@@ -20,7 +20,10 @@ import android.widget.ListView;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.model.BaseObject;
+import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.adapter.SubjectAndGradeFragmentListAdapter;
+import net.mavericklabs.mitra.utils.CommonCodeGroup;
+import net.mavericklabs.mitra.utils.EditProfileDialogFragment;
 import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.ArrayList;
@@ -28,6 +31,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by amoghpalnitkar on 12/3/16.
@@ -37,6 +42,7 @@ public class GradeFragment extends DialogFragment {
 
     private OnDialogFragmentDismissedListener onDialogFragmentDismissedListener;
     private List<BaseObject> objects;
+    private List<String> selectedGradeCodeIds;
 
     @BindView(R.id.subject_or_grade_list_view)
     ListView gradeListView;
@@ -75,8 +81,8 @@ public class GradeFragment extends DialogFragment {
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.grade_s);
 
-        objects = (List<BaseObject>) getArguments().getSerializable("grades_list");
-
+        selectedGradeCodeIds = getArguments().getStringArrayList("selected_grade_code_ids");
+        objects = getGradesList();
         gradeListView.setAdapter(new SubjectAndGradeFragmentListAdapter(getContext(),
                                     android.R.layout.simple_list_item_multiple_choice,objects));
 
@@ -112,8 +118,8 @@ public class GradeFragment extends DialogFragment {
                     checkedItems.add(object);
                 }
             }
-
-            onDialogFragmentDismissedListener.onDialogFragmentDismissed(checkedItems);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
+            onDialogFragmentDismissedListener.onDialogFragmentDismissed(checkedItems, EditProfileDialogFragment.ADD_GRADE);
             dismiss();
             return true;
         }
@@ -126,9 +132,27 @@ public class GradeFragment extends DialogFragment {
         return super.onCreateDialog(savedInstanceState);
     }
 
+    private List<BaseObject> getGradesList() {
+        List<BaseObject> objectList = new ArrayList<>();
+        RealmResults<CommonCode> gradeListResult = Realm.getDefaultInstance().where(CommonCode.class)
+                .equalTo("codeGroupID", CommonCodeGroup.GRADES).findAll();
+        List<CommonCode>  gradeList = new ArrayList<>(gradeListResult);
+        for(CommonCode commonCode : gradeList) {
+            BaseObject object= new BaseObject(commonCode,false);
+            for(String selectedGradeCodeId : selectedGradeCodeIds) {
+                if(object.getCommonCode().getCodeID().equals(selectedGradeCodeId)) {
+                    object.setChecked(true);
+                }
+            }
+            Logger.d("object added to grade list : " + object.getCommonCode().getCodeNameForCurrentLocale());
+            objectList.add(object);
+        }
+        return objectList;
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("My Profile");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
     }
 }

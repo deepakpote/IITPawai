@@ -55,30 +55,4 @@
             />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="24dp"
-        >
-        <TextView
-            android:id="@+id/have_an_account_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/already_have_an_account"
-            android:textColor="@color/primary_text"
-            />
-        <Button
-            android:id="@+id/sign_in_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sign_in"
-            android:layout_gravity="center"
-            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-            android:textColor="@color/colorAccent"
-            />
-    </LinearLayout>
-
 </RelativeLayout>

@@ -57,23 +57,29 @@
 
                     <RelativeLayout
                         android:id="@+id/content_layout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/gradient_background">
 
-                        <fragment
-                            android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
-                            android:id="@+id/youtube_fragment"
-                            android:layout_width="match_parent"
+                        <RelativeLayout
+                            android:id="@+id/youtube_layout"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            />
+                            android:visibility="gone">
+                            <fragment
+                                android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
+                                android:id="@+id/youtube_fragment"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                />
+                        </RelativeLayout>
 
 
                         <ImageView
                             android:id="@+id/content_image_view"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/pdf_512"
-                            android:background="@color/default_grey" />
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_centerInParent="true"/>
 
                     </RelativeLayout>
 
@@ -92,10 +98,11 @@
                             android:src="@drawable/ic_favorite_grey_24dp" />
 
                         <ImageView
+                            android:id="@+id/save_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
-                            android:src="@drawable/ic_bookmark_grey_24dp" />
+                            android:src="@drawable/ic_bookmark_lightgrey_24dp" />
 
                         <ImageView
                             android:layout_width="wrap_content"

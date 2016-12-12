@@ -25,11 +25,17 @@ public class RegisterUser {
     @SerializedName("userType")
     private String userType;
 
+    @SerializedName("udiseCode")
+    private String udiseCode;
+
     @SerializedName("subjectCodeIDs")
     private String subjectCodeIds;
 
     @SerializedName("gradeCodeIDs")
     private String gradeCodeIds;
+
+    @SerializedName("topicCodeIDs")
+    private String topicCodeIds;
 
     @SerializedName("preferredLanguage")
     private String preferredLanguage;
@@ -117,5 +123,22 @@ public class RegisterUser {
 
     public void setFcmDeviceId(String fcmDeviceId) {
         this.fcmDeviceId = fcmDeviceId;
+    }
+
+
+    public String getUdiseCode() {
+        return udiseCode;
+    }
+
+    public void setUdiseCode(String udiseCode) {
+        this.udiseCode = udiseCode;
+    }
+
+    public String getTopicCodeIds() {
+        return topicCodeIds;
+    }
+
+    public void setTopicCodeIds(String topicCodeIds) {
+        this.topicCodeIds = topicCodeIds;
     }
 }
