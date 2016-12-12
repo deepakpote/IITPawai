@@ -518,19 +518,8 @@ def getContentResponseDetails(objContent, objUser):
             objContentResponse.hasLiked = False
             objContentResponse.downloadCount = 0
             objContentResponse.sharedCount = 0
-            #return objContentResponse
-        # If response exists then return the response.
-        #return objContentResponse
         
         #Check any response for the user content exists or not.
-        try:
-            objuserContent = userContent.objects.get(content = objContent , user = objUser)
-            objContentResponse.hasSaved = True
-        except userContent.DoesNotExist:
-            #If not exists.It means no single response has been made for this content.
-            objContentResponse.hasSaved = False
-            return objContentResponse
-        # If response exists then return the response.
-        
-        
+        objContentResponse.hasSaved = userContent.objects.filter(content = objContent , user = objUser).exists()
+
         return objContentResponse
