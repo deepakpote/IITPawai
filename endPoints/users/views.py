@@ -445,7 +445,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
         # check contentID is passed as parameter in post    
         if not contentTypeCodeID:
-            return Response({"response_message": constants.messages.list_usercontent_contenttype_codeid_cannnot_be_empty,
+            return Response({"response_message": constants.messages.usercontent_list_contenttype_codeid_cannnot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
 
@@ -453,7 +453,7 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             objUser = user.objects.get(userID = userID)
         except user.DoesNotExist:
-            return Response({"response_message": constants.messages.list_usercontent_user_id_not_exists,
+            return Response({"response_message": constants.messages.usercontent_list_user_id_not_exists,
                              "data": []},
                             status = status.HTTP_404_NOT_FOUND)
 
@@ -461,7 +461,7 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             objContentTypeCodeID = code.objects.get(codeID = contentTypeCodeID)
         except code.DoesNotExist:
-            return Response({"response_message": constants.messages.list_usercontent_contenttype_code_id_does_not_exists,
+            return Response({"response_message": constants.messages.usercontent_list_contenttype_code_id_does_not_exists,
                              "data": []},
                             status = status.HTTP_404_NOT_FOUND)
         
