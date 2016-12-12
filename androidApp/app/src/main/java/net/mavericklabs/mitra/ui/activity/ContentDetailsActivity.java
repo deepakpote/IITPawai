@@ -106,6 +106,9 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
     @BindView(R.id.like_icon)
     ImageView likeIcon;
 
+    @BindView(R.id.save_icon)
+    ImageView saveIcon;
+
     @BindView(R.id.youtube_layout)
     RelativeLayout youTubeLayout;
 
@@ -155,10 +158,54 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                 });
     }
 
+    @OnClick(R.id.save_icon)
+    void saveContent() {
+        //TODO get issaved value from content
+        if(isSaved) {
+            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
+            isSaved = false;
+        } else {
+            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+            isSaved = true;
+        }
+        String userId = UserDetailUtils.getUserId(getApplicationContext());
+        RestClient.getApiService("").saveContent(userId,content.getContentID())
+                .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+                    @Override
+                    public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                        if(response.isSuccessful()) {
+                            Logger.d("content saved..");
+                        } else {
+                            Logger.d("is liked " + isSaved);
+                            if(isSaved) {
+                                saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
+                                isSaved = false;
+                            } else {
+                                saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+                                isSaved = true;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                        Logger.d("is liked " + isLiked);
+                        if(isSaved) {
+                            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
+                            isSaved = false;
+                        } else {
+                            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+                            isSaved = true;
+                        }
+                    }
+                });
+    }
+
     BaseHorizontalCardListAdapter similarContentsAdapter;
     private Content content;
     private YouTubePlayer player;
     private boolean isLiked;
+    private boolean isSaved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

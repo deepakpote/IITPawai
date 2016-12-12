@@ -37,7 +37,6 @@ public class ProfileActivityGradesAdapter extends RecyclerView.Adapter<ChipViewH
 
     @Override
     public int getItemCount() {
-        Logger.d("selected grades count : " + selectedGrades.size());
         return selectedGrades.size();
     }
 }

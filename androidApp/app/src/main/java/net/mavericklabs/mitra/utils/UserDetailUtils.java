@@ -20,9 +20,7 @@ public class UserDetailUtils {
 
     public static String getUserId(Context context){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        //TODO
-        return "4";
-        //return preferences.getString("user_id", "");
+        return preferences.getString("user_id", "");
     }
 
     public static void saveToken(String id , Context context){
@@ -54,6 +52,18 @@ public class UserDetailUtils {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("verified",value);
         editor.apply();
+    }
+
+    public static void setEnteredInformation(Context context, boolean value) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("info",value);
+        editor.apply();
+    }
+
+    public static boolean hasEnteredInformation(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getBoolean("info", false);
     }
 
     public static boolean isVerifiedMobileNumber(Context context) {

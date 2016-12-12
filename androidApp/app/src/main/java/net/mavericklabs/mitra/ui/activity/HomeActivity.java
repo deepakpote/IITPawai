@@ -19,19 +19,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.ui.fragment.EventCalendarFragment;
 import net.mavericklabs.mitra.ui.fragment.HomeFragment;
 import net.mavericklabs.mitra.ui.fragment.MyResourcesFragment;
+import net.mavericklabs.mitra.ui.fragment.NotificationFragment;
 import net.mavericklabs.mitra.ui.fragment.ProfileFragment;
 import net.mavericklabs.mitra.ui.fragment.SelfLearningFragment;
+import net.mavericklabs.mitra.ui.fragment.SettingsFragment;
 import net.mavericklabs.mitra.ui.fragment.TeachingAidsFragment;
 import net.mavericklabs.mitra.utils.AnimationUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.StringUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -109,8 +116,18 @@ public class HomeActivity extends AppCompatActivity {
         selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_HOME));
         View headerView = navigationView.getHeaderView(0);
         TextView userNameTextView = (TextView) headerView.findViewById(R.id.nav_header_user_name);
+        ImageView profilePhoto = (ImageView) headerView.findViewById(R.id.nav_header_image);
         if(user.size() ==1) {
             userNameTextView.setText(user.get(0).getName());
+            if(!StringUtils.isEmpty(user.get(0).getProfilePhotoPath())) {
+                Glide.with(this).load(user.get(0).getProfilePhotoPath())
+                        .bitmapTransform(new CropCircleTransformation(getApplicationContext()))
+                        .into(profilePhoto);
+            } else {
+                Glide.with(this).load(R.drawable.placeholder_user).
+                        bitmapTransform(new CropCircleTransformation(getApplicationContext())).
+                        into(profilePhoto);
+            }
         }
         headerView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,6 +183,15 @@ public class HomeActivity extends AppCompatActivity {
                 fragmentClass = EventCalendarFragment.class;
                 break;
 
+            //commenting for now. to be implemented in next release.
+//            case R.id.nav_notification:
+//                tabLayout.setVisibility(View.GONE);
+//                fragmentClass = NotificationFragment.class;
+//                break;
+            case R.id.nav_settings:
+                tabLayout.setVisibility(View.GONE);
+                fragmentClass = SettingsFragment.class;
+                break;
             default:
                 fragmentClass = HomeFragment.class;
 
@@ -288,8 +314,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

@@ -98,6 +98,7 @@
                             android:src="@drawable/ic_favorite_grey_24dp" />
 
                         <ImageView
+                            android:id="@+id/save_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"

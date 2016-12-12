@@ -26,6 +26,8 @@ package net.mavericklabs.mitra.utils;
 import android.text.InputFilter;
 import android.text.Spanned;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -101,6 +103,13 @@ public class StringUtils {
             sb.append(",");
         }
         return sb.toString();
+    }
+
+    public static ArrayList<String> splitCommas(String str) {
+        String[] parts = str.split(",");
+        ArrayList<String> codes = new ArrayList<>();
+        Collections.addAll(codes, parts);
+        return codes;
     }
 
 }
