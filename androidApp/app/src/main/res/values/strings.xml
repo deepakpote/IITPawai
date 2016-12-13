@@ -94,5 +94,6 @@
     <string name="no_grades">No Grades</string>
     <string name="no_topics">No Topics</string>
     <string name="profile_updated">Profile updated successfully</string>
+    <string name="author">"Author "</string>
 
 </resources>

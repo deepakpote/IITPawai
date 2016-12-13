@@ -14,10 +14,10 @@ import android.widget.RelativeLayout;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.News;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.model.Content;
-import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.NewsListAdapter;
@@ -112,19 +112,27 @@ public class HomeFragment extends Fragment{
 
         loadPopularTeachingAids();
         loadPopularSelfLearning();
+        loadNews();
+    }
 
-        List<News> news = new ArrayList<>();
-        news.add(new News("Title 1", "Details 1"));
-        news.add(new News("Title 2", "Details 2"));
-        news.add(new News("Title 3", "Details 3"));
-        news.add(new News("Title 4", "Details 4"));
+    private void loadNews() {
+        RestClient.getApiService("").listNews().enqueue(new Callback<BaseModel<News>>() {
+            @Override
+            public void onResponse(Call<BaseModel<News>> call, Response<BaseModel<News>> response) {
+                if(response.isSuccessful()) {
+                    List<News> news = response.body().getData();
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+                    newsRecyclerView.setLayoutManager(layoutManager);
+                    NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), news);
+                    newsRecyclerView.setAdapter(newsListAdapter);
+                }
+            }
 
+            @Override
+            public void onFailure(Call<BaseModel<News>> call, Throwable t) {
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        newsRecyclerView.setLayoutManager(layoutManager);
-        NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), news);
-        newsRecyclerView.setAdapter(newsListAdapter);
-
+            }
+        });
     }
 
     private void loadPopularTeachingAids() {

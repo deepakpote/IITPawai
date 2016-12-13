@@ -349,7 +349,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
     private void editUser() {
         String userId = UserDetailUtils.getUserId(getApplicationContext());
-        String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
+        final String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
         EditUser user = new EditUser(userId,nameEditText.getText().toString(),
                                         phoneNumber,getSelectedUserTypeId(),getSelectedDistrictID());
 
@@ -401,6 +401,10 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                     dbUser.setUdise(udiseEditText.getText().toString());
                     dbUser.setUserType(getSelectedUserTypeId());
                     dbUser.setDistrict(getSelectedDistrictID());
+
+                    if(!StringUtils.isEmpty(profilePhotoPath)) {
+                        dbUser.setProfilePhotoPath(profilePhotoPath);
+                    }
 
                     //format grades to store into database
                     if(!selectedGradesList.isEmpty()) {
@@ -622,8 +626,6 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         //set the fcm token
         String token = FirebaseInstanceId.getInstance().getToken();
-        //TODO remove dummy token
-        token = "qqqqwwwweee";
         user.setFcmDeviceId(token);
         Logger.d("fcm token set.." + token);
 

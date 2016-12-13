@@ -50,6 +50,7 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.MetaContent;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
@@ -117,7 +118,6 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
     @OnClick(R.id.like_icon)
     void likeContent() {
-        //TODO get isliked value from content
         if(isLiked) {
             likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_grey_24dp));
             isLiked = false;
@@ -160,7 +160,6 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
     @OnClick(R.id.save_icon)
     void saveContent() {
-        //TODO get issaved value from content
         if(isSaved) {
             saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
             isSaved = false;
@@ -169,7 +168,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
             isSaved = true;
         }
         String userId = UserDetailUtils.getUserId(getApplicationContext());
-        RestClient.getApiService("").saveContent(userId,content.getContentID())
+        RestClient.getApiService("").saveContent(userId,content.getContentID(),isSaved)
                 .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
@@ -226,6 +225,35 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
         }
 
         if(content != null) {
+
+            String userId = UserDetailUtils.getUserId(getApplicationContext());
+            RestClient.getApiService("").metaContent(userId,content.getContentID())
+                    .enqueue(new Callback<BaseModel<MetaContent>>() {
+                            @Override
+                            public void onResponse(Call<BaseModel<MetaContent>> call, Response<BaseModel<MetaContent>> response) {
+                                if(response.isSuccessful()) {
+                                    isLiked = response.body().getData().get(0).isLiked();
+                                    isSaved = response.body().getData().get(0).isSaved();
+                                    if(isSaved) {
+                                        saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+                                    } else {
+                                        saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
+                                    }
+
+                                    if(isLiked) {
+                                        likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_accent_24dp));
+                                    } else {
+                                        likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_grey_24dp));
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<BaseModel<MetaContent>> call, Throwable t) {
+
+                            }
+                        });
+
             DisplayUtils.displayFileIcon(content.getFileType(), contentImageView);
 
             //Load Video
@@ -298,7 +326,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
             }
 
             //TODO : set author name
-            authorName.setText("Author ");
+            authorName.setText(R.string.author);
             description.setText(content.getInstruction());
 
             if(getSupportActionBar() != null) {

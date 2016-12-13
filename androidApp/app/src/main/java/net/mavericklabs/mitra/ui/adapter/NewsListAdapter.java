@@ -24,6 +24,9 @@
 package net.mavericklabs.mitra.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +34,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.model.News;
+import net.mavericklabs.mitra.api.model.News;
+import net.mavericklabs.mitra.ui.activity.NewsDetailsActivity;
 
 import java.util.List;
 
@@ -61,10 +65,20 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.CardVi
 
     @Override
     public void onBindViewHolder(final CardViewHolder holder, int position) {
-
-        holder.title.setText(newsList.get(holder.getAdapterPosition()).getTitle());
-        holder.text2.setText(newsList.get(holder.getAdapterPosition()).getDetails());
-
+        holder.title.setText(newsList.get(holder.getAdapterPosition()).getNewsTitle());
+        holder.text2.setText(newsList.get(holder.getAdapterPosition()).getContent());
+        holder.newsCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                News item = newsList.get(holder.getAdapterPosition());
+                Intent details = new Intent(context, NewsDetailsActivity.class);
+                details.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("news_item",item);
+                details.putExtras(bundle);
+                context.startActivity(details);
+            }
+        });
     }
 
     @Override
@@ -79,6 +93,9 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.CardVi
 
         @BindView(R.id.text2)
         TextView text2;
+
+        @BindView(R.id.card_news)
+        CardView newsCard;
 
         CardViewHolder(View itemView) {
             super(itemView);
