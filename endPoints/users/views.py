@@ -9,7 +9,7 @@ from users.serializers import userSerializer, otpSerializer
 
 from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth, device, userContent
 from commons.models import code
-from mitraEndPoints import constants
+from mitraEndPoints import constants , utils
 import random
 import plivo
 import base64
@@ -381,7 +381,8 @@ class UserViewSet(viewsets.ModelViewSet):
         """
         userID = request.data.get("userID")
         contentID = request.data.get("contentID")
-
+        saveContent = request.data.get("saveContent")
+        
         # check userID is passed as parameter in post
         if not userID:
             return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
@@ -393,6 +394,14 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.save_usercontent_contentid_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
+                # Create object of common class 
+        objCommon = utils.common()
+        
+        # Check value of saveContent is boolean or NOT.
+        if not objCommon.isBool(saveContent):
+            return Response({"response_message": constants.messages.save_like_hasLike_value_must_be_boolean,
+                            "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED)    
 
         # If contentID parameter is passed, then check content exists or not
         try:
@@ -410,16 +419,23 @@ class UserViewSet(viewsets.ModelViewSet):
                              "data": []},
                             status = status.HTTP_404_NOT_FOUND)
 
-        # If userIDis allready present in userContent
-        objUserContentUserInfo = userContent.objects.filter(user = objUser, content = objContent)
-        
-        if objUserContentUserInfo:
-            return Response({"response_message": constants.messages.save_usercontent_user_id_allready_exists,
-                     "data": []},
-                    status = status.HTTP_404_NOT_FOUND)
 
-        # Save user content detail
-        userContent(user = objUser,content = objContent).save()
+            
+        if objCommon.getBoolValue(saveContent) == True:
+            # If userIDis allready present in userContent
+            objUserContentUserInfo = userContent.objects.filter(user = objUser, content = objContent)
+            
+            if objUserContentUserInfo:
+                return Response({"response_message": constants.messages.save_usercontent_user_id_allready_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
+            
+            # Save user content detail
+            userContent(user = objUser,content = objContent).save()
+        else:
+            # saveContent == False mean delete the content.
+            contentDelete( objUser.userID , objContent.contentID)
+            
 
         return Response({"response_message": constants.messages.success, "data": []})
 
@@ -480,45 +496,78 @@ class UserViewSet(viewsets.ModelViewSet):
         response = objContentSerializer.data
 
         return Response({"response_message": constants.messages.success, "data": response})
-
+    
     """
-    API to delete userContent
+    API to update user language.
     """
-    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
-    def contentDelete(self,request):
-        """ Delete userContent
-        args:
-            request: passed userID and contentID as parameter
-        returns:
-            response: user content deleteed successfully
-        """
-        userID = request.data.get("userID")
-        contentID = request.data.get("contentID")
-
-        # check userID is passed as parameter in post
+    
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def saveLanguage(self,request):
+        # Get input data
+        userID = request.data.get('userID') 
+        preferredLanguageCodeID = request.data.get('preferredLanguageCodeID') 
+        
+        # check userID is passed as parameter 
         if not userID:
             return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
 
-        # check contentID is passed as parameter in post    
-        if not contentID:
-            return Response({"response_message": constants.messages.usercontent_delete_contentid_cannot_be_empty,
+        # check preferredLanguageCodeID is passed as parameter in post    
+        if not preferredLanguageCodeID:
+            return Response({"response_message": constants.messages.save_userlanguage_languagecode_id_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
-
-        # If contentID and userID parameters are passed, then check content exists or not in userContent table
+      
+        # validate user information
         try:
-            objUserContentID = userContent.objects.get(content = contentID, user = userID)
-        except userContent.DoesNotExist:
-            return Response({"response_message": constants.messages.usercontent_delete_userid_and_contentid_does_not_exists,
-                     "data": []},
-                    status = status.HTTP_404_NOT_FOUND)
-
-        # Delete user content based on userID and contentID
-        userContent.objects.get(user = userID, content = contentID).delete()
-
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.save_userlanguage_user_not_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
+        
+        # If user valid, update the details.
+        user.objects.filter(userID = userID).update(preferredLanguage = preferredLanguageCodeID)
+        
+        # Return the success response.
         return Response({"response_message": constants.messages.success, "data": []})
+
+"""
+API to delete userContent
+"""
+def contentDelete(userID , contentID):
+    """ Delete userContent
+    args:
+        request: passed userID and contentID as parameter
+    returns:
+        response: user content deleteed successfully
+    """
+
+    # check userID is passed as parameter in post
+    if not userID:
+        return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                         "data": []},
+                         status = status.HTTP_401_UNAUTHORIZED)
+
+    # check contentID is passed as parameter in post    
+    if not contentID:
+        return Response({"response_message": constants.messages.usercontent_delete_contentid_cannot_be_empty,
+                         "data": []},
+                         status = status.HTTP_401_UNAUTHORIZED)
+
+    # If contentID and userID parameters are passed, then check content exists or not in userContent table
+    try:
+        objUserContentID = userContent.objects.get(content = contentID, user = userID)
+    except userContent.DoesNotExist:
+        return Response({"response_message": constants.messages.usercontent_delete_userid_and_contentid_does_not_exists,
+                 "data": []},
+                status = status.HTTP_404_NOT_FOUND)
+
+    # Delete user content based on userID and contentID
+    userContent.objects.get(user = userID, content = contentID).delete()
+
+    return
 
     """
     APT to save user photo
