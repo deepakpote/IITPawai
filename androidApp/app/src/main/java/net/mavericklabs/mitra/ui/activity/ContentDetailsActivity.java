@@ -313,7 +313,8 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                     @Override
                     public void onClick(View view) {
                         if(content.getFileType().equals(Constants.FileTypePPT) ||
-                                content.getFileType().equals(Constants.FileTypeWorksheet)) {
+                                content.getFileType().equals(Constants.FileTypeWorksheet) ||
+                                content.getFileType().equals(Constants.FileTypePDF)) {
                             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(content.getFileName()));
                             startActivity(browserIntent);
                         }
@@ -331,10 +332,15 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
             if(content.getContentTypeCodeID().equals(Constants.ContentTypeTeachingAids)) {
 
                 requirementsLayout.setVisibility(View.VISIBLE);
+
+                String requirements = content.getRequirement();
+
+                String[] list = requirements.split(",");
+
                 List<Requirements> requirementsList = new ArrayList<>();
-                requirementsList.add(new Requirements(R.drawable.ic_menu_camera, " Wi-Fi"));
-                requirementsList.add(new Requirements(R.drawable.ic_menu_camera, " Computer"));
-                requirementsList.add(new Requirements(R.drawable.ic_menu_camera, " Projector"));
+                for (String requirement : list) {
+                    requirementsList.add(new Requirements(R.drawable.ic_menu_camera, requirement));
+                }
 
                 GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
                 requirementsGridView.setLayoutManager(gridLayoutManager);
@@ -363,8 +369,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                 loadSimilarSelfLearning();
             }
 
-            //TODO : set author name
-            authorName.setText(R.string.author);
+            authorName.setText(content.getAuthor());
             description.setText(content.getInstruction());
 
             if(getSupportActionBar() != null) {

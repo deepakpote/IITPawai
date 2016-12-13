@@ -136,7 +136,7 @@ public class CustomBottomSheetDialogFragment extends BottomSheetDialogFragment {
                 description.setText(event.getDescription());
 
                 String date = event.getStartTime().getDateTime();
-                Date convertedDate = DateUtils.convertToDate(date, "yyyy-MM-dd'T'HH:mm:ssXXX");
+                Date convertedDate = DateUtils.convertToDate(date, "yyyy-MM-dd'T'HH:mm:ssZ");
                 String newDate = DateUtils.convertToString(convertedDate, "EEE, MMM d, yy");
 
                 dateTextView.setText(newDate);
