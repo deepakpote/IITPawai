@@ -700,12 +700,11 @@ def sendOtpSms(recepientPhoneNumber, generatedOtp, languageCodeID, otpMessage):
 Function to save the user subjects.
 """
 def userSubjectSave(subjectCodeIDs, objUser):
-    if not subjectCodeIDs:
-        return
-    
     # Delete all the subjects of respective user from userSubject.
     userSubject.objects.filter(user = objUser).delete()
     
+    if not subjectCodeIDs:
+        return
     # save the user subject.
     subjectCodeList = subjectCodeIDs.split(',')
     for subjectCodeID in subjectCodeList:
@@ -717,11 +716,11 @@ def userSubjectSave(subjectCodeIDs, objUser):
 Function to save the user skills.
 """
 def userSkillSave(skillCodeIDs, userObj):
-    if not skillCodeIDs:
-        return
-    
     # Delete all the skills of respective user from userSkill.
     userSkill.objects.filter(user = userObj).delete()
+    
+    if not skillCodeIDs:
+        return
         
     # save the user skills.
     skillCodeList = skillCodeIDs.split(',')
@@ -734,11 +733,11 @@ def userSkillSave(skillCodeIDs, userObj):
 Function to save the user topics.
 """
 def userTopicSave(topicCodeIDs, userObj):
+        # Delete all the topics of respective user from userTopic.
+    userTopic.objects.filter(user = userObj).delete()
+    
     if not topicCodeIDs:
         return
-    
-    # Delete all the topics of respective user from userTopic.
-    userTopic.objects.filter(user = userObj).delete()
         
     # save the user topics.
     topicCodeList = topicCodeIDs.split(',')
@@ -750,12 +749,12 @@ def userTopicSave(topicCodeIDs, userObj):
 """
 Function to save the user grades.
 """
-def userGradeSave(gradeCodeIDs , userObj):
-    if not gradeCodeIDs:
-        return 
-    
+def userGradeSave(gradeCodeIDs , userObj): 
     # Delete all the grades of respective user from userGrade.
     userGrade.objects.filter(user = userObj).delete()
+    
+    if not gradeCodeIDs:
+        return 
     
     # save the user Grade.
     gradeCodeList = gradeCodeIDs.split(',')
