@@ -9,8 +9,8 @@ class content(models.Model):
     contentID = models.AutoField(primary_key = True)
     contentTitle = models.CharField(null = False, unique = True, max_length = 255)
     contentType = models.ForeignKey('commons.code', db_column='contentTypeCodeID', related_name='content_contentTypeCodeID')
-    subject = models.ForeignKey('commons.code', db_column='subjectCodeID', related_name='content_subjectCodeID')
-    grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='content_gradeCodeID')
+    subject = models.ForeignKey('commons.code', db_column='subjectCodeID', related_name='content_subjectCodeID', null = True)
+    grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='content_gradeCodeID', null = True)
     topic = models.ForeignKey('commons.code', db_column='topicCodeID', related_name='content_topicCodeID', null = True)
     
     requirement = models.TextField(null = True)
