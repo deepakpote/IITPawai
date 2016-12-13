@@ -64,8 +64,8 @@ class messages():
     user_uploadphoto_user_does_not_exists = 100155
 
 class authenticationTypes():
-    registration = 110100
-    signIn = 110101
+    registration = "110100"
+    signIn = "110101"
     otpValidityHours = 18.5
 
 class sms():
