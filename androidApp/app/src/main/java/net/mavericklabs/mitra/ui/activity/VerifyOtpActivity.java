@@ -186,7 +186,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
                             progressDialog.dismiss();
                         } else {
                             progressDialog.dismiss();
-                            Toast.makeText(getApplicationContext(), R.string.error_please_enter_6_digit_otp,Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), R.string.error_invalid_otp,Toast.LENGTH_LONG).show();
                         }
                     }
 
