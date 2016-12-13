@@ -521,10 +521,10 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({"response_message": constants.messages.success, "data": []})
 
     """
-    APT to upload user photo
+    APT to save user photo
     """
     @list_route(methods = ['POST'], permission_classes = [permissions.AllowAny])
-    def uploadPhoto(self,request):
+    def saveUserPhoto(self,request):
         """ save photo url of user 
         args:
             request : userID and image byte array passed as parameter
