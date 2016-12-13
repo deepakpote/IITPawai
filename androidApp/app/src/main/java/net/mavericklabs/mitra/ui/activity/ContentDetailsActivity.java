@@ -326,7 +326,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
             }
 
             //TODO : set author name
-            authorName.setText("Author ");
+            authorName.setText(R.string.author);
             description.setText(content.getInstruction());
 
             if(getSupportActionBar() != null) {
