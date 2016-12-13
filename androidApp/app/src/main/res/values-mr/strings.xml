@@ -77,4 +77,6 @@
     <string name="news_and_circulars">News and Circulars</string>
     <string name="toast_6_digits">Please enter all 6 digits.</string>
     <string name="author">"Author "</string>
+    <string name="error_user_exists">User already exists. Please sign in.</string>
+    <string name="error_please_register">You have not registered yet. Please register first.</string>
 </resources>
