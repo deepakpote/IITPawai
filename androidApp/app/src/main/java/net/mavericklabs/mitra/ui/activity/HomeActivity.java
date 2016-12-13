@@ -69,6 +69,9 @@ public class HomeActivity extends AppCompatActivity {
     @BindView(R.id.trainings_button)
     Button trainingsButton;
 
+    @BindView(R.id.my_resources_button)
+    Button myResourcesButton;
+
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
 
@@ -83,6 +86,7 @@ public class HomeActivity extends AppCompatActivity {
     public int DRAWER_ITEM_TEACHING_AIDS = 1;
     public int DRAWER_ITEM_SELF_LEARNING = 2;
     public int DRAWER_ITEM_TRAINING_CALENDAR = 3;
+    public int DRAWER_ITEM_MY_RESOURCES = 4;
     public int DRAWER_ITEM_PROFILE = 5;
 
 
@@ -246,6 +250,15 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //Go to self learning
                 selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_TRAINING_CALENDAR));
+                collapseFab();
+            }
+        });
+
+        myResourcesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Go to self learning
+                selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_MY_RESOURCES));
                 collapseFab();
             }
         });
