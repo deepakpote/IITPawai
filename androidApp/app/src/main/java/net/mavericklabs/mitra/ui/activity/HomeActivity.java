@@ -83,6 +83,7 @@ public class HomeActivity extends AppCompatActivity {
     public int DRAWER_ITEM_TEACHING_AIDS = 1;
     public int DRAWER_ITEM_SELF_LEARNING = 2;
     public int DRAWER_ITEM_TRAINING_CALENDAR = 3;
+    public int DRAWER_ITEM_PROFILE = 5;
 
 
     @Override
@@ -132,17 +133,7 @@ public class HomeActivity extends AppCompatActivity {
         headerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction;
-                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                tabLayout.setVisibility(View.GONE);
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, new ProfileFragment());
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                setTitle("My Profile");
-                // Close the navigation drawer
-                drawerLayout.closeDrawers();
+                selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_PROFILE));
             }
         });
     }
