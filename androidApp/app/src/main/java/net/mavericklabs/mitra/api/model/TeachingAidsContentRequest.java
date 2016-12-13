@@ -44,10 +44,10 @@ public class TeachingAidsContentRequest implements Serializable{
     @SerializedName("languageCodeID")
     private String language;
 
-    @SerializedName("subjectCodeID")
+    @SerializedName("subjectCodeIDs")
     private String subject;
 
-    @SerializedName("gradeCodeID")
+    @SerializedName("gradeCodeIDs")
     private String grade;
 
     @SerializedName("pageNumber")

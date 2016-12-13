@@ -39,7 +39,7 @@ public class SelfLearningContentRequest implements Serializable{
     @SerializedName("languageCodeID")
     private String language;
 
-    @SerializedName("topicCodeID")
+    @SerializedName("topicCodeIDs")
     private String topic;
 
     @SerializedName("pageNumber")
