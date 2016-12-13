@@ -626,8 +626,6 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         //set the fcm token
         String token = FirebaseInstanceId.getInstance().getToken();
-        //TODO remove dummy token
-        token = "qqqqwwwweee";
         user.setFcmDeviceId(token);
         Logger.d("fcm token set.." + token);
 

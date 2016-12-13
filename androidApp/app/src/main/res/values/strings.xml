@@ -95,6 +95,7 @@
     <string name="no_grades">No Grades</string>
     <string name="no_topics">No Topics</string>
     <string name="profile_updated">Profile updated successfully</string>
+
     <string name="error_message">Something went wrong. Please try again later.</string>
 
     <plurals name="resources_saved">
@@ -103,5 +104,8 @@
     </plurals>
 
     <string name="share_title">Share via</string>
+
+    <string name="author">"Author "</string>
+
 
 </resources>
