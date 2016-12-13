@@ -71,6 +71,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.activity.ContentDetailsActivity" />
         <activity android:name=".ui.activity.NewsDetailsActivity"></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="308030be7c4bc5bc57284789a5d17a804939eebf" />
     </application>
 
 </manifest>
