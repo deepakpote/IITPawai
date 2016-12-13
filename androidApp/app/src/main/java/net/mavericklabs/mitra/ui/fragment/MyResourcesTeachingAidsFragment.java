@@ -234,7 +234,6 @@ public class MyResourcesTeachingAidsFragment extends Fragment {
                         contentRecyclerView.setLayoutManager(linearLayoutManager);
                         contentAdapter = new ContentVerticalCardListAdapter(getContext(), contents, fragment);
                         contentAdapter.setShowDeleteOption(true);
-                        contentAdapter.setShowDeleteOption(true);
                         contentRecyclerView.setAdapter(contentAdapter);
                         fragment.subtitle0.setText(getResources().getQuantityString(R.plurals.resources_saved,
                                 contents.size(), contents.size()));

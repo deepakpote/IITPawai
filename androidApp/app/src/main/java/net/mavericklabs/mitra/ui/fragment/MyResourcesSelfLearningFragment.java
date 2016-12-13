@@ -198,6 +198,7 @@ public class MyResourcesSelfLearningFragment extends Fragment {
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                         contentRecyclerView.setLayoutManager(linearLayoutManager);
                         adapter = new ContentVerticalCardListAdapter(getContext(), contents, fragment);
+                        adapter.setShowDeleteOption(true);
                         contentRecyclerView.setAdapter(adapter);
 
                         fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved, contents.size(), contents.size()));

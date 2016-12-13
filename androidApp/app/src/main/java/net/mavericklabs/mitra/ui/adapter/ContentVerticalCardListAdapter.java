@@ -24,18 +24,18 @@
 package net.mavericklabs.mitra.ui.adapter;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -44,6 +44,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
@@ -129,10 +130,27 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
             holder.deleteResource.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Content content = contents.get(holder.getAdapterPosition());
-                    removeFromSavedContent(content.getContentID());
-                    contents.remove(holder.getAdapterPosition());
-                    notifyItemRemoved(holder.getAdapterPosition());
+
+                    AlertDialog dialog =
+                            new AlertDialog.Builder(callingFragment.getActivity())
+                                    .setMessage(context.getString(R.string.delete_saved_resource_confirmation))
+                                    .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            Content content = contents.get(holder.getAdapterPosition());
+                                            removeFromSavedContent(content.getContentID(), holder);
+                                        }
+                                    })
+                                    .setNegativeButton(context.getString(R.string.cancel),
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    //do nothing
+                                                }
+                                            })
+                                    .create();
+                    dialog.show();
+
                 }
             });
         } else {
@@ -227,7 +245,7 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
 
     }
 
-    private void removeFromSavedContent(String contentID) {
+    private void removeFromSavedContent(String contentID, final CardViewHolder holder) {
         String userId = UserDetailUtils.getUserId(context);
         RestClient.getApiService("").saveContent(userId, contentID ,false)
                 .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
@@ -235,14 +253,18 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
                         if(response.isSuccessful()) {
                             Logger.d("content saved..");
+                            contents.remove(holder.getAdapterPosition());
+                            notifyItemRemoved(holder.getAdapterPosition());
                         } else {
                             Logger.d("is saved not success");
+                            Toast.makeText(context, context.getString(R.string.error_message), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
                         Logger.d("is saved onfailure");
+                        Toast.makeText(context, context.getString(R.string.error_message), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
