@@ -54,6 +54,7 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.ContentDataRequest;
 import net.mavericklabs.mitra.api.model.ContentDataResponse;
+import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
@@ -128,7 +129,10 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
             holder.deleteResource.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //call delete from saved resources
+                    Content content = contents.get(holder.getAdapterPosition());
+                    removeFromSavedContent(content.getContentID());
+                    contents.remove(holder.getAdapterPosition());
+                    notifyItemRemoved(holder.getAdapterPosition());
                 }
             });
         } else {
@@ -221,6 +225,26 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
             }
         });
 
+    }
+
+    private void removeFromSavedContent(String contentID) {
+        String userId = UserDetailUtils.getUserId(context);
+        RestClient.getApiService("").saveContent(userId, contentID ,false)
+                .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+                    @Override
+                    public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                        if(response.isSuccessful()) {
+                            Logger.d("content saved..");
+                        } else {
+                            Logger.d("is saved not success");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                        Logger.d("is saved onfailure");
+                    }
+                });
     }
 
     private boolean checkPermission() {
