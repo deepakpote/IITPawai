@@ -67,7 +67,6 @@ public class SettingsFragment extends Fragment {
         languageSpinner.setAdapter(new SpinnerArrayAdapter(getContext(),R.layout.custom_spinner_dropdown_item
                 ,languageList));
         final int currentLanguageIndex = getCurrentLanguageIndex();
-        languageSpinner.setSelection(currentLanguageIndex, false);
         languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, final int i, long l) {
