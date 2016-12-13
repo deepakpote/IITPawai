@@ -89,11 +89,23 @@
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
     <string name="language_select_confirmation">Are you sure you want to select this as default language?</string>
+    <string name="delete_saved_resource_confirmation">Are you sure you want to remove this resource from saved resources?</string>
     <string name="topic_s">Topic/s</string>
     <string name="no_subjects">No Subjects</string>
     <string name="no_grades">No Grades</string>
     <string name="no_topics">No Topics</string>
     <string name="profile_updated">Profile updated successfully</string>
+
+    <string name="error_message">Something went wrong. Please try again later.</string>
+
+    <plurals name="resources_saved">
+        <item quantity="one">%1$d resource saved</item>
+        <item quantity="other">%1$d resources saved</item>
+    </plurals>
+
+    <string name="share_title">Share via</string>
+
     <string name="author">"Author "</string>
+
 
 </resources>

@@ -174,7 +174,7 @@ public class HomeActivity extends AppCompatActivity {
                 break;
 
             case R.id.nav_my_resources :
-                tabLayout.setVisibility(View.VISIBLE);
+                AnimationUtils.fadeInView(tabLayout, null);
                 fragmentClass = MyResourcesFragment.class;
                 break;
 

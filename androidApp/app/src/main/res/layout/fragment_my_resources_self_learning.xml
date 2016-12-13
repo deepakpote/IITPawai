@@ -34,9 +34,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center">
+        android:gravity="center"
+        android:padding="8dp">
         <Spinner
-            android:id="@+id/subject_spinner"
+            android:id="@+id/topic_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
         </Spinner>
@@ -47,7 +48,7 @@
             android:layout_height="match_parent"/>
 
         <Spinner
-            android:id="@+id/grade_spinner"
+            android:id="@+id/language_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
@@ -70,5 +71,15 @@
         android:layout_height="wrap_content">
 
     </android.support.v7.widget.RecyclerView>
+
+    <include layout="@layout/custom_loading_panel"
+        android:id="@+id/loading_panel"/>
+
+    <TextView
+        android:id="@+id/error_view"
+        android:layout_marginTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
 </LinearLayout>
