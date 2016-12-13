@@ -188,6 +188,10 @@ public class HomeActivity extends AppCompatActivity {
 //                tabLayout.setVisibility(View.GONE);
 //                fragmentClass = NotificationFragment.class;
 //                break;
+            case R.id.nav_profile:
+                tabLayout.setVisibility(View.GONE);
+                fragmentClass = ProfileFragment.class;
+                break;
             case R.id.nav_settings:
                 tabLayout.setVisibility(View.GONE);
                 fragmentClass = SettingsFragment.class;
