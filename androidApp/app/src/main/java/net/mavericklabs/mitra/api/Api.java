@@ -78,10 +78,10 @@ public interface Api {
     @FormUrlEncoded
     Call<BaseModel<MetaContent>> metaContent(@Field("userID") String userId, @Field("contentID") String contentId);
 
-    @POST("user/savelanguage/")
+    @POST("user/saveLanguage/")
     @FormUrlEncoded
     Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("userID") String userId,
-                                                       @Field("preferredLanguage") String languageCode);
+                                                       @Field("preferredLanguageCodeID") String languageCode);
 
     @POST("user/detail/")
     @FormUrlEncoded
