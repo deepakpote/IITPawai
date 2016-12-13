@@ -10,7 +10,12 @@ import net.mavericklabs.mitra.api.model.ContentDataResponse;
 import net.mavericklabs.mitra.api.model.ContentDataRequest;
 
 import net.mavericklabs.mitra.api.model.EventRequest;
+
 import net.mavericklabs.mitra.api.model.SavedContentRequest;
+
+import net.mavericklabs.mitra.api.model.MetaContent;
+import net.mavericklabs.mitra.api.model.News;
+
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.api.model.LikeRequest;
@@ -66,7 +71,12 @@ public interface Api {
     @POST("user/contentSave/")
     @FormUrlEncoded
     Call<BaseModel<GenericListDataModel>> saveContent(@Field("userID") String userId,
-                                                      @Field("contentID") String contentId);
+                                                      @Field("contentID") String contentId,
+                                                      @Field("saveContent") boolean value);
+
+    @POST("content/getContentResponse/")
+    @FormUrlEncoded
+    Call<BaseModel<MetaContent>> metaContent(@Field("userID") String userId, @Field("contentID") String contentId);
 
     @POST("user/savelanguage/")
     @FormUrlEncoded
@@ -83,7 +93,6 @@ public interface Api {
     @POST("events/listEvents/")
     Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);
 
-
     @POST("user/contentList/")
     Call<BaseModel<Content>> getSavedContent(@Body SavedContentRequest contentRequest);
 
@@ -92,4 +101,8 @@ public interface Api {
 
     @POST("content/share/")
     Call<BaseModel<ContentDataResponse>> share(@Body ContentDataRequest request);
+
+    @GET("news/")
+    Call<BaseModel<News>> listNews();
+
 }
