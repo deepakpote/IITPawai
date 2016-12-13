@@ -26,7 +26,8 @@
 
         <activity
             android:name=".ui.activity.SplashActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,7 +36,8 @@
         </activity>
         <activity
             android:name=".ui.activity.HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
@@ -44,22 +46,28 @@
         </activity>
         <activity
             android:name=".ui.activity.SelectLanguageActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activity.ChooseSignInOrRegisterActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activity.RegisterUserActivity"
-            android:label="@string/register_title" />
+            android:label="@string/register_title"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activity.SignInUserActivity"
-            android:label="@string/sign_in_title" />
+            android:label="@string/sign_in_title"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activity.VerifyOtpActivity"
-            android:label="@string/phone_verification_title" />
+            android:label="@string/phone_verification_title"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activity.EditProfileActivity"
-            android:label="@string/my_profile_title">
+            android:label="@string/my_profile_title"
+            android:screenOrientation="portrait">
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
@@ -68,9 +76,12 @@
         </activity>
         <activity
             android:name=".ui.activity.AlmostDoneActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.activity.ContentDetailsActivity" />
-        <activity android:name=".ui.activity.NewsDetailsActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.ContentDetailsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.NewsDetailsActivity"
+            android:screenOrientation="portrait"/>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="308030be7c4bc5bc57284789a5d17a804939eebf" />

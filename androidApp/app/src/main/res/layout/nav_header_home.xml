@@ -30,15 +30,4 @@
         android:text="Username"
         />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorWhite"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:text="00 videos watched, 00 videos saved"
-        android:textSize="12sp"
-        />
-
 </LinearLayout>
