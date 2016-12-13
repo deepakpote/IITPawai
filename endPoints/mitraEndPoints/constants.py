@@ -57,6 +57,9 @@ class messages():
     usercontent_delete_contentid_cannot_be_empty = 100150
     usercontent_delete_userid_and_contentid_does_not_exists = 100151
 
+    user_uploadphoto_bytearray_data_cannot_be_empty = 100154
+    user_uploadphoto_user_does_not_exists = 100155
+
 class authenticationTypes():
     registration = 110100
     signIn = 110101
