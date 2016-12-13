@@ -232,7 +232,7 @@ public class TeachingAidsFragment extends Fragment{
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     CommonCode subject = (CommonCode) subjectSpinner.getSelectedItem();
-                    searchTeachingAids(fileType, language, grades.get(i).getCodeID() , subject.getCodeID(), 0);
+                    searchTeachingAids(fileType, language, subject.getCodeID(), grades.get(i).getCodeID() , 0);
                 }
 
                 @Override
