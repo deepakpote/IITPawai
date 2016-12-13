@@ -114,7 +114,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageCaptureUri);
 
-            Intent chooserIntent = Intent.createChooser(pickIntent, "Choose profile photo");
+            Intent chooserIntent = Intent.createChooser(pickIntent, getString(R.string.choose_profile_photo));
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{intent});
             startActivityForResult(chooserIntent, PICK_PROFILE_PHOTO);
         } catch (Exception e) {
@@ -367,6 +367,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             //format grades to be sent to server
             String grades = StringUtils.stringify(gradeCodeList);
             user.setGradeCodeIDs(grades);
+        } else {
+            user.setGradeCodeIDs("");
         }
 
         if(!selectedSubjectsList.isEmpty()) {
@@ -374,6 +376,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             //format subject to be sent to server
             String subjects = StringUtils.stringify(subjectCodeList);
             user.setSubjectCodeIDs(subjects);
+        } else {
+            user.setSubjectCodeIDs("");
         }
 
         if(!selectedTopicsList.isEmpty()) {
@@ -381,6 +385,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             //format subject to be sent to server
             String topics = StringUtils.stringify(topicCodeList);
             user.setTopicCodeIDs(topics);
+        } else {
+            user.setTopicCodeIDs("");
         }
 
         final ProgressDialog progressDialog = new ProgressDialog(EditProfileActivity.this,
@@ -416,6 +422,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                             dbGrades.add(dbGrade);
                         }
                         dbUser.setGrades(dbGrades);
+                    } else {
+                        dbUser.setGrades(null);
                     }
 
                     if(!selectedSubjectsList.isEmpty()) {
@@ -429,6 +437,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                             dbSubjects.add(dbSubject);
                         }
                         dbUser.setSubjects(dbSubjects);
+                    } else {
+                        dbUser.setSubjects(null);
                     }
 
                     if(!selectedTopicsList.isEmpty()) {
@@ -442,6 +452,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                             dbTopics.add(dbTopic);
                         }
                         dbUser.setTopics(dbTopics);
+                    } else {
+                        dbUser.setTopics(null);
                     }
 
                     realm.commitTransaction();
@@ -499,17 +511,22 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             }
             if(!selectedGradesList.isEmpty()) {
                 gradePlaceholderTextView.setVisibility(View.GONE);
-                gradeRecyclerView.getAdapter().notifyDataSetChanged();
+            } else {
+                gradePlaceholderTextView.setVisibility(View.VISIBLE);
             }
+            gradeRecyclerView.getAdapter().notifyDataSetChanged();
         } else if (EditProfileDialogFragment.ADD_SUBJECT == fragmentType) {
             selectedSubjectsList.clear();
             for(BaseObject checkedItem : checkedItemsList) {
                 selectedSubjectsList.add(checkedItem);
             }
+            Logger.d("selected subjects : " + selectedSubjectsList.size());
             if(!selectedSubjectsList.isEmpty()) {
                 subjectPlaceholderTextView.setVisibility(View.GONE);
-                subjectRecyclerView.getAdapter().notifyDataSetChanged();
+            } else {
+                subjectPlaceholderTextView.setVisibility(View.VISIBLE);
             }
+            subjectRecyclerView.getAdapter().notifyDataSetChanged();
         } else if(EditProfileDialogFragment.ADD_TOPIC == fragmentType) {
             selectedTopicsList.clear();
             for(BaseObject checkedItem : checkedItemsList) {
@@ -517,8 +534,10 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             }
             if(!selectedTopicsList.isEmpty()) {
                 topicPlaceholderTextView.setVisibility(View.GONE);
-                topicRecyclerView.getAdapter().notifyDataSetChanged();
+            } else {
+                topicPlaceholderTextView.setVisibility(View.VISIBLE);
             }
+            topicRecyclerView.getAdapter().notifyDataSetChanged();
         }
     }
 

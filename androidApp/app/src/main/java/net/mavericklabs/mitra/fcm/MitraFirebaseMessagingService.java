@@ -22,13 +22,15 @@ public class MitraFirebaseMessagingService extends FirebaseMessagingService{
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        Logger.d("message received : " + remoteMessage.getNotification().getBody());
-        DbNotification notification = new DbNotification(remoteMessage.getNotification().getTitle(),
-                                                NOTIFICATION_TYPE_DEFAULT,
-                                                remoteMessage.getNotification().getBody());
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.insert(notification);
-        realm.commitTransaction();
+        Logger.d("message received : " + remoteMessage.getData().get("Nick"));
+        Logger.d("message received : " + remoteMessage.getData().get("body"));
+
+//        DbNotification notification = new DbNotification(remoteMessage.getNotification().getTitle(),
+//                                                NOTIFICATION_TYPE_DEFAULT,
+//                                                remoteMessage.getNotification().getBody());
+//        Realm realm = Realm.getDefaultInstance();
+//        realm.beginTransaction();
+//        realm.insert(notification);
+//        realm.commitTransaction();
     }
 }
