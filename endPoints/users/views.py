@@ -17,8 +17,10 @@ import os,time
 from datetime import datetime, timedelta
 from django.utils import timezone
 from contents.models import content
+from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs
 from time import gmtime, strftime
 from contents.serializers import contentSerializer
+from commons.views import getCodeIDs
  
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -453,7 +455,13 @@ class UserViewSet(viewsets.ModelViewSet):
         """
         userID = request.data.get("userID")
         contentTypeCodeID = request.data.get("contentTypeCodeID")
-
+        
+        subjectCodeIDs = request.data.get('subjectCodeIDs') 
+        gradeCodeIDs = request.data.get('gradeCodeIDs')
+        fileTypeCodeID = request.data.get('fileTypeCodeID')
+        
+        topicCodeIDs = request.data.get('topicCodeIDs') 
+        languageCodeID = request.data.get('languageCodeID')
 
         # check userID is passed as parameter 
         if not userID:
@@ -482,13 +490,54 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.usercontent_list_contenttype_code_id_does_not_exists,
                              "data": []},
                             status = status.HTTP_404_NOT_FOUND)
-        
+                    
         # Get list of contentIDs of login user
         objUserContent = list(userContent.objects.filter(user = objUser).values_list('content_id',flat = True))
         
-        # Get the content details based on ContentTypeCodeID
-        objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, contentID__in = objUserContent)
+        #If content type is Teaching Aids.
+        if contentTypeCodeID == constants.mitraCode.teachingAids:
+            #Get the applicable subject list for the respective user.    
+            arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs , objUser)  
+            #Get the applicable grade list for the respective user.
+            arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs , objUser)
+            #Get correct/valid FileTypeCodeID 
+            arrContentFileTypeCodeID = []
+            if not fileTypeCodeID:
+                # Get codeIDs related to filetype codegroup
+                arrContentFileTypeCodeID = getCodeIDs(constants.mitraCodeGroup.fileType)
+            else:
+                arrContentFileTypeCodeID = [fileTypeCodeID]
 
+            # Get the content details.
+            objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, 
+                                                            contentID__in = objUserContent,
+                                                            subject__in = arrSubjectCodeIDs,
+                                                            grade__in = arrGradeCodeIDs,
+                                                            fileType__in = arrContentFileTypeCodeID)
+            
+        elif contentTypeCodeID == constants.mitraCode.selfLearning:
+            #Get the applicable topic list for the respective user.    
+            arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs , objUser)  
+
+            #Get Language
+            arrLanguageCodeID = []
+            if not languageCodeID:
+                # Get all the languages
+                arrLanguageCodeID = getCodeIDs(constants.mitraCodeGroup.language)
+            else:
+                arrLanguageCodeID = [languageCodeID]
+            
+            #Build queryset               
+            objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, 
+                                                            contentID__in = objUserContent,
+                                                            topic__in = arrTopicCodeIDs,
+                                                            language__in = arrLanguageCodeID)
+              
+        #Check for the no of records fetched.
+        if not objUserContentTypeCode:
+            return Response({"response_message": constants.messages.usercontent_list_no_records_found,
+                    "data": []},
+                    status = status.HTTP_404_NOT_FOUND) 
         # Set query string to contentSerializer
         objContentSerializer = contentSerializer(objUserContentTypeCode, many = True)
 
@@ -515,7 +564,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
         # check preferredLanguageCodeID is passed as parameter in post    
         if not preferredLanguageCodeID:
-            return Response({"response_message": constants.messages.save_userlanguage_languagecode_id_cannot_be_empty,
+            return Response({"response_message": constants.messages.userlanguage_save_languagecode_id_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
       
@@ -523,7 +572,7 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             objUser = user.objects.get(userID = userID)
         except user.DoesNotExist:
-            return Response({"response_message": constants.messages.save_userlanguage_user_not_exists,
+            return Response({"response_message": constants.messages.userlanguage_save_user_not_exists,
                          "data": []},
                         status = status.HTTP_404_NOT_FOUND)
         
@@ -805,5 +854,3 @@ def userDeviceSave(objUser, fcmDeviceID):
     # If the given userID and device ID combination does NOT exists, then, save
     device(user = objUser, fcmDeviceID = fcmDeviceID).save()
     return
-
-

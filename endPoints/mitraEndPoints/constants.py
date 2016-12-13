@@ -58,6 +58,7 @@ class messages():
     usercontent_delete_userid_and_contentid_does_not_exists = 100151
     userlanguage_save_languagecode_id_cannot_be_empty = 100152
     userlanguage_save_user_not_exists = 100153
+    usercontent_list_no_records_found = 100156
 
 
     user_uploadphoto_bytearray_data_cannot_be_empty = 100154
@@ -79,6 +80,8 @@ class mitraCodeGroup():
     subject = 103 
     grade = 104   
     topic = 105
+    fileType = 108
+    language = 101
     
 class mitraCode():
     teachingAids = 107100
