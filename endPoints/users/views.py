@@ -12,10 +12,12 @@ from commons.models import code
 from mitraEndPoints import constants , utils
 import random
 import plivo
+import base64
+import os,time
 from datetime import datetime, timedelta
 from django.utils import timezone
 from contents.models import content
-
+from time import gmtime, strftime
 from contents.serializers import contentSerializer
  
 class UserViewSet(viewsets.ModelViewSet):
@@ -498,6 +500,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     API to update user language.
     """
+    
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def saveLanguage(self,request):
         # Get input data
@@ -565,6 +568,55 @@ def contentDelete(userID , contentID):
     userContent.objects.get(user = userID, content = contentID).delete()
 
     return
+
+    """
+    APT to save user photo
+    """
+    @list_route(methods = ['POST'], permission_classes = [permissions.AllowAny])
+    def saveUserPhoto(self,request):
+        """ save photo url of user 
+        args:
+            request : userID and image byte array passed as parameter
+        returns:
+            response : photo url successfully saved in database
+        """
+        userID = request.data.get('userID')
+        byteArrayData = request.data.get('byteArray')
+
+        # fileName = None
+        # check userID is passed as parameter in post method
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+
+        # check image byteArray is passed as parameter in posty method
+        if not byteArrayData:
+            return Response({"response_message": constants.messages.user_uploadphoto_bytearray_data_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.user_uploadphoto_user_does_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+
+        # Decode image byte array data 
+        result = base64.b64decode(byteArrayData)
+
+        # Get current date and time to set name of image file 
+        objCurrentDateTime = strftime("%Y-%m-%d %H-%M-%S", time.localtime())
+        fileName = str(userID) + "_" + objCurrentDateTime + ".png"
+
+        with open(fileName, 'wb') as f:
+            f.write(result)
+
+        user.objects.filter(userID = userID).update(photoUrl = fileName)
+
+        return Response({"response_message": constants.messages.success, "data": []})
 
 
 #     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])

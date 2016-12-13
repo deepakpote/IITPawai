@@ -60,6 +60,9 @@ class messages():
     userlanguage_save_user_not_exists = 100153
 
 
+    user_uploadphoto_bytearray_data_cannot_be_empty = 100154
+    user_uploadphoto_user_does_not_exists = 100155
+
 class authenticationTypes():
     registration = 110100
     signIn = 110101
