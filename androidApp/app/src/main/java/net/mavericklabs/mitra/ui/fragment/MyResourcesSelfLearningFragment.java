@@ -64,11 +64,11 @@ import retrofit2.Response;
 
 
 public class MyResourcesSelfLearningFragment extends Fragment {
-    @BindView(R.id.topic_spinner)
-    Spinner topicSpinner;
-
-    @BindView(R.id.language_spinner)
-    Spinner languageSpinner;
+//    @BindView(R.id.topic_spinner)
+//    Spinner topicSpinner;
+//
+//    @BindView(R.id.language_spinner)
+//    Spinner languageSpinner;
 
     @BindView(R.id.content_recycler_view)
     RecyclerView contentRecyclerView;
@@ -111,52 +111,52 @@ public class MyResourcesSelfLearningFragment extends Fragment {
 
         fragment = (MyResourcesFragment) getParentFragment();
 
-        final List<CommonCode> topics = new ArrayList<>(CommonCodeUtils.getTopics());
-        final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getLanguages());
-
-        //Header - not a valid value
-        topics.add(0, new CommonCode("", "","Topic", "Topic", 0));
-        languages.add(0,new CommonCode("","","Language","Language",0));
-
-        SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(),
-                R.layout.custom_spinner_item_header,
-                topics);
-        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
-        topicSpinner.setAdapter(adapter);
-        topicSpinner.setSelection(0 ,false);
-
-
-        topicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                CommonCode language = (CommonCode) languageSpinner.getSelectedItem();
-                loadMySelfLearning(language.getCodeID(), topics.get(i).getCodeID());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        SpinnerArrayAdapter languageAdapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
-                languages);
-        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
-        languageSpinner.setAdapter(languageAdapter);
-        languageSpinner.setSelection(0 ,false);
-
-        languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                CommonCode topic = (CommonCode) topicSpinner.getSelectedItem();
-                loadMySelfLearning(languages.get(i).getCodeID() , topic.getCodeID());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
+//        final List<CommonCode> topics = new ArrayList<>(CommonCodeUtils.getTopics());
+//        final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getLanguages());
+//
+//        //Header - not a valid value
+//        topics.add(0, new CommonCode("", "","Topic", "Topic", 0));
+//        languages.add(0,new CommonCode("","","Language","Language",0));
+//
+//        SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(),
+//                R.layout.custom_spinner_item_header,
+//                topics);
+//        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
+//        topicSpinner.setAdapter(adapter);
+//        topicSpinner.setSelection(0 ,false);
+//
+//
+//        topicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                CommonCode language = (CommonCode) languageSpinner.getSelectedItem();
+//                loadMySelfLearning(language.getCodeID(), topics.get(i).getCodeID());
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
+//
+//        SpinnerArrayAdapter languageAdapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
+//                languages);
+//        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
+//        languageSpinner.setAdapter(languageAdapter);
+//        languageSpinner.setSelection(0 ,false);
+//
+//        languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                CommonCode topic = (CommonCode) topicSpinner.getSelectedItem();
+//                loadMySelfLearning(languages.get(i).getCodeID() , topic.getCodeID());
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
 
         String language = "";
 
