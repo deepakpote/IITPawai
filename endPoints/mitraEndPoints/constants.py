@@ -99,7 +99,8 @@ class language():
     english = 101100
     marathi = 101101
 
-class imageFolder():
-    path = "/static/"
-    baseDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    baseDir += path
+class imageDir():
+    path = "/static/user/"
+    projectDir = os.path.normpath(os.getcwd() + os.sep + os.pardir)
+    currentDir = os.getcwd()
+    baseDir = currentDir + path

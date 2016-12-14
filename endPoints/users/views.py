@@ -434,7 +434,7 @@ class UserViewSet(viewsets.ModelViewSet):
             if objUserContentUserInfo:
                 return Response({"response_message": constants.messages.save_usercontent_user_id_allready_exists,
                          "data": []},
-                        status = status.HTTP_200_OK)
+                        status = status.HTTP_304_NOT_MODIFIED)
             
             # Save user content detail
             userContent(user = objUser,content = objContent).save()
@@ -624,7 +624,7 @@ class UserViewSet(viewsets.ModelViewSet):
         result = base64.b64decode(byteArrayData)
 
         # Set the base dirceory with static folder in app
-        baseDir = constants.imageFolder.baseDir
+        baseDir = constants.imageDir.baseDir
 
         # Get current date and time to set name of image file 
         objCurrentDateTime = strftime("%y%m%d%H%M%S", time.localtime())
