@@ -25,14 +25,12 @@ import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.activity.EditProfileActivity;
-import net.mavericklabs.mitra.ui.adapter.ProfileActivityGradesAdapter;
+import net.mavericklabs.mitra.ui.adapter.ChipLayoutAdapter;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivitySubjectsAdapter;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,7 +126,7 @@ public class ProfileFragment extends Fragment {
                 gradeList.add(new BaseObject(CommonCodeUtils.getObjectFromCode(grade.getGradeCommonCode()),
                                         false));
             }
-            gradeRecyclerView.setAdapter(new ProfileActivityGradesAdapter(gradeList));
+            gradeRecyclerView.setAdapter(new ChipLayoutAdapter(gradeList));
             if(0 == gradeList.size()) {
                 gradeRecyclerView.setVisibility(GONE);
             } else {

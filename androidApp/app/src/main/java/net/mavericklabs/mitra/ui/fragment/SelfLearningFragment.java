@@ -42,8 +42,10 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.ui.adapter.ChipLayoutAdapter;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
@@ -79,7 +81,17 @@ public class SelfLearningFragment extends Fragment {
     @BindView(R.id.loading_panel)
     RelativeLayout loadingPanel;
 
+    @BindView(R.id.filter_recycler_view)
+    RecyclerView filterRecyclerView;
+
+    @BindView(R.id.view_below_filter_list)
+    View viewBelowFilterList;
+
     private ContentVerticalCardListAdapter adapter;
+
+    private List<BaseObject> filterList;
+    private List<CommonCode> filterGradeList, filterSubjectList;
+    private ChipLayoutAdapter filterAdapter;
 
 
     public SelfLearningFragment() {

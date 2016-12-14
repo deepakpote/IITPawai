@@ -41,7 +41,7 @@ import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
-import net.mavericklabs.mitra.ui.adapter.ProfileActivityGradesAdapter;
+import net.mavericklabs.mitra.ui.adapter.ChipLayoutAdapter;
 import net.mavericklabs.mitra.ui.adapter.ProfileActivitySubjectsAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
@@ -237,11 +237,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         gradeRecyclerView.setHasFixedSize(true);
         gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
-        gradeRecyclerView.setAdapter(new ProfileActivityGradesAdapter(selectedGradesList));
+        gradeRecyclerView.setAdapter(new ChipLayoutAdapter(selectedGradesList));
 
         topicRecyclerView.setHasFixedSize(true);
         topicRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
-        topicRecyclerView.setAdapter(new ProfileActivityGradesAdapter(selectedTopicsList));
+        topicRecyclerView.setAdapter(new ChipLayoutAdapter(selectedTopicsList));
     }
 
     private void setDefaultValues(DbUser dbUser) {

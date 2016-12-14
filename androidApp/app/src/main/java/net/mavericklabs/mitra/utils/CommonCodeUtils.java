@@ -25,6 +25,7 @@ package net.mavericklabs.mitra.utils;
 
 import net.mavericklabs.mitra.model.CommonCode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -97,6 +98,20 @@ public class CommonCodeUtils {
                 Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeNameEnglish",
                         language).equalTo("codeGroupID", CommonCodeGroup.LANGUAGE) .findAll();
         return contentTypeResult.get(0).getCodeID();
+
+    }
+
+    public static String getCommonCodeCommaSeparatedList(List<CommonCode> codes) {
+        List<String> commonCodeStringList = new ArrayList<>();
+        if(codes.size() > 0) {
+            for (CommonCode code : codes) {
+                commonCodeStringList.add(code.getCodeID());
+            }
+
+            return StringUtils.stringify(commonCodeStringList);
+        }
+
+        return "";
 
     }
 

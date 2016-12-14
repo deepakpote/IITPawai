@@ -96,6 +96,9 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
         thumbnailViewToLoaderMap = new HashMap<>();
     }
 
+    public void setContents(List<Content> contents) {
+        this.contents = contents;
+    }
     public List<Content> getContents() {
         return contents;
     }
