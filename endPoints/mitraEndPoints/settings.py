@@ -129,10 +129,9 @@ USE_TZ = True
 
 PROJECT_DIR = os.path.normpath(os.getcwd() + os.sep + os.pardir)
 
-os.chdir('..')
-
 CURRENT_DIR = os.getcwd()
 
+CURRENT_DIR = PROJECT_DIR
 #STATIC_ROOT= os.path.join(PROJECT_DIR,'static')
 
 STATIC_URL = "/static/"

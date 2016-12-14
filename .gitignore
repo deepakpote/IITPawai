@@ -90,3 +90,6 @@ ENV/
 
 # migrations
 migrations/
+
+# png file
+.png

@@ -1,4 +1,5 @@
 import os
+import settings
 class messages():
     success = 100100
     registration_phone_number_cannot_be_empty = 100101
@@ -101,6 +102,7 @@ class language():
 
 class imageDir():
     path = "/static/user/"
-    projectDir = os.path.normpath(os.getcwd() + os.sep + os.pardir)
+    projectDir = settings.PROJECT_DIR
     currentDir = os.getcwd()
+    currentDir = settings.PROJECT_DIR
     baseDir = currentDir + path
