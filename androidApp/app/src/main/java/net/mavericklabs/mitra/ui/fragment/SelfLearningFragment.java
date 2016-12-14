@@ -69,7 +69,7 @@ import retrofit2.Response;
 
 import static android.view.View.GONE;
 
-public class SelfLearningFragment extends Fragment {
+public class SelfLearningFragment extends BaseContentFragment {
 
     @BindView(R.id.subject_spinner)
     Spinner topicSpinner;
@@ -77,38 +77,11 @@ public class SelfLearningFragment extends Fragment {
     @BindView(R.id.grade_spinner)
     Spinner languageSpinner;
 
-    @BindView(R.id.content_recycler_view)
-    RecyclerView contentRecyclerView;
-
-    @BindView(R.id.error_view)
-    TextView errorView;
-
-    @BindView(R.id.loading_panel)
-    RelativeLayout loadingPanel;
-
-    @BindView(R.id.filter_recycler_view)
-    RecyclerView filterRecyclerView;
-
-    @BindView(R.id.view_below_filter_list)
-    View viewBelowFilterList;
-
-    private ContentVerticalCardListAdapter adapter;
-
-    private List<BaseObject> filterList;
     private List<CommonCode> filterTopicList;
-    private ChipLayoutAdapter filterAdapter;
-    private String language;
 
 
     public SelfLearningFragment() {
         //mandatory constructor
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        Logger.d("fragment -  on permission result");
-        adapter.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Nullable
@@ -122,12 +95,8 @@ public class SelfLearningFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
 
-        filterList = new ArrayList<>();
         filterTopicList = new ArrayList<>();
-
-        filterAdapter = new ChipLayoutAdapter(filterList);
-        filterAdapter.setShowRemoveButton(true);
-        filterAdapter.setListener(new OnChipRemovedListener() {
+        setupFilterView(new OnChipRemovedListener() {
             @Override
             public void onChipRemoved(int position) {
                 BaseObject object = filterList.get(position);
@@ -137,19 +106,10 @@ public class SelfLearningFragment extends Fragment {
                 } else {
                     language = "";
                 }
-                filterList.remove(position);
-                filterAdapter.notifyItemRemoved(position);
-                if(filterList.isEmpty()) {
-                    viewBelowFilterList.setVisibility(GONE);
-                }
+                removeFromFilterList(position);
                 searchSelfLearning( 0);
             }
         });
-
-        filterRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
-                LinearLayoutManager.HORIZONTAL,false));
-        filterRecyclerView.setVisibility(GONE);
-
 
         final List<CommonCode> topics = new ArrayList<>(CommonCodeUtils.getTopics());
         final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getLanguages());
@@ -169,14 +129,12 @@ public class SelfLearningFragment extends Fragment {
         topicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                filterTopicList.add(topics.get(i));
-                searchSelfLearning(0);
-
-                filterRecyclerView.setVisibility(View.VISIBLE);
-                viewBelowFilterList.setVisibility(View.VISIBLE);
-                filterList.add(new BaseObject(topics.get(i), true));
-                filterAdapter.setObjects(filterList);
-                filterRecyclerView.swapAdapter(filterAdapter, false);
+                if(!StringUtils.isEmpty(topics.get(i).getCodeID())) {
+                    filterTopicList.add(topics.get(i));
+                    addItemToFilterList(topics.get(i));
+                    searchSelfLearning(0);
+                    topicSpinner.setSelection(0 ,false);
+                }
             }
 
             @Override
@@ -229,6 +187,9 @@ public class SelfLearningFragment extends Fragment {
             }
         }
         String topicList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterTopicList);
+        
+        contentRecyclerView.setVisibility(View.GONE);
+        loadingPanel.setVisibility(View.VISIBLE);
         SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(UserDetailUtils.getUserId(getContext()),
                  language, topicList);
         contentRequest.setPageNumber(pageNumber);
@@ -237,55 +198,31 @@ public class SelfLearningFragment extends Fragment {
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 loadingPanel.setVisibility(View.GONE);
                 if(response.isSuccessful()) {
-                    Logger.d(" Succes");
-                    if(response.body().getData() != null) {
-                        contentRecyclerView.setVisibility(View.VISIBLE);
-                        errorView.setVisibility(View.GONE);
 
-                        List<Content> contents = response.body().getData();
-                        Logger.d(" contents " + contents.size());
+                    loadContent(response, pageNumber, new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+                            if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                                Logger.d(" scrolled idle");
+                                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                                int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
+                                int childCount = contentRecyclerView.getAdapter().getItemCount();
 
-                        if(pageNumber == 0) {
-                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-                            contentRecyclerView.setLayoutManager(linearLayoutManager);
-                            adapter = new ContentVerticalCardListAdapter(getContext(), contents, SelfLearningFragment.this);
-                            contentRecyclerView.setAdapter(adapter);
-                        } else {
-                            ContentVerticalCardListAdapter adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
-                            List<Content> originalContents = adapter.getContents();
-                            Logger.d(" original contents " + originalContents.size());
-                            originalContents.addAll(contents);
-                            adapter = new ContentVerticalCardListAdapter(getContext(), originalContents, SelfLearningFragment.this);
-                            contentRecyclerView.swapAdapter(adapter, false);
-                        }
-
-                        contentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                            @Override
-                            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                                super.onScrollStateChanged(recyclerView, newState);
-                                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                                    Logger.d(" scrolled idle");
-                                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                                    int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
-                                    int childCount = contentRecyclerView.getAdapter().getItemCount();
-
-                                    Logger.d(" lastVisibleItem " + lastVisibleItem  + " childCount " + childCount);
-                                    if(lastVisibleItem == childCount - 1) {
-                                        searchSelfLearning(1);
-                                    }
+                                Logger.d(" lastVisibleItem " + lastVisibleItem  + " childCount " + childCount);
+                                if(lastVisibleItem == childCount - 1) {
+                                    searchSelfLearning(1);
                                 }
                             }
+                        }
 
-                            @Override
-                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                                super.onScrolled(recyclerView, dx, dy);
+                        @Override
+                        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                            super.onScrolled(recyclerView, dx, dy);
 
-                            }
-                        });
-
-                        return;
-
-                    }
+                        }
+                    });
+                    return;
                 }
 
                 if(pageNumber == 0) {

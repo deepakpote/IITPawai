@@ -139,7 +139,7 @@ public class TeachingAidsFragment extends Fragment{
         super.onDestroy();
     }
 
-    public static class TeachingAidsContentFragment extends Fragment {
+    public static class TeachingAidsContentFragment extends BaseContentFragment {
 
         @BindView(R.id.subject_spinner)
         Spinner subjectSpinner;
@@ -147,39 +147,8 @@ public class TeachingAidsFragment extends Fragment{
         @BindView(R.id.grade_spinner)
         Spinner gradeSpinner;
 
-        @BindView(R.id.content_recycler_view)
-        RecyclerView contentRecyclerView;
-
-        @BindView(R.id.error_view)
-        TextView errorView;
-
-        @BindView(R.id.loading_panel)
-        RelativeLayout loadingPanel;
-
-        @BindView(R.id.filter_recycler_view)
-        RecyclerView filterRecyclerView;
-
-        @BindView(R.id.view_below_filter_list)
-        View viewBelowFilterList;
-
-
-//        @BindView(R.id.load_more)
-//        Button loadMore;
-
-        private String language;
-
-        private List<BaseObject> filterList;
         private List<CommonCode> filterGradeList, filterSubjectList;
-        private ChipLayoutAdapter filterAdapter;
 
-        @Override
-        public void onRequestPermissionsResult(int requestCode,
-                                               String permissions[], int[] grantResults) {
-            Logger.d("fragment -  on permission result");
-            adapter.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-
-        ContentVerticalCardListAdapter adapter;
         public TeachingAidsContentFragment() {
         }
 
@@ -203,13 +172,11 @@ public class TeachingAidsFragment extends Fragment{
 
             int tabNumber = getArguments().getInt("tabNumber");
             final String fileType = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
-            filterList = new ArrayList<>();
+
             filterGradeList = new ArrayList<>();
             filterSubjectList = new ArrayList<>();
 
-            filterAdapter = new ChipLayoutAdapter(filterList);
-            filterAdapter.setShowRemoveButton(true);
-            filterAdapter.setListener(new OnChipRemovedListener() {
+            setupFilterView(new OnChipRemovedListener() {
                 @Override
                 public void onChipRemoved(int position) {
                     BaseObject object = filterList.get(position);
@@ -219,18 +186,10 @@ public class TeachingAidsFragment extends Fragment{
                     } else {
                         filterGradeList.remove(commonCode);
                     }
-                    filterList.remove(position);
-                    filterAdapter.notifyItemRemoved(position);
-                    if(filterList.isEmpty()) {
-                        viewBelowFilterList.setVisibility(GONE);
-                    }
+                    removeFromFilterList(position);
                     searchTeachingAids(fileType, language, 0);
                 }
             });
-
-            filterRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
-                    LinearLayoutManager.HORIZONTAL,false));
-            filterRecyclerView.setVisibility(GONE);
 
             final List<CommonCode> subjects = new ArrayList<>(CommonCodeUtils.getSubjects());
             final List<CommonCode> grades = new ArrayList<>(CommonCodeUtils.getGrades());
@@ -257,14 +216,12 @@ public class TeachingAidsFragment extends Fragment{
             subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    filterSubjectList.add(subjects.get(i));
-                    searchTeachingAids(fileType, language, 0);
-
-                    filterRecyclerView.setVisibility(View.VISIBLE);
-                    viewBelowFilterList.setVisibility(View.VISIBLE);
-                    filterList.add(new BaseObject(subjects.get(i), true));
-                    filterAdapter.setObjects(filterList);
-                    filterRecyclerView.swapAdapter(filterAdapter, false);
+                    if(!StringUtils.isEmpty(subjects.get(i).getCodeID())) {
+                        filterSubjectList.add(subjects.get(i));
+                        addItemToFilterList(subjects.get(i));
+                        searchTeachingAids(fileType, language, 0);
+                        subjectSpinner.setSelection(0 ,false);
+                    }
                 }
 
                 @Override
@@ -282,15 +239,12 @@ public class TeachingAidsFragment extends Fragment{
             gradeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    filterGradeList.add(grades.get(i));
-                    searchTeachingAids(fileType, language , 0);
-
-                    filterRecyclerView.setVisibility(View.VISIBLE);
-                    viewBelowFilterList.setVisibility(View.VISIBLE);
-                    filterList.add(new BaseObject(grades.get(i), true));
-                    filterAdapter.setObjects(filterList);
-                    filterRecyclerView.swapAdapter(filterAdapter, false);
-
+                    if(!StringUtils.isEmpty(grades.get(i).getCodeID())) {
+                        filterGradeList.add(grades.get(i));
+                        addItemToFilterList(grades.get(i));
+                        searchTeachingAids(fileType, language , 0);
+                        gradeSpinner.setSelection(0 ,false);
+                    }
                 }
 
                 @Override
@@ -322,6 +276,9 @@ public class TeachingAidsFragment extends Fragment{
 
         private void searchTeachingAids(final String fileType, final String language, final int pageNumber) {
             Logger.d(" searching ");
+            contentRecyclerView.setVisibility(View.GONE);
+            loadingPanel.setVisibility(View.VISIBLE);
+
             String subjectList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterSubjectList);
             String gradeList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterGradeList);
 
@@ -333,61 +290,22 @@ public class TeachingAidsFragment extends Fragment{
                 public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                     loadingPanel.setVisibility(View.GONE);
                     if(response.isSuccessful()) {
-                        contentRecyclerView.setVisibility(View.VISIBLE);
-                        errorView.setVisibility(View.GONE);
-                        Logger.d(" Succes");
-                        if(response.body().getData() != null) {
-                            List<Content> contents = response.body().getData();
-                            Logger.d(" contents " + contents.size());
-
-                            if(pageNumber == 0) {
-                                Logger.d(" in here ");
-                                if(contentRecyclerView.getAdapter() == null) {
-                                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-                                    contentRecyclerView.setLayoutManager(linearLayoutManager);
-                                    adapter = new ContentVerticalCardListAdapter(getContext(), contents, TeachingAidsContentFragment.this);
-                                    contentRecyclerView.setAdapter(adapter);
-                                } else {
-                                    adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
-                                    adapter.setContents(contents);
-                                    adapter.notifyDataSetChanged();
-
+                        loadContent(response, pageNumber, new RecyclerView.OnScrollListener() {
+                            @Override
+                            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                                super.onScrollStateChanged(recyclerView, newState);
+                                if(isNextPageToBeLoaded(newState, recyclerView)) {
+                                    searchTeachingAids(fileType, language, 1);
                                 }
-
-                            } else {
-                                adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
-                                List<Content> originalContents = adapter.getContents();
-                                Logger.d(" original contents " + originalContents.size());
-                                originalContents.addAll(contents);
-                                adapter.setContents(originalContents);
-                                adapter.notifyDataSetChanged();
                             }
 
-                            contentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                                @Override
-                                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                                    super.onScrollStateChanged(recyclerView, newState);
-                                    if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                                        Logger.d(" scrolled idle");
-                                        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                                        int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
-                                        int childCount = contentRecyclerView.getAdapter().getItemCount();
+                            @Override
+                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                super.onScrolled(recyclerView, dx, dy);
+                            }
+                        });
 
-                                        if(lastVisibleItem == childCount - 1) {
-                                            searchTeachingAids(fileType, language, 1);
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                                    super.onScrolled(recyclerView, dx, dy);
-                                }
-                            });
-
-                            return;
-
-                        }
+                        return;
                     }
 
                     if(pageNumber == 0) {
