@@ -17,9 +17,12 @@ import os,time
 from datetime import datetime, timedelta
 from django.utils import timezone
 from contents.models import content
+from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs
 from time import gmtime, strftime
 from contents.serializers import contentSerializer
 from mitraEndPoints import settings
+from commons.views import getCodeIDs
+
  
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -57,11 +60,11 @@ class UserViewSet(viewsets.ModelViewSet):
         
         if(isPhoneNumberRegistered and authenticationType == constants.authenticationTypes.registration):
             return Response({"response_message": constants.messages.registration_user_already_registered, "data": []},
-                            status=status.HTTP_200_OK)
+                            status=status.HTTP_401_UNAUTHORIZED)
             
         if (not isPhoneNumberRegistered and authenticationType == constants.authenticationTypes.signIn):
             return Response({"response_message": constants.messages.sign_in_user_not_registered, "data": []},
-                            status=status.HTTP_200_OK)
+                            status=status.HTTP_401_UNAUTHORIZED)
         
         generatedOTP = random.randint(100000, 999999)
         objOtp = otp(phoneNumber = phoneNumber, otp = generatedOTP)
@@ -110,13 +113,13 @@ class UserViewSet(viewsets.ModelViewSet):
         if authenticationType == constants.authenticationTypes.registration:
             if isPhoneNumberRegistered:
                 return Response({"response_message": constants.messages.registration_user_already_registered, "data": []},
-                            status=status.HTTP_200_OK)
+                            status=status.HTTP_401_UNAUTHORIZED)
         
         # If verification is for Sign In, then check if the user with given phone number is registered or not 
         if authenticationType == constants.authenticationTypes.signIn:
             if not isPhoneNumberRegistered:
                 return Response({"response_message": constants.messages.sign_in_user_not_registered, "data": []},
-                            status=status.HTTP_200_OK)
+                            status=status.HTTP_401_UNAUTHORIZED)
                 
         
         # Check if the OTP is generated in the last 24 hours    
@@ -456,7 +459,13 @@ class UserViewSet(viewsets.ModelViewSet):
         """
         userID = request.data.get("userID")
         contentTypeCodeID = request.data.get("contentTypeCodeID")
-
+        
+        subjectCodeIDs = request.data.get('subjectCodeIDs') 
+        gradeCodeIDs = request.data.get('gradeCodeIDs')
+        fileTypeCodeID = request.data.get('fileTypeCodeID')
+        
+        topicCodeIDs = request.data.get('topicCodeIDs') 
+        languageCodeID = request.data.get('languageCodeID')
 
         # check userID is passed as parameter 
         if not userID:
@@ -485,13 +494,54 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.usercontent_list_contenttype_code_id_does_not_exists,
                              "data": []},
                             status = status.HTTP_404_NOT_FOUND)
-        
+                    
         # Get list of contentIDs of login user
         objUserContent = list(userContent.objects.filter(user = objUser).values_list('content_id',flat = True))
         
-        # Get the content details based on ContentTypeCodeID
-        objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, contentID__in = objUserContent)
+        #If content type is Teaching Aids.
+        if contentTypeCodeID == constants.mitraCode.teachingAids:
+            #Get the applicable subject list for the respective user.    
+            arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs , objUser)  
+            #Get the applicable grade list for the respective user.
+            arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs , objUser)
+            #Get correct/valid FileTypeCodeID 
+            arrContentFileTypeCodeID = []
+            if not fileTypeCodeID:
+                # Get codeIDs related to filetype codegroup
+                arrContentFileTypeCodeID = getCodeIDs(constants.mitraCodeGroup.fileType)
+            else:
+                arrContentFileTypeCodeID = [fileTypeCodeID]
 
+            # Get the content details.
+            objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, 
+                                                            contentID__in = objUserContent,
+                                                            subject__in = arrSubjectCodeIDs,
+                                                            grade__in = arrGradeCodeIDs,
+                                                            fileType__in = arrContentFileTypeCodeID)
+            
+        elif contentTypeCodeID == constants.mitraCode.selfLearning:
+            #Get the applicable topic list for the respective user.    
+            arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs , objUser)  
+
+            #Get Language
+            arrLanguageCodeID = []
+            if not languageCodeID:
+                # Get all the languages
+                arrLanguageCodeID = getCodeIDs(constants.mitraCodeGroup.language)
+            else:
+                arrLanguageCodeID = [languageCodeID]
+            
+            #Build queryset               
+            objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, 
+                                                            contentID__in = objUserContent,
+                                                            topic__in = arrTopicCodeIDs,
+                                                            language__in = arrLanguageCodeID)
+              
+        #Check for the no of records fetched.
+        if not objUserContentTypeCode:
+            return Response({"response_message": constants.messages.usercontent_list_no_records_found,
+                    "data": []},
+                    status = status.HTTP_404_NOT_FOUND) 
         # Set query string to contentSerializer
         objContentSerializer = contentSerializer(objUserContentTypeCode, many = True)
 
@@ -518,7 +568,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
         # check preferredLanguageCodeID is passed as parameter in post    
         if not preferredLanguageCodeID:
-            return Response({"response_message": constants.messages.save_userlanguage_languagecode_id_cannot_be_empty,
+            return Response({"response_message": constants.messages.userlanguage_save_languagecode_id_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
       
@@ -526,7 +576,7 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             objUser = user.objects.get(userID = userID)
         except user.DoesNotExist:
-            return Response({"response_message": constants.messages.save_userlanguage_user_not_exists,
+            return Response({"response_message": constants.messages.userlanguage_save_user_not_exists,
                          "data": []},
                         status = status.HTTP_404_NOT_FOUND)
         
@@ -534,7 +584,7 @@ class UserViewSet(viewsets.ModelViewSet):
         user.objects.filter(userID = userID).update(preferredLanguage = preferredLanguageCodeID)
         
         # Return the success response.
-        return Response({"response_message": constants.messages.success, "data": []})
+        return Response({"response_mess<<age": constants.messages.success, "data": []})
 
     """
     APT to save user photo
@@ -671,12 +721,11 @@ def sendOtpSms(recepientPhoneNumber, generatedOtp, languageCodeID, otpMessage):
 Function to save the user subjects.
 """
 def userSubjectSave(subjectCodeIDs, objUser):
-    if not subjectCodeIDs:
-        return
-    
     # Delete all the subjects of respective user from userSubject.
     userSubject.objects.filter(user = objUser).delete()
     
+    if not subjectCodeIDs:
+        return
     # save the user subject.
     subjectCodeList = subjectCodeIDs.split(',')
     for subjectCodeID in subjectCodeList:
@@ -688,11 +737,11 @@ def userSubjectSave(subjectCodeIDs, objUser):
 Function to save the user skills.
 """
 def userSkillSave(skillCodeIDs, userObj):
-    if not skillCodeIDs:
-        return
-    
     # Delete all the skills of respective user from userSkill.
     userSkill.objects.filter(user = userObj).delete()
+    
+    if not skillCodeIDs:
+        return
         
     # save the user skills.
     skillCodeList = skillCodeIDs.split(',')
@@ -705,11 +754,11 @@ def userSkillSave(skillCodeIDs, userObj):
 Function to save the user topics.
 """
 def userTopicSave(topicCodeIDs, userObj):
+        # Delete all the topics of respective user from userTopic.
+    userTopic.objects.filter(user = userObj).delete()
+    
     if not topicCodeIDs:
         return
-    
-    # Delete all the topics of respective user from userTopic.
-    userTopic.objects.filter(user = userObj).delete()
         
     # save the user topics.
     topicCodeList = topicCodeIDs.split(',')
@@ -721,12 +770,12 @@ def userTopicSave(topicCodeIDs, userObj):
 """
 Function to save the user grades.
 """
-def userGradeSave(gradeCodeIDs , userObj):
-    if not gradeCodeIDs:
-        return 
-    
+def userGradeSave(gradeCodeIDs , userObj): 
     # Delete all the grades of respective user from userGrade.
     userGrade.objects.filter(user = userObj).delete()
+    
+    if not gradeCodeIDs:
+        return 
     
     # save the user Grade.
     gradeCodeList = gradeCodeIDs.split(',')
@@ -825,5 +874,3 @@ def userDeviceSave(objUser, fcmDeviceID):
     # If the given userID and device ID combination does NOT exists, then, save
     device(user = objUser, fcmDeviceID = fcmDeviceID).save()
     return
-
-

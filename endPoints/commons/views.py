@@ -33,3 +33,15 @@ class NewsViewSet(viewsets.ModelViewSet):
         serializer = newsSerializer(queryset, many = True)
         return Response({"response_message": constants.messages.success, "data": serializer.data})
     
+def getCodeIDs(codeGroupID):
+    
+    #Declare array.
+    arrCodeIDs = []
+
+    # Get all codeIDs for respective CodeGroup.
+    objCodeList= code.objects.filter(codeGroup = codeGroupID)
+    for objCode in objCodeList:
+        arrCodeIDs.append(objCode.codeID)
+        
+    if len(arrCodeIDs) > 0:
+        return arrCodeIDs
