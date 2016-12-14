@@ -2,6 +2,9 @@ package net.mavericklabs.mitra.ui.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -12,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +33,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.EditPhoto;
 import net.mavericklabs.mitra.api.model.EditUser;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.RegisterUser;
@@ -56,7 +61,14 @@ import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -67,6 +79,8 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -458,11 +472,16 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
                     realm.commitTransaction();
 
-                    Toast.makeText(getApplicationContext(), R.string.profile_updated,Toast.LENGTH_LONG).show();
-                    progressDialog.dismiss();
-                    Intent home = new Intent(EditProfileActivity.this , HomeActivity.class);
-                    startActivity(home);
-                    finishAffinity();
+                    if(!StringUtils.isEmpty(profilePhotoPath)) {
+                        Logger.d("1. in send profile photo..");
+                        sendProfilePhoto(progressDialog);
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.profile_updated,Toast.LENGTH_LONG).show();
+                        progressDialog.dismiss();
+                        Intent home = new Intent(EditProfileActivity.this , HomeActivity.class);
+                        startActivity(home);
+                        finishAffinity();
+                    }
                 } else {
                     //TODO show error
                     progressDialog.dismiss();
@@ -557,6 +576,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         if (requestCode == PICK_PROFILE_PHOTO) {
             Logger.d("data is : " + data);
             if(data != null) {
+                //case for photo from gallery
                 imageCaptureUri = data.getData();
                 if(imageCaptureUri != null) {
                     profilePhotoPath = imageCaptureUri.toString();
@@ -565,7 +585,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                             into(profilePhotoImageView);
                 }
             } else if(imageCaptureUri != null && imageCaptureUri.getPath() != null) {
-                    File file = new File(imageCaptureUri.getPath());
+                //case for photo from camera
+                File file = new File(imageCaptureUri.getPath());
                 profilePhotoPath = imageCaptureUri.getPath();
                     Glide.with(this).load(Uri.fromFile(file)).
                             bitmapTransform(new CropCircleTransformation(getApplicationContext())).
@@ -738,5 +759,62 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                 Logger.d(" on fail");
             }
         });
+    }
+
+    private void sendProfilePhoto(final ProgressDialog progressDialog) {
+        String userId = UserDetailUtils.getUserId(getApplicationContext());
+        InputStream in;
+        byte[] buf;
+        byte[] base64ByteArray;
+        try {
+            String path = getPath(Uri.parse(profilePhotoPath));
+            if(path == null) {
+                in = new FileInputStream(new File(profilePhotoPath));
+            } else {
+                in = new FileInputStream(path);
+            }
+            Bitmap imageBitmap = BitmapFactory.decodeStream(in);
+            imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 64, 64, false);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            buf = baos.toByteArray();
+            base64ByteArray = Base64.encode(buf,Base64.DEFAULT);
+            EditPhoto photo = new EditPhoto();
+            try {
+                photo.setByteArray(new String(base64ByteArray,"UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            photo.setUserID(userId);
+
+            RestClient.getApiService("").savePhoto(photo).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+                @Override
+                public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                    Logger.d("response : " + response.message());
+                    progressDialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                    Logger.d("failure : " + t.getLocalizedMessage());
+                    progressDialog.dismiss();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getPath(Uri uri)
+    {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if (cursor == null) return null;
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String s=cursor.getString(column_index);
+        cursor.close();
+        return s;
     }
 }
