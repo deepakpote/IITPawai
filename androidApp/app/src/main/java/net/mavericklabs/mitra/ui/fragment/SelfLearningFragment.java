@@ -42,15 +42,18 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.listener.OnChipRemovedListener;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.ChipLayoutAdapter;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
+import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
@@ -63,6 +66,8 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.view.View.GONE;
 
 public class SelfLearningFragment extends Fragment {
 
@@ -90,8 +95,9 @@ public class SelfLearningFragment extends Fragment {
     private ContentVerticalCardListAdapter adapter;
 
     private List<BaseObject> filterList;
-    private List<CommonCode> filterGradeList, filterSubjectList;
+    private List<CommonCode> filterTopicList;
     private ChipLayoutAdapter filterAdapter;
+    private String language;
 
 
     public SelfLearningFragment() {
@@ -116,6 +122,35 @@ public class SelfLearningFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
 
+        filterList = new ArrayList<>();
+        filterTopicList = new ArrayList<>();
+
+        filterAdapter = new ChipLayoutAdapter(filterList);
+        filterAdapter.setShowRemoveButton(true);
+        filterAdapter.setListener(new OnChipRemovedListener() {
+            @Override
+            public void onChipRemoved(int position) {
+                BaseObject object = filterList.get(position);
+                CommonCode commonCode = object.getCommonCode();
+                if(commonCode.getCodeGroupID().equals(CommonCodeGroup.TOPICS)) {
+                    filterTopicList.remove(commonCode);
+                } else {
+                    language = "";
+                }
+                filterList.remove(position);
+                filterAdapter.notifyItemRemoved(position);
+                if(filterList.isEmpty()) {
+                    viewBelowFilterList.setVisibility(GONE);
+                }
+                searchSelfLearning( 0);
+            }
+        });
+
+        filterRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL,false));
+        filterRecyclerView.setVisibility(GONE);
+
+
         final List<CommonCode> topics = new ArrayList<>(CommonCodeUtils.getTopics());
         final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getLanguages());
 
@@ -134,8 +169,14 @@ public class SelfLearningFragment extends Fragment {
         topicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                CommonCode language = (CommonCode) languageSpinner.getSelectedItem();
-                searchSelfLearning(language.getCodeID(), topics.get(i).getCodeID(), 0);
+                filterTopicList.add(topics.get(i));
+                searchSelfLearning(0);
+
+                filterRecyclerView.setVisibility(View.VISIBLE);
+                viewBelowFilterList.setVisibility(View.VISIBLE);
+                filterList.add(new BaseObject(topics.get(i), true));
+                filterAdapter.setObjects(filterList);
+                filterRecyclerView.swapAdapter(filterAdapter, false);
             }
 
             @Override
@@ -153,8 +194,8 @@ public class SelfLearningFragment extends Fragment {
         languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                CommonCode topic = (CommonCode) topicSpinner.getSelectedItem();
-                searchSelfLearning(languages.get(i).getCodeID() , topic.getCodeID(), 0);
+                language = languages.get(i).getCodeID();
+                searchSelfLearning(0);
             }
 
             @Override
@@ -162,18 +203,7 @@ public class SelfLearningFragment extends Fragment {
 
             }
         });
-
-        String language = "101100";
-
-        RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
-                .where(DbUser.class).findAll();
-        Logger.d(" db user " + dbUser);
-        if(dbUser.size() == 1) {
-            DbUser user = dbUser.get(0);
-            language = user.getPreferredLanguage();
-        }
-
-        searchSelfLearning(language, "", 0);
+        searchSelfLearning(0);
     }
 
 
@@ -186,10 +216,10 @@ public class SelfLearningFragment extends Fragment {
         }
     }
 
-    private void searchSelfLearning(String language, String topic, final int pageNumber) {
+    private void searchSelfLearning(final int pageNumber) {
         Logger.d(" searching ");
         Logger.d("sent language " + language);
-        if(language.isEmpty()) {
+        if(StringUtils.isEmpty(language)) {
             RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
                     .where(DbUser.class).findAll();
             if(dbUser.size() == 1) {
@@ -198,8 +228,9 @@ public class SelfLearningFragment extends Fragment {
                 Logger.d(" language " + language);
             }
         }
+        String topicList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterTopicList);
         SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(UserDetailUtils.getUserId(getContext()),
-                 language, topic);
+                 language, topicList);
         contentRequest.setPageNumber(pageNumber);
         RestClient.getApiService("").searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
@@ -208,6 +239,9 @@ public class SelfLearningFragment extends Fragment {
                 if(response.isSuccessful()) {
                     Logger.d(" Succes");
                     if(response.body().getData() != null) {
+                        contentRecyclerView.setVisibility(View.VISIBLE);
+                        errorView.setVisibility(View.GONE);
+
                         List<Content> contents = response.body().getData();
                         Logger.d(" contents " + contents.size());
 
@@ -237,9 +271,7 @@ public class SelfLearningFragment extends Fragment {
 
                                     Logger.d(" lastVisibleItem " + lastVisibleItem  + " childCount " + childCount);
                                     if(lastVisibleItem == childCount - 1) {
-                                        CommonCode topic = (CommonCode) topicSpinner.getSelectedItem();
-                                        CommonCode language = (CommonCode) languageSpinner.getSelectedItem();
-                                        searchSelfLearning(language.getCodeID(), topic.getCodeID(), 1);
+                                        searchSelfLearning(1);
                                     }
                                 }
                             }

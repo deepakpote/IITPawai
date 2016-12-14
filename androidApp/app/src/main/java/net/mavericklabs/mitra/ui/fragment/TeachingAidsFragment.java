@@ -221,6 +221,9 @@ public class TeachingAidsFragment extends Fragment{
                     }
                     filterList.remove(position);
                     filterAdapter.notifyItemRemoved(position);
+                    if(filterList.isEmpty()) {
+                        viewBelowFilterList.setVisibility(GONE);
+                    }
                     searchTeachingAids(fileType, language, 0);
                 }
             });
