@@ -22,14 +22,16 @@ class CodeViewSet(viewsets.ModelViewSet):
         #Get query param
         l = request.query_params.get('l')
 
-        #If l is 0 mean feth all the code list
+        #If l is 0 mean fetch all the code list
         if l == "0" or l is None:
             queryset = code.objects.all()
         # Date time in UTC format    
         else:
-            # Convert query param to date time 
+            # Fetch all records having date gretter then input date(l)
             try:
+                # Convert query param to date time 
                 dt = datetime.strptime(l, "%Y-%m-%d %H:%M:%S")
+                #Get query string
                 queryset = code.objects.filter(createdOn__gte=dt)  
             except : 
                 return Response({"response_message": constants.messages.code_list_invalid_date_format,
