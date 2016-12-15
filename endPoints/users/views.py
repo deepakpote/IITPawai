@@ -9,7 +9,7 @@ from users.serializers import userSerializer, otpSerializer
 
 from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth, device, userContent
 from commons.models import code
-from mitraEndPoints import constants , utils
+from mitraEndPoints import constants , utils, settings 
 import random
 import plivo
 import base64
@@ -20,10 +20,8 @@ from contents.models import content
 from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs
 from time import gmtime, strftime
 from contents.serializers import contentSerializer
-from mitraEndPoints import settings
 from commons.views import getCodeIDs
 
- 
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -351,7 +349,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # If userID parameter is passed, then check user is exists or not
         if not userInfo:
             return Response({"response_message": constants.messages.user_userprofile_user_not_exists,
-                             "data": []}, 
+                             "data": []},
                             status = status.HTTP_404_NOT_FOUND)
 
         #Set query string to the userSerializer
@@ -359,8 +357,9 @@ class UserViewSet(viewsets.ModelViewSet):
     
         #Set serializer data to the response 
         response = objUserSerializer.data
-
-        response["photoUrl"] = settings.DOMAIN_NAME + settings.STATIC_URL + str(response["photoUrl"])
+        
+        if  response["photoUrl"]:
+            response["photoUrl"] = settings.DOMAIN_NAME + settings.STATIC_URL + str(response["photoUrl"])
 
         userSubjectCodeID = getUserSubjectCode(userInfo)
         userGradeCodeID = getUserGradeCode(userInfo)
@@ -553,7 +552,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     API to update user language.
     """
-
+    
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def saveLanguage(self,request):
         # Get input data
@@ -584,8 +583,8 @@ class UserViewSet(viewsets.ModelViewSet):
         user.objects.filter(userID = userID).update(preferredLanguage = preferredLanguageCodeID)
         
         # Return the success response.
-        return Response({"response_mess<<age": constants.messages.success, "data": []})
-
+        return Response({"response_message": constants.messages.success, "data": []})
+    
     """
     APT to save user photo
     """
@@ -600,6 +599,7 @@ class UserViewSet(viewsets.ModelViewSet):
         userID = request.data.get('userID')
         byteArrayData = request.data.get('byteArray')
 
+        # fileName = None
         # check userID is passed as parameter in post method
         if not userID:
             return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
@@ -622,10 +622,10 @@ class UserViewSet(viewsets.ModelViewSet):
 
         # Decode image byte array data 
         result = base64.b64decode(byteArrayData)
-
+        
         # Set the base dirceory with static folder in app
         baseDir = constants.imageDir.baseDir
-
+        
         # Get current date and time to set name of image file 
         objCurrentDateTime = strftime("%y%m%d%H%M%S", time.localtime())
         fileName = str(userID) + "_" + objCurrentDateTime + ".png"
@@ -649,6 +649,16 @@ class UserViewSet(viewsets.ModelViewSet):
         user.objects.filter(userID = userID).update(photoUrl = fileName)
 
         return Response({"response_message": constants.messages.success, "data": []})
+
+
+#     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])
+#     def opentoAll(self,request):
+#         return Response({"hello"})
+
+#     @list_route(methods=['get','post'])
+#     def myinfo(self,request):
+#         print request.user
+#         return Response(UserSerializer(request.user).data)
 
 """
 API to delete userContent
@@ -686,17 +696,7 @@ def contentDelete(userID , contentID):
 
     return
 
-    
-
-
-#     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])
-#     def opentoAll(self,request):
-#         return Response({"hello"})
-
-#     @list_route(methods=['get','post'])
-#     def myinfo(self,request):
-#         print request.user
-#         return Response(UserSerializer(request.user).data)
+   
 def sendOtpSms(recepientPhoneNumber, generatedOtp, languageCodeID, otpMessage):
     
     print ("Entered SMS OTP")

@@ -1,4 +1,4 @@
-from django.conf.urls import url, include ,patterns
+from django.conf.urls import url, include
 from rest_framework import routers
 from users import views as userView
 from commons import views as commonViews
@@ -7,6 +7,7 @@ from contents import views as contentViews
 import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 router = routers.DefaultRouter()
 router.register(r'user', userView.UserViewSet)
 router.register(r'code', commonViews.CodeViewSet)
