@@ -9,7 +9,7 @@ from users.serializers import userSerializer, otpSerializer
 
 from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth, device, userContent
 from commons.models import code
-from mitraEndPoints import constants , utils
+from mitraEndPoints import constants , utils, settings 
 import random
 import plivo
 import base64
@@ -21,7 +21,7 @@ from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchC
 from time import gmtime, strftime
 from contents.serializers import contentSerializer
 from commons.views import getCodeIDs
- 
+
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -357,6 +357,9 @@ class UserViewSet(viewsets.ModelViewSet):
     
         #Set serializer data to the response 
         response = objUserSerializer.data
+        
+        if  response["photoUrl"]:
+            response["photoUrl"] = settings.DOMAIN_NAME + settings.STATIC_URL + str(response["photoUrl"])
 
         userSubjectCodeID = getUserSubjectCode(userInfo)
         userGradeCodeID = getUserGradeCode(userInfo)
@@ -430,7 +433,7 @@ class UserViewSet(viewsets.ModelViewSet):
             if objUserContentUserInfo:
                 return Response({"response_message": constants.messages.save_usercontent_user_id_allready_exists,
                          "data": []},
-                        status = status.HTTP_404_NOT_FOUND)
+                        status = status.HTTP_304_NOT_MODIFIED)
             
             # Save user content detail
             userContent(user = objUser,content = objContent).save()
@@ -581,43 +584,7 @@ class UserViewSet(viewsets.ModelViewSet):
         
         # Return the success response.
         return Response({"response_message": constants.messages.success, "data": []})
-
-"""
-API to delete userContent
-"""
-def contentDelete(userID , contentID):
-    """ Delete userContent
-    args:
-        request: passed userID and contentID as parameter
-    returns:
-        response: user content deleteed successfully
-    """
-
-    # check userID is passed as parameter in post
-    if not userID:
-        return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
-                         "data": []},
-                         status = status.HTTP_401_UNAUTHORIZED)
-
-    # check contentID is passed as parameter in post    
-    if not contentID:
-        return Response({"response_message": constants.messages.usercontent_delete_contentid_cannot_be_empty,
-                         "data": []},
-                         status = status.HTTP_401_UNAUTHORIZED)
-
-    # If contentID and userID parameters are passed, then check content exists or not in userContent table
-    try:
-        objUserContentID = userContent.objects.get(content = contentID, user = userID)
-    except userContent.DoesNotExist:
-        return Response({"response_message": constants.messages.usercontent_delete_userid_and_contentid_does_not_exists,
-                 "data": []},
-                status = status.HTTP_404_NOT_FOUND)
-
-    # Delete user content based on userID and contentID
-    userContent.objects.get(user = userID, content = contentID).delete()
-
-    return
-
+    
     """
     APT to save user photo
     """
@@ -655,13 +622,29 @@ def contentDelete(userID , contentID):
 
         # Decode image byte array data 
         result = base64.b64decode(byteArrayData)
-
+        
+        # Set the base dirceory with static folder in app
+        baseDir = constants.imageDir.baseDir
+        
         # Get current date and time to set name of image file 
-        objCurrentDateTime = strftime("%Y-%m-%d %H-%M-%S", time.localtime())
+        objCurrentDateTime = strftime("%y%m%d%H%M%S", time.localtime())
         fileName = str(userID) + "_" + objCurrentDateTime + ".png"
 
-        with open(fileName, 'wb') as f:
+        # Set folder path and file name of image
+        completeFileName = str(baseDir) + fileName
+
+        with open(completeFileName, 'wb') as f:
             f.write(result)
+
+        # Get the cuerent image file of user
+        objUserPhotoUrl = str(objUser.photoUrl)
+
+        if len(objUserPhotoUrl) > 0:
+            objUserPhotoUrlDelete =  baseDir + objUserPhotoUrl
+
+        # If image file of user exist in directory delete it before update entry of photoUrl for user
+        if os.path.isfile(objUserPhotoUrlDelete):
+            os.unlink(objUserPhotoUrlDelete)
 
         user.objects.filter(userID = userID).update(photoUrl = fileName)
 
@@ -676,6 +659,44 @@ def contentDelete(userID , contentID):
 #     def myinfo(self,request):
 #         print request.user
 #         return Response(UserSerializer(request.user).data)
+
+"""
+API to delete userContent
+"""
+def contentDelete(userID , contentID):
+    """ Delete userContent
+    args:
+        request: passed userID and contentID as parameter
+    returns:
+        response: user content deleteed successfully
+    """
+
+    # check userID is passed as parameter in post
+    if not userID:
+        return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                         "data": []},
+                         status = status.HTTP_401_UNAUTHORIZED)
+
+    # check contentID is passed as parameter in post    
+    if not contentID:
+        return Response({"response_message": constants.messages.usercontent_delete_contentid_cannot_be_empty,
+                         "data": []},
+                         status = status.HTTP_401_UNAUTHORIZED)
+
+    # If contentID and userID parameters are passed, then check content exists or not in userContent table
+    try:
+        objUserContentID = userContent.objects.get(content = contentID, user = userID)
+    except userContent.DoesNotExist:
+        return Response({"response_message": constants.messages.usercontent_delete_userid_and_contentid_does_not_exists,
+                 "data": []},
+                status = status.HTTP_404_NOT_FOUND)
+
+    # Delete user content based on userID and contentID
+    userContent.objects.get(user = userID, content = contentID).delete()
+
+    return
+
+   
 def sendOtpSms(recepientPhoneNumber, generatedOtp, languageCodeID, otpMessage):
     
     print ("Entered SMS OTP")
