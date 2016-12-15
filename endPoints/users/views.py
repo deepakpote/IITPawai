@@ -20,9 +20,7 @@ from contents.models import content
 from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs
 from time import gmtime, strftime
 from contents.serializers import contentSerializer
-from mitraEndPoints import settings
 from commons.views import getCodeIDs
-
  
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -351,7 +349,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # If userID parameter is passed, then check user is exists or not
         if not userInfo:
             return Response({"response_message": constants.messages.user_userprofile_user_not_exists,
-                             "data": []}, 
+                             "data": []},
                             status = status.HTTP_404_NOT_FOUND)
 
         #Set query string to the userSerializer
@@ -359,8 +357,6 @@ class UserViewSet(viewsets.ModelViewSet):
     
         #Set serializer data to the response 
         response = objUserSerializer.data
-
-        response["photoUrl"] = settings.DOMAIN_NAME + settings.STATIC_URL + str(response["photoUrl"])
 
         userSubjectCodeID = getUserSubjectCode(userInfo)
         userGradeCodeID = getUserGradeCode(userInfo)
@@ -434,7 +430,7 @@ class UserViewSet(viewsets.ModelViewSet):
             if objUserContentUserInfo:
                 return Response({"response_message": constants.messages.save_usercontent_user_id_allready_exists,
                          "data": []},
-                        status = status.HTTP_200_OK)
+                        status = status.HTTP_404_NOT_FOUND)
             
             # Save user content detail
             userContent(user = objUser,content = objContent).save()
@@ -553,7 +549,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     API to update user language.
     """
-
+    
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def saveLanguage(self,request):
         # Get input data
@@ -584,70 +580,6 @@ class UserViewSet(viewsets.ModelViewSet):
         user.objects.filter(userID = userID).update(preferredLanguage = preferredLanguageCodeID)
         
         # Return the success response.
-        return Response({"response_mess<<age": constants.messages.success, "data": []})
-
-    """
-    APT to save user photo
-    """
-    @list_route(methods = ['POST'], permission_classes = [permissions.AllowAny])
-    def saveUserPhoto(self,request):
-        """ save photo url of user 
-        args:
-            request : userID and image byte array passed as parameter
-        returns:
-            response : photo url successfully saved in database
-        """
-        userID = request.data.get('userID')
-        byteArrayData = request.data.get('byteArray')
-
-        # check userID is passed as parameter in post method
-        if not userID:
-            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
-                             "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED)
-
-        # check image byteArray is passed as parameter in posty method
-        if not byteArrayData:
-            return Response({"response_message": constants.messages.user_uploadphoto_bytearray_data_cannot_be_empty,
-                             "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED)
-
-        # If userID parameter is passed, then check user exists or not
-        try:
-            objUser = user.objects.get(userID = userID)
-        except user.DoesNotExist:
-            return Response({"response_message": constants.messages.user_uploadphoto_user_does_not_exists,
-                             "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
-
-        # Decode image byte array data 
-        result = base64.b64decode(byteArrayData)
-
-        # Set the base dirceory with static folder in app
-        baseDir = constants.imageFolder.baseDir
-
-        # Get current date and time to set name of image file 
-        objCurrentDateTime = strftime("%y%m%d%H%M%S", time.localtime())
-        fileName = str(userID) + "_" + objCurrentDateTime + ".png"
-
-        # Set folder path and file name of image
-        completeFileName = str(baseDir) + fileName
-
-        with open(completeFileName, 'wb') as f:
-            f.write(result)
-
-        # Get the cuerent image file of user
-        objUserPhotoUrl = str(objUser.photoUrl)
-
-        if len(objUserPhotoUrl) > 0:
-            objUserPhotoUrlDelete =  baseDir + objUserPhotoUrl
-
-        # If image file of user exist in directory delete it before update entry of photoUrl for user
-        if os.path.isfile(objUserPhotoUrlDelete):
-            os.unlink(objUserPhotoUrlDelete)
-
-        user.objects.filter(userID = userID).update(photoUrl = fileName)
-
         return Response({"response_message": constants.messages.success, "data": []})
 
 """
@@ -686,7 +618,54 @@ def contentDelete(userID , contentID):
 
     return
 
-    
+    """
+    APT to save user photo
+    """
+    @list_route(methods = ['POST'], permission_classes = [permissions.AllowAny])
+    def saveUserPhoto(self,request):
+        """ save photo url of user 
+        args:
+            request : userID and image byte array passed as parameter
+        returns:
+            response : photo url successfully saved in database
+        """
+        userID = request.data.get('userID')
+        byteArrayData = request.data.get('byteArray')
+
+        # fileName = None
+        # check userID is passed as parameter in post method
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+
+        # check image byteArray is passed as parameter in posty method
+        if not byteArrayData:
+            return Response({"response_message": constants.messages.user_uploadphoto_bytearray_data_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.user_uploadphoto_user_does_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+
+        # Decode image byte array data 
+        result = base64.b64decode(byteArrayData)
+
+        # Get current date and time to set name of image file 
+        objCurrentDateTime = strftime("%Y-%m-%d %H-%M-%S", time.localtime())
+        fileName = str(userID) + "_" + objCurrentDateTime + ".png"
+
+        with open(fileName, 'wb') as f:
+            f.write(result)
+
+        user.objects.filter(userID = userID).update(photoUrl = fileName)
+
+        return Response({"response_message": constants.messages.success, "data": []})
 
 
 #     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])
