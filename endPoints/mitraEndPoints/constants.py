@@ -1,4 +1,5 @@
 import os
+import settings
 class messages():
     success = 100100
     registration_phone_number_cannot_be_empty = 100101
@@ -99,7 +100,9 @@ class language():
     english = 101100
     marathi = 101101
 
-class imageFolder():
-    path = "/static/"
-    baseDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    baseDir += path
+class imageDir():
+    path = "/static/user/"
+    projectDir = settings.PROJECT_DIR
+    currentDir = os.getcwd()
+    currentDir = settings.PROJECT_DIR
+    baseDir = currentDir + path
