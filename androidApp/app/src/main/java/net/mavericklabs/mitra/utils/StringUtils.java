@@ -29,6 +29,8 @@ import android.text.Spanned;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by amoghpalnitkar on 3/11/16.
@@ -112,4 +114,15 @@ public class StringUtils {
         return codes;
     }
 
+    public static String getVideoKeyFromUrl(String fileName) {
+        String pattern = "(?:https?:\\/{2})?(?:w{3}\\.)?youtu(?:be)?\\.(?:com|be)(?:\\/watch\\?v=|\\/)([^\\s&]+)";
+
+        Pattern compiledPattern = Pattern.compile(pattern);
+        Matcher matcher = compiledPattern.matcher(fileName);
+
+        if(matcher.find()){
+            return matcher.group(1);
+        }
+        return null;
+    }
 }

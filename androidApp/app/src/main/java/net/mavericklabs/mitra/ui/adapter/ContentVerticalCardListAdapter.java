@@ -62,6 +62,7 @@ import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.io.Serializable;
@@ -182,7 +183,8 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
                     Content content = contents.get(holder.getAdapterPosition());
                     if(content != null) {
                         String fileName = content.getFileName();
-                        String videoID = fileName.substring(fileName.lastIndexOf('/') + 1);
+                        Logger.d("file name : " + fileName);
+                        String videoID = StringUtils.getVideoKeyFromUrl(fileName);
                         Logger.d(" video " + videoID);
                         youTubeThumbnailLoader.setVideo(videoID);
                         youTubeThumbnailLoader.setOnThumbnailLoadedListener(onThumbnailLoadedListener);

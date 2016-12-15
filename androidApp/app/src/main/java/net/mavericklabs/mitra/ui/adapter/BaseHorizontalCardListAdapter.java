@@ -23,6 +23,7 @@ import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
+import net.mavericklabs.mitra.utils.StringUtils;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -95,7 +96,7 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
                 public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
                     thumbnailViewToLoaderMap.put(youTubeThumbnailView, youTubeThumbnailLoader);
                     String fileName = contents.get(holder.getAdapterPosition()).getFileName();
-                    String videoID = fileName.substring(fileName.lastIndexOf('/') + 1);
+                    String videoID = StringUtils.getVideoKeyFromUrl(fileName);
 
                     youTubeThumbnailLoader.setVideo(videoID);
                     youTubeThumbnailLoader.setOnThumbnailLoadedListener(onThumbnailLoadedListener);

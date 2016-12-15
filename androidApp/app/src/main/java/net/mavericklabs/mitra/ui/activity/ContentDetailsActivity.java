@@ -68,6 +68,7 @@ import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
@@ -461,7 +462,9 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
         if (!wasRestored) {
             player = youTubePlayer;
             String fileName = content.getFileName();
-            String videoID = fileName.substring(fileName.lastIndexOf('/') + 1);
+            Logger.d("file name is : " + fileName);
+            String videoID = StringUtils.getVideoKeyFromUrl(fileName);
+            Logger.d("video id is : " + videoID);
             player.cueVideo(videoID);
         }
     }
