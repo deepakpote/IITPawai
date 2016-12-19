@@ -1,0 +1,145 @@
+<html>
+<title>Mitra WebPortal Admin page</title>
+<head>
+<script src="js/jquery-3.1.1.min.js"></script>
+<script src="js/jquery.cookie.js"></script>
+<link rel="stylesheet" type="text/css" href="css/styles.css">
+<script>
+$(document).ready(function(){
+	if($.cookie("utoken") == undefined){
+		$("#beforeLogin").show();
+		$("#afterLogin").hide();
+	}else{
+		$("#beforeLogin").hide();
+		$("#afterLogin").show();
+	}
+	
+	$("#send").click(function(){
+		var message = $("#message").val();
+		if(message != ""){
+			if(confirm("Do you want to send the notifications to all the users?")){
+				$.ajax({
+					/*url:"http://localhost:8000/user/sendDataNotificationsToAll/",*/
+					url:"http://localhost:8000/user/sendNotificationsToAll/",
+					type:"post",
+					crossDomain: true,
+					header:"Access-Control-Allow-Origin: *",
+					data:{title:"Message title",body:$("#message").val(),utoken:$.cookie("utoken")},
+					success:function(data){
+						alert("Successfully sent all the notifications");
+					},
+					error: function(err){
+						//alert("Error occurred:" + err);
+					}
+				});
+			}
+		}
+	});
+	
+	$("#phoneno").keydown(function(e){
+		if(e.keyCode == 13){
+			$("#login").click();		
+		}
+	});
+	$("#passkey").keydown(function(e){
+		if(e.keyCode == 13){
+			$("#login").click();		
+		}
+	});
+	$("#login").click(function(){
+		var phoneno = $("#phoneno").val();
+		var passkey = $("#passkey").val();
+		
+		$.ajax({
+			url:"http://localhost:8000/user/validateWebAdmin/",
+			type:"post",
+			crossDomain: true,
+			header:"Access-Control-Allow-Origin: *",
+			data:{phoneno:phoneno,passkey:passkey},
+			success :function(data){
+
+				if(data.data.error == "true"){
+					$("#beforeLogin div.error").text(data.response_message);
+					$("#beforeLogin div.error").show();
+				}else{
+					$("#beforeLogin").hide();
+					$("#afterLogin").show();
+					$.cookie("utoken",data.data.usertoken);
+					$("#beforeLogin div.error").text("");
+					$("#beforeLogin div.error").hide();
+				}
+			},
+		});
+	});
+	
+	$("#logout").click(function(){
+		$("#beforeLogin").show();
+		$("#afterLogin").hide();
+		$.cookie("utoken",null);
+		window.location.reload();
+	});
+});
+</script>
+
+</head>
+<body>
+	<div id="beforeLogin" class="beforeLogin">
+		<div class="error"></div>
+		<table>
+			<tr>
+				<td>
+					Enter Phone Number
+				</td>
+				<td>
+					<input type="text" id="phoneno">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Enter Passkey
+				</td>
+				<td>
+					<input type="password" id="passkey">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<input type="button" class="button" id="login" value="Login">
+				</td>
+			</tr>
+		</table>
+		
+	</div>
+	<div id="afterLogin" class="afterLogin">
+		<div class="leftmenu">
+			<ul class="menu">
+				<li>
+					<a href="javascript: void(0)">Send Bulk Notifications</a>
+				</li>
+				<li>
+					<a id="logout" href="javascript: void(0)">Logout</a>
+				</li>
+			</ul>
+		</div>
+		
+		<div class="maincontent">
+			<h2>Send bulk push Notifications</h2>
+			<table>
+				<tr>
+					<td>
+						Enter Notification Text
+					</td>
+					<td>
+						<textarea id="message" class="textarea" maxlength="255"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input type="button" class="button" id="send" value="Push Notifications">			
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>
