@@ -20,7 +20,7 @@ from contents.models import content
 from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs
 from time import gmtime, strftime
 from contents.serializers import contentSerializer
-from commons.views import getCodeIDs
+from commons.views import getCodeIDs, getArrayFromCommaSepString
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -461,10 +461,10 @@ class UserViewSet(viewsets.ModelViewSet):
         
         subjectCodeIDs = request.data.get('subjectCodeIDs') 
         gradeCodeIDs = request.data.get('gradeCodeIDs')
-        fileTypeCodeID = request.data.get('fileTypeCodeID')
+        fileTypeCodeIDs = request.data.get('fileTypeCodeIDs')
         
         topicCodeIDs = request.data.get('topicCodeIDs') 
-        languageCodeID = request.data.get('languageCodeID')
+        languageCodeIDs = request.data.get('languageCodeIDs')
 
         # check userID is passed as parameter 
         if not userID:
@@ -497,6 +497,9 @@ class UserViewSet(viewsets.ModelViewSet):
         # Get list of contentIDs of login user
         objUserContent = list(userContent.objects.filter(user = objUser).values_list('content_id',flat = True))
         
+        # Declare empty user content type code.
+        objUserContentTypeCode = None
+        
         #If content type is Teaching Aids.
         if contentTypeCodeID == constants.mitraCode.teachingAids:
             #Get the applicable subject list for the respective user.    
@@ -505,11 +508,12 @@ class UserViewSet(viewsets.ModelViewSet):
             arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs , objUser)
             #Get correct/valid FileTypeCodeID 
             arrContentFileTypeCodeID = []
-            if not fileTypeCodeID:
+            if not fileTypeCodeIDs:
                 # Get codeIDs related to filetype codegroup
                 arrContentFileTypeCodeID = getCodeIDs(constants.mitraCodeGroup.fileType)
             else:
-                arrContentFileTypeCodeID = [fileTypeCodeID]
+                #Get the array from comma sep string of fileTypeCodeIDs.
+                arrContentFileTypeCodeID = getArrayFromCommaSepString(fileTypeCodeIDs)
 
             # Get the content details.
             objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, 
@@ -524,11 +528,12 @@ class UserViewSet(viewsets.ModelViewSet):
 
             #Get Language
             arrLanguageCodeID = []
-            if not languageCodeID:
+            if not languageCodeIDs:
                 # Get all the languages
                 arrLanguageCodeID = getCodeIDs(constants.mitraCodeGroup.language)
             else:
-                arrLanguageCodeID = [languageCodeID]
+                #Get the array from comma sep string of languageCodeIDs.
+                arrLanguageCodeID = getArrayFromCommaSepString(languageCodeIDs)
             
             #Build queryset               
             objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, 
@@ -540,7 +545,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if not objUserContentTypeCode:
             return Response({"response_message": constants.messages.usercontent_list_no_records_found,
                     "data": []},
-                    status = status.HTTP_404_NOT_FOUND) 
+                    status = status.HTTP_200_OK) 
         # Set query string to contentSerializer
         objContentSerializer = contentSerializer(objUserContentTypeCode, many = True)
 

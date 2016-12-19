@@ -66,3 +66,18 @@ def getCodeIDs(codeGroupID):
         
     if len(arrCodeIDs) > 0:
         return arrCodeIDs
+    
+"""
+Common function used to get the array from comma seprated string.
+"""    
+def getArrayFromCommaSepString(CommaSepString):
+    
+    #Declare array.
+    arrOut = []
+
+    if CommaSepString:
+        arrOut = CommaSepString.split(',')
+        return arrOut
+    
+    return arrOut
+    
