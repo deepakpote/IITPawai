@@ -30,15 +30,20 @@ class CodeViewSet(viewsets.ModelViewSet):
             # Fetch all records having date gretter then input date(l)
             try:
                 # Convert query param to date time 
-                dt = datetime.strptime(l, "%Y-%m-%d %H:%M:%S")
+                Objdate = int(l) / 1000.0
+                
+                #convert it to timestamp
+                objFormatedDate = datetime.fromtimestamp(Objdate).strftime('%Y-%m-%d %H:%M:%S')
+                
                 #Get query string
-                queryset = code.objects.filter(createdOn__gte=dt)  
+                queryset = code.objects.filter(modifiedOn__gte=objFormatedDate)  
             except : 
                 return Response({"response_message": constants.messages.code_list_invalid_date_format,
                              "data": []},
                             status = status.HTTP_404_NOT_FOUND)
             
         serializer = codeSerializer(queryset, many = True)
+
         return Response({"response_message": constants.messages.success, "data": serializer.data})
         
 
@@ -80,4 +85,3 @@ def getArrayFromCommaSepString(CommaSepString):
         return arrOut
     
     return arrOut
-    
