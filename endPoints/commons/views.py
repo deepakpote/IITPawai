@@ -21,7 +21,7 @@ class CodeViewSet(viewsets.ModelViewSet):
     def list(self, request):
         #Get query param
         l = request.query_params.get('l')
-        print "INSIDE"
+
         #If l is 0 mean fetch all the code list
         if l == "0" or l is None:
             queryset = code.objects.all()
@@ -31,12 +31,9 @@ class CodeViewSet(viewsets.ModelViewSet):
             try:
                 # Convert query param to date time 
                 Objdate = int(l) / 1000.0
-                #print "objDate:",Objdate
                 
                 #convert it to timestamp
                 objFormatedDate = datetime.fromtimestamp(Objdate).strftime('%Y-%m-%d %H:%M:%S')
-                
-                print "Converted datetime:", objFormatedDate
                 
                 #Get query string
                 queryset = code.objects.filter(modifiedOn__gte=objFormatedDate)  
