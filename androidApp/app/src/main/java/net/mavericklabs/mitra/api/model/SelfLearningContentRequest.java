@@ -25,40 +25,30 @@ package net.mavericklabs.mitra.api.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import net.mavericklabs.mitra.utils.Constants;
-
 import java.io.Serializable;
 
 /**
  * Created by vishakha on 10/11/16.
  */
 
-public class ContentRequest implements Serializable{
+public class SelfLearningContentRequest implements Serializable{
 
     @SerializedName("userID")
     private String userID;
 
-    @SerializedName("fileTypeCodeID")
-    private String fileType;
-
     @SerializedName("languageCodeID")
     private String language;
 
-    @SerializedName("subjectCodeID")
-    private String subject;
+    @SerializedName("topicCodeIDs")
+    private String topic;
 
-    @SerializedName("gradeCodeID")
-    private String grade;
+    @SerializedName("pageNumber")
+    private int pageNumber;
 
-    //@SerializedName("pageNumber")
-    //private int pageNumber;
-
-    public ContentRequest(String userID, String fileType, String language, String subject, String grade) {
+    public SelfLearningContentRequest(String userID, String language, String topic) {
         this.userID = userID;
-        this.fileType = fileType;
         this.language = language;
-        this.subject = subject;
-        this.grade = grade;
+        this.topic = topic;
     }
 
     public String getUserID() {
@@ -69,14 +59,6 @@ public class ContentRequest implements Serializable{
         this.userID = userID;
     }
 
-    public String getFileType() {
-        return fileType;
-    }
-
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
-    }
-
     public String getLanguage() {
         return language;
     }
@@ -85,27 +67,19 @@ public class ContentRequest implements Serializable{
         this.language = language;
     }
 
-    public String getSubject() {
-        return subject;
+    public String getTopic() {
+        return topic;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 
-    public String getGrade() {
-        return grade;
+    public int getPageNumber() {
+        return pageNumber;
     }
 
-    public void setGrade(String grade) {
-        this.grade = grade;
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
     }
-
-//    public int getPageNumber() {
-//        return pageNumber;
-//    }
-//
-//    public void setPageNumber(int pageNumber) {
-//        this.pageNumber = pageNumber;
-//    }
 }

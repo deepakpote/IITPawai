@@ -49,16 +49,15 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp">
+                android:layout_height="wrap_content">
 
                 <android.support.design.widget.FloatingActionButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:fabSize="mini"
+                    app:useCompatPadding="true"
                     android:layout_marginEnd="@dimen/fab_margin"
                     android:layout_marginRight="@dimen/fab_margin"
-                    android:layout_marginTop="4dp"
                     app:backgroundTint="@color/colorAccent_light"
                     android:src="@drawable/ic_bookmark_black_18dp"/>
 
@@ -68,20 +67,20 @@
                     android:layout_height="wrap_content"
                     android:text="@string/my_saved_resources"
                     android:textColor="@color/colorWhite"
+                    android:layout_gravity="center"
                     style="@style/Base.Widget.AppCompat.Button.Borderless"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp">
+                android:layout_height="wrap_content">
 
                 <android.support.design.widget.FloatingActionButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:fabSize="mini"
-                    android:layout_marginTop="4dp"
+                    app:useCompatPadding="true"
                     android:layout_marginEnd="@dimen/fab_margin"
                     android:layout_marginRight="@dimen/fab_margin"
                     android:src="@drawable/ic_school_black_18dp"/>
@@ -91,6 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/teaching_aids"
+                    android:layout_gravity="center"
                     android:textColor="@color/colorWhite"
                     style="@style/Base.Widget.AppCompat.Button.Borderless"/>
 
@@ -98,14 +98,13 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp">
+                android:layout_height="wrap_content">
                 <android.support.design.widget.FloatingActionButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:fabSize="mini"
+                    app:useCompatPadding="true"
                     app:backgroundTint="@color/colorAccent_dark"
-                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="@dimen/fab_margin"
                     android:layout_marginRight="@dimen/fab_margin"
                     android:src="@drawable/ic_subscriptions_black_18dp" />
@@ -115,6 +114,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/self_learning"
+                    android:layout_gravity="center"
                     android:textColor="@color/colorWhite"
                     style="@style/Base.Widget.AppCompat.Button.Borderless"/>
 
@@ -122,14 +122,13 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp">
+                android:layout_height="wrap_content">
 
                 <android.support.design.widget.FloatingActionButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:fabSize="mini"
-                    android:layout_marginTop="4dp"
+                    app:useCompatPadding="true"
                     app:backgroundTint="@color/color_teal_light"
                     android:layout_marginEnd="@dimen/fab_margin"
                     android:layout_marginRight="@dimen/fab_margin"
@@ -140,6 +139,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/training_calendar"
+                    android:layout_gravity="center"
                     android:textColor="@color/colorWhite"
                     style="@style/Base.Widget.AppCompat.Button.Borderless"/>
             </LinearLayout>

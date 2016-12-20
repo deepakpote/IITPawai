@@ -1,6 +1,7 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -18,18 +19,10 @@ import butterknife.ButterKnife;
 
 public class SplashActivity extends AppCompatActivity {
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("");
-        }
-
         Thread timerThread = new Thread() {
             public void run() {
                 try {
@@ -38,11 +31,15 @@ public class SplashActivity extends AppCompatActivity {
                     e.printStackTrace();
                 } finally {
                     String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
+
+                    //case 1 : user has not entered his phone number
                     if(StringUtils.isEmpty(phoneNumber)) {
                         Intent selectLanguage = new Intent(SplashActivity.this,SelectLanguageActivity.class);
                         startActivity(selectLanguage);
                         finishAffinity();
-                    } else {
+                    } else { // user has entered phone number ..
+
+                        //case 2: but has not verified his phone number
                         if(!UserDetailUtils.isVerifiedMobileNumber(getApplicationContext())) {
                             Intent verifyOtp = new Intent(SplashActivity.this,VerifyOtpActivity.class);
                             Bundle bundle = new Bundle();
@@ -50,16 +47,24 @@ public class SplashActivity extends AppCompatActivity {
                             boolean signIn= MitraSharedPreferences.readFromPreferences(
                                                                     getApplicationContext(),
                                                                     "sign_in",Boolean.FALSE);
-                            Logger.d("sign in value : " + signIn);
                             bundle.putBoolean("is_from_sign_in",signIn);
                             verifyOtp.putExtras(bundle);
                             startActivity(verifyOtp);
                             finishAffinity();
-                        } else {
-                            //TODO check if he has entered his info
-                            Intent selectLanguage = new Intent(SplashActivity.this,SelectLanguageActivity.class);
-                            startActivity(selectLanguage);
-                            finishAffinity();
+                        } else { // has verified his phone number
+                            boolean hasEnteredInformation = UserDetailUtils.hasEnteredInformation(getApplicationContext());
+
+                            // case 3 : not yet entered personal information
+                            if(!hasEnteredInformation) {
+                                Intent selectLanguage = new Intent(SplashActivity.this,EditProfileActivity.class);
+                                startActivity(selectLanguage);
+                                finishAffinity();
+
+                            } else { // case 4 : everything good to go. take user home :)
+                                Intent selectLanguage = new Intent(SplashActivity.this,HomeActivity.class);
+                                startActivity(selectLanguage);
+                                finishAffinity();
+                            }
                         }
                     }
                 }

@@ -90,6 +90,8 @@ public class SignInUserActivity extends AppCompatActivity {
                             bundle.putBoolean("is_from_sign_in",true);
                             verifyOtp.putExtras(bundle);
                             startActivity(verifyOtp);
+                        } else {
+                            Toast.makeText(getApplicationContext(), R.string.error_please_register,Toast.LENGTH_LONG).show();
                         }
                     }
 

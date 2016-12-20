@@ -67,6 +67,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <include layout="@layout/custom_loading_panel"
+                    android:id="@+id/teaching_aids_loading_panel"/>
+
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/popularTeachingAidsRecyclerView"
                     android:layout_width="match_parent"
@@ -104,6 +107,9 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <include layout="@layout/custom_loading_panel"
+                    android:id="@+id/self_learning_loading_panel"/>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/popularSelfLearningRecyclerView"
@@ -143,14 +149,14 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/see_all"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:textColor="@color/colorAccent"
-                    style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"/>
+                <!--<Button-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/see_all"-->
+                    <!--android:layout_alignParentEnd="true"-->
+                    <!--android:layout_alignParentRight="true"-->
+                    <!--android:textColor="@color/colorAccent"-->
+                    <!--style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"/>-->
 
             </RelativeLayout>
 

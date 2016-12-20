@@ -25,6 +25,9 @@ package net.mavericklabs.mitra.utils;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.widget.ImageView;
+
+import net.mavericklabs.mitra.R;
 
 /**
  * Created by vishakha on 10/11/16.
@@ -34,5 +37,31 @@ public class DisplayUtils {
     public static int dpToPx(int dp, Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    public static void displayFileIcon(String fileType, ImageView fileIconImageView) {
+        switch (fileType) {
+            case Constants.FileTypeVideo :
+                fileIconImageView.setImageResource(R.drawable.ic_play_arrow_black_48dp);
+                break;
+
+            case Constants.FileTypeAudio:
+                fileIconImageView.setImageResource(R.drawable.ic_audiotrack_black_48dp);
+                break;
+
+            case Constants.FileTypePPT:
+                fileIconImageView.setImageResource(R.drawable.ic_slideshow_black_48dp);
+                break;
+
+            case Constants.FileTypeWorksheet:
+                fileIconImageView.setImageResource(R.drawable.ic_picture_as_pdf_black_48dp);
+                break;
+
+            case Constants.FileTypePDF:
+                fileIconImageView.setImageResource(R.drawable.ic_picture_as_pdf_black_48dp);
+                break;
+
+
+        }
     }
 }

@@ -54,6 +54,18 @@ public class UserDetailUtils {
         editor.apply();
     }
 
+    public static void setEnteredInformation(Context context, boolean value) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("info",value);
+        editor.apply();
+    }
+
+    public static boolean hasEnteredInformation(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getBoolean("info", false);
+    }
+
     public static boolean isVerifiedMobileNumber(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getBoolean("verified", false);

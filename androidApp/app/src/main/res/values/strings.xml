@@ -47,7 +47,7 @@
     <string name="almost_done">Almost done!</string>
     <string name="just_tell_a_little_about_yourself">Just tell a little about yourself</string>
     <string name="title_activity_teaching_aids">TeachingAidsActivity</string>
-    <string name="subject">Subject</string>
+    <string name="topic">Subject</string>
     <string name="grade">Grade</string>
     <string name="required_field">* Required</string>
     <string name="menu_edit">Edit</string>
@@ -83,5 +83,32 @@
     <string name="loading">Loading..</string>
     <string name="error_email_address">Please enter valid email address</string>
     <string name="error_enter_required_fields">Please enter required fields.</string>
+    <string name="notification">Notifications</string>
+    <string name="settings">Settings</string>
+    <string name="select_language">Select Language</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="language_select_confirmation">Are you sure you want to select this as default language?</string>
+    <string name="delete_saved_resource_confirmation">Are you sure you want to remove this resource from saved resources?</string>
+    <string name="topic_s">Topic/s</string>
+    <string name="no_subjects">No Subjects</string>
+    <string name="no_grades">No Grades</string>
+    <string name="no_topics">No Topics</string>
+    <string name="profile_updated">Profile updated successfully</string>
+
+    <string name="error_message">Something went wrong. Please try again later.</string>
+
+    <plurals name="resources_saved">
+        <item quantity="one">%1$d resource saved</item>
+        <item quantity="other">%1$d resources saved</item>
+    </plurals>
+
+    <string name="share_title">Share via</string>
+
+    <string name="error_user_exists">User already exists. Please sign in.</string>
+    <string name="error_please_register">You have not registered yet. Please register first.</string>
+    <string name="error_invalid_otp">Invalid OTP</string>
+    <string name="choose_profile_photo">Choose profile photo</string>
+
 
 </resources>

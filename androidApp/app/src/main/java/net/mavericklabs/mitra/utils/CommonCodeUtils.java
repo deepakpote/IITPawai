@@ -51,6 +51,11 @@ public class CommonCodeUtils {
 
     }
 
+    public static List<CommonCode> getFileTypes() {
+        return  Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
+                        CommonCodeGroup.FILE_TYPES).findAll();
+    }
+
     public static List<CommonCode> getSubjects() {
         return Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
                         CommonCodeGroup.SUBJECTS).findAll();
@@ -65,11 +70,33 @@ public class CommonCodeUtils {
 
     }
 
+    public static List<CommonCode> getTopics() {
+        return Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
+                CommonCodeGroup.TOPICS).findAll();
+
+
+    }
+
+    public static List<CommonCode> getLanguages() {
+        return Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
+                CommonCodeGroup.LANGUAGE).findAll();
+
+
+    }
+
     public static CommonCode getObjectFromCode(String code) {
         RealmResults<CommonCode> contentTypeResult =
                 Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeID",
                         code).findAll();
         return contentTypeResult.get(0);
+
+    }
+
+    public static String getLanguageCode(String language) {
+        RealmResults<CommonCode> contentTypeResult =
+                Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeNameEnglish",
+                        language).equalTo("codeGroupID", CommonCodeGroup.LANGUAGE) .findAll();
+        return contentTypeResult.get(0).getCodeID();
 
     }
 

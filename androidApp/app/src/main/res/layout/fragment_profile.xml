@@ -72,20 +72,66 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/i_teach"
+                    android:layout_marginBottom="16dp"
+                    android:textSize="18sp"
                     />
 
-                <EditText
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:hint="@string/subject_s"
+                    android:text="@string/subject_s"
+                    android:layout_marginBottom="16dp"
                     />
 
-                <EditText
-                    android:layout_width="match_parent"
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/subject_recycler_view"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:hint="@string/grade_s"
+                    android:layout_marginBottom="4dp"
+                    />
+
+                <TextView
+                    android:id="@+id/no_subjects_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_subjects"
+                    android:textColor="@color/default_grey"
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@color/default_grey"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/grade_s"
+                    android:layout_marginBottom="16dp"
+                    />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/grade_recycler_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    />
+
+                <TextView
+                    android:id="@+id/no_grades_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_grades"
+                    android:textColor="@color/default_grey"
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@color/default_grey"
                     />
 
             </LinearLayout>
@@ -114,11 +160,33 @@
                     android:text="@string/interested_in_learning"
                     />
 
-                <EditText
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:hint="@string/topics"
+                    android:text="@string/topic_s"
+                    android:layout_marginBottom="16dp"
+                    />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/topic_recycler_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    />
+
+                <TextView
+                    android:id="@+id/no_topics_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_topics"
+                    android:textColor="@color/default_grey"
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@color/default_grey"
                     />
 
                 <EditText
@@ -126,6 +194,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:hint="@string/skills"
+                    android:visibility="gone"
                     />
 
             </LinearLayout>

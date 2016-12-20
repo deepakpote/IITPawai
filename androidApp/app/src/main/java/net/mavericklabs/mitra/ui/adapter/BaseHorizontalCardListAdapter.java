@@ -1,7 +1,9 @@
 package net.mavericklabs.mitra.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -17,10 +19,13 @@ import com.google.android.youtube.player.YouTubeThumbnailView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
+import net.mavericklabs.mitra.utils.StringUtils;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,10 +73,11 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
         layoutParams.height = layoutParams.width + (DisplayUtils.dpToPx(8, context));
         holder.contentView.setLayoutParams(layoutParams);
 
+        DisplayUtils.displayFileIcon(getObject(holder).getFileType(), holder.fileIcon);
+
         //Load Video
         if(holder.getItemViewType() == 0) {
             holder.youTubeThumbnailView.setVisibility(View.VISIBLE);
-            holder.fileIcon.setVisibility(View.GONE);
             final YouTubeThumbnailLoader.OnThumbnailLoadedListener onThumbnailLoadedListener = new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
                 @Override
                 public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
@@ -90,7 +96,7 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
                 public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
                     thumbnailViewToLoaderMap.put(youTubeThumbnailView, youTubeThumbnailLoader);
                     String fileName = contents.get(holder.getAdapterPosition()).getFileName();
-                    String videoID = fileName.substring(fileName.lastIndexOf('/') + 1);
+                    String videoID = StringUtils.getVideoKeyFromUrl(fileName);
 
                     youTubeThumbnailLoader.setVideo(videoID);
                     youTubeThumbnailLoader.setOnThumbnailLoadedListener(onThumbnailLoadedListener);
@@ -103,8 +109,6 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
             });
         } else {
             //Show file Icon
-
-            holder.fileIcon.setVisibility(View.VISIBLE);
             holder.youTubeThumbnailView.setVisibility(View.GONE);
         }
 
@@ -119,8 +123,26 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
 
             holder.details.setText(subject +  " | "  + context.getResources().getString(R.string.grade) + " " + grade);
         } else {
-            holder.details.setText("Topic | Language");
+            String topicCode = contents.get(holder.getAdapterPosition()).getTopic();
+            String topic = CommonCodeUtils.getObjectFromCode(topicCode).getCodeNameForCurrentLocale();
+
+            String languageCode = contents.get(holder.getAdapterPosition()).getLanguage();
+            String language = CommonCodeUtils.getObjectFromCode(languageCode).getCodeNameForCurrentLocale();
+
+            holder.details.setText(topic +  " | " + language);
         }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ContentDetailsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("content", (Serializable) contents.get(holder.getAdapterPosition()));
+                intent.putExtras(bundle);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            }
+        });
 
     }
 

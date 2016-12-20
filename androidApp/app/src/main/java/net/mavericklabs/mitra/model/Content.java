@@ -50,6 +50,9 @@ public class Content implements Serializable{
     @SerializedName("grade")
     private String grade;
 
+    @SerializedName("topic")
+    private String topic;
+
     @SerializedName("requirement")
     private String requirement;
 
@@ -63,7 +66,7 @@ public class Content implements Serializable{
     private String fileName;
 
     @SerializedName("author")
-    private int author;
+    private String author;
 
     @SerializedName("objectives")
     private String objectives;
@@ -71,7 +74,7 @@ public class Content implements Serializable{
     @SerializedName("language")
     private String language;
 
-    public Content(String contentID, String title, String contentTypeCodeID, String subject, String grade, String requirement, String instruction, String fileType, String fileName, int author, String objectives, String language) {
+    public Content(String contentID, String title, String contentTypeCodeID, String subject, String grade, String requirement, String instruction, String fileType, String fileName, String author, String objectives, String language) {
         this.contentID = contentID;
         this.title = title;
         this.contentTypeCodeID = contentTypeCodeID;
@@ -158,11 +161,11 @@ public class Content implements Serializable{
         this.fileName = fileName;
     }
 
-    public int getAuthor() {
+    public String getAuthor() {
         return author;
     }
 
-    public void setAuthor(int author) {
+    public void setAuthor(String author) {
         this.author = author;
     }
 
@@ -180,5 +183,13 @@ public class Content implements Serializable{
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 }

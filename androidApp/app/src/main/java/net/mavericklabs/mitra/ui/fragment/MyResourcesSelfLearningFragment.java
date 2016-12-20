@@ -30,33 +30,57 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.SavedContentRequest;
+import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
+import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
+import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
+import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.HttpUtils;
+import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MyResourcesSelfLearningFragment extends Fragment {
-    @BindView(R.id.subject_spinner)
-    Spinner subjectSpinner;
-
-    @BindView(R.id.grade_spinner)
-    Spinner gradeSpinner;
+//    @BindView(R.id.topic_spinner)
+//    Spinner topicSpinner;
+//
+//    @BindView(R.id.language_spinner)
+//    Spinner languageSpinner;
 
     @BindView(R.id.content_recycler_view)
     RecyclerView contentRecyclerView;
 
+    @BindView(R.id.error_view)
+    TextView errorView;
+
+    @BindView(R.id.loading_panel)
+    RelativeLayout loadingPanel;
+
     private ContentVerticalCardListAdapter adapter;
+    private MyResourcesFragment fragment;
 
     public MyResourcesSelfLearningFragment() {
     }
@@ -73,37 +97,77 @@ public class MyResourcesSelfLearningFragment extends Fragment {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        Logger.d("fragment -  on permission result");
+        adapter.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_resources_self_learning, container, false);
         ButterKnife.bind(this, rootView);
 
-        //Temp
-        List<String> subjects = Arrays.asList("Subject", "English", "Marathi", "Maths");
-        List<String> grades = Arrays.asList("Grade", "1", "2", "3");
-        //List<String> types = Arrays.asList("Type", Constants.FileType.VIDEO.toString(), Constants.FileType.PDF.toString());
+        fragment = (MyResourcesFragment) getParentFragment();
 
-        ArrayAdapter<String> subjectAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_dropdown_item, subjects);
-        subjectSpinner.setAdapter(subjectAdapter);
-        subjectSpinner.setPrompt(subjects.get(0));
+//        final List<CommonCode> topics = new ArrayList<>(CommonCodeUtils.getTopics());
+//        final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getLanguages());
+//
+//        //Header - not a valid value
+//        topics.add(0, new CommonCode("", "","Topic", "Topic", 0));
+//        languages.add(0,new CommonCode("","","Language","Language",0));
+//
+//        SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(),
+//                R.layout.custom_spinner_item_header,
+//                topics);
+//        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
+//        topicSpinner.setAdapter(adapter);
+//        topicSpinner.setSelection(0 ,false);
+//
+//
+//        topicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                CommonCode language = (CommonCode) languageSpinner.getSelectedItem();
+//                loadMySelfLearning(language.getCodeID(), topics.get(i).getCodeID());
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
+//
+//        SpinnerArrayAdapter languageAdapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
+//                languages);
+//        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
+//        languageSpinner.setAdapter(languageAdapter);
+//        languageSpinner.setSelection(0 ,false);
+//
+//        languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                CommonCode topic = (CommonCode) topicSpinner.getSelectedItem();
+//                loadMySelfLearning(languages.get(i).getCodeID() , topic.getCodeID());
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
 
+        String language = "";
 
-        List<Content> contents = new ArrayList<>();
-//        contents.add(new Content("Video 1", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
-//        contents.add(new Content("PDF 1", Constants.FileType.PDF, Constants.Type.TEACHING_AIDS));
-//        contents.add(new Content("PPT 1", Constants.FileType.PPT, Constants.Type.TEACHING_AIDS));
-//        contents.add(new Content("Video 2", Constants.FileType.VIDEO, Constants.Type.TEACHING_AIDS));
+        RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
+                .where(DbUser.class).findAll();
+        if(dbUser.size() == 1) {
+            DbUser user = dbUser.get(0);
+            language = user.getPreferredLanguage();
+        }
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        contentRecyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new ContentVerticalCardListAdapter(getContext(), contents);
-        contentRecyclerView.setAdapter(adapter);
-
-        ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_dropdown_item, grades);
-        gradeSpinner.setAdapter(gradeAdapter);
-        gradeSpinner.setPrompt(grades.get(0));
+        loadMySelfLearning(language, "");
 
         return rootView;
     }
@@ -111,6 +175,54 @@ public class MyResourcesSelfLearningFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        adapter.releaseLoaders();
+        if(adapter != null) {
+            adapter.releaseLoaders();
+        }
+    }
+
+    private void loadMySelfLearning(String language, String topic) {
+        loadingPanel.setVisibility(View.VISIBLE);
+
+        SavedContentRequest contentRequest = new SavedContentRequest(UserDetailUtils.getUserId(getContext()),
+                Constants.ContentTypeSelfLearning);
+        RestClient.getApiService("").getSavedContent(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+            @Override
+            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                loadingPanel.setVisibility(View.GONE);
+                if(response.isSuccessful()) {
+                    Logger.d(" Succes");
+                    if(response.body().getData() != null) {
+                        List<Content> contents = response.body().getData();
+                        Logger.d(" contents " + contents.size());
+
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+                        contentRecyclerView.setLayoutManager(linearLayoutManager);
+                        adapter = new ContentVerticalCardListAdapter(getContext(), contents, fragment);
+                        adapter.setShowDeleteOption(true);
+                        contentRecyclerView.setAdapter(adapter);
+
+                        fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved, contents.size(), contents.size()));
+
+                        return;
+
+                    }
+                }
+
+
+                    String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessage(response)).getCodeNameForCurrentLocale();
+                    Logger.d(" error " + error);
+                    contentRecyclerView.setVisibility(View.GONE);
+                    errorView.setVisibility(View.VISIBLE);
+                    errorView.setText(error);
+
+
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+                Logger.d(" on fail");
+            }
+        });
+
     }
 }

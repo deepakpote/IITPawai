@@ -23,7 +23,15 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
+import android.app.DownloadManager;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
+import android.media.Image;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
@@ -35,6 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
@@ -44,14 +53,22 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.ContentRequest;
+import net.mavericklabs.mitra.api.model.ContentDataRequest;
+import net.mavericklabs.mitra.api.model.ContentDataResponse;
+import net.mavericklabs.mitra.api.model.MetaContent;
+import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
+import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
+import net.mavericklabs.mitra.api.model.GenericListDataModel;
+import net.mavericklabs.mitra.api.model.LikeRequest;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Requirements;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.RequirementsListAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.DisplayUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
@@ -59,6 +76,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -89,9 +107,143 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
     @BindView(R.id.requirements_layout)
     LinearLayout requirementsLayout;
 
+    @BindView(R.id.loading_panel)
+    RelativeLayout loadingPanel;
+
+    @BindView(R.id.like_icon)
+    ImageView likeIcon;
+
+    @BindView(R.id.save_icon)
+    ImageView saveIcon;
+
+    @BindView(R.id.share_icon)
+    ImageView shareIcon;
+
+    @BindView(R.id.youtube_layout)
+    RelativeLayout youTubeLayout;
+
+    @BindView(R.id.content_layout)
+    RelativeLayout contentLayout;
+
+    @OnClick(R.id.share_icon)
+    void shareContent() {
+        Logger.d(" share ");
+        String userId = UserDetailUtils.getUserId(getApplicationContext());
+        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService("")
+                .share(new ContentDataRequest(userId, content.getContentID()));
+
+        saveRequest.enqueue(new Callback<BaseModel<ContentDataResponse>>() {
+            @Override
+            public void onResponse(Call<BaseModel<ContentDataResponse>> call, Response<BaseModel<ContentDataResponse>> response) {
+                if(response.isSuccessful()) {
+                    List<ContentDataResponse> responseList = response.body().getData();
+                    Logger.d(" file " + responseList.get(0).getFileName());
+
+                    String shareBody = "Here is the share content body " + responseList.get(0).getFileName();
+                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                    sharingIntent.setType("text/plain");
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "MITRA " + content.getTitle());
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_title)));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<ContentDataResponse>> call, Throwable t) {
+                Logger.d(" on failure ");
+            }
+        });
+    }
+
+    @OnClick(R.id.like_icon)
+    void likeContent() {
+        if(isLiked) {
+            likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_grey_24dp));
+            isLiked = false;
+        } else {
+            likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_accent_24dp));
+            isLiked = true;
+        }
+        String userId = UserDetailUtils.getUserId(getApplicationContext());
+        RestClient.getApiService("").likeContent(new LikeRequest(userId,content.getContentID(),isLiked))
+                .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+                    @Override
+                    public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                        if(response.isSuccessful()) {
+                            Logger.d("content liked..");
+                        } else {
+                            Logger.d("is liked " + isLiked);
+                            if(isLiked) {
+                                likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_grey_24dp));
+                                isLiked = false;
+                            } else {
+                                likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_accent_24dp));
+                                isLiked = true;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                        Logger.d("is liked " + isLiked);
+                        if(isLiked) {
+                            likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_grey_24dp));
+                            isLiked = false;
+                        } else {
+                            likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_accent_24dp));
+                            isLiked = true;
+                        }
+                    }
+                });
+    }
+
+    @OnClick(R.id.save_icon)
+    void saveContent() {
+        if(isSaved) {
+            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
+            isSaved = false;
+        } else {
+            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+            isSaved = true;
+        }
+        String userId = UserDetailUtils.getUserId(getApplicationContext());
+        RestClient.getApiService("").saveContent(userId,content.getContentID(),isSaved)
+                .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+                    @Override
+                    public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                        if(response.isSuccessful()) {
+                            Logger.d("content saved..");
+                        } else {
+                            Logger.d("is liked " + isSaved);
+                            if(isSaved) {
+                                saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
+                                isSaved = false;
+                            } else {
+                                saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+                                isSaved = true;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                        Logger.d("is liked " + isLiked);
+                        if(isSaved) {
+                            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
+                            isSaved = false;
+                        } else {
+                            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+                            isSaved = true;
+                        }
+                    }
+                });
+    }
+
     BaseHorizontalCardListAdapter similarContentsAdapter;
     private Content content;
     private YouTubePlayer player;
+    private boolean isLiked;
+    private boolean isSaved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,26 +264,84 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
         }
 
         if(content != null) {
+
+            String userId = UserDetailUtils.getUserId(getApplicationContext());
+            RestClient.getApiService("").metaContent(userId,content.getContentID())
+                    .enqueue(new Callback<BaseModel<MetaContent>>() {
+                            @Override
+                            public void onResponse(Call<BaseModel<MetaContent>> call, Response<BaseModel<MetaContent>> response) {
+                                if(response.isSuccessful()) {
+                                    isLiked = response.body().getData().get(0).isLiked();
+                                    isSaved = response.body().getData().get(0).isSaved();
+                                    if(isSaved) {
+                                        saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+                                    } else {
+                                        saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
+                                    }
+
+                                    if(isLiked) {
+                                        likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_accent_24dp));
+                                    } else {
+                                        likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_grey_24dp));
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<BaseModel<MetaContent>> call, Throwable t) {
+
+                            }
+                        });
+
+            DisplayUtils.displayFileIcon(content.getFileType(), contentImageView);
+
             //Load Video
             if(content.getFileType().equals(Constants.FileTypeVideo)) {
 
+                youTubeLayout.setVisibility(View.VISIBLE);
+                contentImageView.setVisibility(View.GONE);
+                contentLayout.setBackgroundColor(Color.BLACK);
                 YouTubePlayerSupportFragment frag =
                         (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
                 frag.initialize(Constants.youtubeDeveloperKey, this);
 
-                contentImageView.setVisibility(View.GONE);
             } else {
                 //Show file Icon
                 contentImageView.setVisibility(View.VISIBLE);
+                youTubeLayout.setVisibility(View.GONE);
+                contentLayout.setBackgroundResource(R.drawable.gradient_background);
+                contentImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(content.getFileType().equals(Constants.FileTypePPT) ||
+                                content.getFileType().equals(Constants.FileTypeWorksheet) ||
+                                content.getFileType().equals(Constants.FileTypePDF)) {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(content.getFileName()));
+                            startActivity(browserIntent);
+                        }
+
+                        if(content.getFileType().equals(Constants.FileTypeAudio)) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.setDataAndType(Uri.parse(content.getFileName()), "audio/mp3");
+                            startActivity(intent);
+                        }
+                    }
+                });
             }
 
             if(content.getContentTypeCodeID().equals(Constants.ContentTypeTeachingAids)) {
 
                 requirementsLayout.setVisibility(View.VISIBLE);
+
+                String requirements = content.getRequirement();
+
+                String[] list = requirements.split(",");
+
                 List<Requirements> requirementsList = new ArrayList<>();
-                requirementsList.add(new Requirements(R.drawable.ic_menu_camera, " Wi-Fi"));
-                requirementsList.add(new Requirements(R.drawable.ic_menu_camera, " Computer"));
-                requirementsList.add(new Requirements(R.drawable.ic_menu_camera, " Projector"));
+                for (String requirement : list) {
+                    requirementsList.add(new Requirements(R.drawable.ic_menu_camera, requirement));
+                }
 
                 GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
                 requirementsGridView.setLayoutManager(gridLayoutManager);
@@ -145,13 +355,22 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
                 details.setText(subject +  " | "  + getResources().getString(R.string.grade) + " " + grade);
 
+                loadSimilarTeachingAids();
+
             } else {
                 requirementsLayout.setVisibility(View.GONE);
-                details.setText(" Topic | Language");
+                String topicCode = content.getTopic();
+                String topic = CommonCodeUtils.getObjectFromCode(topicCode).getCodeNameForCurrentLocale();
+
+                String languageCode = content.getLanguage();
+                String language = CommonCodeUtils.getObjectFromCode(languageCode).getCodeNameForCurrentLocale();
+
+                details.setText(topic +  " | " + language);
+
+                loadSimilarSelfLearning();
             }
 
-            //TODO : set author name
-            authorName.setText("Author ");
+            authorName.setText(content.getAuthor());
             description.setText(content.getInstruction());
 
             if(getSupportActionBar() != null) {
@@ -163,14 +382,18 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
         }
 
+    }
+
+    private void loadSimilarTeachingAids() {
         //TODO similar resources - get resources with same file type, language, subject, grade - confirm
 
-        ContentRequest contentRequest = new ContentRequest(UserDetailUtils.getUserId(getApplicationContext()),
+        TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(UserDetailUtils.getUserId(getApplicationContext()),
                 content.getFileType(), content.getLanguage(), content.getSubject(), content.getGrade());
         RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 Logger.d(" Succes");
+                loadingPanel.setVisibility(View.GONE);
                 if(response.isSuccessful()) {
                     if(response.body().getData() != null) {
                         List<Content> contents = response.body().getData();
@@ -189,11 +412,34 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                 Logger.d(" on fail");
             }
         });
+    }
 
+    private void loadSimilarSelfLearning() {
+        //TODO similar resources - get resources with same file type, language, subject, grade - confirm
+        SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(UserDetailUtils.getUserId(getApplicationContext()),
+                content.getLanguage(), content.getTopic());
+        RestClient.getApiService("").searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+            @Override
+            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                loadingPanel.setVisibility(View.GONE);
+                Logger.d(" Succes");
+                if(response.isSuccessful()) {
+                    if(response.body().getData() != null) {
+                        List<Content> contents = response.body().getData();
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
+                        contentRecyclerView.setLayoutManager(linearLayoutManager);
+                        similarContentsAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
+                        contentRecyclerView.setAdapter(similarContentsAdapter);
 
+                    }
+                }
+            }
 
-
-
+            @Override
+            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+                Logger.d(" on fail");
+            }
+        });
     }
 
     @Override
@@ -216,7 +462,9 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
         if (!wasRestored) {
             player = youTubePlayer;
             String fileName = content.getFileName();
-            String videoID = fileName.substring(fileName.lastIndexOf('/') + 1);
+            Logger.d("file name is : " + fileName);
+            String videoID = StringUtils.getVideoKeyFromUrl(fileName);
+            Logger.d("video id is : " + videoID);
             player.cueVideo(videoID);
         }
     }

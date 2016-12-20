@@ -21,6 +21,7 @@ public class ProfileActivitySubjectsAdapter extends RecyclerView.Adapter<ChipVie
     private List<BaseObject> selectedGrades;
 
     public ProfileActivitySubjectsAdapter(List<BaseObject> selectedGrades) {
+        Logger.d("constructor " + selectedGrades.size());
         this.selectedGrades = selectedGrades;
     }
 
@@ -32,11 +33,13 @@ public class ProfileActivitySubjectsAdapter extends RecyclerView.Adapter<ChipVie
 
     @Override
     public void onBindViewHolder(ChipViewHolder holder, int position) {
+        Logger.d("on bind view holder : " + position);
         holder.subjectNameTextView.setText(selectedGrades.get(position).getCommonCode().getCodeNameForCurrentLocale());
     }
 
     @Override
     public int getItemCount() {
+        Logger.d("in get item count.. " + selectedGrades.size());
         return selectedGrades.size();
     }
 }

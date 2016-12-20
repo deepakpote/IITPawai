@@ -25,21 +25,32 @@ public class RegisterUser {
     @SerializedName("userType")
     private String userType;
 
+    @SerializedName("udiseCode")
+    private String udiseCode;
+
     @SerializedName("subjectCodeIDs")
     private String subjectCodeIds;
 
     @SerializedName("gradeCodeIDs")
     private String gradeCodeIds;
 
+    @SerializedName("topicCodeIDs")
+    private String topicCodeIds;
+
+    @SerializedName("preferredLanguage")
+    private String preferredLanguage;
+
     @SerializedName("fcmDeviceID")
     private String fcmDeviceId;
 
-    public RegisterUser(String userName, String otp, String phoneNumber, String districtCode, String userType) {
+
+    public RegisterUser(String userName, String otp, String phoneNumber, String districtCode, String userType, String preferredLanguage) {
         this.name = userName;
         this.otp = otp;
         this.phoneNumber = phoneNumber;
         this.district = districtCode;
         this.userType = userType;
+        this.preferredLanguage = preferredLanguage;
     }
 
     public String getName() {
@@ -98,11 +109,36 @@ public class RegisterUser {
         this.gradeCodeIds = gradeCodeIds;
     }
 
+    public String getPreferredLanguage() {
+        return preferredLanguage;
+    }
+
+    public void setPreferredLanguage(String preferredLanguage) {
+        this.preferredLanguage = preferredLanguage;
+    }
+
     public String getFcmDeviceId() {
         return fcmDeviceId;
     }
 
     public void setFcmDeviceId(String fcmDeviceId) {
         this.fcmDeviceId = fcmDeviceId;
+    }
+
+
+    public String getUdiseCode() {
+        return udiseCode;
+    }
+
+    public void setUdiseCode(String udiseCode) {
+        this.udiseCode = udiseCode;
+    }
+
+    public String getTopicCodeIds() {
+        return topicCodeIds;
+    }
+
+    public void setTopicCodeIds(String topicCodeIds) {
+        this.topicCodeIds = topicCodeIds;
     }
 }

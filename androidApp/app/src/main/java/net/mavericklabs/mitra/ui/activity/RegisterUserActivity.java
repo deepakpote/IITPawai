@@ -15,6 +15,7 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.NewUser;
+import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
@@ -89,6 +90,9 @@ public class RegisterUserActivity extends AppCompatActivity {
                             bundle.putString("phone_number", phoneNumber);
                             verifyOtp.putExtras(bundle);
                             startActivity(verifyOtp);
+                        } else {
+                            progressDialog.dismiss();
+                            Toast.makeText(getApplicationContext(), R.string.error_user_exists,Toast.LENGTH_LONG).show();
                         }
                     }
 

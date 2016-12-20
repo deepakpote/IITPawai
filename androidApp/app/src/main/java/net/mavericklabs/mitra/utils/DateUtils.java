@@ -2,6 +2,7 @@ package net.mavericklabs.mitra.utils;
 
 import android.support.annotation.Nullable;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -76,6 +77,31 @@ public class DateUtils {
         return milliseconds;
     }
 
+    public static Date convertToDate(String dateTime, String fromFormat) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(fromFormat, Locale.US);
+        try {
+            return simpleDateFormat.parse(dateTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static String convertToString(Date date, String newFormat) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(newFormat, Locale.US);
+        return dateFormat.format(date);
+    }
+
+    public static String convertToServerFormatFromDate(Date date) {
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US); // Quoted "Z" to indicate UTC, no timezone offset
+        df.setTimeZone(tz);
+
+        return df.format(date);
+    }
+
+
     public static long convertToMillisecondsFromServerUTC(String dateTime) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -148,6 +174,33 @@ public class DateUtils {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(clickedDateTime);
         return String.valueOf(calendar.get(Calendar.YEAR));
+    }
+
+    public static void setTimeToBeginningOfMonth(Calendar calendar) {
+        // get start of the month
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        setTimeToBeginningOfDay(calendar);
+    }
+
+    public static void setTimeToEndOfMonth(Calendar calendar) {
+        // get start of the month
+        calendar.set(Calendar.DAY_OF_MONTH,
+                calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        setTimeToEndofDay(calendar);
+    }
+
+    public static void setTimeToBeginningOfDay(Calendar calendar) {
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+    }
+
+    public static void setTimeToEndofDay(Calendar calendar) {
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
     }
 
 }

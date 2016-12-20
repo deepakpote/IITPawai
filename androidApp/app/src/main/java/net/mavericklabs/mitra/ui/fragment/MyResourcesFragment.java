@@ -62,6 +62,8 @@ public class MyResourcesFragment extends Fragment{
      */
     private ViewPager mViewPager;
     private TabLayout tabLayout;
+    public TextView subtitle0, subtitle1;
+    private TextView title0, title1;
 
 
     public MyResourcesFragment() {
@@ -95,26 +97,76 @@ public class MyResourcesFragment extends Fragment{
         tabLayout.setupWithViewPager(mViewPager);
         setupCustomTabs();
 
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == 0) {
+
+                    //Subtitle is visible only for selected items
+                    subtitle0.setVisibility(View.VISIBLE);
+                    subtitle1.setVisibility(View.GONE);
+
+                    //Toggle title text color on selection
+                    title0.setTextColor(getResources().getColor(R.color.colorAccent));
+                    title1.setTextColor(getResources().getColor(R.color.colorWhite));
+                } else {
+                    subtitle0.setVisibility(View.GONE);
+                    subtitle1.setVisibility(View.VISIBLE);
+
+                    title0.setTextColor(getResources().getColor(R.color.colorWhite));
+                    title1.setTextColor(getResources().getColor(R.color.colorAccent));
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
     }
 
     private void setupCustomTabs() {
         TabLayout.Tab tab0 = tabLayout.getTabAt(0);
-        tab0.setCustomView(R.layout.custom_tab);
+        if(tab0 != null) {
+            tab0.setCustomView(R.layout.custom_tab);
 
-        TextView title = (TextView) tab0.getCustomView().findViewById(R.id.title);
-        title.setText(getResources().getString(R.string.teaching_aids));
+            if(tab0.getCustomView() != null) {
+                title0 = (TextView) tab0.getCustomView().findViewById(R.id.title);
+                title0.setText(getResources().getString(R.string.teaching_aids));
 
-        TextView subtitle = (TextView) tab0.getCustomView().findViewById(R.id.subtitle);
-        subtitle.setText("10 resources saved");
+                subtitle0 = (TextView) tab0.getCustomView().findViewById(R.id.subtitle);
+                //subtitle0.setText("10 resources saved");
+
+                //Tab0 is initially selected
+                title0.setTextColor(getResources().getColor(R.color.colorAccent));
+                subtitle0.setVisibility(View.VISIBLE);
+            }
+        }
 
         TabLayout.Tab tab1 = tabLayout.getTabAt(1);
-        tab1.setCustomView(R.layout.custom_tab);
+        if(tab1 != null) {
+            tab1.setCustomView(R.layout.custom_tab);
 
-        TextView title1 = (TextView) tab1.getCustomView().findViewById(R.id.title);
-        title1.setText(getResources().getString(R.string.self_learning));
+            if(tab1.getCustomView() != null) {
+                title1 = (TextView) tab1.getCustomView().findViewById(R.id.title);
+                title1.setText(getResources().getString(R.string.self_learning));
 
-        TextView subtitle1 = (TextView) tab1.getCustomView().findViewById(R.id.subtitle);
-        subtitle1.setText("5 resources saved");
+                subtitle1 = (TextView) tab1.getCustomView().findViewById(R.id.subtitle);
+                //subtitle1.setText("5 resources saved");
+
+                //Tab1 is initially not selected
+                subtitle1.setVisibility(View.GONE);
+                title1.setTextColor(getResources().getColor(R.color.colorWhite));
+            }
+
+        }
+
     }
 
     @Override
@@ -162,38 +214,4 @@ public class MyResourcesFragment extends Fragment{
         }
     }
 
-//    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-//
-//        public SectionsPagerAdapter(FragmentManager fm) {
-//            super(fm);
-//        }
-//
-//        @Override
-//        public Fragment getItem(int position) {
-//            Logger.d(" get item - fragment " + position);
-//            if(position == 0) {
-//                return MyResourcesTeachingAidsFragment.newInstance();
-//            }
-//            return MyResourcesSelfLearningFragment.newInstance();
-//
-//        }
-//
-//        @Override
-//        public int getCount() {
-//            // Show 2 total pages.
-//            return 2;
-//        }
-//
-//        @Override
-//        public CharSequence getPageTitle(int position) {
-//            switch (position) {
-//                case 0:
-//                    return "Teaching Aids";
-//                case 1:
-//                    return "Self Learning";
-//
-//            }
-//            return null;
-//        }
-//    }
 }

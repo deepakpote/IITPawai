@@ -23,34 +23,38 @@
 
 package net.mavericklabs.mitra.model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * Created by vishakha on 14/11/16.
+ * Created by vishakha on 09/12/16.
  */
 
-public class News {
+public class Time {
 
-    private String details;
-    private String title;
+    @SerializedName("timeZone")
+    private String timeZone;
 
-    public News(String title, String details) {
-        this.details = details;
-        this.title = title;
+    @SerializedName("dateTime")
+    private String dateTime;
+
+    public Time(String timeZone, String dateTime) {
+        this.timeZone = timeZone;
+        this.dateTime = dateTime;
     }
 
-
-    public String getTitle() {
-        return title;
+    public String getTimeZone() {
+        return timeZone;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
     }
 
-    public String getDetails() {
-        return details;
+    public String getDateTime() {
+        return dateTime;
     }
 
-    public void setDetails(String details) {
-        this.details = details;
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
     }
 }
