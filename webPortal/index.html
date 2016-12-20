@@ -16,11 +16,14 @@ $(document).ready(function(){
 	
 	$("#send").click(function(){
 		var message = $("#message").val();
+		if (!window.location.origin) {
+			  window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+			}
 		if(message != ""){
 			if(confirm("Do you want to send the notifications to all the users?")){
 				$.ajax({
 					/*url:"http://localhost:8000/user/sendDataNotificationsToAll/",*/
-					url:"http://localhost:8000/user/sendNotificationsToAll/",
+					url:window.location.origin + "/user/sendNotificationsToAll/",
 					type:"post",
 					crossDomain: true,
 					header:"Access-Control-Allow-Origin: *",
@@ -50,9 +53,11 @@ $(document).ready(function(){
 	$("#login").click(function(){
 		var phoneno = $("#phoneno").val();
 		var passkey = $("#passkey").val();
-		
+		if (!window.location.origin) {
+		  window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+		}
 		$.ajax({
-			url:"http://localhost:8000/user/validateWebAdmin/",
+			url: window.location.origin + "/user/validateWebAdmin/",
 			type:"post",
 			crossDomain: true,
 			header:"Access-Control-Allow-Origin: *",
