@@ -51,7 +51,7 @@ class UserViewSet(viewsets.ModelViewSet):
             title = request.data.get('title')
             body = request.data.get('body')
             if(not title):
-                title = "Sample Title"
+                title = constants.fcm.DATA_NOTIFICATION_TITLE
             if(not body):
                 body = "Sample message body"
             #send push notifications to multiple registered devices at a time        
@@ -81,13 +81,13 @@ class UserViewSet(viewsets.ModelViewSet):
         if(token.objects.filter(token=userTokenToVerify).exists()):
             api_key = constants.fcm.FCM_SERVERKEY
             push_service = FCMNotification(api_key=api_key)
-            nick = request.data.get('nick')
+            title = request.data.get('title')
             body = request.data.get('body')
-            if(not nick):
-                nick = "Sample Nick"
+            if(not title):
+                title = constants.fcm.DATA_NOTIFICATION_TITLE
             if(not body):
-                body = "Sample body"
-            data = {"Nick" : nick,"body": body}
+                body = "Sample message body"
+            data = {"title" : title,"body": body}
             #send push notifications to multiple registered devices at a time
             result = push_service.notify_multiple_devices(registration_ids=objDevices,
                                                       data_message=data)
