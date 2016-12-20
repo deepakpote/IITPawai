@@ -23,7 +23,7 @@ $(document).ready(function(){
 			if(confirm("Do you want to send the notifications to all the users?")){
 				$.ajax({
 					url:window.location.origin + "/user/sendDataNotificationsToAll/",
-					/*url:window.location.origin + "/user/sendNotificationsToAll/",*/
+					/*url:window.location.origin + "/user/sendDisplayNotificationsToAll/",*/
 					type:"post",
 					crossDomain: true,
 					header:"Access-Control-Allow-Origin: *",

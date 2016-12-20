@@ -34,10 +34,10 @@ class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post']
     
     """
-    API to send non data push notification to all the devices registered in the system
+    API to send non data push, display, notification to all the devices registered in the system
     """
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
-    def sendNotificationsToAll(self,request):
+    def sendDisplayNotificationsToAll(self,request):
         devices = device.objects.filter()
         #Fetch all the devices from usr_device table to send push notifications to
         objDevices = list(device.objects.all().values_list('fcmDeviceID',flat = True))
