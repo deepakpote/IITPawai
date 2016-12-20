@@ -86,7 +86,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         if not contentQuerySet:
             return Response({"response_message": constants.messages.teaching_aid_search_no_records_found,
                     "data": []},
-                    status = status.HTTP_404_NOT_FOUND) 
+                    status = status.HTTP_200_OK) 
         
         #Set query string to the contentSerializer
         objContentserializer = contentSerializer(contentQuerySet, many = True)
@@ -151,7 +151,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         if not contentQuerySet:
             return Response({"response_message": constants.messages.self_learning_search_no_records_found,
                     "data": []},
-                    status = status.HTTP_404_NOT_FOUND) 
+                    status = status.HTTP_200_OK) 
         
         #Set query string to the contentSerializer
         objContentserializer = contentSerializer(contentQuerySet, many = True)
