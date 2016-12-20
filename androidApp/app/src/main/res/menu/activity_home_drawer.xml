@@ -30,7 +30,7 @@
         <!-- commenting right now. to be implemented in next release. -->
         <item
             android:id="@+id/nav_notification"
-            android:icon="@drawable/ic_menu_send"
+            android:icon="@drawable/ic_notifications_grey_24dp"
             android:title="@string/notification" />
         <item
             android:id="@+id/nav_profile"
