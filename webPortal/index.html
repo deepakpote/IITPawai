@@ -25,8 +25,9 @@ $(document).ready(function(){
 					crossDomain: true,
 					header:"Access-Control-Allow-Origin: *",
 					data:{title:"Message title",body:$("#message").val(),utoken:$.cookie("utoken")},
-					success:function(data){
-						alert("Successfully sent all the notifications");
+					success:function(response){
+						$("#message").val('');
+						alert(response.response_message);
 					},
 					error: function(err){
 						//alert("Error occurred:" + err);

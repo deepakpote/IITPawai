@@ -3,15 +3,18 @@ body{
 	font-family: serif;
 }
 .leftmenu{
-	width: 15%;
+	width: 20%;
 	display: block;
 	position: fixed;
 	height: 700px;
 	border-right: 1px solid #000;
 }
+.leftmenu li{
+	padding: 5px 0 5px 0;
+}
 .maincontent{
 	width: 80%;
-	margin-left: 20%;
+	margin-left: 25%;
 }
 .menu{
 	list-style: none;
