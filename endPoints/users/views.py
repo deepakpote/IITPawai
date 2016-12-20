@@ -21,6 +21,8 @@ from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchC
 from time import gmtime, strftime
 from contents.serializers import contentSerializer
 from commons.views import getCodeIDs, getArrayFromCommaSepString
+from commons.models import code 
+from pyfcm import FCMNotification
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -30,6 +32,95 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = userSerializer
 
     http_method_names = ['get', 'post']
+    
+    """
+    API to send non data push, display, notification to all the devices registered in the system
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def sendDisplayNotificationsToAll(self,request):
+        devices = device.objects.filter()
+        #Fetch all the devices from usr_device table to send push notifications to
+        objDevices = list(device.objects.all().values_list('fcmDeviceID',flat = True))
+        userTokenToVerify = request.data.get('utoken')
+        result = []
+        response_message = ""
+        #Verify of the user token of the webPortal admin is matching with the one registered with the system 
+        if(token.objects.filter(token=userTokenToVerify).exists()):
+            api_key = constants.fcm.FCM_SERVERKEY
+            push_service = FCMNotification(api_key=api_key)
+            title = request.data.get('title')
+            body = request.data.get('body')
+            if(not title):
+                title = "Sample Title"
+            if(not body):
+                body = "Sample message body"
+            #send push notifications to multiple registered devices at a time        
+            result = push_service.notify_multiple_devices(registration_ids=objDevices,
+                                                      message_title=title,
+                                                      message_body=body)
+            response_message = str(result['failure']) + " notifications failed, and " + str(result['success']) + " notification sent successfully."
+        else:
+            response_message = code.objects.get(codeID = constants.webportalmessages.web_admin_invalid_token).codeNameEn
+        
+        #print response_message
+        #print result     
+        return Response({"response_message": response_message, "data":result})
+    
+    """
+    API to send data push notifications to all devices having FCM id
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def sendDataNotificationsToAll(self,request):
+        devices = device.objects.filter()
+        #Fetch all the devices from usr_device table to send push notifications to
+        objDevices = list(device.objects.all().values_list('fcmDeviceID',flat = True))
+        userTokenToVerify = request.data.get('utoken')
+        result = []
+        response_message = ""
+        #Verify of the user token of the webPortal admin is matching with the one registered with the system
+        if(token.objects.filter(token=userTokenToVerify).exists()):
+            api_key = constants.fcm.FCM_SERVERKEY
+            push_service = FCMNotification(api_key=api_key)
+            nick = request.data.get('nick')
+            body = request.data.get('body')
+            if(not nick):
+                nick = "Sample Nick"
+            if(not body):
+                body = "Sample body"
+            data = {"Nick" : nick,"body": body}
+            #send push notifications to multiple registered devices at a time
+            result = push_service.notify_multiple_devices(registration_ids=objDevices,
+                                                      data_message=data)
+            response_message = str(result['failure']) + " notifications failed, and " + str(result['success']) + " notification sent successfully."
+        else:
+            response_message = code.objects.get(codeID = constants.webportalmessages.web_admin_invalid_token).codeNameEn
+        
+        #print response_message
+        #print result     
+        return Response({"response_message": response_message, "data":result})
+    
+    """
+    API to send OTP
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def validateWebAdmin(self,request):
+        userPhoneNo = request.data.get('phoneno')
+        userPassKey = request.data.get('passkey')
+        result = []
+        if(user.objects.filter(phoneNumber = userPhoneNo).exists()):
+            #this is a hard coded passkey to be used for verifying the admin user for webPortal
+            if userPassKey == constants.webportal.AdminPassword:
+                response_message = code.objects.get(codeID = constants.webportalmessages.web_admin_valid_user).codeNameEn
+                userObj = user.objects.filter(phoneNumber = userPhoneNo).first()
+                userTokenObject = token.objects.get(user = userObj)
+                result = {"error": "false", "usertoken":userTokenObject.token}
+            else:
+                response_message = code.objects.get(codeID = constants.webportalmessages.web_admin_invalid_pass_key).codeNameEn
+                result = {"error":"true"}
+        else:
+            result = {"error":"true"}
+            response_message = code.objects.get(codeID = constants.webportalmessages.web_admin_phoneno_not_registered).codeNameEn    
+        return Response({"response_message": response_message, "data":result})
 
     """
     API to send OTP
