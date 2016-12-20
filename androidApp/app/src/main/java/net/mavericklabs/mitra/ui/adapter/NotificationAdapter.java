@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.database.model.DbNotification;
+import net.mavericklabs.mitra.utils.DateUtils;
+
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,6 +40,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public void onBindViewHolder(NotificationViewHolder holder, int position) {
         holder.notificationBody.setText(notifications.get(position).getBody());
+        holder.notificationTime.setText(DateUtils.timeFormat(notifications.get(position).getReceivedTime(),"MMM dd"));
     }
 
     @Override
@@ -48,6 +52,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         @BindView(R.id.notification_body)
         TextView notificationBody;
+
+        @BindView(R.id.notification_time)
+        TextView notificationTime;
 
         NotificationViewHolder(View itemView) {
             super(itemView);

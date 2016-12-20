@@ -87,7 +87,9 @@ public class HomeActivity extends AppCompatActivity {
     public int DRAWER_ITEM_SELF_LEARNING = 2;
     public int DRAWER_ITEM_TRAINING_CALENDAR = 3;
     public int DRAWER_ITEM_MY_RESOURCES = 4;
-    public int DRAWER_ITEM_PROFILE = 5;
+    public int DRAWER_ITEM_NOTIFICATION = 5;
+    public int DRAWER_ITEM_PROFILE = 6;
+    public int DRAWER_ITEM_SETTINGS = 7;
 
 
     @Override
@@ -140,6 +142,18 @@ public class HomeActivity extends AppCompatActivity {
                 selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_PROFILE));
             }
         });
+        Logger.d("get intent get extras " + getIntent().getExtras());
+        if(getIntent().getExtras() != null) {
+            Bundle bundle = getIntent().getExtras();
+            boolean showNotificationView = bundle.getBoolean("show_notification");
+            Logger.d("show notification : " + showNotificationView);
+            if(showNotificationView){
+                Logger.d("select drawer item..");
+                Logger.d("menu item is " + navigationView.getMenu().getItem(DRAWER_ITEM_NOTIFICATION).getTitle());
+                selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_NOTIFICATION));
+            }
+
+        }
     }
 
     public void selectDrawerItem(MenuItem item) {
@@ -177,12 +191,10 @@ public class HomeActivity extends AppCompatActivity {
                 tabLayout.setVisibility(View.GONE);
                 fragmentClass = EventCalendarFragment.class;
                 break;
-
-            //commenting for now. to be implemented in next release.
-//            case R.id.nav_notification:
-//                tabLayout.setVisibility(View.GONE);
-//                fragmentClass = NotificationFragment.class;
-//                break;
+            case R.id.nav_notification:
+                tabLayout.setVisibility(View.GONE);
+                fragmentClass = NotificationFragment.class;
+                break;
             case R.id.nav_profile:
                 tabLayout.setVisibility(View.GONE);
                 fragmentClass = ProfileFragment.class;

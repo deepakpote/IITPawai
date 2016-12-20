@@ -10,15 +10,17 @@ public class DbNotification extends RealmObject {
     private String title;
     private String body;
     private String type;
+    private long receivedTime;
 
     public DbNotification() {
 
     }
 
-    public DbNotification(String title, String type, String body) {
+    public DbNotification(String title, String type, String body, long time) {
         this.title = title;
         this.type = type;
         this.body = body;
+        this.receivedTime = time;
     }
 
     public String getTitle() {
@@ -43,5 +45,13 @@ public class DbNotification extends RealmObject {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public long getReceivedTime() {
+        return receivedTime;
+    }
+
+    public void setReceivedTime(long receivedTime) {
+        this.receivedTime = receivedTime;
     }
 }
