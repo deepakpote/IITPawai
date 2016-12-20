@@ -483,11 +483,9 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                         finishAffinity();
                     }
                 } else {
-                    //TODO show error
-                    progressDialog.dismiss();
+                    Toast.makeText(getApplicationContext(), R.string.error_enter_required_fields,Toast.LENGTH_LONG).show();
                 }
             }
-
             @Override
             public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
                 //TODO show error

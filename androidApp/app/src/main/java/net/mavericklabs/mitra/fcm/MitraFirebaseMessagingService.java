@@ -4,6 +4,7 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.database.model.DbNotification;
 import net.mavericklabs.mitra.utils.Logger;
 
