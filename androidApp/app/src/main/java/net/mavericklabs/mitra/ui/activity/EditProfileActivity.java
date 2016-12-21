@@ -662,11 +662,6 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             dbUser.setProfilePhotoPath(profilePhotoPath);
         }
 
-        //set the fcm token
-        String token = FirebaseInstanceId.getInstance().getToken();
-        user.setFcmDeviceId(token);
-        Logger.d("fcm token set.." + token);
-
         if(!selectedGradesList.isEmpty()) {
             List<String> gradeCodeList = getGradeCodeList();
 

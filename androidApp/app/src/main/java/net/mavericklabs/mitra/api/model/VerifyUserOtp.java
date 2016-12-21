@@ -15,12 +15,16 @@ public class VerifyUserOtp {
     private String otp;
 
     @SerializedName("authenticationType")
-    private String authenticationType;
+    private int authenticationType;
 
-    public VerifyUserOtp(String mobileNumber, String otp, String authenticationType) {
+    @SerializedName("fcmDeviceID")
+    private String fcmToken;
+
+    public VerifyUserOtp(String mobileNumber, String otp, int authenticationType, String fcmToken) {
         this.mobileNumber = mobileNumber;
         this.otp = otp;
         this.authenticationType = authenticationType;
+        this.fcmToken = fcmToken;
     }
 
     public String getMobileNumber() {
