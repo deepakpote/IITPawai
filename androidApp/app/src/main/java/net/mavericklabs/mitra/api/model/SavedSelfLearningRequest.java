@@ -29,16 +29,42 @@ import com.google.gson.annotations.SerializedName;
  * Created by vishakha on 12/12/16.
  */
 
-public class SavedContentRequest {
+public class SavedSelfLearningRequest {
     @SerializedName("userID")
     private String userID;
 
     @SerializedName("contentTypeCodeID")
     private String contentTypeCodeID;
 
-    public SavedContentRequest(String userID, String contentTypeCodeID) {
+    @SerializedName("languageCodeID")
+    private String language;
+
+    @SerializedName("topicCodeIDs")
+    private String topic;
+
+
+
+    public SavedSelfLearningRequest(String userID, String contentTypeCodeID, String language, String topic) {
         this.userID = userID;
         this.contentTypeCodeID = contentTypeCodeID;
+        this.language = language;
+        this.topic = topic;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 
     public String getUserID() {

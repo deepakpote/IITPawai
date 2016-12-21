@@ -38,6 +38,8 @@ import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.ChipLayoutAdapter;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
+import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.ArrayList;
@@ -137,17 +139,26 @@ public class BaseContentFragment extends Fragment {
 
             if(pageNumber == 0) {
                 Logger.d(" in here ");
-                if(contentRecyclerView.getAdapter() == null) {
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-                    contentRecyclerView.setLayoutManager(linearLayoutManager);
-                    adapter = new ContentVerticalCardListAdapter(getContext(), contents, BaseContentFragment.this);
-                    contentRecyclerView.setAdapter(adapter);
+                if(contents.size() == 0) {
+                    String error = CommonCodeUtils.getObjectFromCode(response.body().getResponseMessage()).getCodeNameForCurrentLocale();
+                    Logger.d(" error " + error);
+                    contentRecyclerView.setVisibility(View.GONE);
+                    errorView.setVisibility(View.VISIBLE);
+                    errorView.setText(error);
                 } else {
-                    adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
-                    adapter.setContents(contents);
-                    adapter.notifyDataSetChanged();
+                    if(contentRecyclerView.getAdapter() == null) {
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+                        contentRecyclerView.setLayoutManager(linearLayoutManager);
+                        adapter = new ContentVerticalCardListAdapter(getContext(), contents, BaseContentFragment.this);
+                        contentRecyclerView.setAdapter(adapter);
+                    } else {
+                        adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+                        adapter.setContents(contents);
+                        adapter.notifyDataSetChanged();
 
+                    }
                 }
+
 
             } else {
                 adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
