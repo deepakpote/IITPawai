@@ -39,6 +39,7 @@ import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.model.CommonCodeWrapper;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.Logger;
 
@@ -88,18 +89,18 @@ public class SelectLanguageActivity extends AppCompatActivity {
 
     private void setLocale(String lang) {
 
-        Call<BaseModel<CommonCode>> codeNameListCall = RestClient.getApiService("").getCodeNameList();
+        Call<BaseModel<CommonCodeWrapper>> codeNameListCall = RestClient.getApiService("").getCodeNameList();
 
-        codeNameListCall.enqueue(new Callback<BaseModel<CommonCode>>() {
+        codeNameListCall.enqueue(new Callback<BaseModel<CommonCodeWrapper>>() {
             @Override
-            public void onResponse(Call<BaseModel<CommonCode>> call, Response<BaseModel<CommonCode>> response) {
+            public void onResponse(Call<BaseModel<CommonCodeWrapper>> call, Response<BaseModel<CommonCodeWrapper>> response) {
                 if(response.isSuccessful()) {
                     Logger.d(" is successful");
                     Realm realm = Realm.getDefaultInstance();
                     RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
                             .where(CommonCode.class).findAll();
                     if(commonCodes.isEmpty()) {
-                        List<CommonCode> responseList = response.body().getData();
+                        List<CommonCode> responseList = response.body().getData().get(0).getCommonCode();
                         realm.beginTransaction();
                         realm.copyToRealm(responseList);
                         realm.commitTransaction();
@@ -111,7 +112,7 @@ public class SelectLanguageActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<BaseModel<CommonCode>> call, Throwable t) {
+            public void onFailure(Call<BaseModel<CommonCodeWrapper>> call, Throwable t) {
                 Logger.d(" on failure ");
             }
         });
