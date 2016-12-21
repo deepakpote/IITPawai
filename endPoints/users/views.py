@@ -38,14 +38,17 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def sendDisplayNotificationsToAll(self,request):
-        devices = device.objects.filter()
-        #Fetch all the devices from usr_device table to send push notifications to
-        objDevices = list(device.objects.all().values_list('fcmDeviceID',flat = True))
         userTokenToVerify = request.data.get('utoken')
         result = []
         response_message = ""
         #Verify of the user token of the webPortal admin is matching with the one registered with the system 
         if(token.objects.filter(token=userTokenToVerify).exists()):
+            #Fetch all the devices from usr_device table to send push notifications to
+            sqlQuery = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
+            objDevices = []
+            objDevicesObjects = device.objects.raw(sqlQuery)
+            for objDeviceInstance in objDevicesObjects:
+                objDevices.append(objDeviceInstance.fcmDeviceID)
             api_key = constants.fcm.FCM_SERVERKEY
             push_service = FCMNotification(api_key=api_key)
             title = request.data.get('title')
@@ -71,14 +74,17 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def sendDataNotificationsToAll(self,request):
-        devices = device.objects.filter()
-        #Fetch all the devices from usr_device table to send push notifications to
-        objDevices = list(device.objects.all().values_list('fcmDeviceID',flat = True))
         userTokenToVerify = request.data.get('utoken')
         result = []
         response_message = ""
         #Verify of the user token of the webPortal admin is matching with the one registered with the system
         if(token.objects.filter(token=userTokenToVerify).exists()):
+            #Fetch all the devices from usr_device table to send push notifications to
+            sqlQuery = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
+            objDevices = []
+            objDevicesObjects = device.objects.raw(sqlQuery)
+            for objDeviceInstance in objDevicesObjects:
+                objDevices.append(objDeviceInstance.fcmDeviceID)
             api_key = constants.fcm.FCM_SERVERKEY
             push_service = FCMNotification(api_key=api_key)
             title = request.data.get('title')
