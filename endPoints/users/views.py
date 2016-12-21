@@ -179,6 +179,7 @@ class UserViewSet(viewsets.ModelViewSet):
         phoneNumber = request.data.get('phoneNumber')
         authenticationType = request.data.get('authenticationType')
         otp_string = request.data.get('otp')
+        fcmDeviceID = request.data.get('fcmDeviceID')
         
         # Check if phone # is passed in post param
         if not phoneNumber:
@@ -190,6 +191,11 @@ class UserViewSet(viewsets.ModelViewSet):
         objOtp = otpSerializer(data = request.data)
         if not objOtp.is_valid():
             return Response({"response_message": constants.messages.registration_phone_number_is_invalid, "data": []},
+                            status=status.HTTP_401_UNAUTHORIZED)
+        
+        # validate FCM device id. This is later on used for sending push notifications
+        if not fcmDeviceID:
+            return Response({"response_message": constants.messages.registration_fcm_device_id_cannot_be_empty, "data":[]},
                             status=status.HTTP_401_UNAUTHORIZED)
         
         # Check if authentication type is not empty
@@ -223,6 +229,9 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.registration_otp_is_invalid, "data": []},
                         status=status.HTTP_401_UNAUTHORIZED)
         
+        #Finally save the user device id, required for push notifications
+        userDeviceSave(phoneNumber, fcmDeviceID)
+        
         # For registration call, do not send auth token
         if authenticationType == constants.authenticationTypes.registration:
             return Response({"response_message": constants.messages.success, "data": []})
@@ -243,7 +252,6 @@ class UserViewSet(viewsets.ModelViewSet):
         # Get input data
         phoneNumber = request.data.get('phoneNumber')
         otp_string = request.data.get('otp')
-        fcmDeviceID = request.data.get('fcmDeviceID')
 
         # validate user information
         objUserSerializer = userSerializer(data = request.data)#, context={'request': request})
@@ -255,11 +263,6 @@ class UserViewSet(viewsets.ModelViewSet):
         otpList = otp.objects.filter(phoneNumber = phoneNumber,otp = otp_string).first()
         if not otpList:
             return Response({"response_message": constants.messages.registration_otp_is_invalid, "data":[]},
-                            status=status.HTTP_401_UNAUTHORIZED)
-        
-        # validate FCM device id. This is later on used for sending push notifications
-        if not fcmDeviceID:
-            return Response({"response_message": constants.messages.registration_fcm_device_id_cannot_be_empty, "data":[]},
                             status=status.HTTP_401_UNAUTHORIZED)
         
         # If user information is valid, save it
@@ -300,8 +303,6 @@ class UserViewSet(viewsets.ModelViewSet):
         # Save the auth generated token
         objToken = token(user=objUserSerializer.instance, token = token_string).save()
         
-        #Finally save the user device id, required for push notifications
-        userDeviceSave(objUserSerializer.instance, fcmDeviceID)
         
         # Add user data, along with the generated token to the response
         #response = objUserSerializer.data
@@ -961,12 +962,12 @@ def getUserSkillCode(userInfo):
 """
 Save user's device ID for push notifications
 """
-def userDeviceSave(objUser, fcmDeviceID):
-    # Check if the given userID and device ID combination already exists
-    isDeviceAlreadyRegistrered = device.objects.filter(user = objUser, fcmDeviceID = fcmDeviceID).exists()
+def userDeviceSave(phoneNumber, fcmDeviceID):
+    # Check if the given phoneNumber and device ID combination already exists
+    isDeviceAlreadyRegistrered = device.objects.filter(phoneNumber = phoneNumber, fcmDeviceID = fcmDeviceID).exists()
     if isDeviceAlreadyRegistrered:
         return
     
-    # If the given userID and device ID combination does NOT exists, then, save
-    device(user = objUser, fcmDeviceID = fcmDeviceID).save()
+    # If the given phoneNumber and device ID combination does NOT exists, then, save
+    device(phoneNumber = phoneNumber, fcmDeviceID = fcmDeviceID).save()
     return
