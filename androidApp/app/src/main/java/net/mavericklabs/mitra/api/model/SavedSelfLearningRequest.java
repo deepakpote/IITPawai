@@ -34,7 +34,7 @@ public class SavedSelfLearningRequest {
     private String userID;
 
     @SerializedName("contentTypeCodeID")
-    private String contentTypeCodeID;
+    private Integer contentTypeCodeID;
 
     @SerializedName("languageCodeID")
     private String language;
@@ -44,7 +44,7 @@ public class SavedSelfLearningRequest {
 
 
 
-    public SavedSelfLearningRequest(String userID, String contentTypeCodeID, String language, String topic) {
+    public SavedSelfLearningRequest(String userID, Integer contentTypeCodeID, String language, String topic) {
         this.userID = userID;
         this.contentTypeCodeID = contentTypeCodeID;
         this.language = language;
@@ -75,11 +75,11 @@ public class SavedSelfLearningRequest {
         this.userID = userID;
     }
 
-    public String getContentTypeCodeID() {
+    public Integer getContentTypeCodeID() {
         return contentTypeCodeID;
     }
 
-    public void setContentTypeCodeID(String contentTypeCodeID) {
+    public void setContentTypeCodeID(Integer contentTypeCodeID) {
         this.contentTypeCodeID = contentTypeCodeID;
     }
 }

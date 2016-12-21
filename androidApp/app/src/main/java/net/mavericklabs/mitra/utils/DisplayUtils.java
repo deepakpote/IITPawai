@@ -39,7 +39,7 @@ public class DisplayUtils {
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-    public static void displayFileIcon(String fileType, ImageView fileIconImageView) {
+    public static void displayFileIcon(Integer fileType, ImageView fileIconImageView) {
         switch (fileType) {
             case Constants.FileTypeVideo :
                 fileIconImageView.setImageResource(R.drawable.ic_play_arrow_black_48dp);

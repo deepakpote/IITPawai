@@ -23,19 +23,13 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
-import android.app.DownloadManager;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
-import android.media.Image;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
@@ -56,8 +50,6 @@ import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.ContentDataRequest;
 import net.mavericklabs.mitra.api.model.ContentDataResponse;
 import net.mavericklabs.mitra.api.model.MetaContent;
-import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
-import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.LikeRequest;
 import net.mavericklabs.mitra.model.Content;

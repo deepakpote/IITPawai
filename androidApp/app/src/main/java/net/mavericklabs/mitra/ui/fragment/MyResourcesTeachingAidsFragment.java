@@ -244,6 +244,8 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
 
                         fragment.subtitle0.setText(getResources().getQuantityString(R.plurals.resources_saved,
                                 contents.size(), contents.size()));
+                        contentRecyclerView.setVisibility(View.VISIBLE);
+                        errorView.setVisibility(View.GONE);
 
                     } else {
 

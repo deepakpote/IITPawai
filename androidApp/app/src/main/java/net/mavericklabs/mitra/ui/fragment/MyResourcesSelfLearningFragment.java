@@ -216,6 +216,8 @@ public class MyResourcesSelfLearningFragment extends BaseContentFragment {
                         adapter = new ContentVerticalCardListAdapter(getContext(), contents, fragment);
                         adapter.setShowDeleteOption(true);
                         contentRecyclerView.setAdapter(adapter);
+                        contentRecyclerView.setVisibility(View.VISIBLE);
+                        errorView.setVisibility(View.GONE);
 
                         fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved, contents.size(), contents.size()));
 

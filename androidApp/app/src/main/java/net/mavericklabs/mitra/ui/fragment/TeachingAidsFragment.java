@@ -76,7 +76,7 @@ import static android.view.View.GONE;
  * Created by amoghpalnitkar on 14/11/16.
  */
 
-public class TeachingAidsFragment extends BaseContentFragment{
+public class TeachingAidsFragment extends Fragment{
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -205,13 +205,6 @@ public class TeachingAidsFragment extends BaseContentFragment{
             subjectSpinner.setAdapter(adapter);
             subjectSpinner.setSelection(0 ,false);
 
-            RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
-                    .where(DbUser.class).findAll();
-            if(dbUser.size() == 1) {
-                DbUser user = dbUser.get(0);
-                language = user.getPreferredLanguage();
-                Logger.d(" language " + language);
-            }
 
             subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -277,14 +270,16 @@ public class TeachingAidsFragment extends BaseContentFragment{
 
         private void searchTeachingAids(final int fileType, final int pageNumber) {
             Logger.d(" searching ");
-            contentRecyclerView.setVisibility(View.GONE);
-            loadingPanel.setVisibility(View.VISIBLE);
+            if(pageNumber == 0) {
+                contentRecyclerView.setVisibility(View.GONE);
+                loadingPanel.setVisibility(View.VISIBLE);
+            }
 
             String subjectList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterSubjectList);
             String gradeList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterGradeList);
 
             TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(UserDetailUtils.getUserId(getContext()),
-                    fileType, "", subjectList, gradeList);
+                    fileType, "101100", subjectList, gradeList);
             contentRequest.setPageNumber(pageNumber);
             RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
                 @Override

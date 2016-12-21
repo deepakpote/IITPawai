@@ -73,7 +73,6 @@ public class BaseContentFragment extends Fragment {
 //        @BindView(R.id.load_more)
 //        Button loadMore;
 
-    protected int language = 0;
 
     protected List<BaseObject> filterList;
     protected ChipLayoutAdapter filterAdapter;

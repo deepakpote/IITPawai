@@ -34,7 +34,7 @@ public class SavedTeachingAidsRequest {
     private String userID;
 
     @SerializedName("contentTypeCodeID")
-    private String contentTypeCodeID;
+    private Integer contentTypeCodeID;
 
     @SerializedName("fileTypeCodeIDs")
     private String fileType;
@@ -46,7 +46,7 @@ public class SavedTeachingAidsRequest {
     private String grade;
 
 
-    public SavedTeachingAidsRequest(String userID, String contentTypeCodeID, String fileType, String subject, String grade) {
+    public SavedTeachingAidsRequest(String userID, Integer contentTypeCodeID, String fileType, String subject, String grade) {
         this.userID = userID;
         this.contentTypeCodeID = contentTypeCodeID;
         this.fileType = fileType;
@@ -62,11 +62,11 @@ public class SavedTeachingAidsRequest {
         this.userID = userID;
     }
 
-    public String getContentTypeCodeID() {
+    public Integer getContentTypeCodeID() {
         return contentTypeCodeID;
     }
 
-    public void setContentTypeCodeID(String contentTypeCodeID) {
+    public void setContentTypeCodeID(Integer contentTypeCodeID) {
         this.contentTypeCodeID = contentTypeCodeID;
     }
 
