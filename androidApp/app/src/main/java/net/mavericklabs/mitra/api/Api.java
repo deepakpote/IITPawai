@@ -87,7 +87,7 @@ public interface Api {
     @POST("user/saveLanguage/")
     @FormUrlEncoded
     Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("userID") String userId,
-                                                       @Field("preferredLanguageCodeID") String languageCode);
+                                                       @Field("preferredLanguageCodeID") Integer languageCode);
 
     @POST("user/detail/")
     @FormUrlEncoded

@@ -151,7 +151,7 @@ public class SelfLearningFragment extends Fragment {
             }
         });
 
-        String language = "101100";
+        Integer language = "101100";
 
         RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
                 .where(DbUser.class).findAll();
@@ -174,7 +174,7 @@ public class SelfLearningFragment extends Fragment {
         }
     }
 
-    private void searchSelfLearning(String language, String topic, final int pageNumber) {
+    private void searchSelfLearning(Integer language, Integer topic, final int pageNumber) {
         Logger.d(" searching ");
         Logger.d("sent language " + language);
         if(language.isEmpty()) {

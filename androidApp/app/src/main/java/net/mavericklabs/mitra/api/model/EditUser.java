@@ -9,15 +9,15 @@ public class EditUser {
     private String userName;
     private String phoneNumber;
     private String udiseCode;
-    private String userTypeCodeID;
-    private String districtCodeID;
-    private String preferredLanguageCodeID;
+    private Integer userTypeCodeID;
+    private Integer districtCodeID;
+    private Integer preferredLanguageCodeID;
     private String subjectCodeIDs;
     private String skillCodeIDs;
     private String gradeCodeIDs;
     private String topicCodeIDs;
 
-    public EditUser(String userID, String userName, String phoneNumber, String userTypeCodeID, String districtCodeID) {
+    public EditUser(String userID, String userName, String phoneNumber, Integer userTypeCodeID, Integer districtCodeID) {
         this.userID = userID;
         this.userName = userName;
         this.phoneNumber = phoneNumber;
@@ -57,27 +57,27 @@ public class EditUser {
         this.udiseCode = udiseCode;
     }
 
-    public String getUserTypeCodeID() {
+    public Integer getUserTypeCodeID() {
         return userTypeCodeID;
     }
 
-    public void setUserTypeCodeID(String userTypeCodeID) {
+    public void setUserTypeCodeID(Integer userTypeCodeID) {
         this.userTypeCodeID = userTypeCodeID;
     }
 
-    public String getDistrictCodeID() {
+    public Integer getDistrictCodeID() {
         return districtCodeID;
     }
 
-    public void setDistrictCodeID(String districtCodeID) {
+    public void setDistrictCodeID(Integer districtCodeID) {
         this.districtCodeID = districtCodeID;
     }
 
-    public String getPreferredLanguageCodeID() {
+    public Integer getPreferredLanguageCodeID() {
         return preferredLanguageCodeID;
     }
 
-    public void setPreferredLanguageCodeID(String preferredLanguageCodeID) {
+    public void setPreferredLanguageCodeID(Integer preferredLanguageCodeID) {
         this.preferredLanguageCodeID = preferredLanguageCodeID;
     }
 

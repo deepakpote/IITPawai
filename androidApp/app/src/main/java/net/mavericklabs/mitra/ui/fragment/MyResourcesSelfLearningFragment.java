@@ -158,7 +158,7 @@ public class MyResourcesSelfLearningFragment extends Fragment {
 //            }
 //        });
 
-        String language = "";
+        Integer language = "";
 
         RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
                 .where(DbUser.class).findAll();
@@ -180,7 +180,7 @@ public class MyResourcesSelfLearningFragment extends Fragment {
         }
     }
 
-    private void loadMySelfLearning(String language, String topic) {
+    private void loadMySelfLearning(Integer language, String topic) {
         loadingPanel.setVisibility(View.VISIBLE);
 
         SavedContentRequest contentRequest = new SavedContentRequest(UserDetailUtils.getUserId(getContext()),

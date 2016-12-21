@@ -143,8 +143,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         Fragment gradeFragment = new GradeFragment();
         Bundle bundle = new Bundle();
-        ArrayList<String> selectedCodeIds = getSelectedGradeCodeIds();
-        bundle.putStringArrayList("selected_grade_code_ids",selectedCodeIds);
+        ArrayList<Integer> selectedCodeIds = getSelectedGradeCodeIds();
+        bundle.putIntegerArrayList("selected_grade_code_ids",selectedCodeIds);
         gradeFragment.setArguments(bundle);
 
         fragmentTransaction.setCustomAnimations(R.anim.anim_in, R.anim.anim_out, R.anim.anim_in, R.anim.anim_out);
@@ -160,8 +160,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         Bundle bundle = new Bundle();
         Fragment subjectFragment = new SubjectFragment();
-        ArrayList<String> selectedCodeIds = getSelectedSubjectCodeIds();
-        bundle.putStringArrayList("selected_subject_code_ids",selectedCodeIds);
+        ArrayList<Integer> selectedCodeIds = getSelectedSubjectCodeIds();
+        bundle.putIntegerArrayList("selected_subject_code_ids",selectedCodeIds);
         subjectFragment.setArguments(bundle);
 
         fragmentTransaction.setCustomAnimations(R.anim.anim_in, R.anim.anim_out, R.anim.anim_in, R.anim.anim_out);
@@ -177,8 +177,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         Bundle bundle = new Bundle();
         Fragment topicFragment = new TopicFragment();
-        ArrayList<String> selectedCodeIds = getSelectedTopicCodeIds();
-        bundle.putStringArrayList("selected_topic_code_ids",selectedCodeIds);
+        ArrayList<Integer> selectedCodeIds = getSelectedTopicCodeIds();
+        bundle.putIntegerArrayList("selected_topic_code_ids",selectedCodeIds);
         topicFragment.setArguments(bundle);
 
         fragmentTransaction.setCustomAnimations(R.anim.anim_in, R.anim.anim_out, R.anim.anim_in, R.anim.anim_out);
@@ -223,8 +223,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         List<CommonCode> districts = new ArrayList<>(districtList);
 
         //Header - not a valid value
-        districts.add(0, new CommonCode("0", "0",getString(R.string.select), getString(R.string.select), 0));
-        userTypeList.add(0,new CommonCode("0","0",getString(R.string.select),getString(R.string.select),0));
+        districts.add(0, new CommonCode(0, 0,getString(R.string.select), getString(R.string.select), 0));
+        userTypeList.add(0,new CommonCode(0,0,getString(R.string.select),getString(R.string.select),0));
 
         SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(EditProfileActivity.this,R.layout.custom_spinner_item_header,userTypeList);
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
@@ -261,9 +261,9 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     private void setDefaultValues(DbUser dbUser) {
         nameEditText.setText(dbUser.getName());
         udiseEditText.setText(dbUser.getUdise());
-        String userTypeId = dbUser.getUserType();
+        Integer userTypeId = dbUser.getUserType();
         userTypeSpinner.setSelection(getIndexForUserTypeSpinner(userTypeId));
-        String spinnerId = dbUser.getDistrict();
+        Integer spinnerId = dbUser.getDistrict();
         districtSpinner.setSelection(getIndexForDistrictSpinner(spinnerId));
 
         RealmList<DbSubject> dbSubjects = dbUser.getSubjects();
@@ -312,10 +312,10 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         }
     }
 
-    private int getIndexForDistrictSpinner(String spinnerId) {
+    private int getIndexForDistrictSpinner(Integer spinnerId) {
         int i;
         for(i = 0 ; i < districtSpinner.getCount() ; i ++) {
-            String id =((CommonCode)districtSpinner.getItemAtPosition(i)).getCodeID();
+            Integer id =((CommonCode)districtSpinner.getItemAtPosition(i)).getCodeID();
             if(id.equals(spinnerId)) {
                 break;
             }
@@ -323,10 +323,10 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         return i;
     }
 
-    private int getIndexForUserTypeSpinner(String userTypeId) {
+    private int getIndexForUserTypeSpinner(Integer userTypeId) {
         int i;
         for(i = 0 ; i < userTypeSpinner.getCount() ; i ++) {
-            String id =((CommonCode)userTypeSpinner.getItemAtPosition(i)).getCodeID();
+            Integer id =((CommonCode)userTypeSpinner.getItemAtPosition(i)).getCodeID();
             if(id.equals(userTypeId)) {
                 break;
             }
@@ -369,7 +369,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         //Get the current language name in English
         String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
-        String languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+        Integer languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
         user.setPreferredLanguageCodeID(languageCode);
 
         //set udise
@@ -377,7 +377,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
 
         if(!selectedGradesList.isEmpty()) {
-            List<String> gradeCodeList = getGradeCodeList();
+            List<Integer> gradeCodeList = getGradeCodeList();
             //format grades to be sent to server
             String grades = StringUtils.stringify(gradeCodeList);
             user.setGradeCodeIDs(grades);
@@ -386,7 +386,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         }
 
         if(!selectedSubjectsList.isEmpty()) {
-            List<String> subjectCodeList = getSubjectCodeList();
+            List<Integer> subjectCodeList = getSubjectCodeList();
             //format subject to be sent to server
             String subjects = StringUtils.stringify(subjectCodeList);
             user.setSubjectCodeIDs(subjects);
@@ -395,7 +395,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         }
 
         if(!selectedTopicsList.isEmpty()) {
-            List<String> topicCodeList = getTopicCodeList();
+            List<Integer> topicCodeList = getTopicCodeList();
             //format subject to be sent to server
             String topics = StringUtils.stringify(topicCodeList);
             user.setTopicCodeIDs(topics);
@@ -429,8 +429,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                     //format grades to store into database
                     if(!selectedGradesList.isEmpty()) {
                         RealmList<DbGrade> dbGrades = new RealmList<>();
-                        List<String> gradeCodeList = getGradeCodeList();
-                        for(String commonCode : gradeCodeList) {
+                        List<Integer> gradeCodeList = getGradeCodeList();
+                        for(Integer commonCode : gradeCodeList) {
                             DbGrade dbGrade = realm.createObject(DbGrade.class);
                             dbGrade.setGradeCommonCode(commonCode);
                             dbGrades.add(dbGrade);
@@ -441,11 +441,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                     }
 
                     if(!selectedSubjectsList.isEmpty()) {
-                        List<String> subjectCodeList = getSubjectCodeList();
+                        List<Integer> subjectCodeList = getSubjectCodeList();
 
                         //format subject to store into database
                         RealmList<DbSubject> dbSubjects = new RealmList<>();
-                        for (String commonCode : subjectCodeList) {
+                        for (Integer commonCode : subjectCodeList) {
                             DbSubject dbSubject = realm.createObject(DbSubject.class);
                             dbSubject.setSubjectCommonCode(commonCode);
                             dbSubjects.add(dbSubject);
@@ -456,11 +456,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                     }
 
                     if(!selectedTopicsList.isEmpty()) {
-                        List<String> topicCodeList = getTopicCodeList();
+                        List<Integer> topicCodeList = getTopicCodeList();
 
                         //format subject to store into database
                         RealmList<DbTopic> dbTopics = new RealmList<>();
-                        for (String commonCode : topicCodeList) {
+                        for (Integer commonCode : topicCodeList) {
                             DbTopic dbTopic = realm.createObject(DbTopic.class);
                             dbTopic.setTopicCommonCode(commonCode);
                             dbTopics.add(dbTopic);
@@ -495,24 +495,24 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
     }
 
-    private List<String> getSubjectCodeList() {
-        List<String> subjectCodeList = new ArrayList<>();
+    private List<Integer> getSubjectCodeList() {
+        List<Integer> subjectCodeList = new ArrayList<>();
         for (BaseObject subjectObject : selectedSubjectsList) {
             subjectCodeList.add(subjectObject.getCommonCode().getCodeID());
         }
         return subjectCodeList;
     }
 
-    private List<String> getGradeCodeList() {
-        List<String> gradeCodeList = new ArrayList<>();
+    private List<Integer> getGradeCodeList() {
+        List<Integer> gradeCodeList = new ArrayList<>();
         for(BaseObject gradeObject : selectedGradesList) {
             gradeCodeList.add(gradeObject.getCommonCode().getCodeID());
         }
         return gradeCodeList;
     }
 
-    private List<String> getTopicCodeList() {
-        List<String> topicCodeList = new ArrayList<>();
+    private List<Integer> getTopicCodeList() {
+        List<Integer> topicCodeList = new ArrayList<>();
         for (BaseObject topicObject : selectedTopicsList) {
             topicCodeList.add(topicObject.getCommonCode().getCodeID());
         }
@@ -605,34 +605,34 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         return true;
     }
 
-    private String getSelectedUserTypeId() {
+    private Integer getSelectedUserTypeId() {
         CommonCode userType = (CommonCode) userTypeSpinner.getSelectedItem();
         return userType.getCodeID();
     }
 
-    private String getSelectedDistrictID() {
+    private Integer getSelectedDistrictID() {
         CommonCode district = (CommonCode) districtSpinner.getSelectedItem();
         return district.getCodeID();
     }
 
-    private ArrayList<String> getSelectedGradeCodeIds() {
-        ArrayList<String> selectedIds = new ArrayList<>();
+    private ArrayList<Integer> getSelectedGradeCodeIds() {
+        ArrayList<Integer> selectedIds = new ArrayList<>();
         for(BaseObject grade : selectedGradesList) {
             selectedIds.add(grade.getCommonCode().getCodeID());
         }
         return selectedIds;
     }
 
-    private ArrayList<String> getSelectedSubjectCodeIds() {
-        ArrayList<String> selectedIds = new ArrayList<>();
+    private ArrayList<Integer> getSelectedSubjectCodeIds() {
+        ArrayList<Integer> selectedIds = new ArrayList<>();
         for(BaseObject subject : selectedSubjectsList) {
             selectedIds.add(subject.getCommonCode().getCodeID());
         }
         return selectedIds;
     }
 
-    private ArrayList<String> getSelectedTopicCodeIds() {
-        ArrayList<String> selectedIds = new ArrayList<>();
+    private ArrayList<Integer> getSelectedTopicCodeIds() {
+        ArrayList<Integer> selectedIds = new ArrayList<>();
         for(BaseObject subject : selectedTopicsList) {
             selectedIds.add(subject.getCommonCode().getCodeID());
         }
@@ -646,7 +646,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         //Get the current language name in English
         String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
-        String languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+        Integer languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
 
         RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(),
                 getSelectedUserTypeId(), languageCode);
@@ -668,11 +668,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         Logger.d("fcm token set.." + token);
 
         if(!selectedGradesList.isEmpty()) {
-            List<String> gradeCodeList = getGradeCodeList();
+            List<Integer> gradeCodeList = getGradeCodeList();
 
             //format grades to store into database
             RealmList<DbGrade> dbGrades = new RealmList<>();
-            for(String commonCode : gradeCodeList) {
+            for(Integer commonCode : gradeCodeList) {
                 dbGrades.add(new DbGrade(commonCode));
             }
             dbUser.setGrades(dbGrades);
@@ -683,11 +683,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         }
 
         if(!selectedSubjectsList.isEmpty()) {
-            List<String> subjectCodeList = getSubjectCodeList();
+            List<Integer> subjectCodeList = getSubjectCodeList();
 
             //format subject to store into database
             RealmList<DbSubject> dbSubjects = new RealmList<>();
-            for(String commonCode : subjectCodeList) {
+            for(Integer commonCode : subjectCodeList) {
                 dbSubjects.add(new DbSubject(commonCode));
             }
             dbUser.setSubjects(dbSubjects);
@@ -698,11 +698,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         }
 
         if(!selectedTopicsList.isEmpty()) {
-            List<String> topicCodeList = getTopicCodeList();
+            List<Integer> topicCodeList = getTopicCodeList();
 
             //format subject to store into database
             RealmList<DbTopic> dbTopics = new RealmList<>();
-            for(String commonCode : topicCodeList) {
+            for(Integer commonCode : topicCodeList) {
                 dbTopics.add(new DbTopic(commonCode));
             }
             dbUser.setTopics(dbTopics);

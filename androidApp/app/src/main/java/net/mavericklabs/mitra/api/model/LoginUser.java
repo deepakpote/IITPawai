@@ -9,17 +9,17 @@ public class LoginUser {
     private String emailID ;
     private String gradeCodeIDs;
     private String subjectCodeIDs;
-    private String district;
+    private Integer district;
     private String photoUrl;
-    private String preferredLanguage ;
+    private Integer preferredLanguage ;
     private String topicCodeIDs;
     private String userID ;
     private String skillCodeIDs;
-    private String userType;
+    private Integer userType;
     private String phoneNumber;
     private String udiseCode;
 
-    public LoginUser(String userName, String userType, String district) {
+    public LoginUser(String userName, Integer userType, Integer district) {
         this.userName = userName;
         this.userType = userType;
         this.district = district;
@@ -57,11 +57,11 @@ public class LoginUser {
         this.subjectCodeIDs = subjectCodeIDs;
     }
 
-    public String getDistrict() {
+    public Integer getDistrict() {
         return district;
     }
 
-    public void setDistrict(String district) {
+    public void setDistrict(Integer district) {
         this.district = district;
     }
 
@@ -73,11 +73,11 @@ public class LoginUser {
         this.photoUrl = photoUrl;
     }
 
-    public String getPreferredLanguage() {
+    public Integer getPreferredLanguage() {
         return preferredLanguage;
     }
 
-    public void setPreferredLanguage(String preferredLanguage) {
+    public void setPreferredLanguage(Integer preferredLanguage) {
         this.preferredLanguage = preferredLanguage;
     }
 
@@ -105,11 +105,11 @@ public class LoginUser {
         this.skillCodeIDs = skillCodeIDs;
     }
 
-    public String getUserType() {
+    public Integer getUserType() {
         return userType;
     }
 
-    public void setUserType(String userType) {
+    public void setUserType(Integer userType) {
         this.userType = userType;
     }
 

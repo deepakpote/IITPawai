@@ -93,10 +93,10 @@ public class StringUtils {
         return str.replaceAll("\\s+","");
     }
 
-    public static String stringify(List<String> list) {
+    public static String stringify(List<Integer> list) {
         StringBuilder sb = new StringBuilder();
         int i = 0;
-        for(String e : list) {
+        for(Integer e : list) {
             sb.append(e);
             i++;
             if(i == list.size()) {
@@ -107,10 +107,13 @@ public class StringUtils {
         return sb.toString();
     }
 
-    public static ArrayList<String> splitCommas(String str) {
+    public static ArrayList<Integer> splitCommas(String str) {
         String[] parts = str.split(",");
-        ArrayList<String> codes = new ArrayList<>();
-        Collections.addAll(codes, parts);
+        ArrayList<Integer> codes = new ArrayList<>();
+
+        for (String part : parts) {
+            codes.add(Integer.valueOf(part));
+        }
         return codes;
     }
 

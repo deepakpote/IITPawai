@@ -115,18 +115,18 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
         holder.videoTitle.setText(getObject(holder).getTitle());
 
         if(getObject(holder).getContentTypeCodeID().equals(Constants.ContentTypeTeachingAids)) {
-            String subjectCode = contents.get(holder.getAdapterPosition()).getSubject();
+            Integer subjectCode = contents.get(holder.getAdapterPosition()).getSubject();
             String subject = CommonCodeUtils.getObjectFromCode(subjectCode).getCodeNameForCurrentLocale();
 
-            String gradeCode = contents.get(holder.getAdapterPosition()).getGrade();
+            Integer gradeCode = contents.get(holder.getAdapterPosition()).getGrade();
             String grade = CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale();
 
             holder.details.setText(subject +  " | "  + context.getResources().getString(R.string.grade) + " " + grade);
         } else {
-            String topicCode = contents.get(holder.getAdapterPosition()).getTopic();
+            Integer topicCode = contents.get(holder.getAdapterPosition()).getTopic();
             String topic = CommonCodeUtils.getObjectFromCode(topicCode).getCodeNameForCurrentLocale();
 
-            String languageCode = contents.get(holder.getAdapterPosition()).getLanguage();
+            Integer languageCode = contents.get(holder.getAdapterPosition()).getLanguage();
             String language = CommonCodeUtils.getObjectFromCode(languageCode).getCodeNameForCurrentLocale();
 
             holder.details.setText(topic +  " | " + language);

@@ -15,10 +15,10 @@ public class DbUser extends RealmObject {
     @PrimaryKey
     private String id;
     private String name;
-    private String userType;
-    private String district;
+    private Integer userType;
+    private Integer district;
     private String Udise;
-    private String preferredLanguage;
+    private Integer preferredLanguage;
     private String profilePhotoPath;
     private RealmList<DbSubject> subjects;
     private RealmList<DbGrade> grades;
@@ -28,7 +28,7 @@ public class DbUser extends RealmObject {
         //default constructor required.
     }
 
-    public DbUser(String name, String userType, String district) {
+    public DbUser(String name, Integer userType, Integer district) {
         this.name = name;
         this.userType = userType;
         this.district = district;
@@ -50,19 +50,19 @@ public class DbUser extends RealmObject {
         this.name = name;
     }
 
-    public String getUserType() {
+    public Integer getUserType() {
         return userType;
     }
 
-    public void setUserType(String userType) {
+    public void setUserType(Integer userType) {
         this.userType = userType;
     }
 
-    public String getDistrict() {
+    public Integer getDistrict() {
         return district;
     }
 
-    public void setDistrict(String district) {
+    public void setDistrict(Integer district) {
         this.district = district;
     }
 
@@ -90,11 +90,11 @@ public class DbUser extends RealmObject {
         this.grades = grades;
     }
 
-    public String getPreferredLanguage() {
+    public Integer getPreferredLanguage() {
         return preferredLanguage;
     }
 
-    public void setPreferredLanguage(String preferredLanguage) {
+    public void setPreferredLanguage(Integer preferredLanguage) {
         this.preferredLanguage = preferredLanguage;
     }
 

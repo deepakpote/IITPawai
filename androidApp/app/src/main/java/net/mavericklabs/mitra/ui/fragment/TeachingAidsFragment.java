@@ -153,7 +153,7 @@ public class TeachingAidsFragment extends Fragment{
 //        @BindView(R.id.load_more)
 //        Button loadMore;
 
-        private String language;
+        private Integer language;
 
         @Override
         public void onRequestPermissionsResult(int requestCode,
@@ -185,7 +185,7 @@ public class TeachingAidsFragment extends Fragment{
             ButterKnife.bind(this, rootView);
 
             int tabNumber = getArguments().getInt("tabNumber");
-            final String fileType = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
+            final Integer fileType = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
 
             final List<CommonCode> subjects = new ArrayList<>(CommonCodeUtils.getSubjects());
             final List<CommonCode> grades = new ArrayList<>(CommonCodeUtils.getGrades());
@@ -262,7 +262,7 @@ public class TeachingAidsFragment extends Fragment{
             }
         }
 
-        private void searchTeachingAids(final String fileType, final String language, String subject, String grade, final int pageNumber) {
+        private void searchTeachingAids(final Integer fileType, final Integer language, Integer subject, Integer grade, final int pageNumber) {
             Logger.d(" searching ");
             TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(UserDetailUtils.getUserId(getContext()),
                     fileType, language, subject, grade);
