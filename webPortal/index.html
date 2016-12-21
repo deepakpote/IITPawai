@@ -27,7 +27,7 @@ $(document).ready(function(){
 					type:"post",
 					crossDomain: true,
 					header:"Access-Control-Allow-Origin: *",
-					data:{title:"Message title",body:$("#message").val(),utoken:$.cookie("utoken")},
+					data:{title:"Mitra",body:$("#message").val(),utoken:$.cookie("utoken")},
 					success:function(response){
 						$("#message").val('');
 						alert(response.response_message);
