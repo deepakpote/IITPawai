@@ -81,4 +81,5 @@
     <string name="error_please_register">You have not registered yet. Please register first.</string>
     <string name="error_invalid_otp">Invalid OTP</string>
     <string name="choose_profile_photo">Choose profile photo</string>
+    <string name="error_code_list">Oops.. There was some problem. Please check your internet connection or relaunch the MITRA app.</string>
 </resources>

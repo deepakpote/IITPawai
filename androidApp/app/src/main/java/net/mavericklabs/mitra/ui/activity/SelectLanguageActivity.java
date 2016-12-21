@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.widget.Button;
+import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
@@ -149,6 +150,12 @@ public class SelectLanguageActivity extends AppCompatActivity {
         //Deprecated api - but still works. workaround is complicated
         res.updateConfiguration(conf, dm);
 
+        RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
+                .where(CommonCode.class).findAll();
+        if(commonCodes.isEmpty()) {
+            Toast.makeText(getApplicationContext(), R.string.error_code_list,Toast.LENGTH_LONG).show();
+            return;
+        }
         Intent intent = new Intent(SelectLanguageActivity.this,ChooseSignInOrRegisterActivity.class);
         startActivity(intent);
         finishAffinity();
