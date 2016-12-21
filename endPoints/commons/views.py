@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import list_route
 
-from commons.models import code , news 
+from commons.models import code , news, configuration
 from commons.serializers import codeSerializer , newsSerializer 
 from mitraEndPoints import constants
 from datetime import datetime
@@ -20,31 +20,40 @@ class CodeViewSet(viewsets.ModelViewSet):
         
     def list(self, request):
         #Get query param
-        l = request.query_params.get('l')
-
-        #If l is 0 mean fetch all the code list
-        if l == "0" or l is None:
-            queryset = code.objects.all()
-        # Date time in UTC format    
-        else:
-            # Fetch all records having date gretter then input date(l)
-            try:
-                # Convert query param to date time 
-                Objdate = int(l) / 1000.0
-                
-                #convert it to timestamp
-                objFormatedDate = datetime.fromtimestamp(Objdate).strftime('%Y-%m-%d %H:%M:%S')
-                
-                #Get query string
-                queryset = code.objects.filter(modifiedOn__gte=objFormatedDate)  
-            except : 
-                return Response({"response_message": constants.messages.code_list_invalid_date_format,
-                             "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
+        appCodeVersionNumber = request.query_params.get('version')
+        
+        #If version is None set it to 1
+        if appCodeVersionNumber is None:
+            appCodeVersionNumber = 1
+        
+        # verify that the version number passed in, is an integer.
+        try:
+            versionNumber = int(appCodeVersionNumber)
+        except:
+            return Response({"response_message": constants.messages.code_list_version_number_must_be_integer, "data": []},
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
+        
+        # Get the version # stored in DB
+        objConfiguration = configuration.objects.filter(key = constants.configurationKey.comCodeVersion).first();
+        dbCodeVersionNumber = objConfiguration.value
+         
+        if dbCodeVersionNumber < appCodeVersionNumber:
+                return Response({"response_message": constants.messages.code_list_version_number_invalid, "data": []},
+                            status=status.HTTP_417_EXPECTATION_FAILED)
+        
+        
+        response = {}
+        response['version'] = dbCodeVersionNumber
+        response['codeList'] = []
+        if dbCodeVersionNumber == appCodeVersionNumber:
+                return Response({"response_message": constants.messages.success, "data": [response]})
+            
+        queryset = code.objects.all()
             
         serializer = codeSerializer(queryset, many = True)
+        response['codeList'] = serializer.data
 
-        return Response({"response_message": constants.messages.success, "data": serializer.data})
+        return Response({"response_message": constants.messages.success, "data": [response]})
         
 
 class NewsViewSet(viewsets.ModelViewSet):
