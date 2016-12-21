@@ -44,6 +44,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Query;
 
 /**
  * Created by amoghpalnitkar on 18/11/16.
@@ -64,7 +65,7 @@ public interface Api {
     Call<BaseModel<GenericListDataModel>> updateUser(@Body EditUser user);
 
     @GET("code/")
-    Call<BaseModel<CommonCodeWrapper>> getCodeNameList();
+    Call<BaseModel<CommonCodeWrapper>> getCodeNameList(@Query("version") String version);
 
     @POST("content/searchTeachingAid/")
     Call<BaseModel<Content>> searchTeachingAids(@Body TeachingAidsContentRequest contentRequest);
