@@ -34,13 +34,16 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.widget.Button;
+import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.model.CommonCodeWrapper;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 
 import java.util.List;
 import java.util.Locale;
@@ -84,38 +87,56 @@ public class SelectLanguageActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("");
         }
-    }
 
-    private void setLocale(String lang) {
+        RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
+                .where(CommonCode.class).findAll();
+        String codeVersion;
+        if(commonCodes.isEmpty()) {
+            codeVersion = "0";
+        } else {
+            codeVersion = MitraSharedPreferences.readFromPreferences(getApplicationContext(),"code_version","0");
+        }
 
-        Call<BaseModel<CommonCode>> codeNameListCall = RestClient.getApiService("").getCodeNameList();
-
-        codeNameListCall.enqueue(new Callback<BaseModel<CommonCode>>() {
+        Call<BaseModel<CommonCodeWrapper>> codeNameListCall = RestClient.getApiService("").getCodeNameList(codeVersion);
+        codeNameListCall.enqueue(new Callback<BaseModel<CommonCodeWrapper>>() {
             @Override
-            public void onResponse(Call<BaseModel<CommonCode>> call, Response<BaseModel<CommonCode>> response) {
+            public void onResponse(Call<BaseModel<CommonCodeWrapper>> call, Response<BaseModel<CommonCodeWrapper>> response) {
                 if(response.isSuccessful()) {
-                    Logger.d(" is successful");
                     Realm realm = Realm.getDefaultInstance();
                     RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
                             .where(CommonCode.class).findAll();
+                    CommonCodeWrapper wrapper = response.body().getData().get(0);
                     if(commonCodes.isEmpty()) {
-                        List<CommonCode> responseList = response.body().getData();
+                        List<CommonCode> responseList = wrapper.getCommonCode();
                         realm.beginTransaction();
                         realm.copyToRealm(responseList);
                         realm.commitTransaction();
                         for (CommonCode commonCode : responseList) {
                             Logger.d(" " + commonCode.getCodeID() + " " + commonCode.getCodeNameEnglish());
                         }
+                        MitraSharedPreferences.saveToPreferences(getApplicationContext(),"code_version",wrapper.getVersion());
+                    } else {
+                        String localVersion = MitraSharedPreferences.readFromPreferences(getApplicationContext(),"code_version","0");
+                        String serverVersion = wrapper.getVersion();
+                        Logger.d("local version : " + localVersion);
+                        Logger.d("server version : " + serverVersion);
+                        if(!serverVersion.equalsIgnoreCase(localVersion)) {
+                            realm.beginTransaction();
+                            realm.copyToRealmOrUpdate(wrapper.getCommonCode());
+                            realm.commitTransaction();
+                        }
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<BaseModel<CommonCode>> call, Throwable t) {
+            public void onFailure(Call<BaseModel<CommonCodeWrapper>> call, Throwable t) {
                 Logger.d(" on failure ");
             }
         });
+    }
 
+    private void setLocale(String lang) {
         Locale myLocale = new Locale(lang, Locale.UK.getCountry());
         Resources res = getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
@@ -129,6 +150,12 @@ public class SelectLanguageActivity extends AppCompatActivity {
         //Deprecated api - but still works. workaround is complicated
         res.updateConfiguration(conf, dm);
 
+        RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
+                .where(CommonCode.class).findAll();
+        if(commonCodes.isEmpty()) {
+            Toast.makeText(getApplicationContext(), R.string.error_code_list,Toast.LENGTH_LONG).show();
+            return;
+        }
         Intent intent = new Intent(SelectLanguageActivity.this,ChooseSignInOrRegisterActivity.class);
         startActivity(intent);
         finishAffinity();

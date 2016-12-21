@@ -40,9 +40,6 @@ public class RegisterUser {
     @SerializedName("preferredLanguage")
     private String preferredLanguage;
 
-    @SerializedName("fcmDeviceID")
-    private String fcmDeviceId;
-
 
     public RegisterUser(String userName, String otp, String phoneNumber, String districtCode, String userType, String preferredLanguage) {
         this.name = userName;
@@ -116,15 +113,6 @@ public class RegisterUser {
     public void setPreferredLanguage(String preferredLanguage) {
         this.preferredLanguage = preferredLanguage;
     }
-
-    public String getFcmDeviceId() {
-        return fcmDeviceId;
-    }
-
-    public void setFcmDeviceId(String fcmDeviceId) {
-        this.fcmDeviceId = fcmDeviceId;
-    }
-
 
     public String getUdiseCode() {
         return udiseCode;

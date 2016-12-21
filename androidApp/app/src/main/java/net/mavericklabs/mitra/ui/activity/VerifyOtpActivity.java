@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
@@ -150,13 +152,15 @@ public class VerifyOtpActivity extends AppCompatActivity {
         }
         if (id == R.id.action_next) {
             if (isValidOtp()) {
-                String authenticationType;
+                int authenticationType;
                 if(isFromSignIn) {
                     authenticationType = NewUser.TYPE_SIGN_IN;
                 } else {
                     authenticationType = NewUser.TYPE_REGISTER;
                 }
-                VerifyUserOtp verifyUserOtp = new VerifyUserOtp(phoneNumber,otpEditText.getText().toString(), authenticationType);
+                String token = FirebaseInstanceId.getInstance().getToken();
+                VerifyUserOtp verifyUserOtp = new VerifyUserOtp(phoneNumber,otpEditText.getText().toString(),
+                                                    String.valueOf(authenticationType),token);
 
                 final ProgressDialog progressDialog = new ProgressDialog(VerifyOtpActivity.this,
                         R.style.ProgressDialog);

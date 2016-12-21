@@ -29,6 +29,7 @@ import net.mavericklabs.mitra.api.model.NewUser;
 import net.mavericklabs.mitra.api.model.RegisterUser;
 import net.mavericklabs.mitra.api.model.RegisterUserResponse;
 import net.mavericklabs.mitra.api.model.VerifyUserOtp;
+import net.mavericklabs.mitra.model.CommonCodeWrapper;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Event;
 
@@ -43,6 +44,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Query;
 
 /**
  * Created by amoghpalnitkar on 18/11/16.
@@ -63,7 +65,7 @@ public interface Api {
     Call<BaseModel<GenericListDataModel>> updateUser(@Body EditUser user);
 
     @GET("code/")
-    Call<BaseModel<CommonCode>> getCodeNameList();
+    Call<BaseModel<CommonCodeWrapper>> getCodeNameList(@Query("version") String version);
 
     @POST("content/searchTeachingAid/")
     Call<BaseModel<Content>> searchTeachingAids(@Body TeachingAidsContentRequest contentRequest);

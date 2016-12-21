@@ -11,12 +11,12 @@ public class NewUser {
     private String mobileNumber;
 
     @SerializedName("authenticationType")
-    private String authenticationType;
+    private int authenticationType;
 
-    public static String TYPE_SIGN_IN = "110101";
-    public static String TYPE_REGISTER = "110100";
+    public static int TYPE_SIGN_IN = 110101;
+    public static int TYPE_REGISTER = 110100;
 
-    public NewUser(String mobileNumber,String authenticationType) {
+    public NewUser(String mobileNumber,int authenticationType) {
         this.mobileNumber = mobileNumber;
         this.authenticationType = authenticationType;
     }
@@ -29,11 +29,4 @@ public class NewUser {
         this.mobileNumber = mobileNumber;
     }
 
-    public String getAuthenticationType() {
-        return authenticationType;
-    }
-
-    public void setAuthenticationType(String authenticationType) {
-        this.authenticationType = authenticationType;
-    }
 }
