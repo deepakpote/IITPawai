@@ -3,6 +3,7 @@ package net.mavericklabs.mitra.api;
 import net.mavericklabs.mitra.api.model.Attend;
 import net.mavericklabs.mitra.api.model.BaseModel;
 
+import net.mavericklabs.mitra.api.model.EditPhoto;
 import net.mavericklabs.mitra.api.model.EditUser;
 import net.mavericklabs.mitra.api.model.LoginUser;
 
@@ -31,12 +32,17 @@ import net.mavericklabs.mitra.api.model.VerifyUserOtp;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Event;
 
+import java.io.File;
+
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 
 /**
  * Created by amoghpalnitkar on 18/11/16.
@@ -81,7 +87,7 @@ public interface Api {
     @POST("user/saveLanguage/")
     @FormUrlEncoded
     Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("userID") String userId,
-                                                       @Field("preferredLanguageCodeID") String languageCode);
+                                                       @Field("preferredLanguageCodeID") Integer languageCode);
 
     @POST("user/detail/")
     @FormUrlEncoded
@@ -105,4 +111,6 @@ public interface Api {
     @GET("news/")
     Call<BaseModel<News>> listNews();
 
+    @POST("user/saveUserPhoto/")
+    Call<BaseModel<GenericListDataModel>> savePhoto(@Body EditPhoto photo);
 }

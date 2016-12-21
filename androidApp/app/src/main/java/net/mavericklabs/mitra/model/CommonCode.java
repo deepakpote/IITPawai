@@ -25,8 +25,6 @@ package net.mavericklabs.mitra.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import net.mavericklabs.mitra.utils.Logger;
-
 import java.util.Locale;
 
 import io.realm.RealmObject;
@@ -40,10 +38,10 @@ public class CommonCode extends RealmObject{
 
     @PrimaryKey
     @SerializedName("codeID")
-    private String codeID;
+    private Integer codeID;
 
     @SerializedName("codeGroup")
-    private String codeGroupID;
+    private Integer codeGroupID;
 
     @SerializedName("codeNameEn")
     private String codeNameEnglish;
@@ -57,7 +55,7 @@ public class CommonCode extends RealmObject{
     public CommonCode() {
     }
 
-    public CommonCode(String codeID, String codeGroupID, String codeNameEnglish, String codeNameMarathi, int displayOder) {
+    public CommonCode(Integer codeID, Integer codeGroupID, String codeNameEnglish, String codeNameMarathi, int displayOder) {
         this.codeID = codeID;
         this.codeGroupID = codeGroupID;
         this.codeNameEnglish = codeNameEnglish;
@@ -65,19 +63,19 @@ public class CommonCode extends RealmObject{
         this.displayOder = displayOder;
     }
 
-    public String getCodeID() {
+    public Integer getCodeID() {
         return codeID;
     }
 
-    public void setCodeID(String codeID) {
+    public void setCodeID(Integer codeID) {
         this.codeID = codeID;
     }
 
-    public String getCodeGroupID() {
+    public Integer getCodeGroupID() {
         return codeGroupID;
     }
 
-    public void setCodeGroupID(String codeGroupID) {
+    public void setCodeGroupID(Integer codeGroupID) {
         this.codeGroupID = codeGroupID;
     }
 

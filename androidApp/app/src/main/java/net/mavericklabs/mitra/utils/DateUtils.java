@@ -162,7 +162,7 @@ public class DateUtils {
 
 
     public static String timeFormat(long timeMillis, String pattern){
-        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.CHINA);
+        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.US);
         return format.format(new Date(timeMillis));
     }
 

@@ -29,6 +29,8 @@ import android.text.Spanned;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by amoghpalnitkar on 3/11/16.
@@ -91,10 +93,10 @@ public class StringUtils {
         return str.replaceAll("\\s+","");
     }
 
-    public static String stringify(List<String> list) {
+    public static String stringify(List<Integer> list) {
         StringBuilder sb = new StringBuilder();
         int i = 0;
-        for(String e : list) {
+        for(Integer e : list) {
             sb.append(e);
             i++;
             if(i == list.size()) {
@@ -105,11 +107,25 @@ public class StringUtils {
         return sb.toString();
     }
 
-    public static ArrayList<String> splitCommas(String str) {
+    public static ArrayList<Integer> splitCommas(String str) {
         String[] parts = str.split(",");
-        ArrayList<String> codes = new ArrayList<>();
-        Collections.addAll(codes, parts);
+        ArrayList<Integer> codes = new ArrayList<>();
+
+        for (String part : parts) {
+            codes.add(Integer.valueOf(part));
+        }
         return codes;
     }
 
+    public static String getVideoKeyFromUrl(String fileName) {
+        String pattern = "(?:https?:\\/{2})?(?:w{3}\\.)?youtu(?:be)?\\.(?:com|be)(?:\\/watch\\?v=|\\/)([^\\s&]+)";
+
+        Pattern compiledPattern = Pattern.compile(pattern);
+        Matcher matcher = compiledPattern.matcher(fileName);
+
+        if(matcher.find()){
+            return matcher.group(1);
+        }
+        return null;
+    }
 }

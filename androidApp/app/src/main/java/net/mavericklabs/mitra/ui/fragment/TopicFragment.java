@@ -40,7 +40,7 @@ import io.realm.RealmResults;
 public class TopicFragment extends DialogFragment{
     private OnDialogFragmentDismissedListener onDialogFragmentDismissedListener;
     private List<BaseObject> objects;
-    private List<String> selectedTopicCodeIds;
+    private List<Integer> selectedTopicCodeIds;
 
     @BindView(R.id.subject_or_grade_list_view)
     ListView topicListView;
@@ -77,7 +77,7 @@ public class TopicFragment extends DialogFragment{
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.topic_s);
 
-        selectedTopicCodeIds = getArguments().getStringArrayList("selected_topic_code_ids");
+        selectedTopicCodeIds = getArguments().getIntegerArrayList("selected_topic_code_ids");
         objects = getTopicsList();
         topicListView.setAdapter(new SubjectAndGradeFragmentListAdapter(getContext(),android.R.layout.simple_list_item_multiple_choice,objects));
         topicListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -142,7 +142,7 @@ public class TopicFragment extends DialogFragment{
 
         for(CommonCode commonCode : subjectsList) {
             BaseObject object= new BaseObject(commonCode,false);
-            for(String selectedTopicCodeIds : this.selectedTopicCodeIds) {
+            for(Integer selectedTopicCodeIds : this.selectedTopicCodeIds) {
                 if(object.getCommonCode().getCodeID().equals(selectedTopicCodeIds)) {
                     object.setChecked(true);
                 }

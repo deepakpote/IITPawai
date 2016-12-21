@@ -2,6 +2,9 @@ package net.mavericklabs.mitra.ui.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -12,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +33,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.api.model.EditPhoto;
 import net.mavericklabs.mitra.api.model.EditUser;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.RegisterUser;
@@ -56,7 +61,14 @@ import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -67,6 +79,8 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -114,7 +128,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageCaptureUri);
 
-            Intent chooserIntent = Intent.createChooser(pickIntent, "Choose profile photo");
+            Intent chooserIntent = Intent.createChooser(pickIntent, getString(R.string.choose_profile_photo));
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{intent});
             startActivityForResult(chooserIntent, PICK_PROFILE_PHOTO);
         } catch (Exception e) {
@@ -129,8 +143,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         Fragment gradeFragment = new GradeFragment();
         Bundle bundle = new Bundle();
-        ArrayList<String> selectedCodeIds = getSelectedGradeCodeIds();
-        bundle.putStringArrayList("selected_grade_code_ids",selectedCodeIds);
+        ArrayList<Integer> selectedCodeIds = getSelectedGradeCodeIds();
+        bundle.putIntegerArrayList("selected_grade_code_ids",selectedCodeIds);
         gradeFragment.setArguments(bundle);
 
         fragmentTransaction.setCustomAnimations(R.anim.anim_in, R.anim.anim_out, R.anim.anim_in, R.anim.anim_out);
@@ -146,8 +160,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         Bundle bundle = new Bundle();
         Fragment subjectFragment = new SubjectFragment();
-        ArrayList<String> selectedCodeIds = getSelectedSubjectCodeIds();
-        bundle.putStringArrayList("selected_subject_code_ids",selectedCodeIds);
+        ArrayList<Integer> selectedCodeIds = getSelectedSubjectCodeIds();
+        bundle.putIntegerArrayList("selected_subject_code_ids",selectedCodeIds);
         subjectFragment.setArguments(bundle);
 
         fragmentTransaction.setCustomAnimations(R.anim.anim_in, R.anim.anim_out, R.anim.anim_in, R.anim.anim_out);
@@ -163,8 +177,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         Bundle bundle = new Bundle();
         Fragment topicFragment = new TopicFragment();
-        ArrayList<String> selectedCodeIds = getSelectedTopicCodeIds();
-        bundle.putStringArrayList("selected_topic_code_ids",selectedCodeIds);
+        ArrayList<Integer> selectedCodeIds = getSelectedTopicCodeIds();
+        bundle.putIntegerArrayList("selected_topic_code_ids",selectedCodeIds);
         topicFragment.setArguments(bundle);
 
         fragmentTransaction.setCustomAnimations(R.anim.anim_in, R.anim.anim_out, R.anim.anim_in, R.anim.anim_out);
@@ -209,8 +223,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         List<CommonCode> districts = new ArrayList<>(districtList);
 
         //Header - not a valid value
-        districts.add(0, new CommonCode("0", "0",getString(R.string.select), getString(R.string.select), 0));
-        userTypeList.add(0,new CommonCode("0","0",getString(R.string.select),getString(R.string.select),0));
+        districts.add(0, new CommonCode(0, 0,getString(R.string.select), getString(R.string.select), 0));
+        userTypeList.add(0,new CommonCode(0,0,getString(R.string.select),getString(R.string.select),0));
 
         SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(EditProfileActivity.this,R.layout.custom_spinner_item_header,userTypeList);
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
@@ -247,9 +261,9 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     private void setDefaultValues(DbUser dbUser) {
         nameEditText.setText(dbUser.getName());
         udiseEditText.setText(dbUser.getUdise());
-        String userTypeId = dbUser.getUserType();
+        Integer userTypeId = dbUser.getUserType();
         userTypeSpinner.setSelection(getIndexForUserTypeSpinner(userTypeId));
-        String spinnerId = dbUser.getDistrict();
+        Integer spinnerId = dbUser.getDistrict();
         districtSpinner.setSelection(getIndexForDistrictSpinner(spinnerId));
 
         RealmList<DbSubject> dbSubjects = dbUser.getSubjects();
@@ -298,10 +312,10 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         }
     }
 
-    private int getIndexForDistrictSpinner(String spinnerId) {
+    private int getIndexForDistrictSpinner(Integer spinnerId) {
         int i;
         for(i = 0 ; i < districtSpinner.getCount() ; i ++) {
-            String id =((CommonCode)districtSpinner.getItemAtPosition(i)).getCodeID();
+            Integer id =((CommonCode)districtSpinner.getItemAtPosition(i)).getCodeID();
             if(id.equals(spinnerId)) {
                 break;
             }
@@ -309,10 +323,10 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         return i;
     }
 
-    private int getIndexForUserTypeSpinner(String userTypeId) {
+    private int getIndexForUserTypeSpinner(Integer userTypeId) {
         int i;
         for(i = 0 ; i < userTypeSpinner.getCount() ; i ++) {
-            String id =((CommonCode)userTypeSpinner.getItemAtPosition(i)).getCodeID();
+            Integer id =((CommonCode)userTypeSpinner.getItemAtPosition(i)).getCodeID();
             if(id.equals(userTypeId)) {
                 break;
             }
@@ -355,7 +369,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         //Get the current language name in English
         String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
-        String languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+        Integer languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
         user.setPreferredLanguageCodeID(languageCode);
 
         //set udise
@@ -363,24 +377,30 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
 
         if(!selectedGradesList.isEmpty()) {
-            List<String> gradeCodeList = getGradeCodeList();
+            List<Integer> gradeCodeList = getGradeCodeList();
             //format grades to be sent to server
             String grades = StringUtils.stringify(gradeCodeList);
             user.setGradeCodeIDs(grades);
+        } else {
+            user.setGradeCodeIDs("");
         }
 
         if(!selectedSubjectsList.isEmpty()) {
-            List<String> subjectCodeList = getSubjectCodeList();
+            List<Integer> subjectCodeList = getSubjectCodeList();
             //format subject to be sent to server
             String subjects = StringUtils.stringify(subjectCodeList);
             user.setSubjectCodeIDs(subjects);
+        } else {
+            user.setSubjectCodeIDs("");
         }
 
         if(!selectedTopicsList.isEmpty()) {
-            List<String> topicCodeList = getTopicCodeList();
+            List<Integer> topicCodeList = getTopicCodeList();
             //format subject to be sent to server
             String topics = StringUtils.stringify(topicCodeList);
             user.setTopicCodeIDs(topics);
+        } else {
+            user.setTopicCodeIDs("");
         }
 
         final ProgressDialog progressDialog = new ProgressDialog(EditProfileActivity.this,
@@ -409,54 +429,63 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                     //format grades to store into database
                     if(!selectedGradesList.isEmpty()) {
                         RealmList<DbGrade> dbGrades = new RealmList<>();
-                        List<String> gradeCodeList = getGradeCodeList();
-                        for(String commonCode : gradeCodeList) {
+                        List<Integer> gradeCodeList = getGradeCodeList();
+                        for(Integer commonCode : gradeCodeList) {
                             DbGrade dbGrade = realm.createObject(DbGrade.class);
                             dbGrade.setGradeCommonCode(commonCode);
                             dbGrades.add(dbGrade);
                         }
                         dbUser.setGrades(dbGrades);
+                    } else {
+                        dbUser.setGrades(null);
                     }
 
                     if(!selectedSubjectsList.isEmpty()) {
-                        List<String> subjectCodeList = getSubjectCodeList();
+                        List<Integer> subjectCodeList = getSubjectCodeList();
 
                         //format subject to store into database
                         RealmList<DbSubject> dbSubjects = new RealmList<>();
-                        for (String commonCode : subjectCodeList) {
+                        for (Integer commonCode : subjectCodeList) {
                             DbSubject dbSubject = realm.createObject(DbSubject.class);
                             dbSubject.setSubjectCommonCode(commonCode);
                             dbSubjects.add(dbSubject);
                         }
                         dbUser.setSubjects(dbSubjects);
+                    } else {
+                        dbUser.setSubjects(null);
                     }
 
                     if(!selectedTopicsList.isEmpty()) {
-                        List<String> topicCodeList = getTopicCodeList();
+                        List<Integer> topicCodeList = getTopicCodeList();
 
                         //format subject to store into database
                         RealmList<DbTopic> dbTopics = new RealmList<>();
-                        for (String commonCode : topicCodeList) {
+                        for (Integer commonCode : topicCodeList) {
                             DbTopic dbTopic = realm.createObject(DbTopic.class);
                             dbTopic.setTopicCommonCode(commonCode);
                             dbTopics.add(dbTopic);
                         }
                         dbUser.setTopics(dbTopics);
+                    } else {
+                        dbUser.setTopics(null);
                     }
 
                     realm.commitTransaction();
 
-                    Toast.makeText(getApplicationContext(), R.string.profile_updated,Toast.LENGTH_LONG).show();
-                    progressDialog.dismiss();
-                    Intent home = new Intent(EditProfileActivity.this , HomeActivity.class);
-                    startActivity(home);
-                    finishAffinity();
+                    if(!StringUtils.isEmpty(profilePhotoPath)) {
+                        Logger.d("1. in send profile photo..");
+                        sendProfilePhoto(progressDialog);
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.profile_updated,Toast.LENGTH_LONG).show();
+                        progressDialog.dismiss();
+                        Intent home = new Intent(EditProfileActivity.this , HomeActivity.class);
+                        startActivity(home);
+                        finishAffinity();
+                    }
                 } else {
-                    //TODO show error
-                    progressDialog.dismiss();
+                    Toast.makeText(getApplicationContext(), R.string.error_enter_required_fields,Toast.LENGTH_LONG).show();
                 }
             }
-
             @Override
             public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
                 //TODO show error
@@ -466,24 +495,24 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
     }
 
-    private List<String> getSubjectCodeList() {
-        List<String> subjectCodeList = new ArrayList<>();
+    private List<Integer> getSubjectCodeList() {
+        List<Integer> subjectCodeList = new ArrayList<>();
         for (BaseObject subjectObject : selectedSubjectsList) {
             subjectCodeList.add(subjectObject.getCommonCode().getCodeID());
         }
         return subjectCodeList;
     }
 
-    private List<String> getGradeCodeList() {
-        List<String> gradeCodeList = new ArrayList<>();
+    private List<Integer> getGradeCodeList() {
+        List<Integer> gradeCodeList = new ArrayList<>();
         for(BaseObject gradeObject : selectedGradesList) {
             gradeCodeList.add(gradeObject.getCommonCode().getCodeID());
         }
         return gradeCodeList;
     }
 
-    private List<String> getTopicCodeList() {
-        List<String> topicCodeList = new ArrayList<>();
+    private List<Integer> getTopicCodeList() {
+        List<Integer> topicCodeList = new ArrayList<>();
         for (BaseObject topicObject : selectedTopicsList) {
             topicCodeList.add(topicObject.getCommonCode().getCodeID());
         }
@@ -499,17 +528,22 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             }
             if(!selectedGradesList.isEmpty()) {
                 gradePlaceholderTextView.setVisibility(View.GONE);
-                gradeRecyclerView.getAdapter().notifyDataSetChanged();
+            } else {
+                gradePlaceholderTextView.setVisibility(View.VISIBLE);
             }
+            gradeRecyclerView.getAdapter().notifyDataSetChanged();
         } else if (EditProfileDialogFragment.ADD_SUBJECT == fragmentType) {
             selectedSubjectsList.clear();
             for(BaseObject checkedItem : checkedItemsList) {
                 selectedSubjectsList.add(checkedItem);
             }
+            Logger.d("selected subjects : " + selectedSubjectsList.size());
             if(!selectedSubjectsList.isEmpty()) {
                 subjectPlaceholderTextView.setVisibility(View.GONE);
-                subjectRecyclerView.getAdapter().notifyDataSetChanged();
+            } else {
+                subjectPlaceholderTextView.setVisibility(View.VISIBLE);
             }
+            subjectRecyclerView.getAdapter().notifyDataSetChanged();
         } else if(EditProfileDialogFragment.ADD_TOPIC == fragmentType) {
             selectedTopicsList.clear();
             for(BaseObject checkedItem : checkedItemsList) {
@@ -517,8 +551,10 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             }
             if(!selectedTopicsList.isEmpty()) {
                 topicPlaceholderTextView.setVisibility(View.GONE);
-                topicRecyclerView.getAdapter().notifyDataSetChanged();
+            } else {
+                topicPlaceholderTextView.setVisibility(View.VISIBLE);
             }
+            topicRecyclerView.getAdapter().notifyDataSetChanged();
         }
     }
 
@@ -538,6 +574,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         if (requestCode == PICK_PROFILE_PHOTO) {
             Logger.d("data is : " + data);
             if(data != null) {
+                //case for photo from gallery
                 imageCaptureUri = data.getData();
                 if(imageCaptureUri != null) {
                     profilePhotoPath = imageCaptureUri.toString();
@@ -546,7 +583,8 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                             into(profilePhotoImageView);
                 }
             } else if(imageCaptureUri != null && imageCaptureUri.getPath() != null) {
-                    File file = new File(imageCaptureUri.getPath());
+                //case for photo from camera
+                File file = new File(imageCaptureUri.getPath());
                 profilePhotoPath = imageCaptureUri.getPath();
                     Glide.with(this).load(Uri.fromFile(file)).
                             bitmapTransform(new CropCircleTransformation(getApplicationContext())).
@@ -567,34 +605,34 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         return true;
     }
 
-    private String getSelectedUserTypeId() {
+    private Integer getSelectedUserTypeId() {
         CommonCode userType = (CommonCode) userTypeSpinner.getSelectedItem();
         return userType.getCodeID();
     }
 
-    private String getSelectedDistrictID() {
+    private Integer getSelectedDistrictID() {
         CommonCode district = (CommonCode) districtSpinner.getSelectedItem();
         return district.getCodeID();
     }
 
-    private ArrayList<String> getSelectedGradeCodeIds() {
-        ArrayList<String> selectedIds = new ArrayList<>();
+    private ArrayList<Integer> getSelectedGradeCodeIds() {
+        ArrayList<Integer> selectedIds = new ArrayList<>();
         for(BaseObject grade : selectedGradesList) {
             selectedIds.add(grade.getCommonCode().getCodeID());
         }
         return selectedIds;
     }
 
-    private ArrayList<String> getSelectedSubjectCodeIds() {
-        ArrayList<String> selectedIds = new ArrayList<>();
+    private ArrayList<Integer> getSelectedSubjectCodeIds() {
+        ArrayList<Integer> selectedIds = new ArrayList<>();
         for(BaseObject subject : selectedSubjectsList) {
             selectedIds.add(subject.getCommonCode().getCodeID());
         }
         return selectedIds;
     }
 
-    private ArrayList<String> getSelectedTopicCodeIds() {
-        ArrayList<String> selectedIds = new ArrayList<>();
+    private ArrayList<Integer> getSelectedTopicCodeIds() {
+        ArrayList<Integer> selectedIds = new ArrayList<>();
         for(BaseObject subject : selectedTopicsList) {
             selectedIds.add(subject.getCommonCode().getCodeID());
         }
@@ -608,7 +646,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         //Get the current language name in English
         String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
-        String languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+        Integer languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
 
         RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(),
                 getSelectedUserTypeId(), languageCode);
@@ -630,11 +668,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         Logger.d("fcm token set.." + token);
 
         if(!selectedGradesList.isEmpty()) {
-            List<String> gradeCodeList = getGradeCodeList();
+            List<Integer> gradeCodeList = getGradeCodeList();
 
             //format grades to store into database
             RealmList<DbGrade> dbGrades = new RealmList<>();
-            for(String commonCode : gradeCodeList) {
+            for(Integer commonCode : gradeCodeList) {
                 dbGrades.add(new DbGrade(commonCode));
             }
             dbUser.setGrades(dbGrades);
@@ -645,11 +683,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         }
 
         if(!selectedSubjectsList.isEmpty()) {
-            List<String> subjectCodeList = getSubjectCodeList();
+            List<Integer> subjectCodeList = getSubjectCodeList();
 
             //format subject to store into database
             RealmList<DbSubject> dbSubjects = new RealmList<>();
-            for(String commonCode : subjectCodeList) {
+            for(Integer commonCode : subjectCodeList) {
                 dbSubjects.add(new DbSubject(commonCode));
             }
             dbUser.setSubjects(dbSubjects);
@@ -660,11 +698,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         }
 
         if(!selectedTopicsList.isEmpty()) {
-            List<String> topicCodeList = getTopicCodeList();
+            List<Integer> topicCodeList = getTopicCodeList();
 
             //format subject to store into database
             RealmList<DbTopic> dbTopics = new RealmList<>();
-            for(String commonCode : topicCodeList) {
+            for(Integer commonCode : topicCodeList) {
                 dbTopics.add(new DbTopic(commonCode));
             }
             dbUser.setTopics(dbTopics);
@@ -719,5 +757,62 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                 Logger.d(" on fail");
             }
         });
+    }
+
+    private void sendProfilePhoto(final ProgressDialog progressDialog) {
+        String userId = UserDetailUtils.getUserId(getApplicationContext());
+        InputStream in;
+        byte[] buf;
+        byte[] base64ByteArray;
+        try {
+            String path = getPath(Uri.parse(profilePhotoPath));
+            if(path == null) {
+                in = new FileInputStream(new File(profilePhotoPath));
+            } else {
+                in = new FileInputStream(path);
+            }
+            Bitmap imageBitmap = BitmapFactory.decodeStream(in);
+            imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 64, 64, false);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            buf = baos.toByteArray();
+            base64ByteArray = Base64.encode(buf,Base64.DEFAULT);
+            EditPhoto photo = new EditPhoto();
+            try {
+                photo.setByteArray(new String(base64ByteArray,"UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            photo.setUserID(userId);
+
+            RestClient.getApiService("").savePhoto(photo).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+                @Override
+                public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                    Logger.d("response : " + response.message());
+                    progressDialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                    Logger.d("failure : " + t.getLocalizedMessage());
+                    progressDialog.dismiss();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getPath(Uri uri)
+    {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if (cursor == null) return null;
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String s=cursor.getString(column_index);
+        cursor.close();
+        return s;
     }
 }

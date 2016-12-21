@@ -25,8 +25,6 @@ package net.mavericklabs.mitra.api.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import net.mavericklabs.mitra.utils.Constants;
-
 import java.io.Serializable;
 
 /**
@@ -39,7 +37,7 @@ public class TeachingAidsContentRequest implements Serializable{
     private String userID;
 
     @SerializedName("fileTypeCodeID")
-    private String fileType;
+    private Integer fileType;
 
     @SerializedName("languageCodeID")
     private String language;
@@ -53,7 +51,7 @@ public class TeachingAidsContentRequest implements Serializable{
     @SerializedName("pageNumber")
     private int pageNumber;
 
-    public TeachingAidsContentRequest(String userID, String fileType, String language, String subject, String grade) {
+    public TeachingAidsContentRequest(String userID, int fileType, String language, String subject, String grade) {
         this.userID = userID;
         this.fileType = fileType;
         this.language = language;
@@ -69,11 +67,11 @@ public class TeachingAidsContentRequest implements Serializable{
         this.userID = userID;
     }
 
-    public String getFileType() {
+    public Integer getFileType() {
         return fileType;
     }
 
-    public void setFileType(String fileType) {
+    public void setFileType(Integer fileType) {
         this.fileType = fileType;
     }
 

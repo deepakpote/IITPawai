@@ -23,6 +23,7 @@ import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
+import net.mavericklabs.mitra.utils.StringUtils;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -95,7 +96,7 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
                 public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
                     thumbnailViewToLoaderMap.put(youTubeThumbnailView, youTubeThumbnailLoader);
                     String fileName = contents.get(holder.getAdapterPosition()).getFileName();
-                    String videoID = fileName.substring(fileName.lastIndexOf('/') + 1);
+                    String videoID = StringUtils.getVideoKeyFromUrl(fileName);
 
                     youTubeThumbnailLoader.setVideo(videoID);
                     youTubeThumbnailLoader.setOnThumbnailLoadedListener(onThumbnailLoadedListener);
@@ -114,18 +115,18 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
         holder.videoTitle.setText(getObject(holder).getTitle());
 
         if(getObject(holder).getContentTypeCodeID().equals(Constants.ContentTypeTeachingAids)) {
-            String subjectCode = contents.get(holder.getAdapterPosition()).getSubject();
+            Integer subjectCode = contents.get(holder.getAdapterPosition()).getSubject();
             String subject = CommonCodeUtils.getObjectFromCode(subjectCode).getCodeNameForCurrentLocale();
 
-            String gradeCode = contents.get(holder.getAdapterPosition()).getGrade();
+            Integer gradeCode = contents.get(holder.getAdapterPosition()).getGrade();
             String grade = CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale();
 
             holder.details.setText(subject +  " | "  + context.getResources().getString(R.string.grade) + " " + grade);
         } else {
-            String topicCode = contents.get(holder.getAdapterPosition()).getTopic();
+            Integer topicCode = contents.get(holder.getAdapterPosition()).getTopic();
             String topic = CommonCodeUtils.getObjectFromCode(topicCode).getCodeNameForCurrentLocale();
 
-            String languageCode = contents.get(holder.getAdapterPosition()).getLanguage();
+            Integer languageCode = contents.get(holder.getAdapterPosition()).getLanguage();
             String language = CommonCodeUtils.getObjectFromCode(languageCode).getCodeNameForCurrentLocale();
 
             holder.details.setText(topic +  " | " + language);

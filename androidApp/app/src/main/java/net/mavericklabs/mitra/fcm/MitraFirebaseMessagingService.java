@@ -1,9 +1,21 @@
 package net.mavericklabs.mitra.fcm;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.ui.activity.HomeActivity;
+import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.database.model.DbNotification;
 import net.mavericklabs.mitra.utils.Logger;
 
@@ -22,13 +34,43 @@ public class MitraFirebaseMessagingService extends FirebaseMessagingService{
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        Logger.d("message received : " + remoteMessage.getNotification().getBody());
-        DbNotification notification = new DbNotification(remoteMessage.getNotification().getTitle(),
+        Logger.d("message received : " + remoteMessage.getData().get("Nick"));
+        Logger.d("message received : " + remoteMessage.getData().get("body"));
+
+        String message = remoteMessage.getData().get("body");
+        String title = remoteMessage.getData().get("title");
+
+        DbNotification notification = new DbNotification(title,
                                                 NOTIFICATION_TYPE_DEFAULT,
-                                                remoteMessage.getNotification().getBody());
+                                                remoteMessage.getData().get("body"),
+                                                System.currentTimeMillis());
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         realm.insert(notification);
         realm.commitTransaction();
+
+        NotificationManager mNotificationManager;
+        mNotificationManager = (NotificationManager)
+                getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Bitmap notificationLargeIconBitmap = BitmapFactory.decodeResource(
+                getApplicationContext().getResources(),
+                R.mipmap.ic_launcher);
+        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("show_notification",true);
+        intent.putExtras(bundle);
+        intent.setAction(Long.toString(System.currentTimeMillis()));
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setAutoCancel(true)
+                        .setContentTitle(title)
+                        .setSmallIcon(R.drawable.ic_icon_black_white_small)
+                        .setLargeIcon(notificationLargeIconBitmap)
+                        .setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, intent, 0))
+                        .setContentText(message);
+
+        mNotificationManager.notify(1, mBuilder.build());
     }
 }

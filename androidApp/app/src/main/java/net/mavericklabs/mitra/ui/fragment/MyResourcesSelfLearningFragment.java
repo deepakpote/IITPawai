@@ -158,16 +158,16 @@ public class MyResourcesSelfLearningFragment extends Fragment {
 //            }
 //        });
 
-        String language = "";
-
-        RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
-                .where(DbUser.class).findAll();
-        if(dbUser.size() == 1) {
-            DbUser user = dbUser.get(0);
-            language = user.getPreferredLanguage();
-        }
-
-        loadMySelfLearning(language, "");
+//        Integer language = "";
+//
+//        RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
+//                .where(DbUser.class).findAll();
+//        if(dbUser.size() == 1) {
+//            DbUser user = dbUser.get(0);
+//            language = user.getPreferredLanguage();
+//        }
+//
+//        loadMySelfLearning(language, "");
 
         return rootView;
     }
@@ -180,7 +180,7 @@ public class MyResourcesSelfLearningFragment extends Fragment {
         }
     }
 
-    private void loadMySelfLearning(String language, String topic) {
+    private void loadMySelfLearning(Integer language, String topic) {
         loadingPanel.setVisibility(View.VISIBLE);
 
         SavedContentRequest contentRequest = new SavedContentRequest(UserDetailUtils.getUserId(getContext()),

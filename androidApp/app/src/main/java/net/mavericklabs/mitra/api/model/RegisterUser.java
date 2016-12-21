@@ -2,8 +2,6 @@ package net.mavericklabs.mitra.api.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 /**
  * Created by amoghpalnitkar on 18/11/16.
  */
@@ -20,10 +18,10 @@ public class RegisterUser {
     private String phoneNumber;
 
     @SerializedName("district")
-    private String district;
+    private Integer district;
 
     @SerializedName("userType")
-    private String userType;
+    private Integer userType;
 
     @SerializedName("udiseCode")
     private String udiseCode;
@@ -38,13 +36,13 @@ public class RegisterUser {
     private String topicCodeIds;
 
     @SerializedName("preferredLanguage")
-    private String preferredLanguage;
+    private Integer preferredLanguage;
 
     @SerializedName("fcmDeviceID")
     private String fcmDeviceId;
 
 
-    public RegisterUser(String userName, String otp, String phoneNumber, String districtCode, String userType, String preferredLanguage) {
+    public RegisterUser(String userName, String otp, String phoneNumber, Integer districtCode, Integer userType, Integer preferredLanguage) {
         this.name = userName;
         this.otp = otp;
         this.phoneNumber = phoneNumber;
@@ -77,19 +75,19 @@ public class RegisterUser {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getDistrict() {
+    public Integer getDistrict() {
         return district;
     }
 
-    public void setDistrict(String district) {
+    public void setDistrict(Integer district) {
         this.district = district;
     }
 
-    public String getUserType() {
+    public Integer getUserType() {
         return userType;
     }
 
-    public void setUserType(String userType) {
+    public void setUserType(Integer userType) {
         this.userType = userType;
     }
 
@@ -109,11 +107,11 @@ public class RegisterUser {
         this.gradeCodeIds = gradeCodeIds;
     }
 
-    public String getPreferredLanguage() {
+    public Integer getPreferredLanguage() {
         return preferredLanguage;
     }
 
-    public void setPreferredLanguage(String preferredLanguage) {
+    public void setPreferredLanguage(Integer preferredLanguage) {
         this.preferredLanguage = preferredLanguage;
     }
 

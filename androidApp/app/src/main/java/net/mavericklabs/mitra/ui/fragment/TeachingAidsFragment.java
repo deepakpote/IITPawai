@@ -76,7 +76,7 @@ import static android.view.View.GONE;
  * Created by amoghpalnitkar on 14/11/16.
  */
 
-public class TeachingAidsFragment extends Fragment{
+public class TeachingAidsFragment extends BaseContentFragment{
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -171,7 +171,7 @@ public class TeachingAidsFragment extends Fragment{
             ButterKnife.bind(this, rootView);
 
             int tabNumber = getArguments().getInt("tabNumber");
-            final String fileType = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
+            final Integer fileType = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
 
             filterGradeList = new ArrayList<>();
             filterSubjectList = new ArrayList<>();
@@ -187,7 +187,7 @@ public class TeachingAidsFragment extends Fragment{
                         filterGradeList.remove(commonCode);
                     }
                     removeFromFilterList(position);
-                    searchTeachingAids(fileType, language, 0);
+                    searchTeachingAids(fileType, 0);
                 }
             });
 
@@ -195,8 +195,8 @@ public class TeachingAidsFragment extends Fragment{
             final List<CommonCode> grades = new ArrayList<>(CommonCodeUtils.getGrades());
 
             //Header - not a valid value
-            subjects.add(0, new CommonCode("", "","Subject", "Subject", 0));
-            grades.add(0,new CommonCode("","","Grade","Grade",0));
+            subjects.add(0, new CommonCode(0, 0,"Subject", "Subject", 0));
+            grades.add(0,new CommonCode(0,0,"Grade","Grade",0));
 
 
             SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
@@ -216,10 +216,10 @@ public class TeachingAidsFragment extends Fragment{
             subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    if(!StringUtils.isEmpty(subjects.get(i).getCodeID())) {
+                    if(subjects.get(i).getCodeID() != 0) {
                         filterSubjectList.add(subjects.get(i));
                         addItemToFilterList(subjects.get(i));
-                        searchTeachingAids(fileType, language, 0);
+                        searchTeachingAids(fileType, 0);
                         subjectSpinner.setSelection(0 ,false);
                     }
                 }
@@ -239,10 +239,10 @@ public class TeachingAidsFragment extends Fragment{
             gradeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    if(!StringUtils.isEmpty(grades.get(i).getCodeID())) {
+                    if(grades.get(i).getCodeID() != 0) {
                         filterGradeList.add(grades.get(i));
                         addItemToFilterList(grades.get(i));
-                        searchTeachingAids(fileType, language , 0);
+                        searchTeachingAids(fileType , 0);
                         gradeSpinner.setSelection(0 ,false);
                     }
                 }
@@ -252,7 +252,7 @@ public class TeachingAidsFragment extends Fragment{
 
                 }
             });
-            searchTeachingAids(fileType, language, 0);
+            searchTeachingAids(fileType, 0);
 
 //            loadMore.setOnClickListener(new View.OnClickListener() {
 //                @Override
@@ -274,7 +274,8 @@ public class TeachingAidsFragment extends Fragment{
             }
         }
 
-        private void searchTeachingAids(final String fileType, final String language, final int pageNumber) {
+
+        private void searchTeachingAids(final int fileType, final int pageNumber) {
             Logger.d(" searching ");
             contentRecyclerView.setVisibility(View.GONE);
             loadingPanel.setVisibility(View.VISIBLE);
@@ -283,7 +284,7 @@ public class TeachingAidsFragment extends Fragment{
             String gradeList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterGradeList);
 
             TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(UserDetailUtils.getUserId(getContext()),
-                    fileType, language, subjectList, gradeList);
+                    fileType, "", subjectList, gradeList);
             contentRequest.setPageNumber(pageNumber);
             RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
                 @Override
@@ -295,7 +296,7 @@ public class TeachingAidsFragment extends Fragment{
                             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                                 super.onScrollStateChanged(recyclerView, newState);
                                 if(isNextPageToBeLoaded(newState, recyclerView)) {
-                                    searchTeachingAids(fileType, language, 1);
+                                    searchTeachingAids(fileType, 1);
                                 }
                             }
 

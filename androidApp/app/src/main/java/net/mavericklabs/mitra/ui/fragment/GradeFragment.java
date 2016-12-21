@@ -42,7 +42,7 @@ public class GradeFragment extends DialogFragment {
 
     private OnDialogFragmentDismissedListener onDialogFragmentDismissedListener;
     private List<BaseObject> objects;
-    private List<String> selectedGradeCodeIds;
+    private List<Integer> selectedGradeCodeIds;
 
     @BindView(R.id.subject_or_grade_list_view)
     ListView gradeListView;
@@ -81,7 +81,7 @@ public class GradeFragment extends DialogFragment {
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.grade_s);
 
-        selectedGradeCodeIds = getArguments().getStringArrayList("selected_grade_code_ids");
+        selectedGradeCodeIds = getArguments().getIntegerArrayList("selected_grade_code_ids");
         objects = getGradesList();
         gradeListView.setAdapter(new SubjectAndGradeFragmentListAdapter(getContext(),
                                     android.R.layout.simple_list_item_multiple_choice,objects));
@@ -139,7 +139,7 @@ public class GradeFragment extends DialogFragment {
         List<CommonCode>  gradeList = new ArrayList<>(gradeListResult);
         for(CommonCode commonCode : gradeList) {
             BaseObject object= new BaseObject(commonCode,false);
-            for(String selectedGradeCodeId : selectedGradeCodeIds) {
+            for(Integer selectedGradeCodeId : selectedGradeCodeIds) {
                 if(object.getCommonCode().getCodeID().equals(selectedGradeCodeId)) {
                     object.setChecked(true);
                 }

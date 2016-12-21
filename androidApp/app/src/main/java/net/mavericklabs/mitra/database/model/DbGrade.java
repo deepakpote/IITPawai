@@ -7,20 +7,20 @@ import io.realm.RealmObject;
  */
 
 public class DbGrade extends RealmObject{
-    private String gradeCommonCode;
+    private Integer gradeCommonCode;
 
-    public DbGrade(String gradeCommonCode) {
+    public DbGrade(Integer gradeCommonCode) {
         this.gradeCommonCode = gradeCommonCode;
     }
 
     public DbGrade() {
     }
 
-    public String getGradeCommonCode() {
+    public Integer getGradeCommonCode() {
         return gradeCommonCode;
     }
 
-    public void setGradeCommonCode(String gradeCommonCode) {
+    public void setGradeCommonCode(Integer gradeCommonCode) {
         this.gradeCommonCode = gradeCommonCode;
     }
 }
