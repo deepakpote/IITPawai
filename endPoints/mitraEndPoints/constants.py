@@ -65,7 +65,8 @@ class messages():
 
     user_uploadphoto_bytearray_data_cannot_be_empty = 100154
     user_uploadphoto_user_does_not_exists = 100155
-    code_list_invalid_date_format = 100157
+    code_list_version_number_must_be_integer = 100157
+    code_list_version_number_invalid = 100158
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
@@ -113,8 +114,13 @@ class imageDir():
     currentDir = os.getcwd()
     currentDir = settings.PROJECT_DIR
     baseDir = currentDir + path
+    
 class fcm():
     FCM_SERVERKEY = "AAAAQH5DkUE:APA91bHzQT7zucQ6A807PrrQwzM63mUrUooqyUt_jJ4HTeR-QM-u2FW9dkAr4r_fOm7G0B2z7iFJdMDz2Nc3s4lZTrNYJ6mIovDvLSui0SpqZAiOZKCPhHsxYGCvDxDa3yo5niGsWd4haNyTKnHol1kCZEa3S2zZbw"
-    DATA_NOTIFICATION_TITLE = "Mitra"    
+    DATA_NOTIFICATION_TITLE = "Mitra"
+    
 class webportal():
 	AdminPassword = "softcorner"
+    
+class configurationKey():
+    comCodeVersion = "comCodeVersion"

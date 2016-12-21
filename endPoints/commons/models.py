@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.core.validators import RegexValidator
 from django.utils import timezone
+from pyexpat import model
 
 
 # codeGroup model
@@ -53,3 +54,14 @@ class news(models.Model):
     class Meta:
         db_table = 'com_News'
         get_latest_by = 'createdOn'
+        
+"""
+configuration model
+"""
+class configuration(models.Model):
+    configurationID = models.AutoField(primary_key = True)
+    key = models.CharField(null = False, max_length = 255)
+    value = models.CharField(max_length = 1000)
+     
+    class Meta:
+        db_table = 'com_configuration'
