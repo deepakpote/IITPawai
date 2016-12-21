@@ -17,10 +17,14 @@ public class VerifyUserOtp {
     @SerializedName("authenticationType")
     private String authenticationType;
 
-    public VerifyUserOtp(String mobileNumber, String otp, String authenticationType) {
+    @SerializedName("fcmDeviceID")
+    private String fcmToken;
+
+    public VerifyUserOtp(String mobileNumber, String otp, String authenticationType, String fcmToken) {
         this.mobileNumber = mobileNumber;
         this.otp = otp;
         this.authenticationType = authenticationType;
+        this.fcmToken = fcmToken;
     }
 
     public String getMobileNumber() {

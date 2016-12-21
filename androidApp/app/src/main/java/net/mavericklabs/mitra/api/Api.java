@@ -28,6 +28,7 @@ import net.mavericklabs.mitra.api.model.NewUser;
 import net.mavericklabs.mitra.api.model.RegisterUser;
 import net.mavericklabs.mitra.api.model.RegisterUserResponse;
 import net.mavericklabs.mitra.api.model.VerifyUserOtp;
+import net.mavericklabs.mitra.model.CommonCodeWrapper;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Event;
 
@@ -62,7 +63,7 @@ public interface Api {
     Call<BaseModel<GenericListDataModel>> updateUser(@Body EditUser user);
 
     @GET("code/")
-    Call<BaseModel<CommonCode>> getCodeNameList();
+    Call<BaseModel<CommonCodeWrapper>> getCodeNameList();
 
     @POST("content/searchTeachingAid/")
     Call<BaseModel<Content>> searchTeachingAids(@Body TeachingAidsContentRequest contentRequest);
