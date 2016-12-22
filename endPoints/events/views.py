@@ -4,6 +4,8 @@ from rest_framework import viewsets,permissions
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route, list_route
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from users.authentication import TokenAuthentication
 
 from mitraEndPoints import constants
 from events.serializers import eventQuerySerializer,eventSerializer,userEventModelSerializer
@@ -50,7 +52,7 @@ class EventViewSet(viewsets.ViewSet):
     """
     API to attend event
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def attendEvent(self, request):
         eventID = request.data.get('eventID')
         userID = request.data.get('userID')

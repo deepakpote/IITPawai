@@ -2,8 +2,9 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets,permissions
+from rest_framework.permissions import IsAuthenticated
 from contents.serializers import contentSerializer 
-
+from users.authentication import TokenAuthentication
 from contents.models import content , contentResponse 
 from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent
@@ -21,7 +22,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to search the content
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication] )
     def searchTeachingAid(self,request):
         # get inputs
 #       contentType = request.data.get('contentTypeCodeID')
@@ -100,7 +101,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to search the self learning content
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def searchSelfLearning(self,request):
         # get inputs
         userID = request.data.get('userID') 
@@ -165,7 +166,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to save the content response: Like
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def like(self,request):
         # get inputs
         userID = request.data.get('userID') 
@@ -225,7 +226,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to save the content response: Download
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def download(self,request):
         # get inputs
         userID = request.data.get('userID') 
@@ -271,7 +272,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to save the content response: Share
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def share(self,request):
         # get inputs
         userID = request.data.get('userID') 
@@ -317,7 +318,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to get the content response : Liked
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def getContentResponse(self,request):
         # get inputs
         userID = request.data.get('userID') 

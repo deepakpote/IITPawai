@@ -7,6 +7,8 @@ from rest_framework import status
 from rest_framework import viewsets,permissions
 from users.serializers import userSerializer, otpSerializer
 
+from rest_framework.permissions import IsAuthenticated
+from users.authentication import TokenAuthentication
 from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth, device, userContent
 from commons.models import code
 from mitraEndPoints import constants , utils, settings 
@@ -312,7 +314,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     API to update user profile.
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def updateProfile(self,request):
         # Get input data
         userID = request.data.get('userID') 
@@ -362,7 +364,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     API to login
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny],authentication_classes = [TokenAuthentication])
     def login(self,request):
         # get inputs
         phoneNumber = request.data.get('phoneNumber')
@@ -421,7 +423,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     APT to get user details
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def detail(self,request):
         """ Get user details
             args:
@@ -466,7 +468,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     API to save user content
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def contentSave(self,request):
         """Save user content
         args:
@@ -538,7 +540,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     API to get user content list
     """
-    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['POST'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication] )
     def contentList(self,request):
         """ Get the usercontent list
         args:
@@ -649,7 +651,7 @@ class UserViewSet(viewsets.ModelViewSet):
     API to update user language.
     """
     
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def saveLanguage(self,request):
         # Get input data
         userID = request.data.get('userID') 
@@ -684,7 +686,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     APT to save user photo
     """
-    @list_route(methods = ['POST'], permission_classes = [permissions.AllowAny])
+    @list_route(methods = ['POST'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def saveUserPhoto(self,request):
         """ save photo url of user 
         args:
