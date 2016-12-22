@@ -7,21 +7,21 @@ import io.realm.RealmObject;
  */
 
 public class DbSubject extends RealmObject {
-    private String subjectCommonCode;
+    private Integer subjectCommonCode;
 
     public DbSubject() {
         //compulsory contructor
     }
 
-    public DbSubject(String subjectCommonCode) {
+    public DbSubject(Integer subjectCommonCode) {
         this.subjectCommonCode = subjectCommonCode;
     }
 
-    public String getSubjectCommonCode() {
+    public Integer getSubjectCommonCode() {
         return subjectCommonCode;
     }
 
-    public void setSubjectCommonCode(String subjectCommonCode) {
+    public void setSubjectCommonCode(Integer subjectCommonCode) {
         this.subjectCommonCode = subjectCommonCode;
     }
 }

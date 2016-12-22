@@ -25,8 +25,6 @@ package net.mavericklabs.mitra.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import net.mavericklabs.mitra.utils.Constants;
-
 import java.io.Serializable;
 
 /**
@@ -42,16 +40,16 @@ public class Content implements Serializable{
     private String title;
 
     @SerializedName("contentType")
-    private String contentTypeCodeID;
+    private Integer contentTypeCodeID;
 
     @SerializedName("subject")
-    private String subject;
+    private Integer subject;
 
     @SerializedName("grade")
-    private String grade;
+    private Integer grade;
 
     @SerializedName("topic")
-    private String topic;
+    private Integer topic;
 
     @SerializedName("requirement")
     private String requirement;
@@ -60,7 +58,7 @@ public class Content implements Serializable{
     private String instruction;
 
     @SerializedName("fileType")
-    private String fileType;
+    private Integer fileType;
 
     @SerializedName("fileName")
     private String fileName;
@@ -72,9 +70,9 @@ public class Content implements Serializable{
     private String objectives;
 
     @SerializedName("language")
-    private String language;
+    private Integer language;
 
-    public Content(String contentID, String title, String contentTypeCodeID, String subject, String grade, String requirement, String instruction, String fileType, String fileName, String author, String objectives, String language) {
+    public Content(String contentID, String title, Integer contentTypeCodeID, Integer subject, Integer grade, String requirement, String instruction, Integer fileType, String fileName, String author, String objectives, Integer language) {
         this.contentID = contentID;
         this.title = title;
         this.contentTypeCodeID = contentTypeCodeID;
@@ -105,27 +103,27 @@ public class Content implements Serializable{
         this.title = title;
     }
 
-    public String getContentTypeCodeID() {
+    public Integer getContentTypeCodeID() {
         return contentTypeCodeID;
     }
 
-    public void setContentTypeCodeID(String contentTypeCodeID) {
+    public void setContentTypeCodeID(Integer contentTypeCodeID) {
         this.contentTypeCodeID = contentTypeCodeID;
     }
 
-    public String getSubject() {
+    public Integer getSubject() {
         return subject;
     }
 
-    public void setSubject(String subject) {
+    public void setSubject(Integer subject) {
         this.subject = subject;
     }
 
-    public String getGrade() {
+    public Integer getGrade() {
         return grade;
     }
 
-    public void setGrade(String grade) {
+    public void setGrade(Integer grade) {
         this.grade = grade;
     }
 
@@ -145,11 +143,11 @@ public class Content implements Serializable{
         this.instruction = instruction;
     }
 
-    public String getFileType() {
+    public Integer getFileType() {
         return fileType;
     }
 
-    public void setFileType(String fileType) {
+    public void setFileType(Integer fileType) {
         this.fileType = fileType;
     }
 
@@ -177,19 +175,19 @@ public class Content implements Serializable{
         this.objectives = objectives;
     }
 
-    public String getLanguage() {
+    public Integer getLanguage() {
         return language;
     }
 
-    public void setLanguage(String language) {
+    public void setLanguage(Integer language) {
         this.language = language;
     }
 
-    public String getTopic() {
+    public Integer getTopic() {
         return topic;
     }
 
-    public void setTopic(String topic) {
+    public void setTopic(Integer topic) {
         this.topic = topic;
     }
 }

@@ -25,22 +25,19 @@ package net.mavericklabs.mitra.api.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
-
 /**
- * Created by vishakha on 10/11/16.
+ * Created by vishakha on 12/12/16.
  */
 
-public class TeachingAidsContentRequest implements Serializable{
-
+public class SavedTeachingAidsRequest {
     @SerializedName("userID")
     private String userID;
 
-    @SerializedName("fileTypeCodeID")
-    private Integer fileType;
+    @SerializedName("contentTypeCodeID")
+    private Integer contentTypeCodeID;
 
-    @SerializedName("languageCodeID")
-    private String language;
+    @SerializedName("fileTypeCodeIDs")
+    private String fileType;
 
     @SerializedName("subjectCodeIDs")
     private String subject;
@@ -48,13 +45,11 @@ public class TeachingAidsContentRequest implements Serializable{
     @SerializedName("gradeCodeIDs")
     private String grade;
 
-    @SerializedName("pageNumber")
-    private int pageNumber;
 
-    public TeachingAidsContentRequest(String userID, int fileType, String language, String subject, String grade) {
+    public SavedTeachingAidsRequest(String userID, Integer contentTypeCodeID, String fileType, String subject, String grade) {
         this.userID = userID;
+        this.contentTypeCodeID = contentTypeCodeID;
         this.fileType = fileType;
-        this.language = language;
         this.subject = subject;
         this.grade = grade;
     }
@@ -67,20 +62,20 @@ public class TeachingAidsContentRequest implements Serializable{
         this.userID = userID;
     }
 
-    public Integer getFileType() {
+    public Integer getContentTypeCodeID() {
+        return contentTypeCodeID;
+    }
+
+    public void setContentTypeCodeID(Integer contentTypeCodeID) {
+        this.contentTypeCodeID = contentTypeCodeID;
+    }
+
+    public String getFileType() {
         return fileType;
     }
 
-    public void setFileType(Integer fileType) {
+    public void setFileType(String fileType) {
         this.fileType = fileType;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
     }
 
     public String getSubject() {
@@ -97,13 +92,5 @@ public class TeachingAidsContentRequest implements Serializable{
 
     public void setGrade(String grade) {
         this.grade = grade;
-    }
-
-    public int getPageNumber() {
-        return pageNumber;
-    }
-
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
     }
 }

@@ -5,16 +5,16 @@ package net.mavericklabs.mitra.utils;
  */
 
 public interface CommonCodeGroup {
-    String DISTRICT          = "102";
-    String USER_TYPE         = "109";
-    String CONTENT_TYPES     =  "107";
-    String DISTRICTS         =  "102";
-    String FILE_TYPES        =  "108";
-    String GRADES            =  "104";
-    String LANGUAGE          =  "101";
-    String MESSAGES          =  "100";
-    String SKILLS            =  "106";
-    String SUBJECTS          =  "103";
-    String TOPICS            =  "105";
-    String USER_TYPES        =  "109";
+    Integer DISTRICT          = 102;
+    Integer USER_TYPE         = 109;
+    Integer CONTENT_TYPES     =  107;
+    Integer DISTRICTS         =  102;
+    Integer FILE_TYPES        =  108;
+    Integer GRADES            =  104;
+    Integer LANGUAGE          =  101;
+    Integer MESSAGES          =  100;
+    Integer SKILLS            =  106;
+    Integer SUBJECTS          =  103;
+    Integer TOPICS            =  105;
+    Integer USER_TYPES        =  109;
 }

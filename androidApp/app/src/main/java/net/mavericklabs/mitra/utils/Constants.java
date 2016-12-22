@@ -8,11 +8,11 @@ public interface Constants {
     String youtubeDeveloperKey = "AIzaSyBbjz0Z4iYWFWSvbDRIrpeAz27FOqvX8VA";
 
     //TODO : How to handle this?
-    String FileTypeVideo = "108100";
-    String FileTypeAudio = "108101";
-    String FileTypePPT = "108102";
-    String FileTypeWorksheet = "108103";
-    String FileTypePDF = "108104";
-    String ContentTypeTeachingAids = "107100";
-    String ContentTypeSelfLearning = "107101";
+    int FileTypeVideo = 108100;
+    int FileTypeAudio = 108101;
+    int FileTypePPT = 108102;
+    int FileTypeWorksheet = 108103;
+    int FileTypePDF = 108104;
+    int ContentTypeTeachingAids = 107100;
+    int ContentTypeSelfLearning = 107101;
 }

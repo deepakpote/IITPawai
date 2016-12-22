@@ -42,13 +42,18 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.listener.OnChipRemovedListener;
+import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.ui.adapter.ChipLayoutAdapter;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
+import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
@@ -62,7 +67,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SelfLearningFragment extends Fragment {
+import static android.view.View.GONE;
+
+public class SelfLearningFragment extends BaseContentFragment {
 
     @BindView(R.id.subject_spinner)
     Spinner topicSpinner;
@@ -70,27 +77,11 @@ public class SelfLearningFragment extends Fragment {
     @BindView(R.id.grade_spinner)
     Spinner languageSpinner;
 
-    @BindView(R.id.content_recycler_view)
-    RecyclerView contentRecyclerView;
-
-    @BindView(R.id.error_view)
-    TextView errorView;
-
-    @BindView(R.id.loading_panel)
-    RelativeLayout loadingPanel;
-
-    private ContentVerticalCardListAdapter adapter;
+    private List<CommonCode> filterTopicList, filterLanguageList;
 
 
     public SelfLearningFragment() {
         //mandatory constructor
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        Logger.d("fragment -  on permission result");
-        adapter.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Nullable
@@ -104,12 +95,29 @@ public class SelfLearningFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
 
+        filterTopicList = new ArrayList<>();
+        filterLanguageList = new ArrayList<>();
+        setupFilterView(new OnChipRemovedListener() {
+            @Override
+            public void onChipRemoved(int position) {
+                BaseObject object = filterList.get(position);
+                CommonCode commonCode = object.getCommonCode();
+                if(commonCode.getCodeGroupID().equals(CommonCodeGroup.TOPICS)) {
+                    filterTopicList.remove(commonCode);
+                } else {
+                    filterLanguageList.remove(commonCode);
+                }
+                removeFromFilterList(position);
+                searchSelfLearning( 0);
+            }
+        });
+
         final List<CommonCode> topics = new ArrayList<>(CommonCodeUtils.getTopics());
         final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getLanguages());
 
         //Header - not a valid value
-        topics.add(0, new CommonCode("", "","Topic", "Topic", 0));
-        languages.add(0,new CommonCode("","","Language","Language",0));
+        topics.add(0, new CommonCode(0, 0,"Topic", "Topic", 0));
+        languages.add(0,new CommonCode(0,0,"Language","Language",0));
 
         SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(),
                 R.layout.custom_spinner_item_header,
@@ -122,8 +130,12 @@ public class SelfLearningFragment extends Fragment {
         topicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                CommonCode language = (CommonCode) languageSpinner.getSelectedItem();
-                searchSelfLearning(language.getCodeID(), topics.get(i).getCodeID(), 0);
+                if(topics.get(i).getCodeID() != 0) {
+                    filterTopicList.add(topics.get(i));
+                    addItemToFilterList(topics.get(i));
+                    searchSelfLearning(0);
+                    topicSpinner.setSelection(0 ,false);
+                }
             }
 
             @Override
@@ -141,8 +153,12 @@ public class SelfLearningFragment extends Fragment {
         languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                CommonCode topic = (CommonCode) topicSpinner.getSelectedItem();
-                searchSelfLearning(languages.get(i).getCodeID() , topic.getCodeID(), 0);
+                if(languages.get(i).getCodeID() != 0) {
+                    filterLanguageList.add(languages.get(i));
+                    addItemToFilterList(languages.get(i));
+                    searchSelfLearning(0);
+                    languageSpinner.setSelection(0 ,false);
+                }
             }
 
             @Override
@@ -150,18 +166,8 @@ public class SelfLearningFragment extends Fragment {
 
             }
         });
+        searchSelfLearning(0);
 
-        String language = "101100";
-
-        RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
-                .where(DbUser.class).findAll();
-        Logger.d(" db user " + dbUser);
-        if(dbUser.size() == 1) {
-            DbUser user = dbUser.get(0);
-            language = user.getPreferredLanguage();
-        }
-
-        searchSelfLearning(language, "", 0);
     }
 
 
@@ -174,74 +180,48 @@ public class SelfLearningFragment extends Fragment {
         }
     }
 
-    private void searchSelfLearning(String language, String topic, final int pageNumber) {
+
+    private void searchSelfLearning(final int pageNumber) {
         Logger.d(" searching ");
-        Logger.d("sent language " + language);
-        if(language.isEmpty()) {
-            RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
-                    .where(DbUser.class).findAll();
-            if(dbUser.size() == 1) {
-                DbUser user = dbUser.get(0);
-                language = user.getPreferredLanguage();
-                Logger.d(" language " + language);
-            }
-        }
+
+        String topicList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterTopicList);
+        String languageList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterLanguageList);
+        
+        contentRecyclerView.setVisibility(View.GONE);
+        loadingPanel.setVisibility(View.VISIBLE);
         SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(UserDetailUtils.getUserId(getContext()),
-                 language, topic);
+                 languageList, topicList);
         contentRequest.setPageNumber(pageNumber);
         RestClient.getApiService("").searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 loadingPanel.setVisibility(View.GONE);
                 if(response.isSuccessful()) {
-                    Logger.d(" Succes");
-                    if(response.body().getData() != null) {
-                        List<Content> contents = response.body().getData();
-                        Logger.d(" contents " + contents.size());
 
-                        if(pageNumber == 0) {
-                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-                            contentRecyclerView.setLayoutManager(linearLayoutManager);
-                            adapter = new ContentVerticalCardListAdapter(getContext(), contents, SelfLearningFragment.this);
-                            contentRecyclerView.setAdapter(adapter);
-                        } else {
-                            ContentVerticalCardListAdapter adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
-                            List<Content> originalContents = adapter.getContents();
-                            Logger.d(" original contents " + originalContents.size());
-                            originalContents.addAll(contents);
-                            adapter = new ContentVerticalCardListAdapter(getContext(), originalContents, SelfLearningFragment.this);
-                            contentRecyclerView.swapAdapter(adapter, false);
-                        }
+                    loadContent(response, pageNumber, new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+                            if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                                Logger.d(" scrolled idle");
+                                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                                int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
+                                int childCount = contentRecyclerView.getAdapter().getItemCount();
 
-                        contentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                            @Override
-                            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                                super.onScrollStateChanged(recyclerView, newState);
-                                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                                    Logger.d(" scrolled idle");
-                                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                                    int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
-                                    int childCount = contentRecyclerView.getAdapter().getItemCount();
-
-                                    Logger.d(" lastVisibleItem " + lastVisibleItem  + " childCount " + childCount);
-                                    if(lastVisibleItem == childCount - 1) {
-                                        CommonCode topic = (CommonCode) topicSpinner.getSelectedItem();
-                                        CommonCode language = (CommonCode) languageSpinner.getSelectedItem();
-                                        searchSelfLearning(language.getCodeID(), topic.getCodeID(), 1);
-                                    }
+                                Logger.d(" lastVisibleItem " + lastVisibleItem  + " childCount " + childCount);
+                                if(lastVisibleItem == childCount - 1) {
+                                    searchSelfLearning(1);
                                 }
                             }
+                        }
 
-                            @Override
-                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                                super.onScrolled(recyclerView, dx, dy);
+                        @Override
+                        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                            super.onScrolled(recyclerView, dx, dy);
 
-                            }
-                        });
-
-                        return;
-
-                    }
+                        }
+                    });
+                    return;
                 }
 
                 if(pageNumber == 0) {

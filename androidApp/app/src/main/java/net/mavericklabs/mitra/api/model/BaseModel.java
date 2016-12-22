@@ -10,16 +10,16 @@ import java.util.List;
 
 public class BaseModel<T> {
     @SerializedName("response_message")
-    private String responseMessage;
+    private Integer responseMessage;
 
     @SerializedName("data")
     private List<T> data;
 
-    public String getResponseMessage() {
+    public Integer getResponseMessage() {
         return responseMessage;
     }
 
-    public void setResponseMessage(String responseMessage) {
+    public void setResponseMessage(Integer responseMessage) {
         this.responseMessage = responseMessage;
     }
 

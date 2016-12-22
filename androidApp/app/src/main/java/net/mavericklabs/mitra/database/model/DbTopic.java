@@ -7,21 +7,21 @@ import io.realm.RealmObject;
  */
 
 public class DbTopic extends RealmObject{
-    private String topicCommonCode;
+    private Integer topicCommonCode;
 
     public DbTopic() {
 
     }
 
-    public DbTopic(String topicCommonCode) {
+    public DbTopic(Integer topicCommonCode) {
         this.topicCommonCode = topicCommonCode;
     }
 
-    public String getTopicCommonCode() {
+    public Integer getTopicCommonCode() {
         return topicCommonCode;
     }
 
-    public void setTopicCommonCode(String topicCommonCode) {
+    public void setTopicCommonCode(Integer topicCommonCode) {
         this.topicCommonCode = topicCommonCode;
     }
 }

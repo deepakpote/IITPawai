@@ -220,27 +220,27 @@ public class VerifyOtpActivity extends AppCompatActivity {
                             dbUser.setUdise(user.getUdiseCode());
 
                             if(!StringUtils.isEmpty(user.getSubjectCodeIDs())) {
-                                List<String> subjectCodes = StringUtils.splitCommas(user.getSubjectCodeIDs());
+                                List<Integer> subjectCodes = StringUtils.splitCommas(user.getSubjectCodeIDs());
                                 RealmList<DbSubject> dbSubjects = new RealmList<DbSubject>();
-                                for(String code : subjectCodes) {
+                                for(Integer code : subjectCodes) {
                                     dbSubjects.add(new DbSubject(code));
                                 }
                                 dbUser.setSubjects(dbSubjects);
                             }
 
                             if(!StringUtils.isEmpty(user.getGradeCodeIDs())) {
-                                List<String> gradeCodes = StringUtils.splitCommas(user.getGradeCodeIDs());
+                                List<Integer> gradeCodes = StringUtils.splitCommas(user.getGradeCodeIDs());
                                 RealmList<DbGrade> dbGrade = new RealmList<DbGrade>();
-                                for(String code : gradeCodes) {
+                                for(Integer code : gradeCodes) {
                                     dbGrade.add(new DbGrade(code));
                                 }
                                 dbUser.setGrades(dbGrade);
                             }
 
                             if(!StringUtils.isEmpty(user.getTopicCodeIDs())) {
-                                List<String> topicCodes = StringUtils.splitCommas(user.getTopicCodeIDs());
+                                List<Integer> topicCodes = StringUtils.splitCommas(user.getTopicCodeIDs());
                                 RealmList<DbTopic> dbTopic = new RealmList<>();
-                                for(String code : topicCodes) {
+                                for(Integer code : topicCodes) {
                                     dbTopic.add(new DbTopic(code));
                                 }
                                 dbUser.setTopics(dbTopic);

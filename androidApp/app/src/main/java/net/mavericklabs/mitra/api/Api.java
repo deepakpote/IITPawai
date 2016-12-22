@@ -12,17 +12,16 @@ import net.mavericklabs.mitra.api.model.ContentDataRequest;
 
 import net.mavericklabs.mitra.api.model.EventRequest;
 
-import net.mavericklabs.mitra.api.model.SavedContentRequest;
-
 import net.mavericklabs.mitra.api.model.MetaContent;
 import net.mavericklabs.mitra.api.model.News;
 
+import net.mavericklabs.mitra.api.model.SavedSelfLearningRequest;
+import net.mavericklabs.mitra.api.model.SavedTeachingAidsRequest;
 import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
 import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.api.model.LikeRequest;
 import net.mavericklabs.mitra.api.model.Token;
 
-import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.NewUser;
@@ -89,7 +88,7 @@ public interface Api {
     @POST("user/saveLanguage/")
     @FormUrlEncoded
     Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("userID") String userId,
-                                                       @Field("preferredLanguageCodeID") String languageCode);
+                                                       @Field("preferredLanguageCodeID") Integer languageCode);
 
     @POST("user/detail/")
     @FormUrlEncoded
@@ -102,7 +101,10 @@ public interface Api {
     Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);
 
     @POST("user/contentList/")
-    Call<BaseModel<Content>> getSavedContent(@Body SavedContentRequest contentRequest);
+    Call<BaseModel<Content>> getSavedTeachingAids(@Body SavedTeachingAidsRequest contentRequest);
+
+    @POST("user/contentList/")
+    Call<BaseModel<Content>> getSavedSelfLearning(@Body SavedSelfLearningRequest contentRequest);
 
     @POST("content/download/")
     Call<BaseModel<ContentDataResponse>> download(@Body ContentDataRequest request);
