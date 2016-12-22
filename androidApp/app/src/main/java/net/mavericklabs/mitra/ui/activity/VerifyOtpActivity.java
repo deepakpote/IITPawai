@@ -160,7 +160,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
                 }
                 String token = FirebaseInstanceId.getInstance().getToken();
                 VerifyUserOtp verifyUserOtp = new VerifyUserOtp(phoneNumber,otpEditText.getText().toString(),
-                                                    String.valueOf(authenticationType),token);
+                                                    authenticationType,token);
 
                 final ProgressDialog progressDialog = new ProgressDialog(VerifyOtpActivity.this,
                         R.style.ProgressDialog);
