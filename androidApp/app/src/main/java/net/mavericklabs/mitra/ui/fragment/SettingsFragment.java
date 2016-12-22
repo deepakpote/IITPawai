@@ -1,6 +1,7 @@
 package net.mavericklabs.mitra.ui.fragment;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -22,6 +24,7 @@ import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.database.model.DbUser;
 import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Logger;
@@ -50,6 +53,9 @@ public class SettingsFragment extends Fragment {
     @BindView(R.id.language_spinner)
     Spinner languageSpinner;
 
+    @BindView(R.id.loading_panel)
+    RelativeLayout loadingPanel;
+
     private List<CommonCode> languageList;
 
     @Nullable
@@ -67,6 +73,7 @@ public class SettingsFragment extends Fragment {
         languageSpinner.setAdapter(new SpinnerArrayAdapter(getContext(),R.layout.custom_spinner_dropdown_item
                 ,languageList));
         final int currentLanguageIndex = getCurrentLanguageIndex();
+        languageSpinner.setSelection(currentLanguageIndex ,false);
         languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, final int i, long l) {
@@ -81,12 +88,14 @@ public class SettingsFragment extends Fragment {
                                             //make server call - on success
                                             final CommonCode code = languageList.get(i);
                                             String userId = UserDetailUtils.getUserId(getContext());
+                                            loadingPanel.setVisibility(View.VISIBLE);
                                             RestClient.getApiService("").saveLanguage(userId,code.getCodeID())
                                                     .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                                                         @Override
                                                         public void onResponse(
                                                                 Call<BaseModel<GenericListDataModel>> call,
                                                                 Response<BaseModel<GenericListDataModel>> response) {
+                                                            loadingPanel.setVisibility(View.GONE);
                                                             if(response.isSuccessful()) {
                                                                 setDefaultLanguage(code);
                                                             } else {
@@ -97,6 +106,7 @@ public class SettingsFragment extends Fragment {
                                                         @Override
                                                         public void onFailure(Call<BaseModel<GenericListDataModel>> call,
                                                                               Throwable t) {
+                                                            loadingPanel.setVisibility(View.GONE);
                                                             languageSpinner.setSelection(currentLanguageIndex,false);
                                                         }
                                                     });
@@ -141,6 +151,11 @@ public class SettingsFragment extends Fragment {
 
         //Deprecated api - but still works. workaround is complicated
         res.updateConfiguration(conf, dm);
+
+        //Goto Home Activity
+        Intent intent = new Intent(getContext(), HomeActivity.class);
+        startActivity(intent);
+        getActivity().finishAffinity();
 
         //save new preferred language to database
         Realm realm = Realm.getDefaultInstance();
