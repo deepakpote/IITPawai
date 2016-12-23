@@ -224,9 +224,10 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
         String typeList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterTypeList);
         //String typeList = "";
 
-        SavedTeachingAidsRequest contentRequest = new SavedTeachingAidsRequest(UserDetailUtils.getUserId(getContext()),
+        SavedTeachingAidsRequest contentRequest = new SavedTeachingAidsRequest(
                 Constants.ContentTypeTeachingAids, typeList, subjectList, gradeList);
-        RestClient.getApiService("").getSavedTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+        String token = UserDetailUtils.getToken(getContext());
+        RestClient.getApiService(token).getSavedTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 loadingPanel.setVisibility(View.GONE);

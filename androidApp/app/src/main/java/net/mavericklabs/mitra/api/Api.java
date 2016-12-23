@@ -51,6 +51,8 @@ import retrofit2.http.Query;
 
 public interface Api {
 
+    //Authenticated calls.
+
     @POST("content/searchTeachingAid/")
     Call<BaseModel<Content>> searchTeachingAids(@Body TeachingAidsContentRequest contentRequest);
 
@@ -91,7 +93,14 @@ public interface Api {
     @POST("user/contentList/")
     Call<BaseModel<Content>> getSavedSelfLearning(@Body SavedSelfLearningRequest contentRequest);
 
-    //---------------------------------------------------------------------------------
+    @POST("user/saveLanguage/")
+    @FormUrlEncoded
+    Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("preferredLanguageCodeID") Integer languageCode);
+
+    @POST("user/saveUserPhoto/")
+    Call<BaseModel<GenericListDataModel>> savePhoto(@Body EditPhoto photo);
+
+    //Un-authenticated calls.
 
     @POST("user/requestOtp/")
     Call<BaseModel<GenericListDataModel>> requestOtp(@Body NewUser user);
@@ -106,18 +115,10 @@ public interface Api {
     Call<BaseModel<CommonCodeWrapper>> getCodeNameList(@Query("version") String version);
 
 
-    @POST("user/saveLanguage/")
-    @FormUrlEncoded
-    Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("userID") String userId,
-                                                       @Field("preferredLanguageCodeID") Integer languageCode);
-
-
     @POST("events/listEvents/")
     Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);
 
     @GET("news/")
     Call<BaseModel<News>> listNews();
 
-    @POST("user/saveUserPhoto/")
-    Call<BaseModel<GenericListDataModel>> savePhoto(@Body EditPhoto photo);
 }

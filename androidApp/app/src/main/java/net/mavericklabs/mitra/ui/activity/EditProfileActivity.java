@@ -779,9 +779,9 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            photo.setUserID(userId);
 
-            RestClient.getApiService("").savePhoto(photo).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+            String token = UserDetailUtils.getToken(getApplicationContext());
+            RestClient.getApiService(token).savePhoto(photo).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                 @Override
                 public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
                     Logger.d("response : " + response.message());
