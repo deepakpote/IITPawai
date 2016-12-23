@@ -33,9 +33,6 @@ import java.io.Serializable;
 
 public class SelfLearningContentRequest implements Serializable{
 
-    @SerializedName("userID")
-    private String userID;
-
     @SerializedName("languageCodeID")
     private String language;
 
@@ -45,19 +42,11 @@ public class SelfLearningContentRequest implements Serializable{
     @SerializedName("pageNumber")
     private int pageNumber;
 
-    public SelfLearningContentRequest(String userID, String language, String topic) {
-        this.userID = userID;
+    public SelfLearningContentRequest(String language, String topic) {
         this.language = language;
         this.topic = topic;
     }
 
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
 
     public String getLanguage() {
         return language;

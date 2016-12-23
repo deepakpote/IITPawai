@@ -5,7 +5,6 @@ package net.mavericklabs.mitra.api.model;
  */
 
 public class EditUser {
-    private String userID;
     private String userName;
     private String phoneNumber;
     private String udiseCode;
@@ -17,20 +16,11 @@ public class EditUser {
     private String gradeCodeIDs;
     private String topicCodeIDs;
 
-    public EditUser(String userID, String userName, String phoneNumber, Integer userTypeCodeID, Integer districtCodeID) {
-        this.userID = userID;
+    public EditUser(String userName, String phoneNumber, Integer userTypeCodeID, Integer districtCodeID) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.userTypeCodeID = userTypeCodeID;
         this.districtCodeID = districtCodeID;
-    }
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
     }
 
     public String getUserName() {

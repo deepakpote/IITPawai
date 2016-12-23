@@ -189,10 +189,10 @@ public class SelfLearningFragment extends BaseContentFragment {
         
         contentRecyclerView.setVisibility(View.GONE);
         loadingPanel.setVisibility(View.VISIBLE);
-        SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(UserDetailUtils.getUserId(getContext()),
-                 languageList, topicList);
+        SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(languageList, topicList);
         contentRequest.setPageNumber(pageNumber);
-        RestClient.getApiService("").searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+        String token = UserDetailUtils.getToken(getContext());
+        RestClient.getApiService(token).searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 loadingPanel.setVisibility(View.GONE);

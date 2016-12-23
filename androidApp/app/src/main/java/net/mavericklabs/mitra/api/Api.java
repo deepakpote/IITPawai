@@ -51,20 +51,7 @@ import retrofit2.http.Query;
 
 public interface Api {
 
-    @POST("user/requestOtp/")
-    Call<BaseModel<GenericListDataModel>> requestOtp(@Body NewUser user);
-
-    @POST("user/verifyOtp/")
-    Call<BaseModel<Token>> verifyOtp(@Body VerifyUserOtp verifyUserOtp);
-
-    @POST("user/register/")
-    Call<BaseModel<RegisterUserResponse>> registerUser(@Body RegisterUser user);
-
-    @POST("user/updateProfile/")
-    Call<BaseModel<GenericListDataModel>> updateUser(@Body EditUser user);
-
-    @GET("code/")
-    Call<BaseModel<CommonCodeWrapper>> getCodeNameList(@Query("version") String version);
+    //Authenticated calls.
 
     @POST("content/searchTeachingAid/")
     Call<BaseModel<Content>> searchTeachingAids(@Body TeachingAidsContentRequest contentRequest);
@@ -75,30 +62,29 @@ public interface Api {
     @POST("content/like/")
     Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);
 
-    @POST("user/contentSave/")
-    @FormUrlEncoded
-    Call<BaseModel<GenericListDataModel>> saveContent(@Field("userID") String userId,
-                                                      @Field("contentID") String contentId,
-                                                      @Field("saveContent") boolean value);
+    @POST("content/download/")
+    Call<BaseModel<ContentDataResponse>> download(@Body ContentDataRequest request);
+
+    @POST("content/share/")
+    Call<BaseModel<ContentDataResponse>> share(@Body ContentDataRequest request);
 
     @POST("content/getContentResponse/")
     @FormUrlEncoded
-    Call<BaseModel<MetaContent>> metaContent(@Field("userID") String userId, @Field("contentID") String contentId);
-
-    @POST("user/saveLanguage/")
-    @FormUrlEncoded
-    Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("userID") String userId,
-                                                       @Field("preferredLanguageCodeID") Integer languageCode);
-
-    @POST("user/detail/")
-    @FormUrlEncoded
-    Call<BaseModel<LoginUser>> getUserDetails(@Field("userID") String userId);
+    Call<BaseModel<MetaContent>> metaContent(@Field("contentID") String contentId);
 
     @POST("events/attendEvent/")
     Call<BaseModel<GenericListDataModel>> attendEvent(@Body Attend attend);
 
-    @POST("events/listEvents/")
-    Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);
+    @POST("user/updateProfile/")
+    Call<BaseModel<GenericListDataModel>> updateUser(@Body EditUser user);
+
+    @POST("user/detail/")
+    Call<BaseModel<LoginUser>> getUserDetails();
+
+    @POST("user/contentSave/")
+    @FormUrlEncoded
+    Call<BaseModel<GenericListDataModel>> saveContent(@Field("contentID") String contentId,
+                                                      @Field("saveContent") boolean value);
 
     @POST("user/contentList/")
     Call<BaseModel<Content>> getSavedTeachingAids(@Body SavedTeachingAidsRequest contentRequest);
@@ -106,15 +92,32 @@ public interface Api {
     @POST("user/contentList/")
     Call<BaseModel<Content>> getSavedSelfLearning(@Body SavedSelfLearningRequest contentRequest);
 
-    @POST("content/download/")
-    Call<BaseModel<ContentDataResponse>> download(@Body ContentDataRequest request);
+    @POST("user/saveLanguage/")
+    @FormUrlEncoded
+    Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("preferredLanguageCodeID") Integer languageCode);
 
-    @POST("content/share/")
-    Call<BaseModel<ContentDataResponse>> share(@Body ContentDataRequest request);
+    @POST("user/saveUserPhoto/")
+    Call<BaseModel<GenericListDataModel>> savePhoto(@Body EditPhoto photo);
+
+    //Un-authenticated calls.
+
+    @POST("user/requestOtp/")
+    Call<BaseModel<GenericListDataModel>> requestOtp(@Body NewUser user);
+
+    @POST("user/verifyOtp/")
+    Call<BaseModel<Token>> verifyOtp(@Body VerifyUserOtp verifyUserOtp);
+
+    @POST("user/register/")
+    Call<BaseModel<RegisterUserResponse>> registerUser(@Body RegisterUser user);
+
+    @GET("code/")
+    Call<BaseModel<CommonCodeWrapper>> getCodeNameList(@Query("version") String version);
+
+
+    @POST("events/listEvents/")
+    Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);
 
     @GET("news/")
     Call<BaseModel<News>> listNews();
 
-    @POST("user/saveUserPhoto/")
-    Call<BaseModel<GenericListDataModel>> savePhoto(@Body EditPhoto photo);
 }

@@ -87,9 +87,9 @@ public class SettingsFragment extends Fragment {
                                         public void onClick(DialogInterface dialogInterface, int j) {
                                             //make server call - on success
                                             final CommonCode code = languageList.get(i);
-                                            String userId = UserDetailUtils.getUserId(getContext());
+                                            String token = UserDetailUtils.getToken(getContext());
                                             loadingPanel.setVisibility(View.VISIBLE);
-                                            RestClient.getApiService("").saveLanguage(userId,code.getCodeID())
+                                            RestClient.getApiService(token).saveLanguage(code.getCodeID())
                                                     .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                                                         @Override
                                                         public void onResponse(

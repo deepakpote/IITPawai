@@ -3,6 +3,8 @@ package net.mavericklabs.mitra.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import net.mavericklabs.mitra.utils.Logger;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +32,7 @@ public class RestClient {
 
     public static Api getApiService(final String authToken) {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
 
 
         client = new OkHttpClient.Builder()
@@ -38,11 +40,13 @@ public class RestClient {
                 .addInterceptor(new Interceptor() {
                     @Override
                     public Response intercept(Interceptor.Chain chain) throws IOException {
+                        Logger.d("token is : " + authToken);
                         Request original = chain.request();
                         Request.Builder requestBuilder = original.newBuilder()
-                                .header("Authorization","CUSTOM-ANDROID-AUTH token=" + authToken)
+                                .header("authToken",authToken)
                                 .method(original.method(), original.body());
                         Request request = requestBuilder.build();
+                        Logger.d("headers : " + request.headers().toString());
                         return chain.proceed(request);
                     }
                 })

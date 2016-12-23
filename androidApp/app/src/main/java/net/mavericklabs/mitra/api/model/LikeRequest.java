@@ -7,8 +7,6 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class LikeRequest {
-    @SerializedName("userID")
-    private String userId;
 
     @SerializedName("contentID")
     private String contentId;
@@ -16,18 +14,9 @@ public class LikeRequest {
     @SerializedName("hasLiked")
     private boolean hasLiked;
 
-    public LikeRequest(String userId, String contentId, boolean hasLiked) {
-        this.userId = userId;
+    public LikeRequest(String contentId, boolean hasLiked) {
         this.contentId = contentId;
         this.hasLiked = hasLiked;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     public String getContentId() {

@@ -362,9 +362,9 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     }
 
     private void editUser() {
-        String userId = UserDetailUtils.getUserId(getApplicationContext());
+        String token = UserDetailUtils.getToken(getApplicationContext());
         final String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
-        EditUser user = new EditUser(userId,nameEditText.getText().toString(),
+        EditUser user = new EditUser(nameEditText.getText().toString(),
                                         phoneNumber,getSelectedUserTypeId(),getSelectedDistrictID());
 
         //Get the current language name in English
@@ -409,7 +409,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        RestClient.getApiService("").updateUser(user).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+        RestClient.getApiService(token).updateUser(user).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
             @Override
             public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
                 if(response.isSuccessful()){
@@ -755,7 +755,6 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     }
 
     private void sendProfilePhoto(final ProgressDialog progressDialog) {
-        String userId = UserDetailUtils.getUserId(getApplicationContext());
         InputStream in;
         byte[] buf;
         byte[] base64ByteArray;
@@ -779,9 +778,9 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            photo.setUserID(userId);
 
-            RestClient.getApiService("").savePhoto(photo).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+            String token = UserDetailUtils.getToken(getApplicationContext());
+            RestClient.getApiService(token).savePhoto(photo).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                 @Override
                 public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
                     Logger.d("response : " + response.message());

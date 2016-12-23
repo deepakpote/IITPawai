@@ -120,9 +120,9 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
     @OnClick(R.id.share_icon)
     void shareContent() {
         Logger.d(" share ");
-        String userId = UserDetailUtils.getUserId(getApplicationContext());
-        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService("")
-                .share(new ContentDataRequest(userId, content.getContentID()));
+        String token = UserDetailUtils.getToken(getApplicationContext());
+        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService(token)
+                .share(new ContentDataRequest(content.getContentID()));
 
         saveRequest.enqueue(new Callback<BaseModel<ContentDataResponse>>() {
             @Override
@@ -156,8 +156,8 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
             likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_accent_24dp));
             isLiked = true;
         }
-        String userId = UserDetailUtils.getUserId(getApplicationContext());
-        RestClient.getApiService("").likeContent(new LikeRequest(userId,content.getContentID(),isLiked))
+        String token = UserDetailUtils.getToken(getApplicationContext());
+        RestClient.getApiService(token).likeContent(new LikeRequest(content.getContentID(),isLiked))
                 .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
@@ -198,8 +198,8 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
             saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
             isSaved = true;
         }
-        String userId = UserDetailUtils.getUserId(getApplicationContext());
-        RestClient.getApiService("").saveContent(userId,content.getContentID(),isSaved)
+        String token = UserDetailUtils.getToken(getApplicationContext());
+        RestClient.getApiService(token).saveContent(content.getContentID(),isSaved)
                 .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
@@ -257,8 +257,8 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
         if(content != null) {
 
-            String userId = UserDetailUtils.getUserId(getApplicationContext());
-            RestClient.getApiService("").metaContent(userId,content.getContentID())
+            String token = UserDetailUtils.getToken(getApplicationContext());
+            RestClient.getApiService(token).metaContent(content.getContentID())
                     .enqueue(new Callback<BaseModel<MetaContent>>() {
                             @Override
                             public void onResponse(Call<BaseModel<MetaContent>> call, Response<BaseModel<MetaContent>> response) {

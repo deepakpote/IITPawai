@@ -200,9 +200,10 @@ public class MyResourcesSelfLearningFragment extends BaseContentFragment {
         String languageList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterLanguageList);
 
 
-        SavedSelfLearningRequest contentRequest = new SavedSelfLearningRequest(UserDetailUtils.getUserId(getContext()),
-                Constants.ContentTypeSelfLearning, languageList, topicList);
-        RestClient.getApiService("").getSavedSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+        SavedSelfLearningRequest contentRequest = new SavedSelfLearningRequest(Constants.ContentTypeSelfLearning,
+                                                        languageList, topicList);
+        String token = UserDetailUtils.getToken(getContext());
+        RestClient.getApiService(token).getSavedSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 loadingPanel.setVisibility(View.GONE);

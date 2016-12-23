@@ -208,8 +208,8 @@ public class VerifyOtpActivity extends AppCompatActivity {
     }
 
     private void fetchUserDetails(final ProgressDialog progressDialog) {
-        String userId = UserDetailUtils.getUserId(getApplicationContext());
-        RestClient.getApiService("").getUserDetails(userId)
+        String token = UserDetailUtils.getToken(getApplicationContext());
+        RestClient.getApiService(token).getUserDetails()
                 .enqueue(new Callback<BaseModel<LoginUser>>() {
                     @Override
                     public void onResponse(Call<BaseModel<LoginUser>> call, Response<BaseModel<LoginUser>> response) {

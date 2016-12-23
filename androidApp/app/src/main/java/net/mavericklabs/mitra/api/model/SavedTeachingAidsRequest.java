@@ -30,8 +30,6 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class SavedTeachingAidsRequest {
-    @SerializedName("userID")
-    private String userID;
 
     @SerializedName("contentTypeCodeID")
     private Integer contentTypeCodeID;
@@ -46,20 +44,11 @@ public class SavedTeachingAidsRequest {
     private String grade;
 
 
-    public SavedTeachingAidsRequest(String userID, Integer contentTypeCodeID, String fileType, String subject, String grade) {
-        this.userID = userID;
+    public SavedTeachingAidsRequest(Integer contentTypeCodeID, String fileType, String subject, String grade) {
         this.contentTypeCodeID = contentTypeCodeID;
         this.fileType = fileType;
         this.subject = subject;
         this.grade = grade;
-    }
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
     }
 
     public Integer getContentTypeCodeID() {

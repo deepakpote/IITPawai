@@ -30,8 +30,6 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class SavedSelfLearningRequest {
-    @SerializedName("userID")
-    private String userID;
 
     @SerializedName("contentTypeCodeID")
     private Integer contentTypeCodeID;
@@ -44,8 +42,7 @@ public class SavedSelfLearningRequest {
 
 
 
-    public SavedSelfLearningRequest(String userID, Integer contentTypeCodeID, String language, String topic) {
-        this.userID = userID;
+    public SavedSelfLearningRequest(Integer contentTypeCodeID, String language, String topic) {
         this.contentTypeCodeID = contentTypeCodeID;
         this.language = language;
         this.topic = topic;
@@ -65,14 +62,6 @@ public class SavedSelfLearningRequest {
 
     public void setTopic(String topic) {
         this.topic = topic;
-    }
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
     }
 
     public Integer getContentTypeCodeID() {

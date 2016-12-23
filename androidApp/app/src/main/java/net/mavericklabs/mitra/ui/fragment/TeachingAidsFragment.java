@@ -278,10 +278,11 @@ public class TeachingAidsFragment extends Fragment{
             String subjectList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterSubjectList);
             String gradeList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterGradeList);
 
-            TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(UserDetailUtils.getUserId(getContext()),
-                    fileType, "101100", subjectList, gradeList);
+            TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(fileType, "101100",
+                                                            subjectList, gradeList);
             contentRequest.setPageNumber(pageNumber);
-            RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+            String token = UserDetailUtils.getToken(getContext());
+            RestClient.getApiService(token).searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
                 @Override
                 public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                     loadingPanel.setVisibility(View.GONE);

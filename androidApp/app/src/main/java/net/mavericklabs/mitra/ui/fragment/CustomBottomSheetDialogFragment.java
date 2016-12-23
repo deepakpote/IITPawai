@@ -78,8 +78,8 @@ public class CustomBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
     @OnClick(R.id.attend_button)
     void attend() {
-        String userId = UserDetailUtils.getUserId(getContext());
-        RestClient.getApiService("").attendEvent(new Attend(userId, eventID))
+        String token = UserDetailUtils.getToken(getContext());
+        RestClient.getApiService(token).attendEvent(new Attend(eventID))
                 .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {

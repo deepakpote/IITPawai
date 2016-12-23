@@ -251,8 +251,8 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
     }
 
     private void removeFromSavedContent(String contentID, final CardViewHolder holder) {
-        String userId = UserDetailUtils.getUserId(context);
-        RestClient.getApiService("").saveContent(userId, contentID ,false)
+        String token = UserDetailUtils.getToken(context);
+        RestClient.getApiService(token).saveContent(contentID ,false)
                 .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
@@ -315,10 +315,10 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
 
     private void downloadContent(final CardViewHolder holder) {
         Logger.d(" download ");
-        String userId = UserDetailUtils.getUserId(context);
         Content content = contents.get(holder.getAdapterPosition());
-        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService("")
-                .download(new ContentDataRequest(userId, content.getContentID()));
+        String token = UserDetailUtils.getToken(context);
+        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService(token)
+                .download(new ContentDataRequest(content.getContentID()));
 
         saveRequest.enqueue(new Callback<BaseModel<ContentDataResponse>>() {
             @Override
