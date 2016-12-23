@@ -1,5 +1,5 @@
 #from django.contrib.auth.models import User
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import list_route
@@ -18,7 +18,8 @@ class CodeViewSet(viewsets.ModelViewSet):
 
     queryset = code.objects.all().order_by('codeNameEn')
     serializer_class = codeSerializer
-        
+    
+    permission_classes=[permissions.AllowAny]    
     def list(self, request):
         #Get query param
         appCodeVersionNumber = request.query_params.get('version')
@@ -63,7 +64,8 @@ class NewsViewSet(viewsets.ModelViewSet):
     """
     queryset = news.objects.all().order_by('-createdOn')
     serializer_class = newsSerializer
-    
+
+    permission_classes=[permissions.AllowAny]    
     def list(self, request):
         queryset = news.objects.all().order_by('-createdOn')
         serializer = newsSerializer(queryset, many = True)
