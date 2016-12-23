@@ -156,8 +156,8 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
             likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_accent_24dp));
             isLiked = true;
         }
-        String userId = UserDetailUtils.getUserId(getApplicationContext());
-        RestClient.getApiService("").likeContent(new LikeRequest(userId,content.getContentID(),isLiked))
+        String token = UserDetailUtils.getToken(getApplicationContext());
+        RestClient.getApiService(token).likeContent(new LikeRequest(content.getContentID(),isLiked))
                 .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {

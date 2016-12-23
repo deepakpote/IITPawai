@@ -57,6 +57,10 @@ public interface Api {
     @POST("content/searchSelfLearning/")
     Call<BaseModel<Content>> searchSelfLearning(@Body SelfLearningContentRequest contentRequest);
 
+    @POST("content/like/")
+    Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);
+
+
     //---------------------------------------------------------------------------------
 
     @POST("user/requestOtp/")
@@ -73,9 +77,6 @@ public interface Api {
 
     @GET("code/")
     Call<BaseModel<CommonCodeWrapper>> getCodeNameList(@Query("version") String version);
-
-    @POST("content/like/")
-    Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);
 
     @POST("user/contentSave/")
     @FormUrlEncoded
