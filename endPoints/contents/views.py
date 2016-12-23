@@ -2,12 +2,14 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets,permissions
+from rest_framework.permissions import IsAuthenticated
 from contents.serializers import contentSerializer 
-
+from users.authentication import TokenAuthentication
 from contents.models import content , contentResponse 
 from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent
 from mitraEndPoints import constants , utils
+from commons.views import getUserIDFromAuthToken
 
 class ContentViewSet(viewsets.ModelViewSet):
     """
@@ -21,17 +23,19 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to search the content
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication] )
     def searchTeachingAid(self,request):
         # get inputs
-#       contentType = request.data.get('contentTypeCodeID')
-        userID = request.data.get('userID') 
         fileTypeCodeID = request.data.get('fileTypeCodeID')
         languageCodeID = request.data.get('languageCodeID')
         
         subjectCodeIDs = request.data.get('subjectCodeIDs') 
         gradeCodeIDs = request.data.get('gradeCodeIDs')
         pageNumber = request.data.get('pageNumber')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
                 
         # Check if userID/languageID is passed in post param
         if not userID:
@@ -100,14 +104,17 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to search the self learning content
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def searchSelfLearning(self,request):
         # get inputs
-        userID = request.data.get('userID') 
         languageCodeID = request.data.get('languageCodeID')
         
         topicCodeIDs = request.data.get('topicCodeIDs') 
         pageNumber = request.data.get('pageNumber')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
                 
         # Check if userID/languageID is passed in post param
         if not userID:
@@ -165,12 +172,15 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to save the content response: Like
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def like(self,request):
         # get inputs
-        userID = request.data.get('userID') 
         contentID = request.data.get('contentID')
         hasLiked = request.data.get('hasLiked')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
                
         # Check if userID is passed in post param
         if not userID:
@@ -225,11 +235,14 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to save the content response: Download
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def download(self,request):
         # get inputs
-        userID = request.data.get('userID') 
         contentID = request.data.get('contentID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
                
         # Check if userID is passed in post param
         if not userID:
@@ -271,11 +284,14 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to save the content response: Share
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def share(self,request):
         # get inputs
-        userID = request.data.get('userID') 
         contentID = request.data.get('contentID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
                
         # Check if userID is passed in post param
         if not userID:
@@ -317,11 +333,14 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to get the content response : Liked
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def getContentResponse(self,request):
         # get inputs
-        userID = request.data.get('userID') 
         contentID = request.data.get('contentID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
                
         # Check if userID is passed in post param
         if not userID:
