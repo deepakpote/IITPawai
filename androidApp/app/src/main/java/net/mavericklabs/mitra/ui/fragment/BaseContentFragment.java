@@ -131,6 +131,7 @@ public class BaseContentFragment extends Fragment {
                                int pageNumber, RecyclerView.OnScrollListener listener) {
         contentRecyclerView.setVisibility(View.VISIBLE);
         errorView.setVisibility(View.GONE);
+        contentRecyclerView.clearOnScrollListeners();
         Logger.d(" Succes");
         if(response.body().getData() != null) {
             List<Content> contents = response.body().getData();
@@ -156,6 +157,9 @@ public class BaseContentFragment extends Fragment {
                         adapter.notifyDataSetChanged();
 
                     }
+
+                    //if current page number is 0 and there are contents available, only then set scroll listener
+                    contentRecyclerView.addOnScrollListener(listener);
                 }
 
 
@@ -167,8 +171,6 @@ public class BaseContentFragment extends Fragment {
                 adapter.setContents(originalContents);
                 adapter.notifyDataSetChanged();
             }
-
-            contentRecyclerView.addOnScrollListener(listener);
 
         }
     }

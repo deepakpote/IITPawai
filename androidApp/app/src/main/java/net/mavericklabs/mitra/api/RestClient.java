@@ -32,7 +32,7 @@ public class RestClient {
 
     public static Api getApiService(final String authToken) {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
 
         client = new OkHttpClient.Builder()

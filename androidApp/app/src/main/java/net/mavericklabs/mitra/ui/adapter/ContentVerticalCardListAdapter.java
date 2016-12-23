@@ -165,40 +165,6 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
         //Load Video
         if(holder.getItemViewType() == 0) {
             holder.saveButton.setVisibility(View.GONE);
-            holder.youTubeThumbnailView.setVisibility(View.VISIBLE);
-            final YouTubeThumbnailLoader.OnThumbnailLoadedListener onThumbnailLoadedListener = new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
-                @Override
-                public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
-                    holder.contentView.setBackgroundColor(Color.BLACK);
-
-                }
-
-                @Override
-                public void onThumbnailError(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader.ErrorReason errorReason) {
-
-                }
-            };
-
-            holder.youTubeThumbnailView.initialize(Constants.youtubeDeveloperKey, new YouTubeThumbnailView.OnInitializedListener() {
-                @Override
-                public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
-                    thumbnailViewToLoaderMap.put(youTubeThumbnailView, youTubeThumbnailLoader);
-                    Content content = contents.get(holder.getAdapterPosition());
-                    if(content != null) {
-                        String fileName = content.getFileName();
-                        Logger.d("file name : " + fileName);
-                        String videoID = StringUtils.getVideoKeyFromUrl(fileName);
-                        Logger.d(" video " + videoID);
-                        youTubeThumbnailLoader.setVideo(videoID);
-                        youTubeThumbnailLoader.setOnThumbnailLoadedListener(onThumbnailLoadedListener);
-                    }
-                }
-
-                @Override
-                public void onInitializationFailure(YouTubeThumbnailView youTubeThumbnailView, YouTubeInitializationResult youTubeInitializationResult) {
-
-                }
-            });
         } else {
 
             holder.saveButton.setOnClickListener(new View.OnClickListener() {
@@ -247,6 +213,57 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
 
             }
         });
+
+    }
+
+    @Override
+    public void onViewAttachedToWindow(final CardViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        if(holder.getItemViewType() == 0) {
+            holder.youTubeThumbnailView.setVisibility(View.GONE);
+
+            if(!thumbnailViewToLoaderMap.containsKey(holder.youTubeThumbnailView)) {
+                //Ensure that thumbnail view is not init
+                holder.youTubeThumbnailView.initialize(Constants.youtubeDeveloperKey, new YouTubeThumbnailView.OnInitializedListener() {
+                    @Override
+                    public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
+                        thumbnailViewToLoaderMap.put(holder.youTubeThumbnailView, youTubeThumbnailLoader);
+                        loadThumbnail(youTubeThumbnailLoader, holder);
+                    }
+
+                    @Override
+                    public void onInitializationFailure(YouTubeThumbnailView youTubeThumbnailView, YouTubeInitializationResult youTubeInitializationResult) {
+
+                    }
+                });
+            } else {
+                YouTubeThumbnailLoader loader = thumbnailViewToLoaderMap.get(holder.youTubeThumbnailView);
+                loadThumbnail(loader, holder);
+            }
+        }
+    }
+
+    private void loadThumbnail(final YouTubeThumbnailLoader youTubeThumbnailLoader, final CardViewHolder holder) {
+
+        Content content = contents.get(holder.getAdapterPosition());
+        if(content != null) {
+            String fileName = content.getFileName();
+            String videoID = StringUtils.getVideoKeyFromUrl(fileName);
+            youTubeThumbnailLoader.setVideo(videoID);
+            youTubeThumbnailLoader.
+                    setOnThumbnailLoadedListener(new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
+                @Override
+                public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
+                    holder.youTubeThumbnailView.setVisibility(View.VISIBLE);
+                    holder.contentView.setBackgroundColor(Color.BLACK);
+                }
+
+                @Override
+                public void onThumbnailError(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader.ErrorReason errorReason) {
+
+                }
+            });
+        }
 
     }
 

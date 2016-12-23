@@ -138,7 +138,7 @@ public class HomeFragment extends Fragment{
     private void loadPopularTeachingAids() {
         //TODO popular resources
 
-        TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(108100, "", "", "");
+        TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(108100, "", "");
         String token = UserDetailUtils.getToken(getContext());
         RestClient.getApiService(token).searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override

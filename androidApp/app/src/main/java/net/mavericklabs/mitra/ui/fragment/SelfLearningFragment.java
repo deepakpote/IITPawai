@@ -186,9 +186,11 @@ public class SelfLearningFragment extends BaseContentFragment {
 
         String topicList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterTopicList);
         String languageList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterLanguageList);
-        
-        contentRecyclerView.setVisibility(View.GONE);
-        loadingPanel.setVisibility(View.VISIBLE);
+
+        if(pageNumber == 0) {
+            contentRecyclerView.setVisibility(View.GONE);
+            loadingPanel.setVisibility(View.VISIBLE);
+        }
         SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(languageList, topicList);
         contentRequest.setPageNumber(pageNumber);
         String token = UserDetailUtils.getToken(getContext());

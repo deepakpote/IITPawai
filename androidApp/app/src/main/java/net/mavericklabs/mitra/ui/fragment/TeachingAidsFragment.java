@@ -278,7 +278,7 @@ public class TeachingAidsFragment extends Fragment{
             String subjectList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterSubjectList);
             String gradeList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterGradeList);
 
-            TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(fileType, "101100",
+            TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(fileType,
                                                             subjectList, gradeList);
             contentRequest.setPageNumber(pageNumber);
             String token = UserDetailUtils.getToken(getContext());

@@ -36,9 +36,6 @@ public class TeachingAidsContentRequest implements Serializable{
     @SerializedName("fileTypeCodeID")
     private Integer fileType;
 
-    @SerializedName("languageCodeID")
-    private String language;
-
     @SerializedName("subjectCodeIDs")
     private String subject;
 
@@ -48,9 +45,8 @@ public class TeachingAidsContentRequest implements Serializable{
     @SerializedName("pageNumber")
     private int pageNumber;
 
-    public TeachingAidsContentRequest(int fileType, String language, String subject, String grade) {
+    public TeachingAidsContentRequest(int fileType, String subject, String grade) {
         this.fileType = fileType;
-        this.language = language;
         this.subject = subject;
         this.grade = grade;
     }
@@ -61,14 +57,6 @@ public class TeachingAidsContentRequest implements Serializable{
 
     public void setFileType(Integer fileType) {
         this.fileType = fileType;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
     }
 
     public String getSubject() {

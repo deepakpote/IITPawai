@@ -33,7 +33,7 @@ import java.io.Serializable;
 
 public class SelfLearningContentRequest implements Serializable{
 
-    @SerializedName("languageCodeID")
+    @SerializedName("languageCodeIDs")
     private String language;
 
     @SerializedName("topicCodeIDs")
