@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
@@ -52,6 +53,8 @@ import net.mavericklabs.mitra.api.model.ContentDataResponse;
 import net.mavericklabs.mitra.api.model.MetaContent;
 import net.mavericklabs.mitra.api.model.GenericListDataModel;
 import net.mavericklabs.mitra.api.model.LikeRequest;
+import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
+import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Requirements;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
@@ -378,62 +381,92 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
     private void loadSimilarTeachingAids() {
         //TODO similar resources - get resources with same file type, language, subject, grade - confirm
-        //TODO - use string lists
 
-//        TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(UserDetailUtils.getUserId(getApplicationContext()),
-//                content.getFileType(), content.getLanguage(), content.getSubject(), content.getGrade());
-//        RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
-//            @Override
-//            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
-//                Logger.d(" Succes");
-//                loadingPanel.setVisibility(View.GONE);
-//                if(response.isSuccessful()) {
-//                    if(response.body().getData() != null) {
-//                        List<Content> contents = response.body().getData();
-//                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
-//                        contentRecyclerView.setLayoutManager(linearLayoutManager);
-//                        similarContentsAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
-//                        contentRecyclerView.setAdapter(similarContentsAdapter);
-//
-//
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
-//                Logger.d(" on fail");
-//            }
-//        });
+
+        TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(content.getFileType(),
+                content.getSubject().toString(),
+                content.getGrade().toString());
+        String token = UserDetailUtils.getToken(getApplicationContext());
+        RestClient.getApiService(token).searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+            @Override
+            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                Logger.d(" Succes");
+                loadingPanel.setVisibility(View.GONE);
+                if(response.isSuccessful()) {
+                    if(response.body().getData() != null) {
+                        List<Content> contents = response.body().getData();
+                        Content contentToRemove = null;
+
+                        //Remove the content that is being shown
+                        for (Content similarContent : contents) {
+                            if(similarContent.getContentID().equals(content.getContentID())){
+                                contentToRemove = similarContent;
+                                break;
+                            }
+                        }
+                        if(contentToRemove != null) {
+                            contents.remove(contentToRemove);
+
+                        }
+
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
+                        contentRecyclerView.setLayoutManager(linearLayoutManager);
+                        similarContentsAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
+                        contentRecyclerView.setAdapter(similarContentsAdapter);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+                Logger.d(" on fail");
+            }
+        });
     }
 
     private void loadSimilarSelfLearning() {
         //TODO similar resources - get resources with same file type, language, subject, grade - confirm
-        //TODO - use string lists
-//        SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(UserDetailUtils.getUserId(getApplicationContext()),
-//                content.getLanguage(), content.getTopic());
-//        RestClient.getApiService("").searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
-//            @Override
-//            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
-//                loadingPanel.setVisibility(View.GONE);
-//                Logger.d(" Succes");
-//                if(response.isSuccessful()) {
-//                    if(response.body().getData() != null) {
-//                        List<Content> contents = response.body().getData();
-//                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
-//                        contentRecyclerView.setLayoutManager(linearLayoutManager);
-//                        similarContentsAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
-//                        contentRecyclerView.setAdapter(similarContentsAdapter);
-//
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
-//                Logger.d(" on fail");
-//            }
-//        });
+
+        SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(content.getLanguage().toString(),
+                content.getTopic().toString());
+        String token = UserDetailUtils.getToken(getApplicationContext());
+        RestClient.getApiService(token).searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+            @Override
+            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                loadingPanel.setVisibility(View.GONE);
+                Logger.d(" Succes");
+                if(response.isSuccessful()) {
+                    if(response.body().getData() != null) {
+                        List<Content> contents = response.body().getData();
+
+                        Content contentToRemove = null;
+
+                        //Remove the content that is being shown
+                        for (Content similarContent : contents) {
+                            if(similarContent.getContentID().equals(content.getContentID())){
+                                contentToRemove = similarContent;
+                                break;
+                            }
+                        }
+                        if(contentToRemove != null) {
+                            contents.remove(contentToRemove);
+
+                        }
+
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false);
+                        contentRecyclerView.setLayoutManager(linearLayoutManager);
+                        similarContentsAdapter = new BaseHorizontalCardListAdapter(getApplicationContext(), contents);
+                        contentRecyclerView.setAdapter(similarContentsAdapter);
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+                Logger.d(" on fail");
+            }
+        });
     }
 
     @Override

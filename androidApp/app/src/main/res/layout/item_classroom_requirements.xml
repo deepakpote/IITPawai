@@ -27,8 +27,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp">
 
-    <ImageView
-        android:id="@+id/requirement_icon"
+    <TextView
+        android:id="@+id/requirement_index"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
