@@ -4,12 +4,15 @@ from rest_framework import viewsets,permissions
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route, list_route
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from users.authentication import TokenAuthentication
 
 from mitraEndPoints import constants
 from events.serializers import eventQuerySerializer,eventSerializer,userEventModelSerializer
 from events.CalenderService import EventsCalender
 from users.models import user
 from events.models import userEvent
+from commons.views import getUserIDFromAuthToken
 
 class EventViewSet(viewsets.ViewSet):
     """
@@ -50,10 +53,13 @@ class EventViewSet(viewsets.ViewSet):
     """
     API to attend event
     """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def attendEvent(self, request):
         eventID = request.data.get('eventID')
-        userID = request.data.get('userID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
         # Check if userID is passed in post param
         if not eventID:
             return Response({"response_message": constants.messages.event_attend_eventid_cannot_be_empty,
