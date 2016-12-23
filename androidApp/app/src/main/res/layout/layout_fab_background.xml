@@ -158,6 +158,6 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        app:srcCompat="@drawable/ic_explore_white_24dp" />
+        app:srcCompat="@drawable/ic_fab_white" />
 
 </android.support.design.widget.CoordinatorLayout>

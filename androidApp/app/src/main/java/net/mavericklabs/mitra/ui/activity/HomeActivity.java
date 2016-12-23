@@ -234,7 +234,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
         //AnimationUtils.fadeInView(bottomNavigationView, null);
         fadedBackgroundView.setVisibility(View.GONE);
-        fab.setImageResource(R.drawable.ic_explore_white_24dp);
+        fab.setImageResource(R.drawable.ic_fab_white);
         isFabExpanded = false;
     }
 
@@ -301,7 +301,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void collapseFab() {
-        fab.setImageResource(R.drawable.ic_explore_white_24dp);
+        fab.setImageResource(R.drawable.ic_fab_white);
         AnimationUtils.fadeOutView(fadedBackgroundView);
 
         isFabExpanded = false;
