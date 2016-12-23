@@ -70,6 +70,27 @@ public interface Api {
     @FormUrlEncoded
     Call<BaseModel<MetaContent>> metaContent(@Field("contentID") String contentId);
 
+    @POST("events/attendEvent/")
+    Call<BaseModel<GenericListDataModel>> attendEvent(@Body Attend attend);
+
+    @POST("user/updateProfile/")
+    Call<BaseModel<GenericListDataModel>> updateUser(@Body EditUser user);
+
+    @POST("user/detail/")
+    @FormUrlEncoded
+    Call<BaseModel<LoginUser>> getUserDetails();
+
+    @POST("user/contentSave/")
+    @FormUrlEncoded
+    Call<BaseModel<GenericListDataModel>> saveContent(@Field("contentID") String contentId,
+                                                      @Field("saveContent") boolean value);
+
+    @POST("user/contentList/")
+    Call<BaseModel<Content>> getSavedTeachingAids(@Body SavedTeachingAidsRequest contentRequest);
+
+    @POST("user/contentList/")
+    Call<BaseModel<Content>> getSavedSelfLearning(@Body SavedSelfLearningRequest contentRequest);
+
     //---------------------------------------------------------------------------------
 
     @POST("user/requestOtp/")
@@ -81,38 +102,18 @@ public interface Api {
     @POST("user/register/")
     Call<BaseModel<RegisterUserResponse>> registerUser(@Body RegisterUser user);
 
-    @POST("user/updateProfile/")
-    Call<BaseModel<GenericListDataModel>> updateUser(@Body EditUser user);
-
     @GET("code/")
     Call<BaseModel<CommonCodeWrapper>> getCodeNameList(@Query("version") String version);
 
-    @POST("user/contentSave/")
-    @FormUrlEncoded
-    Call<BaseModel<GenericListDataModel>> saveContent(@Field("userID") String userId,
-                                                      @Field("contentID") String contentId,
-                                                      @Field("saveContent") boolean value);
 
     @POST("user/saveLanguage/")
     @FormUrlEncoded
     Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("userID") String userId,
                                                        @Field("preferredLanguageCodeID") Integer languageCode);
 
-    @POST("user/detail/")
-    @FormUrlEncoded
-    Call<BaseModel<LoginUser>> getUserDetails(@Field("userID") String userId);
-
-    @POST("events/attendEvent/")
-    Call<BaseModel<GenericListDataModel>> attendEvent(@Body Attend attend);
 
     @POST("events/listEvents/")
     Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);
-
-    @POST("user/contentList/")
-    Call<BaseModel<Content>> getSavedTeachingAids(@Body SavedTeachingAidsRequest contentRequest);
-
-    @POST("user/contentList/")
-    Call<BaseModel<Content>> getSavedSelfLearning(@Body SavedSelfLearningRequest contentRequest);
 
     @GET("news/")
     Call<BaseModel<News>> listNews();

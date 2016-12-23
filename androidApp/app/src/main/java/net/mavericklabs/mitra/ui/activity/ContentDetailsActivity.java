@@ -198,8 +198,8 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
             saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
             isSaved = true;
         }
-        String userId = UserDetailUtils.getUserId(getApplicationContext());
-        RestClient.getApiService("").saveContent(userId,content.getContentID(),isSaved)
+        String token = UserDetailUtils.getToken(getApplicationContext());
+        RestClient.getApiService(token).saveContent(content.getContentID(),isSaved)
                 .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {

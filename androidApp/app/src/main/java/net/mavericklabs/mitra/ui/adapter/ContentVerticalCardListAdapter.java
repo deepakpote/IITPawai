@@ -251,8 +251,8 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
     }
 
     private void removeFromSavedContent(String contentID, final CardViewHolder holder) {
-        String userId = UserDetailUtils.getUserId(context);
-        RestClient.getApiService("").saveContent(userId, contentID ,false)
+        String token = UserDetailUtils.getToken(context);
+        RestClient.getApiService(token).saveContent(contentID ,false)
                 .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
                     @Override
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {

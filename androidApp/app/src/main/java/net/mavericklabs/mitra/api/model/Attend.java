@@ -30,23 +30,12 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Attend {
-    @SerializedName("userID")
-    private String userID;
 
     @SerializedName("eventID")
     private String eventID;
 
-    public Attend(String userID, String eventID) {
-        this.userID = userID;
+    public Attend(String eventID) {
         this.eventID = eventID;
-    }
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
     }
 
     public String getEventID() {
