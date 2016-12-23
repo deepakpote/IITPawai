@@ -317,8 +317,9 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
         Logger.d(" download ");
         String userId = UserDetailUtils.getUserId(context);
         Content content = contents.get(holder.getAdapterPosition());
-        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService("")
-                .download(new ContentDataRequest(userId, content.getContentID()));
+        String token = UserDetailUtils.getToken(context);
+        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService(token)
+                .download(new ContentDataRequest(content.getContentID()));
 
         saveRequest.enqueue(new Callback<BaseModel<ContentDataResponse>>() {
             @Override

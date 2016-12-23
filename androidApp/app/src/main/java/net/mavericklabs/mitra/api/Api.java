@@ -60,6 +60,15 @@ public interface Api {
     @POST("content/like/")
     Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);
 
+    @POST("content/download/")
+    Call<BaseModel<ContentDataResponse>> download(@Body ContentDataRequest request);
+
+    @POST("content/share/")
+    Call<BaseModel<ContentDataResponse>> share(@Body ContentDataRequest request);
+
+    @POST("content/getContentResponse/")
+    @FormUrlEncoded
+    Call<BaseModel<MetaContent>> metaContent(@Field("contentID") String contentId);
 
     //---------------------------------------------------------------------------------
 
@@ -84,10 +93,6 @@ public interface Api {
                                                       @Field("contentID") String contentId,
                                                       @Field("saveContent") boolean value);
 
-    @POST("content/getContentResponse/")
-    @FormUrlEncoded
-    Call<BaseModel<MetaContent>> metaContent(@Field("userID") String userId, @Field("contentID") String contentId);
-
     @POST("user/saveLanguage/")
     @FormUrlEncoded
     Call<BaseModel<GenericListDataModel>> saveLanguage(@Field("userID") String userId,
@@ -108,12 +113,6 @@ public interface Api {
 
     @POST("user/contentList/")
     Call<BaseModel<Content>> getSavedSelfLearning(@Body SavedSelfLearningRequest contentRequest);
-
-    @POST("content/download/")
-    Call<BaseModel<ContentDataResponse>> download(@Body ContentDataRequest request);
-
-    @POST("content/share/")
-    Call<BaseModel<ContentDataResponse>> share(@Body ContentDataRequest request);
 
     @GET("news/")
     Call<BaseModel<News>> listNews();

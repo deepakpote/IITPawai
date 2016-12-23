@@ -30,23 +30,12 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class ContentDataRequest {
-    @SerializedName("userID")
-    private String userID;
 
     @SerializedName("contentID")
     private String contentID;
 
-    public ContentDataRequest(String userID, String contentID) {
-        this.userID = userID;
+    public ContentDataRequest(String contentID) {
         this.contentID = contentID;
-    }
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
     }
 
     public String getContentID() {

@@ -120,9 +120,9 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
     @OnClick(R.id.share_icon)
     void shareContent() {
         Logger.d(" share ");
-        String userId = UserDetailUtils.getUserId(getApplicationContext());
-        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService("")
-                .share(new ContentDataRequest(userId, content.getContentID()));
+        String token = UserDetailUtils.getToken(getApplicationContext());
+        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService(token)
+                .share(new ContentDataRequest(content.getContentID()));
 
         saveRequest.enqueue(new Callback<BaseModel<ContentDataResponse>>() {
             @Override
@@ -257,8 +257,8 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
         if(content != null) {
 
-            String userId = UserDetailUtils.getUserId(getApplicationContext());
-            RestClient.getApiService("").metaContent(userId,content.getContentID())
+            String token = UserDetailUtils.getToken(getApplicationContext());
+            RestClient.getApiService(token).metaContent(content.getContentID())
                     .enqueue(new Callback<BaseModel<MetaContent>>() {
                             @Override
                             public void onResponse(Call<BaseModel<MetaContent>> call, Response<BaseModel<MetaContent>> response) {
