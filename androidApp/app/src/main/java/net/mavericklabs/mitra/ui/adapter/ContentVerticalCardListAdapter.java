@@ -315,7 +315,6 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
 
     private void downloadContent(final CardViewHolder holder) {
         Logger.d(" download ");
-        String userId = UserDetailUtils.getUserId(context);
         Content content = contents.get(holder.getAdapterPosition());
         String token = UserDetailUtils.getToken(context);
         Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService(token)

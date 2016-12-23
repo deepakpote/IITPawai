@@ -755,7 +755,6 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     }
 
     private void sendProfilePhoto(final ProgressDialog progressDialog) {
-        String userId = UserDetailUtils.getUserId(getApplicationContext());
         InputStream in;
         byte[] buf;
         byte[] base64ByteArray;

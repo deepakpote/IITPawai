@@ -79,7 +79,6 @@ public interface Api {
     Call<BaseModel<GenericListDataModel>> updateUser(@Body EditUser user);
 
     @POST("user/detail/")
-    @FormUrlEncoded
     Call<BaseModel<LoginUser>> getUserDetails();
 
     @POST("user/contentSave/")
