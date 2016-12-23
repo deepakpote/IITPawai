@@ -51,6 +51,14 @@ import retrofit2.http.Query;
 
 public interface Api {
 
+    @POST("content/searchTeachingAid/")
+    Call<BaseModel<Content>> searchTeachingAids(@Body TeachingAidsContentRequest contentRequest);
+
+    @POST("content/searchSelfLearning/")
+    Call<BaseModel<Content>> searchSelfLearning(@Body SelfLearningContentRequest contentRequest);
+
+    //---------------------------------------------------------------------------------
+
     @POST("user/requestOtp/")
     Call<BaseModel<GenericListDataModel>> requestOtp(@Body NewUser user);
 
@@ -65,12 +73,6 @@ public interface Api {
 
     @GET("code/")
     Call<BaseModel<CommonCodeWrapper>> getCodeNameList(@Query("version") String version);
-
-    @POST("content/searchTeachingAid/")
-    Call<BaseModel<Content>> searchTeachingAids(@Body TeachingAidsContentRequest contentRequest);
-
-    @POST("content/searchSelfLearning/")
-    Call<BaseModel<Content>> searchSelfLearning(@Body SelfLearningContentRequest contentRequest);
 
     @POST("content/like/")
     Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);

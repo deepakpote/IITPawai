@@ -33,9 +33,6 @@ import java.io.Serializable;
 
 public class TeachingAidsContentRequest implements Serializable{
 
-    @SerializedName("userID")
-    private String userID;
-
     @SerializedName("fileTypeCodeID")
     private Integer fileType;
 
@@ -51,20 +48,11 @@ public class TeachingAidsContentRequest implements Serializable{
     @SerializedName("pageNumber")
     private int pageNumber;
 
-    public TeachingAidsContentRequest(String userID, int fileType, String language, String subject, String grade) {
-        this.userID = userID;
+    public TeachingAidsContentRequest(int fileType, String language, String subject, String grade) {
         this.fileType = fileType;
         this.language = language;
         this.subject = subject;
         this.grade = grade;
-    }
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
     }
 
     public Integer getFileType() {

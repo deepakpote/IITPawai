@@ -138,9 +138,9 @@ public class HomeFragment extends Fragment{
     private void loadPopularTeachingAids() {
         //TODO popular resources
 
-        TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(UserDetailUtils.getUserId(getContext()),
-                108100, "", "", "");
-        RestClient.getApiService("").searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+        TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(108100, "", "", "");
+        String token = UserDetailUtils.getToken(getContext());
+        RestClient.getApiService(token).searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 Logger.d(" Succes");
@@ -166,9 +166,9 @@ public class HomeFragment extends Fragment{
 
     private void loadPopularSelfLearning() {
         //TODO popular resources
-        SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(UserDetailUtils.getUserId(getContext()),
-                "101100", "");
-        RestClient.getApiService("").searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+        SelfLearningContentRequest contentRequest = new SelfLearningContentRequest("101100", "");
+        String token = UserDetailUtils.getToken(getContext());
+        RestClient.getApiService(token).searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 Logger.d(" Succes");
