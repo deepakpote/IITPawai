@@ -12,6 +12,7 @@ from events.serializers import eventQuerySerializer,eventSerializer,userEventMod
 from events.CalenderService import EventsCalender
 from users.models import user
 from events.models import userEvent
+from commons.views import getUserIDFromAuthToken
 
 class EventViewSet(viewsets.ViewSet):
     """
@@ -55,7 +56,10 @@ class EventViewSet(viewsets.ViewSet):
     @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def attendEvent(self, request):
         eventID = request.data.get('eventID')
-        userID = request.data.get('userID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
         # Check if userID is passed in post param
         if not eventID:
             return Response({"response_message": constants.messages.event_attend_eventid_cannot_be_empty,

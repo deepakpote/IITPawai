@@ -22,9 +22,10 @@ from contents.models import content
 from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs
 from time import gmtime, strftime
 from contents.serializers import contentSerializer
-from commons.views import getCodeIDs, getArrayFromCommaSepString
+from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from commons.models import code 
 from pyfcm import FCMNotification
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -317,7 +318,6 @@ class UserViewSet(viewsets.ModelViewSet):
     @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def updateProfile(self,request):
         # Get input data
-        userID = request.data.get('userID') 
         phoneNumber = request.data.get('phoneNumber') 
         emailID = request.data.get('emailID') 
         userName = request.data.get('userName')
@@ -325,6 +325,10 @@ class UserViewSet(viewsets.ModelViewSet):
         userTypeCodeID = request.data.get('userTypeCodeID')
         preferredLanguageCodeID = request.data.get('preferredLanguageCodeID') 
         districtCodeID = request.data.get('districtCodeID') 
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
         
         # validate user information
         try:
@@ -431,7 +435,11 @@ class UserViewSet(viewsets.ModelViewSet):
             returns:
                 Response: response_message and user details
         """
-        userID = request.data.get("userID")
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+        
         if not userID:
             return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
                              "data": []},
@@ -477,9 +485,12 @@ class UserViewSet(viewsets.ModelViewSet):
             Response: Save the user content detail
 
         """
-        userID = request.data.get("userID")
         contentID = request.data.get("contentID")
         saveContent = request.data.get("saveContent")
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
         
         # check userID is passed as parameter in post
         if not userID:
@@ -549,7 +560,6 @@ class UserViewSet(viewsets.ModelViewSet):
             Response: list of content
 
         """
-        userID = request.data.get("userID")
         contentTypeCodeID = request.data.get("contentTypeCodeID")
         
         subjectCodeIDs = request.data.get('subjectCodeIDs') 
@@ -558,6 +568,10 @@ class UserViewSet(viewsets.ModelViewSet):
         
         topicCodeIDs = request.data.get('topicCodeIDs') 
         languageCodeIDs = request.data.get('languageCodeIDs')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
 
         # check userID is passed as parameter 
         if not userID:
@@ -654,8 +668,11 @@ class UserViewSet(viewsets.ModelViewSet):
     @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def saveLanguage(self,request):
         # Get input data
-        userID = request.data.get('userID') 
         preferredLanguageCodeID = request.data.get('preferredLanguageCodeID') 
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
         
         # check userID is passed as parameter 
         if not userID:
@@ -694,8 +711,11 @@ class UserViewSet(viewsets.ModelViewSet):
         returns:
             response : photo url successfully saved in database
         """
-        userID = request.data.get('userID')
         byteArrayData = request.data.get('byteArray')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
 
         # fileName = None
         # check userID is passed as parameter in post method

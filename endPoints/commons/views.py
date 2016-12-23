@@ -8,6 +8,7 @@ from commons.models import code , news
 from commons.serializers import codeSerializer , newsSerializer 
 from mitraEndPoints import constants
 from datetime import datetime
+from users.models import token
  
  
 class CodeViewSet(viewsets.ModelViewSet):
@@ -85,3 +86,20 @@ def getArrayFromCommaSepString(CommaSepString):
         return arrOut
     
     return arrOut
+
+"""
+Common function used to get the userID from authToken.
+"""   
+def getUserIDFromAuthToken(authToken):
+    
+    #Check input token exists or not.
+    try:
+        objToken= token.objects.get(token = authToken)
+    except token.DoesNotExist:
+        #If no token exists. return zero
+        return 0
+    
+    # Convert userID to int.
+    userID = int(objToken.user.userID)
+    # return userID
+    return userID
