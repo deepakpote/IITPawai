@@ -15,4 +15,6 @@ public interface Constants {
     int FileTypePDF = 108104;
     int ContentTypeTeachingAids = 107100;
     int ContentTypeSelfLearning = 107101;
+    int LanguageEnglish = 101100;
+    int LanguageMarathi = 101101;
 }
