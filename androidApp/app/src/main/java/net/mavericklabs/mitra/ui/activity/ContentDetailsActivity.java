@@ -90,6 +90,9 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
     @BindView(R.id.requirements_grid_view)
     RecyclerView requirementsGridView;
 
+    @BindView(R.id.content_title)
+    TextView title;
+
     @BindView(R.id.author_name)
     TextView authorName;
 
@@ -365,6 +368,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                 loadSimilarSelfLearning();
             }
 
+            title.setText(content.getTitle());
             authorName.setText(content.getAuthor());
             description.setText(content.getInstruction());
 
