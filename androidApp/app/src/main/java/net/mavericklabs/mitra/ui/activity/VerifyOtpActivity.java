@@ -246,6 +246,10 @@ public class VerifyOtpActivity extends AppCompatActivity {
                                 dbUser.setTopics(dbTopic);
                             }
 
+                            if(!StringUtils.isEmpty(user.getPhotoUrl())) {
+                                dbUser.setProfilePhotoPath(user.getPhotoUrl());
+                            }
+
                             UserDetailUtils.setEnteredInformation(getApplicationContext(),Boolean.TRUE);
 
                             Realm realm = Realm.getDefaultInstance();
