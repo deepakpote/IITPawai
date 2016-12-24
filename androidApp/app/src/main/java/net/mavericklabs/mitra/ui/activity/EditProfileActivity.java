@@ -1,16 +1,20 @@
 package net.mavericklabs.mitra.ui.activity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,7 +33,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.api.model.BaseModel;
@@ -64,11 +67,8 @@ import net.mavericklabs.mitra.utils.UserDetailUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -79,8 +79,6 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -113,22 +111,25 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     private List<BaseObject> selectedSubjectsList = new ArrayList<>();
     private List<BaseObject> selectedTopicsList = new ArrayList<>();
     private String profilePhotoPath;
+    private final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 33;
 
     @OnClick(R.id.profile_photo_image_view)
     void pickProfilePhoto() {
-        File file = new File(Environment.getExternalStorageDirectory(),
-                "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
-        imageCaptureUri = Uri.fromFile(file);
 
-        try {
-            Intent pickIntent = new Intent();
-            pickIntent.setType("image/*");
-            pickIntent.setAction(Intent.ACTION_PICK);
-            Intent chooserIntent = Intent.createChooser(pickIntent, getString(R.string.choose_profile_photo));
-            startActivityForResult(chooserIntent, PICK_PROFILE_PHOTO);
-        } catch (Exception e) {
-            e.printStackTrace();
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(EditProfileActivity.this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(EditProfileActivity.this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+
+        } else {
+            showPhotoPicker();
         }
+
     }
 
     @OnClick(R.id.add_grades)
@@ -197,6 +198,21 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             isAdditionalViewExpanded = true;
             moreImage.setVisibility(View.GONE);
             lessImage.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    showPhotoPicker();
+                }
+                return;
+            }
         }
     }
 
@@ -595,9 +611,9 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         if(nameEditText.getText().length() == 0) {
             return false;
-        } else if(getSelectedDistrictID().equals("0")) {
+        } else if(getSelectedDistrictID() == 0) {
             return false;
-        } else if(getSelectedUserTypeId().equals("0")) {
+        } else if(getSelectedUserTypeId()== 0) {
             return false;
         }
         return true;
@@ -809,8 +825,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         }
     }
 
-    public String getPath(Uri uri)
-    {
+    public String getPath(Uri uri) {
         String[] projection = { MediaStore.Images.Media.DATA };
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
         if (cursor == null) return null;
@@ -819,5 +834,23 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         String s=cursor.getString(column_index);
         cursor.close();
         return s;
+    }
+
+    private void showPhotoPicker() {
+        File file = new File(Environment.getExternalStorageDirectory(),
+                "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+        imageCaptureUri = Uri.fromFile(file);
+
+        try {
+
+            Intent pickIntent = new Intent();
+            pickIntent.setType("image/*");
+            pickIntent.setAction(Intent.ACTION_PICK);
+            Intent chooserIntent = Intent.createChooser(pickIntent, getString(R.string.choose_profile_photo));
+            startActivityForResult(chooserIntent, PICK_PROFILE_PHOTO);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
