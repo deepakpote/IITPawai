@@ -124,12 +124,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
             Intent pickIntent = new Intent();
             pickIntent.setType("image/*");
             pickIntent.setAction(Intent.ACTION_PICK);
-
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageCaptureUri);
-
             Intent chooserIntent = Intent.createChooser(pickIntent, getString(R.string.choose_profile_photo));
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{intent});
             startActivityForResult(chooserIntent, PICK_PROFILE_PHOTO);
         } catch (Exception e) {
             e.printStackTrace();
