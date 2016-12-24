@@ -34,12 +34,6 @@
                     android:textColor="@color/colorWhite"
                     android:textSize="18sp"
                     />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="00 videos watched, 00 resources saved"
-                    android:layout_marginTop="16dp"
-                    />
 
                 <TextView
                     android:id="@+id/designation_and_district_text"
