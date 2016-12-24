@@ -99,9 +99,6 @@ public class HomeActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         tabLayout = (TabLayout) findViewById(R.id.tabs_my_resources);
 
-        RealmResults<DbUser> user = Realm.getDefaultInstance()
-                .where(DbUser.class).findAll();
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setupFAB();
@@ -121,36 +118,19 @@ public class HomeActivity extends AppCompatActivity {
                 });
 
         selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_HOME));
-        View headerView = navigationView.getHeaderView(0);
-        TextView userNameTextView = (TextView) headerView.findViewById(R.id.nav_header_user_name);
-        ImageView profilePhoto = (ImageView) headerView.findViewById(R.id.nav_header_image);
-        if(user.size() ==1) {
-            userNameTextView.setText(user.get(0).getName());
-            if(!StringUtils.isEmpty(user.get(0).getProfilePhotoPath())) {
-                Glide.with(this).load(user.get(0).getProfilePhotoPath())
-                        .bitmapTransform(new CropCircleTransformation(getApplicationContext()))
-                        .into(profilePhoto);
-            } else {
-                Glide.with(this).load(R.drawable.placeholder_user).
-                        bitmapTransform(new CropCircleTransformation(getApplicationContext())).
-                        into(profilePhoto);
-            }
-        }
-        headerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_PROFILE));
-            }
-        });
         Logger.d("get intent get extras " + getIntent().getExtras());
         if(getIntent().getExtras() != null) {
             Bundle bundle = getIntent().getExtras();
             boolean showNotificationView = bundle.getBoolean("show_notification");
+            boolean showProfile = bundle.getBoolean("show_profile");
             Logger.d("show notification : " + showNotificationView);
             if(showNotificationView){
                 Logger.d("select drawer item..");
                 Logger.d("menu item is " + navigationView.getMenu().getItem(DRAWER_ITEM_NOTIFICATION).getTitle());
                 selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_NOTIFICATION));
+            }
+            if (showProfile) {
+                selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_PROFILE));
             }
 
         }
@@ -236,6 +216,31 @@ public class HomeActivity extends AppCompatActivity {
         fadedBackgroundView.setVisibility(View.GONE);
         fab.setImageResource(R.drawable.ic_fab_white);
         isFabExpanded = false;
+
+        RealmResults<DbUser> user = Realm.getDefaultInstance()
+                .where(DbUser.class).findAll();
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView userNameTextView = (TextView) headerView.findViewById(R.id.nav_header_user_name);
+        ImageView profilePhoto = (ImageView) headerView.findViewById(R.id.nav_header_image);
+        if(user.size() ==1) {
+            userNameTextView.setText(user.get(0).getName());
+            if(!StringUtils.isEmpty(user.get(0).getProfilePhotoPath())) {
+                Glide.with(this).load(user.get(0).getProfilePhotoPath())
+                        .bitmapTransform(new CropCircleTransformation(getApplicationContext()))
+                        .into(profilePhoto);
+            } else {
+                Glide.with(this).load(R.drawable.placeholder_user).
+                        bitmapTransform(new CropCircleTransformation(getApplicationContext())).
+                        into(profilePhoto);
+            }
+        }
+        headerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_PROFILE));
+            }
+        });
     }
 
     private void setupFAB() {

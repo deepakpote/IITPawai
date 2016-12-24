@@ -474,11 +474,14 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
                     if(!StringUtils.isEmpty(profilePhotoPath)) {
                         Logger.d("1. in send profile photo..");
-                        sendProfilePhoto(progressDialog);
+                        sendProfilePhoto(progressDialog,true);
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.profile_updated,Toast.LENGTH_LONG).show();
                         progressDialog.dismiss();
                         Intent home = new Intent(EditProfileActivity.this , HomeActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean("show_profile",true);
+                        home.putExtras(bundle);
                         startActivity(home);
                         finishAffinity();
                     }
@@ -738,10 +741,15 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                         UserDetailUtils.saveUserId(serverResponse.getUserID(), getApplicationContext());
                         UserDetailUtils.saveToken(token,getApplicationContext());
 
-                        //move to next activity
-                        Intent verifyOtp = new Intent(EditProfileActivity.this,HomeActivity.class);
-                        startActivity(verifyOtp);
-                        finishAffinity();
+                        if(!StringUtils.isEmpty(profilePhotoPath)) {
+                            Logger.d("1. in send profile photo..");
+                            sendProfilePhoto(progressDialog,false);
+                        } else {
+                            //move to next activity
+                            Intent verifyOtp = new Intent(EditProfileActivity.this,HomeActivity.class);
+                            startActivity(verifyOtp);
+                            finishAffinity();
+                        }
                     }
                 }
             }
@@ -754,9 +762,9 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         });
     }
 
-    private void sendProfilePhoto(final ProgressDialog progressDialog) {
+    private void sendProfilePhoto(final ProgressDialog progressDialog, final boolean isEdit) {
         InputStream in;
-        byte[] buf;
+        final byte[] buf;
         byte[] base64ByteArray;
         try {
             String path = getPath(Uri.parse(profilePhotoPath));
@@ -784,7 +792,15 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                 @Override
                 public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
                     Logger.d("response : " + response.message());
+                    Intent home = new Intent(EditProfileActivity.this , HomeActivity.class);
+                    if(isEdit) {
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean("show_profile",true);
+                        home.putExtras(bundle);
+                    }
                     progressDialog.dismiss();
+                    startActivity(home);
+                    finishAffinity();
                 }
 
                 @Override
