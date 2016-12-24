@@ -110,6 +110,8 @@
     <string name="error_invalid_otp">Invalid OTP</string>
     <string name="choose_profile_photo">Choose profile photo</string>
     <string name="error_code_list">Oops.. There was some problem. Please check your internet connection or relaunch the MITRA app.</string>
+    <string name="message_share">"Sharing content from Mitra "</string>
+    <string name="message_no_notifications">No Notifications</string>
 
 
 </resources>

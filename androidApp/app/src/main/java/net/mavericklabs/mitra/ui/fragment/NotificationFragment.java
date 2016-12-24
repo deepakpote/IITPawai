@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.database.model.DbNotification;
@@ -29,6 +30,9 @@ public class NotificationFragment extends Fragment {
     @BindView(R.id.notification_recycler_view)
     RecyclerView notificationRecyclerView;
 
+    @BindView(R.id.no_notifications_text)
+    TextView noNotificationsText;
+
     public NotificationFragment() {
         super();
     }
@@ -46,6 +50,10 @@ public class NotificationFragment extends Fragment {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<DbNotification> notifications = realm.where(DbNotification.class).findAll();
         Logger.d("notification size : " + notifications.size());
+        if(notifications.isEmpty()) {
+            notificationRecyclerView.setVisibility(View.GONE);
+            noNotificationsText.setVisibility(View.VISIBLE);
+        }
         notificationRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         notificationRecyclerView.setAdapter(new NotificationAdapter(getContext(),notifications));
     }

@@ -137,7 +137,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                     List<ContentDataResponse> responseList = response.body().getData();
                     Logger.d(" file " + responseList.get(0).getFileName());
 
-                    String shareBody = "Here is the share content body " + responseList.get(0).getFileName();
+                    String shareBody = getString(R.string.message_share) + responseList.get(0).getFileName();
                     Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                     sharingIntent.setType("text/plain");
                     sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "MITRA " + content.getTitle());
