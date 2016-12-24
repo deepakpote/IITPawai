@@ -26,7 +26,9 @@ import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.listener.OnMonthSelectedListener;
+import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DateUtils;
+import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 
 import java.text.DateFormatSymbols;
@@ -117,7 +119,12 @@ public class CalendarView extends RelativeLayout {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         String currentMonth = new DateFormatSymbols().getMonths()[calendar.get(Calendar.MONTH)];
-        monthYearSelector.setText(currentMonth.substring(0,3) + " " + calendar.get(Calendar.YEAR));
+        if(LanguageUtils.getCurrentLanguage() == Constants.LanguageEnglish) {
+            monthYearSelector.setText(currentMonth.substring(0,3) + " " + calendar.get(Calendar.YEAR));
+        } else {
+            monthYearSelector.setText(currentMonth + " " + calendar.get(Calendar.YEAR));
+        }
+
         monthYearSelector.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -190,8 +197,13 @@ public class CalendarView extends RelativeLayout {
                 currentSelectedYear = datePicker.getYear();
                 currentDate.set(currentSelectedYear,currentSelectedMonth,1);
                 String monthName = new DateFormatSymbols().getMonths()[currentSelectedMonth];
-                String substring = monthName.substring(0,3);
-                monthYearSelector.setText(substring + " " + currentSelectedYear);
+                if(LanguageUtils.getCurrentLanguage() == Constants.LanguageEnglish) {
+                    String substring = monthName.substring(0,3);
+                    monthYearSelector.setText(substring + " " + currentSelectedYear);
+                } else {
+                    monthYearSelector.setText(monthName + " " + currentSelectedYear);
+                }
+
                 datePickerDialog.dismiss();
                 updateCalendar();
                 if(onMonthSelectedListener != null) {

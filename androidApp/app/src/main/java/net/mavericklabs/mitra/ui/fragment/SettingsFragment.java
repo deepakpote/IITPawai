@@ -27,6 +27,7 @@ import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
@@ -72,7 +73,19 @@ public class SettingsFragment extends Fragment {
         languageList = CommonCodeUtils.getLanguages();
         languageSpinner.setAdapter(new SpinnerArrayAdapter(getContext(),R.layout.custom_spinner_dropdown_item
                 ,languageList));
-        final int currentLanguageIndex = getCurrentLanguageIndex();
+
+        int languageCode = LanguageUtils.getCurrentLanguage();
+        int languageIndex = 0;
+        int i = 0;
+        for(CommonCode language : languageList) {
+            if (language.getCodeID().equals(languageCode)) {
+                languageIndex = i;
+            }
+            i++;
+        }
+
+        final int currentLanguageIndex = languageIndex;
+
         languageSpinner.setSelection(currentLanguageIndex ,false);
         languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -139,18 +152,7 @@ public class SettingsFragment extends Fragment {
             language = "mr";
         }
 
-        Locale myLocale = new Locale(language);
-        Resources res = getResources();
-        DisplayMetrics dm = res.getDisplayMetrics();
-        Configuration conf = res.getConfiguration();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            conf.setLocale(myLocale);
-        } else {
-            conf.locale = myLocale;
-        }
-
-        //Deprecated api - but still works. workaround is complicated
-        res.updateConfiguration(conf, dm);
+        LanguageUtils.setLocale(language, getContext());
 
         //Goto Home Activity
         Intent intent = new Intent(getContext(), HomeActivity.class);
@@ -165,18 +167,5 @@ public class SettingsFragment extends Fragment {
         user.setPreferredLanguage(code.getCodeID());
         realm.insertOrUpdate(user);
         realm.commitTransaction();
-    }
-
-    private int getCurrentLanguageIndex() {
-        RealmResults<DbUser> dbUser = Realm.getDefaultInstance().where(DbUser.class).findAll();
-        DbUser user = dbUser.get(0);
-        int i = 0;
-        for(CommonCode language : languageList) {
-            if (language.getCodeID().equals(user.getPreferredLanguage())) {
-                return i;
-            }
-            i++;
-        }
-        return 0;
     }
 }

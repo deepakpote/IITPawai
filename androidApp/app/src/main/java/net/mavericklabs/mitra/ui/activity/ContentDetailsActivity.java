@@ -338,7 +338,8 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
                 List<Requirements> requirementsList = new ArrayList<>();
                 for (String requirement : list) {
-                    requirementsList.add(new Requirements(R.drawable.ic_menu_camera, requirement));
+                    //TODO : this wil be used if we use actual icons for requirement
+                    requirementsList.add(new Requirements(R.drawable.ic_add_accent_18dp, requirement));
                 }
 
                 GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);

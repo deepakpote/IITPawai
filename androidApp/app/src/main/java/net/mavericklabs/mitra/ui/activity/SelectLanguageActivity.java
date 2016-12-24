@@ -42,6 +42,7 @@ import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.CommonCodeWrapper;
 import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 
@@ -137,18 +138,7 @@ public class SelectLanguageActivity extends AppCompatActivity {
     }
 
     private void setLocale(String lang) {
-        Locale myLocale = new Locale(lang, Locale.UK.getCountry());
-        Resources res = getResources();
-        DisplayMetrics dm = res.getDisplayMetrics();
-        Configuration conf = res.getConfiguration();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            conf.setLocale(myLocale);
-        } else {
-            conf.locale = myLocale;
-        }
-
-        //Deprecated api - but still works. workaround is complicated
-        res.updateConfiguration(conf, dm);
+        LanguageUtils.setLocale(lang, getApplicationContext());
 
         RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
                 .where(CommonCode.class).findAll();

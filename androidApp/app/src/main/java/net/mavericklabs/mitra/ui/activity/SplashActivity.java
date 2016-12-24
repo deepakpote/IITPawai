@@ -9,13 +9,20 @@ import android.support.v7.widget.Toolbar;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -23,6 +30,22 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        int languageCode = LanguageUtils.getCurrentLanguage();
+        RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
+                .where(CommonCode.class).findAll();
+        if(!commonCodes.isEmpty()) {
+            String languageName = CommonCodeUtils.getObjectFromCode(languageCode).getCodeNameEnglish();
+            Logger.d(" code " + CommonCodeUtils.getObjectFromCode(languageCode));
+            String lang = "en";
+            if(languageName.equals("Marathi")) {
+                lang = "mr";
+            }
+
+            LanguageUtils.setLocale(lang, getApplicationContext());
+        }
+
+
         Thread timerThread = new Thread() {
             public void run() {
                 try {
