@@ -114,7 +114,7 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Content
 
     @Override
     public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_item_card_view,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_card_view_vertical,parent,false);
         return new CardViewHolder(view);
     }
 
