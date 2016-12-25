@@ -243,10 +243,13 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
                         adapter.setShowDeleteOption(true);
                         contentRecyclerView.setAdapter(adapter);
 
-                        fragment.subtitle0.setText(getResources().getQuantityString(R.plurals.resources_saved,
-                                contents.size(), contents.size()));
-                        contentRecyclerView.setVisibility(View.VISIBLE);
-                        errorView.setVisibility(View.GONE);
+                        if(fragment.isAdded()) {
+                            fragment.subtitle0.setText(getResources().getQuantityString(R.plurals.resources_saved,
+                                    contents.size(), contents.size()));
+                            contentRecyclerView.setVisibility(View.VISIBLE);
+                            errorView.setVisibility(View.GONE);
+                        }
+
 
                     } else {
 
@@ -257,8 +260,11 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
                         errorView.setVisibility(View.VISIBLE);
                         errorView.setText(error);
 
-                        fragment.subtitle0.setText(getResources().getQuantityString(R.plurals.resources_saved,
-                                0, 0));
+                        if(fragment.isAdded()) {
+                            fragment.subtitle0.setText(getResources().getQuantityString(R.plurals.resources_saved,
+                                    0, 0));
+                        }
+
                     }
 
                     return;

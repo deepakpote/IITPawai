@@ -219,8 +219,9 @@ public class MyResourcesSelfLearningFragment extends BaseContentFragment {
                         contentRecyclerView.setAdapter(adapter);
                         contentRecyclerView.setVisibility(View.VISIBLE);
                         errorView.setVisibility(View.GONE);
-
-                        fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved, contents.size(), contents.size()));
+                        if(fragment.isAdded()) {
+                            fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved, contents.size(), contents.size()));
+                        }
 
                     } else {
 
@@ -230,8 +231,9 @@ public class MyResourcesSelfLearningFragment extends BaseContentFragment {
                         contentRecyclerView.setVisibility(View.GONE);
                         errorView.setVisibility(View.VISIBLE);
                         errorView.setText(error);
-
-                        fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved, 0, 0));
+                        if(fragment.isAdded()) {
+                            fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved, 0, 0));
+                        }
                     }
 
                     return;
