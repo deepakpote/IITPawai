@@ -475,7 +475,8 @@ def saveContentResponse(objContent , objUser, contentResponseType , hasLiked):
         if hasLiked != None:
             # If any response for content exists or not.
             try:
-                objContentResponse = contentResponse.objects.get(content = objContent)
+                #Check response for content exists by respective user.
+                objContentResponse = contentResponse.objects.get(content = objContent , user = objUser)
             except contentResponse.DoesNotExist:
                 #If not exists then make entry for content response
                 contentResponse(user = objUser , content = objContent , hasLiked = hasLiked ).save()
@@ -489,7 +490,8 @@ def saveContentResponse(objContent , objUser, contentResponseType , hasLiked):
     elif contentResponseType == constants.mitraCode.download :
         
         try:
-            objContentResponse = contentResponse.objects.get(content = objContent)
+            #Check response for content exists by respective user.
+            objContentResponse = contentResponse.objects.get(content = objContent , user = objUser)
         except contentResponse.DoesNotExist:
             #If not exists then make entry for content response
             contentResponse(user = objUser , content = objContent , downloadCount = 1 ).save()
@@ -507,7 +509,8 @@ def saveContentResponse(objContent , objUser, contentResponseType , hasLiked):
     elif contentResponseType == constants.mitraCode.share :
                 
         try:
-            objContentResponse = contentResponse.objects.get(content = objContent)
+            #Check response for content exists by respective user.
+            objContentResponse = contentResponse.objects.get(content = objContent , user = objUser)
         except contentResponse.DoesNotExist:
         #If not exists then make entry for content response
             contentResponse(user = objUser , content = objContent , sharedCount = 1 ).save()
