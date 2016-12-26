@@ -87,7 +87,7 @@ class EventViewSet(viewsets.ViewSet):
         if userEvent.objects.filter(event = eventID, user = objUser).exists():
             return Response({"response_message": constants.messages.event_attend_user_already_attending_event,
                              "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
+                            status = status.HTTP_200_OK)
         
         objUserEvent = userEvent(event = eventID, user = objUser)
         objUserEvent.save()
