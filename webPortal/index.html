@@ -1,11 +1,14 @@
 <html>
 <title>Mitra WebPortal Admin page</title>
 <head>
-<script src="js/jquery-3.1.1.min.js"></script>
-<script src="js/jquery.cookie.js"></script>
-<link rel="stylesheet" type="text/css" href="css/styles.css">
+<script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-route.min.js"></script>
+<script src="js/mitra.webPortal.js"></script>
+<script src="js/login/service/mitra.loginService.js"></script>
+<script src="js/login/controller/mitra.loginController.js"></script>
+<link rel="stylesheet" type="text/css" href="css/styles.css?c=1">
 <script>
-$(document).ready(function(){
+/*$(document).ready(function(){
 	if($.cookie("utoken") == undefined){
 		$("#beforeLogin").show();
 		$("#afterLogin").hide();
@@ -23,7 +26,7 @@ $(document).ready(function(){
 			if(confirm("Do you want to send the notifications to all the users?")){
 				$.ajax({
 					url:window.location.origin + "/user/sendDataNotificationsToAll/",
-					/*url:window.location.origin + "/user/sendDisplayNotificationsToAll/",*/
+					url:window.location.origin + "/user/sendDisplayNotificationsToAll/",
 					type:"post",
 					crossDomain: true,
 					header:"Access-Control-Allow-Origin: *",
@@ -84,12 +87,42 @@ $(document).ready(function(){
 		$.cookie("utoken",null);
 		window.location.reload();
 	});
-});
+});*/
 </script>
 
 </head>
-<body>
-	<div id="beforeLogin" class="beforeLogin">
+<body ng-app="webPortal">
+<div class="loginController" ng-controller="loginController">
+	<table>
+		<tr>
+			<td>
+				Enter Phone Number
+			</td>
+			<td>
+				<input type="text" id="phoneno" name="phonno" ng-model="phoneno" required>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Enter Passkey
+			</td>
+			<td>
+				<input type="password" id="passkey" name="passkey" ng-model="passkey" required>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<input type="button" class="button" id="login" value="Login" ng-click="validate()">
+			</td>
+		</tr>
+	</table>
+</div>
+
+
+
+
+
+<!-- 	<div id="beforeLogin" class="beforeLogin">
 		<div class="error"></div>
 		<table>
 			<tr>
@@ -147,5 +180,8 @@ $(document).ready(function(){
 			</table>
 		</div>
 	</div>
+	
+	
+	 -->
 </body>
 </html>

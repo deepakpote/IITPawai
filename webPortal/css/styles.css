@@ -30,19 +30,19 @@ body{
 	box-shadow: 2px 1px 1px #888888;
 	cursor: pointer;
 }
-.beforeLogin{
+.loginController{
 	background: url("../images/LaunchLoad.png") center center fixed;
 	display: block;
 	width: 100%;
 	height: 100%;
 }
 
-.beforeLogin table{
+.loginController table{
 	padding-left: 40%;
 	padding-top: 10px;
 }
 
-.beforeLogin .error{
+.loginController .error{
 	color: red;
 	padding-left: 40%;
 	padding-top: 10%;
