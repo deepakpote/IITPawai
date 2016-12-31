@@ -128,8 +128,8 @@ public class MyResourcesSelfLearningFragment extends BaseContentFragment {
         final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getLanguages());
 
 //        //Header - not a valid value
-        topics.add(0, new CommonCode(0, 0,"Topic", "Topic", 0));
-        languages.add(0,new CommonCode(0,0,"Language","Language",0));
+        topics.add(0, new CommonCode(0, 0,getString(R.string.topic_only), getString(R.string.topic_only), 0));
+        languages.add(0,new CommonCode(0,0,getString(R.string.language),getString(R.string.language),0));
 
         SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(),
                 R.layout.custom_spinner_item_header,

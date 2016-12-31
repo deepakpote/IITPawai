@@ -112,6 +112,10 @@
     <string name="error_code_list">Oops.. There was some problem. Please check your internet connection or relaunch the MITRA app.</string>
     <string name="message_share">"Sharing content from Mitra "</string>
     <string name="message_no_notifications">No Notifications</string>
+    <string name="subject">Subject</string>
+    <string name="topic_only">Topic</string>
+    <string name="language">Language</string>
+    <string name="type">Type</string>
 
 
 </resources>

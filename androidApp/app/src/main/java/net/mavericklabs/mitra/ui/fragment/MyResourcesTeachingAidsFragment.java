@@ -125,9 +125,9 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
         final List<CommonCode> types = new ArrayList<>(CommonCodeUtils.getFileTypes());
 
         //Header - not a valid value
-        subjects.add(0, new CommonCode(0, 0,"Subject", "Subject", 0));
-        grades.add(0,new CommonCode(0,0,"Grade","Grade",0));
-        types.add(0,new CommonCode(0,0,"Type","Type",0));
+        subjects.add(0, new CommonCode(0, 0,getString(R.string.subject), getString(R.string.subject), 0));
+        grades.add(0,new CommonCode(0,0,getString(R.string.grade),getString(R.string.grade),0));
+        types.add(0,new CommonCode(0,0,getString(R.string.type),getString(R.string.type),0));
 
 
         SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
