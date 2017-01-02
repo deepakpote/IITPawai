@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -785,7 +787,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                 in = new FileInputStream(path);
             }
             Bitmap imageBitmap = BitmapFactory.decodeStream(in);
-            imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 64, 64, false);
+            imageBitmap = ThumbnailUtils.extractThumbnail(imageBitmap, 64, 64);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
