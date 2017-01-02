@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -183,9 +184,15 @@ public class CalendarView extends RelativeLayout {
         final DatePicker datePicker = (DatePicker) dialogLayout.findViewById(R.id.date_picker);
         datePicker.updateDate(currentSelectedYear, currentSelectedMonth, 1);
         Button doneButton = (Button) dialogLayout.findViewById(R.id.done_button);
-        if(datePicker != null) {
+        Logger.d(" country def " + Locale.getDefault().getCountry());
+        if(Locale.getDefault().getCountry().equals("US")) {
+            //Date picker is of format: Month - Day - Year. Hide day (1)
+            ((ViewGroup)((ViewGroup)(datePicker.getChildAt(0))).getChildAt(0)).getChildAt(1).setVisibility(GONE);
+        } else {
+            //Date picker is of format: Day - Month - Year. Hide day (0)
             ((ViewGroup)((ViewGroup)(datePicker.getChildAt(0))).getChildAt(0)).getChildAt(0).setVisibility(GONE);
         }
+
         final AlertDialog datePickerDialog = new AlertDialog.Builder(getContext())
                 .setView(dialogLayout)
                 .create();
