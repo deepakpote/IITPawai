@@ -37,8 +37,7 @@
                 android:id="@+id/file_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:contentDescription="pdf"/>
+                android:layout_centerInParent="true"/>
 
             <TextView
                 android:id="@+id/content_title"
@@ -60,7 +59,6 @@
             android:id="@+id/details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Subject | Grade"
             android:textColor="@color/colorAccent"
             android:layout_margin="16dp"/>
 

@@ -17,7 +17,6 @@
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:textSize="18sp"
-            android:text="Dec 2016"
             />
         <ImageView
             android:id="@+id/drop_down_image_view"
@@ -36,7 +35,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:text="6 trainings this month"
             android:textColor="@color/colorWhite"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp" />

@@ -85,7 +85,7 @@ public class CustomBottomSheetDialogFragment extends BottomSheetDialogFragment {
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
                         if(response.isSuccessful()) {
                             Logger.d("attend event..");
-                            Toast.makeText(getContext(), "You have signed up to attend " + eventName, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), getString(R.string.toast_attend, eventName), Toast.LENGTH_LONG).show();
                         } else {
                             Logger.d(" not success");
                         }

@@ -141,7 +141,6 @@ public class MyResourcesFragment extends Fragment{
                 title0.setText(getResources().getString(R.string.teaching_aids));
 
                 subtitle0 = (TextView) tab0.getCustomView().findViewById(R.id.subtitle);
-                //subtitle0.setText("10 resources saved");
 
                 //Tab0 is initially selected
                 title0.setTextColor(getResources().getColor(R.color.colorAccent));
@@ -158,7 +157,6 @@ public class MyResourcesFragment extends Fragment{
                 title1.setText(getResources().getString(R.string.self_learning));
 
                 subtitle1 = (TextView) tab1.getCustomView().findViewById(R.id.subtitle);
-                //subtitle1.setText("5 resources saved");
 
                 //Tab1 is initially not selected
                 subtitle1.setVisibility(View.GONE);
