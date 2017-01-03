@@ -71,13 +71,13 @@ public class VerifyOtpActivity extends AppCompatActivity {
 
             AlertDialog dialog = new AlertDialog.Builder(VerifyOtpActivity.this)
                                         .setMessage(R.string.edit_your_phone_number)
-                                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 VerifyOtpActivity.super.onBackPressed();
                                             }
                                         })
-                                        .setNegativeButton("No",null)
+                                        .setNegativeButton(getString(R.string.no),null)
                                         .create();
             dialog.show();
             return true;

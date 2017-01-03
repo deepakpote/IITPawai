@@ -103,4 +103,5 @@
     <string name="school_udise">शाळेचा युडायस</string>
     <string name="toast_attend">आपण %1$s ला उपस्थित राहण्यासाठी साइन अप केले आहे</string>
     <string name="attend">उपस्थित राहणार</string>
+    <string name="no">नाही</string>
 </resources>
