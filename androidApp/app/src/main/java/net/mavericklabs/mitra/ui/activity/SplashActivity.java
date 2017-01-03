@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -74,6 +75,7 @@ public class SplashActivity extends AppCompatActivity {
                             realm.beginTransaction();
                             realm.copyToRealmOrUpdate(wrapper.getCommonCode());
                             realm.commitTransaction();
+                            MitraSharedPreferences.saveToPreferences(getApplicationContext(),"code_version",serverVersion);
                         }
                     }
 
@@ -135,13 +137,17 @@ public class SplashActivity extends AppCompatActivity {
                         }
                     };
                     timerThread.start();
-
+                } else {
+                    Toast.makeText(SplashActivity.this, getString(R.string.error_code_list), Toast.LENGTH_LONG).show();
+                    finish();
                 }
             }
 
             @Override
             public void onFailure(Call<BaseModel<CommonCodeWrapper>> call, Throwable t) {
                 Logger.d(" on failure ");
+                Toast.makeText(SplashActivity.this, getString(R.string.error_code_list), Toast.LENGTH_LONG).show();
+                finish();
             }
         });
     }
