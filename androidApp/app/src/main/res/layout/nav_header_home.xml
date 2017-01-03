@@ -27,7 +27,6 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:textColor="@color/colorWhite"
-        android:text="Username"
         />
 
 </LinearLayout>

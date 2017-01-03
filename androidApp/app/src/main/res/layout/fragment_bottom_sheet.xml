@@ -35,7 +35,6 @@
                 android:id="@+id/training_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Name of Training"
                 style="@style/ColoredTitle"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -71,7 +70,7 @@
                 android:id="@+id/attend_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Attend"
+                android:text="@string/attend"
                 android:textColor="@color/colorAccent"
                 style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_below="@id/description"/>

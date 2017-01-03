@@ -14,7 +14,6 @@
     <string name="resend_otp">पुन्हा पाठवा.</string>
     <string name="enter_phone_number">वापरकर्त्याचे मोबाईल क्रमांक</string>
     <string name="error_please_enter_6_digit_otp">( वन टाइम पासवर्ड) ओटीपी नोंदवा</string>
-    <string name="error_10_digit_phone_number">Please enter 10 digit phone number</string>
     <string name="name">वापरकर्त्याचे नाव</string>
     <string name="i_am">मी</string>
     <string name="district">जिल्हा</string>
@@ -78,12 +77,11 @@
     <string name="my_saved_resources">मी जतन केलेले साहित्य</string>
     <string name="news_and_circulars">बातम्या आणि परिपत्रके</string>
     <string name="toast_6_digits">कृपया ६ अंक भरा.</string>
-    <string name="author">"लेखक "</string>
     <string name="error_user_exists">वापरकर्ता आधीपासून उपलब्ध आहे कृपया पुन्हा नोंदणी करा.</string>
     <string name="error_please_register">तुम्ही अद्याप नोंदणी केलेली नाही कृपया प्रथम नोंदणी करा.</string>
     <string name="error_invalid_otp">चुकीचा OTP</string>
     <string name="choose_profile_photo">प्रोफाईल फोटो निवडा</string>
-    <string name="error_code_list">कृपया तुमचे इंटरनेट कणेक्शन तपासा.</string>
+    <string name="error_code_list">कृपया तुमचे इंटरनेट कनेक्शन तपासा.</string>
     <string name="message_share">"मित्रा एप वरून सामग्री शेअर करा "</string>
     <string name="message_no_notifications">सूचना नाही</string>
     <string name="subject">विषय</string>
@@ -94,4 +92,15 @@
         <item quantity="one">%1$d जतन केलेले साहित्य</item>
         <item quantity="other">%1$d जतन केलेले साहित्य</item>
     </plurals>
+    <plurals name="training_count">
+        <item quantity="one">या महिन्यात "%1$d प्रशिक्षण</item>
+        <item quantity="other">या महिन्यात %1$d प्रशिक्षणे</item>
+    </plurals>
+    <string name="phone_hint">कृपया मोबाईल क्रमांक भरा.</string>
+    <string name="delete_saved_resource_confirmation">तुम्हाला हे साहित्य जतन केलेल्या साहित्यातून काढून टाकायचे आहे काय?</string>
+    <string name="error_message">काहीतरी चूक झाली. कृपया पुन्हा प्रयत्न करा.</string>
+    <string name="topic">घटक</string>
+    <string name="school_udise">शाळेचा युडायस</string>
+    <string name="toast_attend">आपण %1$s ला उपस्थित राहण्यासाठी साइन अप केले आहे</string>
+    <string name="attend">उपस्थित राहणार</string>
 </resources>

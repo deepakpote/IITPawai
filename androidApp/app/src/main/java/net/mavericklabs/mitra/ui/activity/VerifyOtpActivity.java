@@ -30,7 +30,9 @@ import net.mavericklabs.mitra.database.model.DbGrade;
 import net.mavericklabs.mitra.database.model.DbSubject;
 import net.mavericklabs.mitra.database.model.DbTopic;
 import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
@@ -187,7 +189,6 @@ public class VerifyOtpActivity extends AppCompatActivity {
                                 MitraSharedPreferences.saveToPreferences(getApplicationContext(), "OTP", otpEditText.getText().toString());
                                 startActivity(almostDone);
                             }
-                            progressDialog.dismiss();
                         } else {
                             progressDialog.dismiss();
                             Toast.makeText(getApplicationContext(), R.string.error_invalid_otp,Toast.LENGTH_LONG).show();
@@ -218,6 +219,14 @@ public class VerifyOtpActivity extends AppCompatActivity {
                             DbUser dbUser = new DbUser(user.getUserName(),user.getUserType(),user.getDistrict());
                             dbUser.setPreferredLanguage(user.getPreferredLanguage());
                             dbUser.setUdise(user.getUdiseCode());
+
+                            CommonCode language = CommonCodeUtils.getObjectFromCode(user.getPreferredLanguage());
+                            Logger.d(" language " + language.getCodeID() + language.getCodeNameEnglish());
+                            String lang = "en";
+                            if(language.getCodeNameEnglish().equals("Marathi")) {
+                                lang = "mr";
+                            }
+                            LanguageUtils.setLocale(lang, getApplicationContext());
 
                             if(!StringUtils.isEmpty(user.getSubjectCodeIDs())) {
                                 List<Integer> subjectCodes = StringUtils.splitCommas(user.getSubjectCodeIDs());
@@ -261,8 +270,10 @@ public class VerifyOtpActivity extends AppCompatActivity {
                             progressDialog.dismiss();
                             Intent home = new Intent(VerifyOtpActivity.this,HomeActivity.class);
                             startActivity(home);
+                            finishAffinity();
+                        } else {
+                            progressDialog.dismiss();
                         }
-                        progressDialog.dismiss();
                     }
 
                     @Override

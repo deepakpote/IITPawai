@@ -44,8 +44,8 @@ import io.realm.RealmResults;
 
 public class LanguageUtils {
 
-    public static void setLocale(String language, Context context) {
-        Locale myLocale = new Locale(language, Locale.UK.getCountry());
+    public static void setLocale(String languageShortCode, Context context) {
+        Locale myLocale = new Locale(languageShortCode, "IN");
         Resources res = context.getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
         Configuration conf = res.getConfiguration();
@@ -54,7 +54,8 @@ public class LanguageUtils {
         } else {
             conf.locale = myLocale;
         }
-        Logger.d(" set locale " + language);
+        Logger.d(" set locale " + languageShortCode);
+        Logger.d(" country default " + Locale.getDefault().getCountry());
 
         //Deprecated api - but still works. workaround is complicated
         res.updateConfiguration(conf, dm);

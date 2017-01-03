@@ -2,6 +2,7 @@ package net.mavericklabs.mitra.ui.custom;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,7 +77,7 @@ public class CalendarView extends RelativeLayout {
 
 
     public void setTrainingsCount(int trainingsCount) {
-        this.trainingsCount.setText(" " + trainingsCount + " trainings this month");
+        this.trainingsCount.setText(getResources().getQuantityString(R.plurals.training_count, trainingsCount, trainingsCount));
     }
 
     public HashSet<Date> getEventDates() {
@@ -183,9 +185,24 @@ public class CalendarView extends RelativeLayout {
         final DatePicker datePicker = (DatePicker) dialogLayout.findViewById(R.id.date_picker);
         datePicker.updateDate(currentSelectedYear, currentSelectedMonth, 1);
         Button doneButton = (Button) dialogLayout.findViewById(R.id.done_button);
-        if(datePicker != null) {
+
+        String locale;
+        //In N and above(?) the date picker follows the locale of the app.
+        //Below N, the date picker follows the locale of the system.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locale = Locale.getDefault().getCountry();
+        } else {
+            locale = Resources.getSystem().getConfiguration().locale.getCountry();
+        }
+        Logger.d(" country system default " + locale);
+        if(locale.equals("US")) {
+            //Date picker is of format: Month - Day - Year. Hide day (1)
+            ((ViewGroup)((ViewGroup)(datePicker.getChildAt(0))).getChildAt(0)).getChildAt(1).setVisibility(GONE);
+        } else {
+            //Date picker is of format: Day - Month - Year. Hide day (0)
             ((ViewGroup)((ViewGroup)(datePicker.getChildAt(0))).getChildAt(0)).getChildAt(0).setVisibility(GONE);
         }
+
         final AlertDialog datePickerDialog = new AlertDialog.Builder(getContext())
                 .setView(dialogLayout)
                 .create();

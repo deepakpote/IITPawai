@@ -73,8 +73,7 @@
                 android:id="@+id/file_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:contentDescription="pdf"/>
+                android:layout_centerInParent="true" />
 
         </RelativeLayout>
 

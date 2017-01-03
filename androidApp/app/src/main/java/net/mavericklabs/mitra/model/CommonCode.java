@@ -25,6 +25,10 @@ package net.mavericklabs.mitra.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.LanguageUtils;
+import net.mavericklabs.mitra.utils.StringUtils;
+
 import java.util.Locale;
 
 import io.realm.RealmObject;
@@ -104,10 +108,13 @@ public class CommonCode extends RealmObject{
     }
 
     public String getCodeNameForCurrentLocale() {
-        String currentLocale = Locale.getDefault().getLanguage();
-        if(currentLocale.equals("en")) {
+        int languageCode = LanguageUtils.getCurrentLanguage();
+
+        String currentLocale = CommonCodeUtils.getObjectFromCode(languageCode).codeNameEnglish;
+
+        if(currentLocale.equals("English")) {
             return codeNameEnglish;
-        } else if(currentLocale.equals("mr")) {
+        } else if(currentLocale.equals("Marathi") && !StringUtils.isEmpty(codeNameMarathi)) {
             return codeNameMarathi;
         }
 
