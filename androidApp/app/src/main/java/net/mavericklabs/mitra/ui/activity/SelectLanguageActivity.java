@@ -97,44 +97,6 @@ public class SelectLanguageActivity extends AppCompatActivity {
         } else {
             codeVersion = MitraSharedPreferences.readFromPreferences(getApplicationContext(),"code_version","0");
         }
-
-        Call<BaseModel<CommonCodeWrapper>> codeNameListCall = RestClient.getApiService("").getCodeNameList(codeVersion);
-        codeNameListCall.enqueue(new Callback<BaseModel<CommonCodeWrapper>>() {
-            @Override
-            public void onResponse(Call<BaseModel<CommonCodeWrapper>> call, Response<BaseModel<CommonCodeWrapper>> response) {
-                if(response.isSuccessful()) {
-                    Realm realm = Realm.getDefaultInstance();
-                    RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
-                            .where(CommonCode.class).findAll();
-                    CommonCodeWrapper wrapper = response.body().getData().get(0);
-                    if(commonCodes.isEmpty()) {
-                        List<CommonCode> responseList = wrapper.getCommonCode();
-                        realm.beginTransaction();
-                        realm.copyToRealm(responseList);
-                        realm.commitTransaction();
-                        for (CommonCode commonCode : responseList) {
-                            Logger.d(" " + commonCode.getCodeID() + " " + commonCode.getCodeNameEnglish());
-                        }
-                        MitraSharedPreferences.saveToPreferences(getApplicationContext(),"code_version",wrapper.getVersion());
-                    } else {
-                        String localVersion = MitraSharedPreferences.readFromPreferences(getApplicationContext(),"code_version","0");
-                        String serverVersion = wrapper.getVersion();
-                        Logger.d("local version : " + localVersion);
-                        Logger.d("server version : " + serverVersion);
-                        if(!serverVersion.equalsIgnoreCase(localVersion)) {
-                            realm.beginTransaction();
-                            realm.copyToRealmOrUpdate(wrapper.getCommonCode());
-                            realm.commitTransaction();
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BaseModel<CommonCodeWrapper>> call, Throwable t) {
-                Logger.d(" on failure ");
-            }
-        });
     }
 
     private void setLocale(String lang) {
