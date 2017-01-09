@@ -1,0 +1,25 @@
+<table>
+	<tr>
+		<td>
+			<div ng-include="'js/common/views/leftMenuView.html'"></div>
+		</td>
+		<td>
+			<div ng-controller="NotificationsController">
+				<table>
+					<tr>
+						<td>
+							<textarea rows="5" cols="25" id="notificationBody" ng-model="notificationDataMessage"></textarea>		
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="button" id="sendNotifications" value="Send"  ng-click="sendDataNotifications()">
+						</td>
+					</tr>
+				</table>
+				
+			</div>
+		</td>
+	</tr>
+</table>
+

@@ -1,0 +1,25 @@
+<div class="loginController" ng-controller="LoginController"> 
+<table>
+		<tr>
+			<td>
+				Enter Phone Number
+			</td>
+			<td>
+				<input type="text" id="phoneno" name="phonno" ng-model="phoneno" required>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Enter Passkey
+			</td>
+			<td>
+				<input type="password" id="passkey" name="passkey" ng-model="passkey" required>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<input type="button" class="button" id="login" value="Login" ng-click="validate()">
+			</td>
+		</tr>
+	</table>
+</div>
