@@ -124,7 +124,8 @@ public class StringUtils {
         Matcher matcher = compiledPattern.matcher(fileName);
 
         if(matcher.find()){
-            return matcher.group(1);
+            //TODO : Hacky solution to handle video links with longer length. Better handling?
+            return matcher.group(1).substring(0,11);
         }
         return null;
     }

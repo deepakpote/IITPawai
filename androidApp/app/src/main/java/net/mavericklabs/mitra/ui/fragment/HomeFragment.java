@@ -166,7 +166,7 @@ public class HomeFragment extends Fragment{
 
     private void loadPopularSelfLearning() {
         //TODO popular resources
-        SelfLearningContentRequest contentRequest = new SelfLearningContentRequest("101100", "");
+        SelfLearningContentRequest contentRequest = new SelfLearningContentRequest("", "");
         String token = UserDetailUtils.getToken(getContext());
         RestClient.getApiService(token).searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
