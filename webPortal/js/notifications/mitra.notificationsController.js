@@ -1,9 +1,16 @@
-webPortal.controller("NotificationsController", function($scope, NotificationsService) {
+webPortal.controller("NotificationsController", function($scope,$rootScope, NotificationsService) {
 	$scope.sendDataNotifications = function(){
 		dataMessage = $scope.notificationDataMessage;
-		alert("Send following message:" + dataMessage);
-		//NotificationsService.sendDataNotifications(dataMessage)
-		//		.then(function(response){alert("success");}, function(response){alert("error");});
+		alert("Token: " + $rootScope.globals.currentUser.token);
+		NotificationsService.sendDataNotifications(dataMessage, $rootScope.globals.currentUser.token)
+				.then(
+					function(response){
+						alert(response.data.response_message);
+					}, 
+					function(response){
+						alert("error");
+					}
+				);
 		
 	};
 });

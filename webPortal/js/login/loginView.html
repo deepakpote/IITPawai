@@ -1,25 +1,33 @@
 <div class="loginController" ng-controller="LoginController"> 
-<table>
-		<tr>
-			<td>
+<form name="loginForm">
+<table class="center-block">
+		<tr class="form-group">
+			<td class="vtop">
 				Enter Phone Number
 			</td>
-			<td>
-				<input type="text" id="phoneno" name="phonno" ng-model="phoneno" required>
+			<td class="vtop">
+				<input type="text" id="phoneno" name="phonno" ng-model="phoneno" required><br/>
+				<span class="has-error" ng-if="loginForm.phonno.$error.required">
+				<label class="control-label">*Phone number is required</label>
+				</span>
 			</td>
 		</tr>
-		<tr>
-			<td>
+		<tr class="form-group">
+			<td class="vtop">
 				Enter Passkey
 			</td>
-			<td>
-				<input type="password" id="passkey" name="passkey" ng-model="passkey" required>
+			<td class="vtop">
+				<input type="password" id="passkey" name="passkey" ng-model="passkey" required><br/>
+				<span class="has-error" ng-if="loginForm.passkey.$error.required">
+				<label class="control-label">*Passkey is required</label>
+				</span>
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2">
-				<input type="button" class="button" id="login" value="Login" ng-click="validate()">
+			<td colspan="2" class="vtop">
+				<input type="button" class="button" id="login" value="Login" ng-click="loginForm.$valid && validate()">
 			</td>
 		</tr>
 	</table>
+</form>
 </div>

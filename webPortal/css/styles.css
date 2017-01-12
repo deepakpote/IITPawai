@@ -51,3 +51,18 @@ body{
 .hide{
 	display: none;
 }
+
+.vcenter{
+	vertical-align: middle;
+	float: none;
+}
+
+.vtop{
+	vertical-align: top;
+	float: none;
+}
+
+.vbottom{
+	vertical-align: bottom;
+	float: none;
+}
