@@ -38,6 +38,7 @@ import net.mavericklabs.mitra.ui.fragment.SettingsFragment;
 import net.mavericklabs.mitra.ui.fragment.TeachingAidsFragment;
 import net.mavericklabs.mitra.utils.AnimationUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
 
 import butterknife.BindView;
@@ -222,6 +223,7 @@ public class HomeActivity extends AppCompatActivity {
 
         View headerView = navigationView.getHeaderView(0);
         TextView userNameTextView = (TextView) headerView.findViewById(R.id.nav_header_user_name);
+        TextView serverUrlTextView = (TextView) headerView.findViewById(R.id.server_url_text);
         ImageView profilePhoto = (ImageView) headerView.findViewById(R.id.nav_header_image);
         if(user.size() ==1) {
             userNameTextView.setText(user.get(0).getName());
@@ -235,6 +237,9 @@ public class HomeActivity extends AppCompatActivity {
                         into(profilePhoto);
             }
         }
+        serverUrlTextView.setText(MitraSharedPreferences.readFromPreferences(getApplicationContext(),
+                "base_url",
+                "http://54.152.74.194:8000/"));
         headerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

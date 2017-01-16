@@ -24,6 +24,7 @@
 package net.mavericklabs.mitra.utils;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
@@ -34,10 +35,18 @@ import io.realm.Realm;
  */
 
 public class MitraApplication extends Application {
+
+    private static Context context;
+
     @Override
     public void onCreate() {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
         Realm.init(this);
+        MitraApplication.context = getApplicationContext();
+    }
+
+    public static Context getAppContext() {
+        return MitraApplication.context;
     }
 }

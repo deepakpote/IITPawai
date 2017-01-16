@@ -5,6 +5,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -15,8 +18,11 @@ import net.mavericklabs.mitra.api.model.BaseModel;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.CommonCodeWrapper;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.MitraApplication;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
@@ -41,13 +47,30 @@ public class SplashActivity extends AppCompatActivity {
 
         RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
                 .where(CommonCode.class).findAll();
-        String codeVersion;
+        final String codeVersion;
         if(!commonCodes.isEmpty()) {
             codeVersion = MitraSharedPreferences.readFromPreferences(getApplicationContext(),"code_version","0");
+            load(codeVersion);
         } else {
             codeVersion = "0";
-        }
+            final EditText serverURL = (EditText) findViewById(R.id.server_url);
+            serverURL.setText(MitraSharedPreferences.readFromPreferences(getApplicationContext(),"base_url",
+                    "http://54.152.74.194:8000/"));
 
+            Button button = (Button) findViewById(R.id.button);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MitraSharedPreferences.saveToPreferences(getApplicationContext(), "base_url", serverURL.getText().toString());
+                    load(codeVersion);
+                }
+            });
+            serverURL.setVisibility(View.VISIBLE);
+            button.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void load(String codeVersion) {
         Call<BaseModel<CommonCodeWrapper>> codeNameListCall = RestClient.getApiService("").getCodeNameList(codeVersion);
         codeNameListCall.enqueue(new Callback<BaseModel<CommonCodeWrapper>>() {
             @Override

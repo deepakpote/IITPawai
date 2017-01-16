@@ -1,9 +1,16 @@
 package net.mavericklabs.mitra.api;
 
+import android.content.Context;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.MitraApplication;
+import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class RestClient {
-    private static final String BASE_URL = "http://54.152.74.194:8000/";
+    //private static final String BASE_URL = "http://54.152.74.194:8000/";
     //private static final String BASE_URL = "http://54.152.74.194/";
     private static OkHttpClient client;
     private static Gson gson;
@@ -60,7 +67,8 @@ public class RestClient {
 
     public static Retrofit getRetrofitInstance() {
         return new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(MitraSharedPreferences.readFromPreferences(MitraApplication.getAppContext(),"base_url",
+                        "http://54.152.74.194:8000/"))
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
