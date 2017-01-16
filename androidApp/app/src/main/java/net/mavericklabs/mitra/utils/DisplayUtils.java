@@ -61,6 +61,9 @@ public class DisplayUtils {
                 fileIconImageView.setImageResource(R.drawable.ic_picture_as_pdf_black_48dp);
                 break;
 
+            default:
+                fileIconImageView.setImageResource(R.drawable.ic_toys_black_48dp);
+                break;
 
         }
     }

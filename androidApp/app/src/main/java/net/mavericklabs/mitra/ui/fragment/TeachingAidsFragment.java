@@ -171,7 +171,14 @@ public class TeachingAidsFragment extends Fragment{
             ButterKnife.bind(this, rootView);
 
             int tabNumber = getArguments().getInt("tabNumber");
-            final Integer fileType = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
+            int fileTypeTemp;
+            if(tabNumber < 5) {
+                fileTypeTemp = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
+            } else {
+                fileTypeTemp = 108105;
+            }
+
+            final Integer fileType = fileTypeTemp;
 
             filterGradeList = new ArrayList<>();
             filterSubjectList = new ArrayList<>();
@@ -287,6 +294,24 @@ public class TeachingAidsFragment extends Fragment{
                 public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                     loadingPanel.setVisibility(View.GONE);
                     if(response.isSuccessful()) {
+                        if(pageNumber == 0) {
+                            response.body().getData().add(new Content("1001", "मोजणे- एक, दोन, तीन", 107100, 103102,
+                                    104101, "", "", 108105,
+                                    "https://community.ekstep.in/assets/public/preview/production/preview.html?webview=true&id=do_30111370",
+                                    "Bhavya", "",101101));
+
+                            response.body().getData().add(new Content("1002", "चांदोबाची टोपी", 107100, 103102,
+                                    104101, "", "", 108105,
+                                    "https://community.ekstep.in/assets/public/preview/production/preview.html?webview=true&id=do_30111288",
+                                    "Bhavya", "",101101));
+
+                            response.body().getData().add(new Content("1003", "वजाबाकी सराव", 107100, 103102,
+                                    104101, "", "", 108105,
+                                    "https://community.ekstep.in/assets/public/preview/production/preview.html?webview=true&id=do_30101377",
+                                    "sandip raut", "",101101));
+                        }
+
+
                         loadContent(response, pageNumber, new RecyclerView.OnScrollListener() {
                             @Override
                             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -340,12 +365,16 @@ public class TeachingAidsFragment extends Fragment{
         @Override
         public int getCount() {
             // Show 5 total pages.
-            return CommonCodeUtils.getFileTypeCount();
+            return CommonCodeUtils.getFileTypeCount() + 1;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return CommonCodeUtils.getFileTypeAtPosition(position).getCodeNameForCurrentLocale();
+            if(position < 5) {
+                return CommonCodeUtils.getFileTypeAtPosition(position).getCodeNameForCurrentLocale();
+            } else {
+                return "GENIE";
+            }
         }
 
     }

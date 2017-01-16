@@ -36,6 +36,8 @@ import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -256,7 +258,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
         imageLayoutParams.height = displayMetrics.heightPixels / 3;
         contentImageView.setLayoutParams(imageLayoutParams);
 
-        Bundle bundle = getIntent().getExtras();
+        final Bundle bundle = getIntent().getExtras();
         if(bundle != null) {
             content = (Content) bundle.getSerializable("content");
         }
@@ -324,6 +326,15 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                             intent.setDataAndType(Uri.parse(content.getFileName()), "audio/mp3");
                             startActivity(intent);
                         }
+
+                        if(content.getFileType().equals(108105)) {
+                            Intent intent = new Intent(getApplicationContext(), GenieActivity.class);
+                            Bundle bundle1 = new Bundle();
+                            bundle1.putSerializable("content", content);
+                            intent.putExtras(bundle1);
+                            startActivity(intent);
+                        }
+
                     }
                 });
             }
