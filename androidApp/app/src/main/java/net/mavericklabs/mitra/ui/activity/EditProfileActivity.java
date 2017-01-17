@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -104,6 +105,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     @BindView(R.id.name_edit_text) EditText nameEditText;
     @BindView(R.id.udise_edit_text) EditText udiseEditText;
     @BindView(R.id.topic_recycler_view) RecyclerView topicRecyclerView;
+    @BindView(R.id.scroll_view) ScrollView scrollView;
 
     private Uri imageCaptureUri;
     private final int PICK_PROFILE_PHOTO = 0;
@@ -197,6 +199,13 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         } else {
             moreOrLessButtun.setText(R.string.less);
             moreLayout.setVisibility(View.VISIBLE);
+            Logger.d("bottom of more layout : " + moreLayout.getBottom());
+            scrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    scrollView.fullScroll(View.FOCUS_DOWN);
+                }
+            });
             isAdditionalViewExpanded = true;
             moreImage.setVisibility(View.GONE);
             lessImage.setVisibility(View.VISIBLE);
