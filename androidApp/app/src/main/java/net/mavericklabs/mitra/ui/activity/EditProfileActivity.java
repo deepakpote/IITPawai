@@ -11,6 +11,7 @@ import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -206,6 +207,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
                     scrollView.fullScroll(View.FOCUS_DOWN);
                 }
             });
+            scrollView.postInvalidate();
             isAdditionalViewExpanded = true;
             moreImage.setVisibility(View.GONE);
             lessImage.setVisibility(View.VISIBLE);
