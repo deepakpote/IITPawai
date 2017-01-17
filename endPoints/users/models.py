@@ -49,7 +49,7 @@ class user(models.Model):
         return True
     
     class Meta:
-        db_table = 'usr_User'
+        db_table = 'usr_user'
         get_latest_by = 'userName'
 
 """
@@ -65,7 +65,7 @@ class otp(models.Model):
     modifiedOn = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'usr_Otp'
+        db_table = 'usr_otp'
 
 """
 Token model
@@ -79,7 +79,7 @@ class token(models.Model):
     modifiedOn = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'usr_Token'
+        db_table = 'usr_token'
 
 """
 FCM device model
