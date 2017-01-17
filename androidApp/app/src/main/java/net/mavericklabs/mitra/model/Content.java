@@ -72,6 +72,10 @@ public class Content implements Serializable{
     @SerializedName("language")
     private Integer language;
 
+    public Content() {
+
+    }
+
     public Content(String contentID, String title, Integer contentTypeCodeID, Integer subject, Integer grade, String requirement, String instruction, Integer fileType, String fileName, String author, String objectives, Integer language) {
         this.contentID = contentID;
         this.title = title;

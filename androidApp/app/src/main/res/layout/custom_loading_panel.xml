@@ -24,6 +24,7 @@
 
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/loading_panel_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center" >

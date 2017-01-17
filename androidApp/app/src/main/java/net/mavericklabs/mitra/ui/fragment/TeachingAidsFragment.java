@@ -292,6 +292,10 @@ public class TeachingAidsFragment extends Fragment{
                             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                                 super.onScrollStateChanged(recyclerView, newState);
                                 if(isNextPageToBeLoaded(newState, recyclerView)) {
+                                    //On Scroll, show loading panel at bottom
+                                    adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+                                    adapter.showLoading();
+
                                     searchTeachingAids(fileType, 1);
                                 }
                             }
@@ -311,6 +315,9 @@ public class TeachingAidsFragment extends Fragment{
                         contentRecyclerView.setVisibility(View.GONE);
                         errorView.setVisibility(View.VISIBLE);
                         errorView.setText(error);
+                    } else {
+                        adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+                        adapter.stopLoading();
                     }
 
                 }
@@ -318,6 +325,10 @@ public class TeachingAidsFragment extends Fragment{
                 @Override
                 public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
                     Logger.d(" on fail");
+                    if(pageNumber > 0) {
+                        adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+                        adapter.stopLoading();
+                    }
                 }
             });
         }

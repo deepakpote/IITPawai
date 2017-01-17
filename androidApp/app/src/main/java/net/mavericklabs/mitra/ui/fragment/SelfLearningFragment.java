@@ -204,16 +204,12 @@ public class SelfLearningFragment extends BaseContentFragment {
                         @Override
                         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                             super.onScrollStateChanged(recyclerView, newState);
-                            if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                                Logger.d(" scrolled idle");
-                                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                                int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
-                                int childCount = contentRecyclerView.getAdapter().getItemCount();
+                            //On Scroll, show loading panel at bottom
+                            adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+                            adapter.showLoading();
 
-                                Logger.d(" lastVisibleItem " + lastVisibleItem  + " childCount " + childCount);
-                                if(lastVisibleItem == childCount - 1) {
-                                    searchSelfLearning(1);
-                                }
+                            if(isNextPageToBeLoaded(newState, recyclerView)) {
+                                searchSelfLearning(1);
                             }
                         }
 
@@ -232,6 +228,9 @@ public class SelfLearningFragment extends BaseContentFragment {
                     contentRecyclerView.setVisibility(View.GONE);
                     errorView.setVisibility(View.VISIBLE);
                     errorView.setText(error);
+                } else {
+                    adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+                    adapter.stopLoading();
                 }
 
             }
@@ -239,6 +238,10 @@ public class SelfLearningFragment extends BaseContentFragment {
             @Override
             public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
                 Logger.d(" on fail");
+                if(pageNumber > 0) {
+                    adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+                    adapter.stopLoading();
+                }
             }
         });
     }

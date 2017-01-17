@@ -133,6 +133,10 @@ public class BaseContentFragment extends Fragment {
         errorView.setVisibility(View.GONE);
         contentRecyclerView.clearOnScrollListeners();
         Logger.d(" Succes");
+        if(pageNumber > 0) {
+            adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+            adapter.stopLoading();
+        }
         if(response.body().getData() != null) {
             List<Content> contents = response.body().getData();
             Logger.d(" contents " + contents.size());
