@@ -69,7 +69,7 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
 
         ViewGroup.LayoutParams layoutParams = holder.contentView.getLayoutParams();
-        layoutParams.width = displayMetrics.widthPixels / 2 - (DisplayUtils.dpToPx(24, context));
+        layoutParams.width = displayMetrics.widthPixels / 2 - (DisplayUtils.dpToPx(36, context));
         layoutParams.height = layoutParams.width + (DisplayUtils.dpToPx(8, context));
         holder.contentView.setLayoutParams(layoutParams);
 

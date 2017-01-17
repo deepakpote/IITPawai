@@ -21,11 +21,9 @@ import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.NewsListAdapter;
-import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -102,7 +100,7 @@ public class HomeFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.content_home,container,false);
+        return inflater.inflate(R.layout.fragment_home,container,false);
     }
 
     @Override
