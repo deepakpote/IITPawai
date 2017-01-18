@@ -1,151 +1,30 @@
 <html>
-<title>Mitra WebPortal Admin page</title>
-<head>
-<script src="js/jquery-3.1.1.min.js"></script>
-<script src="js/jquery.cookie.js"></script>
-<link rel="stylesheet" type="text/css" href="css/styles.css">
-<script>
-$(document).ready(function(){
-	if($.cookie("utoken") == undefined){
-		$("#beforeLogin").show();
-		$("#afterLogin").hide();
-	}else{
-		$("#beforeLogin").hide();
-		$("#afterLogin").show();
-	}
-	
-	$("#send").click(function(){
-		var message = $("#message").val();
-		if (!window.location.origin) {
-			  window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
-			}
-		if(message != ""){
-			if(confirm("Do you want to send the notifications to all the users?")){
-				$.ajax({
-					url:window.location.origin + "/user/sendDataNotificationsToAll/",
-					/*url:window.location.origin + "/user/sendDisplayNotificationsToAll/",*/
-					type:"post",
-					crossDomain: true,
-					header:"Access-Control-Allow-Origin: *",
-					data:{title:"Mitra",body:$("#message").val(),utoken:$.cookie("utoken")},
-					success:function(response){
-						$("#message").val('');
-						alert(response.response_message);
-					},
-					error: function(err){
-						//alert("Error occurred:" + err);
-					}
-				});
-			}
-		}
-	});
-	
-	$("#phoneno").keydown(function(e){
-		if(e.keyCode == 13){
-			$("#login").click();		
-		}
-	});
-	$("#passkey").keydown(function(e){
-		if(e.keyCode == 13){
-			$("#login").click();		
-		}
-	});
-	$("#login").click(function(){
-		var phoneno = $("#phoneno").val();
-		var passkey = $("#passkey").val();
-		if (!window.location.origin) {
-		  window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
-		}
-		$.ajax({
-			url: window.location.origin + "/user/validateWebAdmin/",
-			type:"post",
-			crossDomain: true,
-			header:"Access-Control-Allow-Origin: *",
-			data:{phoneno:phoneno,passkey:passkey},
-			success :function(data){
+	<title>Mitra WebPortal Admin page</title>
+	<head>
+		<script src = "js/angular.min.js"></script>
+		<script src = "js/angular-route.min.js"></script>
+		<script src = "js/angular-cookies.min.js"></script>
 
-				if(data.data.error == "true"){
-					$("#beforeLogin div.error").text(data.response_message);
-					$("#beforeLogin div.error").show();
-				}else{
-					$("#beforeLogin").hide();
-					$("#afterLogin").show();
-					$.cookie("utoken",data.data.usertoken);
-					$("#beforeLogin div.error").text("");
-					$("#beforeLogin div.error").hide();
-				}
-			},
-		});
-	});
-	
-	$("#logout").click(function(){
-		$("#beforeLogin").show();
-		$("#afterLogin").hide();
-		$.cookie("utoken",null);
-		window.location.reload();
-	});
-});
-</script>
+		<script src = "js/angular-messages.min.js"></script>
+		<script src = "js/angular-message-format.min.js"></script>
+		<script src = "js/angular-resource.min.js"></script>
+<script src="js/mitra.webPortal.js"></script>
+		<script src="js/login/mitra.loginService.js"></script>
+		<script src="js/notifications/mitra.notificationsService.js"></script>
+		<script src="js/common/mitra.commonController.js"></script>
+		<script src="js/login/mitra.loginController.js"></script>
+		<script src="js/notifications/mitra.notificationsController.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/styles.css">
+		<link rel="stylesheet" type="text/css" href="css/bootstrap3.3.7/css/bootstrap.css">
 
-</head>
-<body>
-	<div id="beforeLogin" class="beforeLogin">
-		<div class="error"></div>
-		<table>
-			<tr>
-				<td>
-					Enter Phone Number
-				</td>
-				<td>
-					<input type="text" id="phoneno">
-				</td>
-			</tr>
-			<tr>
-				<td>
-					Enter Passkey
-				</td>
-				<td>
-					<input type="password" id="passkey">
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<input type="button" class="button" id="login" value="Login">
-				</td>
-			</tr>
-		</table>
-		
-	</div>
-	<div id="afterLogin" class="afterLogin">
-		<div class="leftmenu">
-			<ul class="menu">
-				<li>
-					<a href="javascript: void(0)">Send Bulk Notifications</a>
-				</li>
-				<li>
-					<a id="logout" href="javascript: void(0)">Logout</a>
-				</li>
-			</ul>
+	</head>
+	<body ng-app="webPortal">
+	
+		<div>
+			<div ng-view></div>
 		</div>
 		
-		<div class="maincontent">
-			<h2>Send bulk push Notifications</h2>
-			<table>
-				<tr>
-					<td>
-						Enter Notification Text
-					</td>
-					<td>
-						<textarea id="message" class="textarea" maxlength="255"></textarea>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<input type="button" class="button" id="send" value="Push Notifications">			
-					</td>
-				</tr>
-			</table>
-		</div>
-	</div>
-</body>
+		
+	
+	</body>
 </html>
