@@ -823,8 +823,15 @@ def contentDelete(userID , contentID):
 
    
 def sendOtpSms(recepientPhoneNumber, generatedOtp, languageCodeID, otpMessage):
-    
     print ("Entered SMS OTP")
+    
+    # If send sms is set to TRUE, only then continue sending sms. 
+    # Else Skip sending SMS. 
+    # Send SMS must be set to TRUE ONLY on LIVE site.
+    if not constants.sms.sendSMS:
+        print 'Send SMS functionality is disabled for this site. No SMS will be sent'
+        return
+    
     #Verify the Plivo account
     objPlivo = plivo.RestAPI(constants.sms.authId, constants.sms.authToken)
     
