@@ -10,6 +10,7 @@ from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent
 from mitraEndPoints import constants , utils
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
+import re
 
 
 class ContentViewSet(viewsets.ModelViewSet):
@@ -724,7 +725,6 @@ def getContentResponseDetails(objContent, objUser):
 function to validate the youtube URL.
 """    
 def validateYoutubeURL(url):
-    try:
         # regex for validating youtube URL.
         youtube_regex = (
             r'(https?://)?(www\.)?'
@@ -738,5 +738,4 @@ def validateYoutubeURL(url):
             return youtube_regex_match.group(6)
           
         return youtube_regex_match
-    except:
-        return None
+    
