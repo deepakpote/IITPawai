@@ -1,4 +1,4 @@
-webPortal.service('LoginService', function($http, $window){
+webPortal.service('loginService', function($http, $window){
     
    this.validate = function(phoneno, passkey) {
 	   var postData = {"phoneno": phoneno,"passkey": passkey};
