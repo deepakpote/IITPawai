@@ -8,7 +8,7 @@ content model
 """                 
 class content(models.Model):
     contentID = models.AutoField(primary_key = True)
-    contentTitle = models.CharField(null = False, unique = True, max_length = 255)
+    contentTitle = models.CharField(null = False, unique = False, max_length = 255)
     contentType = models.ForeignKey('commons.code', db_column='contentTypeCodeID', related_name='content_contentTypeCodeID')
     subject = models.ForeignKey('commons.code', db_column='subjectCodeID', related_name='content_subjectCodeID', null = True)
     #grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='content_gradeCodeID', null = True)
@@ -31,7 +31,7 @@ class content(models.Model):
     modifiedOn = models.DateTimeField(auto_now=True)
      
     class Meta:
-        db_table = 'con_Content'
+        db_table = 'con_content'
         get_latest_by = 'contentTitle' 
         
 """
@@ -58,4 +58,4 @@ class contentResponse(models.Model):
     sharedCount = models.IntegerField(null = True , default = 0)
      
     class Meta:
-        db_table = 'con_ContentResponse'
+        db_table = 'con_contentResponse'

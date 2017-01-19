@@ -101,6 +101,7 @@ class sms():
     srcPhoneNumber = "+919822365522"
     registrationMessage = "Thank you for registering with MITRA. Your OTP Code is : "
     signInMessage = "Your MITRA Sign In OTP is : "
+    sendSMS = False
 
 class mitraCodeGroup():
     subject = 103 

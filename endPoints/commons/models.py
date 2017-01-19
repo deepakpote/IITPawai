@@ -16,7 +16,7 @@ class codeGroup(models.Model):
     modifiedOn = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'com_CodeGroup'
+        db_table = 'com_codeGroup'
         get_latest_by = 'codeGroupName'   
         
 # code model
@@ -33,7 +33,7 @@ class code(models.Model):
     modifiedOn = models.DateTimeField(auto_now=True)
     
     class Meta:
-        db_table = 'com_Code'
+        db_table = 'com_code'
         get_latest_by = 'codeNameEn'  
         
 """
@@ -52,7 +52,7 @@ class news(models.Model):
     modifiedOn = models.DateTimeField(auto_now=True)
      
     class Meta:
-        db_table = 'com_News'
+        db_table = 'com_news'
         get_latest_by = 'createdOn'
         
 """
