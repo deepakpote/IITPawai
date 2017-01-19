@@ -10,5 +10,5 @@ content serializer class
 class contentSerializer(serializers.ModelSerializer):
     class Meta:
         model = content
-        fields = ('contentID', 'contentTitle', 'contentType', 'subject' , 'grade' , 'topic' , 'requirement', 'instruction', 'fileType', 'fileName','author','objectives','language')
+        fields = ('contentID', 'contentTitle', 'contentType', 'subject' , 'topic' , 'requirement', 'instruction', 'fileType', 'fileName','author','objectives','language')
              

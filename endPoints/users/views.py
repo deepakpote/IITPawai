@@ -18,7 +18,7 @@ import base64
 import os,time
 from datetime import datetime, timedelta
 from django.utils import timezone
-from contents.models import content
+from contents.models import content , contentGrade
 from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs
 from time import gmtime, strftime
 from contents.serializers import contentSerializer
@@ -610,6 +610,7 @@ class UserViewSet(viewsets.ModelViewSet):
                     
         # Get list of contentIDs of login user
         objUserContent = list(userContent.objects.filter(user = objUser).values_list('content_id',flat = True))
+        print "objUserContent:",objUserContent
         
         # Declare empty user content type code.
         objUserContentTypeCode = None
@@ -628,13 +629,24 @@ class UserViewSet(viewsets.ModelViewSet):
             else:
                 #Get the array from comma sep string of fileTypeCodeIDs.
                 arrContentFileTypeCodeID = getArrayFromCommaSepString(fileTypeCodeIDs)
-
+                
+            #Get the applicable content for GradeCodeID.
+            arrContentID = list(contentGrade.objects.filter(grade__in = arrGradeCodeIDs).values_list('content',flat = True).distinct())
+            print "arrContentID :",arrContentID
+            # combine list of contentIDs of login user and contentID for respective gradeCodeID's
+            #arrContentIDList = objUserContent + arrContentID
+            #arrContentIDList = set(objUserContent) and set(arrContentID)
+            #print "LAST:",arrContentIDList
+            #print "arrSubjectCodeIDs : ",arrSubjectCodeIDs
             # Get the content details.
             objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, 
                                                             contentID__in = objUserContent,
                                                             subject__in = arrSubjectCodeIDs,
-                                                            grade__in = arrGradeCodeIDs,
-                                                            fileType__in = arrContentFileTypeCodeID)
+                                                            fileType__in = arrContentFileTypeCodeID).filter(contentID__in = arrContentID)
+        
+            
+            #objUserContentTypeCode = objUserContentTypeCode.filter(contentID__in = arrContentID)
+
             
         elif contentTypeCodeID == constants.mitraCode.selfLearning:
             #Get the applicable topic list for the respective user.    

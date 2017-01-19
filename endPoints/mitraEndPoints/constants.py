@@ -67,6 +67,22 @@ class messages():
     user_uploadphoto_user_does_not_exists = 100155
     code_list_version_number_must_be_integer = 100157
     code_list_version_number_invalid = 100158
+    
+    uploadContent_contentTitle_cannot_be_empty = 100159
+    uploadContent_contentType_cannot_be_empty = 100160
+    uploadContent_fileType_cannot_be_empty = 100161
+    uploadContent_fileName_cannot_be_empty = 100162
+    uploadContent_user_not_exists = 100163
+    uploadContent_subjectCodeID_cannot_be_empty = 100164 
+    uploadContent_topicCodeID_cannot_be_empty = 100165
+    uploadContent_contentType_invalid = 100166
+    uploadContent_contentType_does_not_exists = 100167
+    uploadContent_fileType_does_not_exists = 100168
+    uploadContent_language_does_not_exists = 100169
+    uploadContent_content_upload_failed = 100170 
+    uploadContent_gradeCodeID_cannot_be_empty = 100171
+    uploadContent_fileName_invaild = 100172
+    
 
 class webportalmessages():    
     web_admin_invalid_token = 200100

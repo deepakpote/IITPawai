@@ -5,7 +5,7 @@ from rest_framework import viewsets,permissions
 from rest_framework.permissions import IsAuthenticated
 from contents.serializers import contentSerializer 
 from users.authentication import TokenAuthentication
-from contents.models import content , contentResponse 
+from contents.models import content , contentResponse  , contentGrade
 from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent
 from mitraEndPoints import constants , utils
@@ -72,13 +72,16 @@ class ContentViewSet(viewsets.ModelViewSet):
         arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs , objUser)         
 
         #Get the applicable grade list for the respective user.
-        arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs , objUser)         
+        arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs , objUser)       
+        
+        #Get the applicable content for GradeCodeID.
+        arrContentID = contentGrade.objects.filter(grade__in = arrGradeCodeIDs).values_list('content').distinct()
         
         #Get the query set using filter on filetype, subject, grade     
         contentQuerySet = content.objects.filter(fileType = fileTypeCodeID, 
                                                   contentType = constants.mitraCode.teachingAids,
                                                   subject__in = arrSubjectCodeIDs, 
-                                                  grade__in = arrGradeCodeIDs).order_by('-contentID')[fromRecord:pageNumber]
+                                                  contentID__in = arrContentID).order_by('-contentID')[fromRecord:pageNumber]
         
         #Check for the no of records fetched.
         if not contentQuerySet:
@@ -377,6 +380,180 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         #Return the response
         return Response({"response_message": constants.messages.success, "data": [response]})
+    
+    """
+    API to upload the content.
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def uploadContent(self,request):
+        # get inputs
+        contentTitle = request.data.get('contentTitle')
+        contentType = request.data.get('contentType')
+        subjectCodeID = request.data.get('subjectCodeID')
+        gradeCodeIDs = request.data.get('gradeCodeIDs')
+        topicCodeID = request.data.get('topicCodeID')
+        requirement = request.data.get('requirement')
+        instruction = request.data.get('instruction')
+        fileType = request.data.get('fileType')
+        fileName = request.data.get('fileName')
+        author = request.data.get('author')
+        objectives = request.data.get('objectives')
+        language = request.data.get('language')
+        
+        #Get user token
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if contentTitle is passed in post param
+        if not contentTitle:
+            return Response({"response_message": constants.messages.uploadContent_contentTitle_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # Check if contentType is passed in post param
+        if not contentType:
+            return Response({"response_message": constants.messages.uploadContent_contentType_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+        
+        # Check if fileType is passed in post param
+        if not fileType:
+            return Response({"response_message": constants.messages.uploadContent_fileType_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # Check if fileName is passed in post param
+        if not fileName:
+            return Response({"response_message": constants.messages.uploadContent_fileName_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED)
+            
+        #Validate youtube URL.
+        ObjResponse = validateYoutubeURL(fileName)
+        
+        #If Youtube URL is Invaild 
+        if ObjResponse is None:
+            return Response({"response_message": constants.messages.uploadContent_fileName_invaild,
+                     "data": []},
+                     status = status.HTTP_400_BAD_REQUEST)
+            
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.uploadContent_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+            
+        #Declare empty object for subject,Grade and topic
+        objSubject = None
+        objGrade = None
+        objTopic = None
+        arrGradeCodeIDs = None
+        
+        # Check content type of uploaded file.    
+        if contentType == constants.mitraCode.teachingAids:
+            # If content type is teaching Aid then subjetCodeID & gradeCodeIDs can not be empty.
+            if not subjectCodeID:
+                return Response({"response_message": constants.messages.uploadContent_subjectCodeID_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED)
+            if not gradeCodeIDs:
+                return Response({"response_message": constants.messages.uploadContent_gradeCodeID_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED)
+                
+            # Get the respective instance of subject and grade
+            objSubject = code.objects.get(codeID = subjectCodeID)
+            #objGrade = code.objects.get(codeID = gradeCodeID)
+            
+            # Build array from comma seprated string (Comma seprated GradeCodeIDs)
+            arrGradeCodeIDs = getArrayFromCommaSepString(gradeCodeIDs)
+        # If content type is self learning.
+        elif contentType == constants.mitraCode.selfLearning:
+            # If content type is selfLearning then topicCodeID can not be empty.
+            if not topicCodeID:
+                return Response({"response_message": constants.messages.uploadContent_topicCodeID_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED)
+            else:
+                # Get the respective instance topic.
+                objTopic = code.objects.get(codeID = topicCodeID)
+        # Invalid content type.
+        else:
+            return Response({"response_message": constants.messages.uploadContent_contentType_invalid,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED)
+        
+        # If contentType parameter is passed, then check contentType exists or not
+        try:
+            objContentType = code.objects.get(codeID = contentType)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.uploadContent_contentType_does_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # If fileType parameter is passed, then check fileType exists or not    
+        try:
+            objFileType = code.objects.get(codeID = fileType)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.uploadContent_fileType_does_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # If language parameter is passed, then check language exists or not        
+        try:
+            objLanguage = code.objects.get(codeID = language)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.uploadContent_language_does_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # If any response for content exists or not.
+        try:
+            # Save the content.
+            ObjRec =content.objects.create(contentTitle = contentTitle, 
+                    contentType = objContentType, 
+                    subject = objSubject,
+                    topic = objTopic,
+                    requirement = requirement,
+                    instruction = instruction,
+                    fileType = objFileType,
+                    fileName= fileName,
+                    author = author,
+                    objectives = objectives,
+                    language = objLanguage,
+                    createdBy = objUser,
+                    modifiedBy = objUser)
+            
+            ObjRec.save()        
+            
+            # Check content type of uploaded file.If teachingAids then save GradeCodeIDs     
+            if contentType == constants.mitraCode.teachingAids:  
+                if content.objects.filter(contentID = ObjRec.contentID).exists():
+                    objContent = content.objects.get(contentID = ObjRec.contentID)
+                    for objGrade in arrGradeCodeIDs:    
+                        objGradeCode = code.objects.get(codeID = objGrade)  
+                        # Save the grades
+                        contentGrade(grade = objGradeCode , content = objContent).save()
+            
+        except Exception as e:
+            # Error occured while uploading the content.
+            print e
+            return Response({"response_message": constants.messages.uploadContent_content_upload_failed,
+                     "data": []},
+                     status = status.HTTP_400_BAD_REQUEST)
+
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": []})
         
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs, objUser):
@@ -543,3 +720,23 @@ def getContentResponseDetails(objContent, objUser):
         objContentResponse.hasSaved = userContent.objects.filter(content = objContent , user = objUser).exists()
 
         return objContentResponse
+"""
+function to validate the youtube URL.
+"""    
+def validateYoutubeURL(url):
+    try:
+        # regex for validating youtube URL.
+        youtube_regex = (
+            r'(https?://)?(www\.)?'
+        '(youtube|youtu|youtube-nocookie)\.(com|be)/'
+        '(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})')
+    
+        # Match youtube URL againest regex
+        youtube_regex_match = re.match(youtube_regex, url)
+        
+        if youtube_regex_match:
+            return youtube_regex_match.group(6)
+          
+        return youtube_regex_match
+    except:
+        return None
