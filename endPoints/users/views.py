@@ -632,12 +632,11 @@ class UserViewSet(viewsets.ModelViewSet):
                 
             #Get the applicable content for GradeCodeID.
             arrContentID = list(contentGrade.objects.filter(grade__in = arrGradeCodeIDs).values_list('content',flat = True).distinct())
-            print "arrContentID :",arrContentID
+
             # combine list of contentIDs of login user and contentID for respective gradeCodeID's
             #arrContentIDList = objUserContent + arrContentID
             #arrContentIDList = set(objUserContent) and set(arrContentID)
-            #print "LAST:",arrContentIDList
-            #print "arrSubjectCodeIDs : ",arrSubjectCodeIDs
+            
             # Get the content details.
             objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, 
                                                             contentID__in = objUserContent,

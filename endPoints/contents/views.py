@@ -388,17 +388,17 @@ class ContentViewSet(viewsets.ModelViewSet):
     def uploadContent(self,request):
         # get inputs
         contentTitle = request.data.get('contentTitle')
-        contentType = request.data.get('contentType')
+        contentTypeCodeID = request.data.get('contentTypeCodeID')
         subjectCodeID = request.data.get('subjectCodeID')
         gradeCodeIDs = request.data.get('gradeCodeIDs')
         topicCodeID = request.data.get('topicCodeID')
         requirement = request.data.get('requirement')
         instruction = request.data.get('instruction')
-        fileType = request.data.get('fileType')
+        fileType = request.data.get('fileTypeCodeID')
         fileName = request.data.get('fileName')
         author = request.data.get('author')
         objectives = request.data.get('objectives')
-        language = request.data.get('language')
+        language = request.data.get('languageCodeID')
         
         #Get user token
         authToken = request.META.get('HTTP_AUTHTOKEN')
@@ -418,8 +418,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED) 
             
-        # Check if contentType is passed in post param
-        if not contentType:
+        # Check if contentType CodeID is passed in post param
+        if not contentTypeCodeID:
             return Response({"response_message": constants.messages.uploadContent_contentType_cannot_be_empty,
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED) 
@@ -460,7 +460,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         arrGradeCodeIDs = None
         
         # Check content type of uploaded file.    
-        if contentType == constants.mitraCode.teachingAids:
+        if contentTypeCodeID == constants.mitraCode.teachingAids:
             # If content type is teaching Aid then subjetCodeID & gradeCodeIDs can not be empty.
             if not subjectCodeID:
                 return Response({"response_message": constants.messages.uploadContent_subjectCodeID_cannot_be_empty,
@@ -478,7 +478,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             # Build array from comma seprated string (Comma seprated GradeCodeIDs)
             arrGradeCodeIDs = getArrayFromCommaSepString(gradeCodeIDs)
         # If content type is self learning.
-        elif contentType == constants.mitraCode.selfLearning:
+        elif contentTypeCodeID == constants.mitraCode.selfLearning:
             # If content type is selfLearning then topicCodeID can not be empty.
             if not topicCodeID:
                 return Response({"response_message": constants.messages.uploadContent_topicCodeID_cannot_be_empty,
@@ -493,9 +493,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED)
         
-        # If contentType parameter is passed, then check contentType exists or not
+        # If contentType parameter is passed, then check contentType CodeID exists or not
         try:
-            objContentType = code.objects.get(codeID = contentType)
+            objContentType = code.objects.get(codeID = contentTypeCodeID)
         except code.DoesNotExist:
             return Response({"response_message": constants.messages.uploadContent_contentType_does_not_exists,
                      "data": []},
@@ -537,7 +537,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             ObjRec.save()        
             
             # Check content type of uploaded file.If teachingAids then save GradeCodeIDs     
-            if contentType == constants.mitraCode.teachingAids:  
+            if contentTypeCodeID == constants.mitraCode.teachingAids:  
                 if content.objects.filter(contentID = ObjRec.contentID).exists():
                     objContent = content.objects.get(contentID = ObjRec.contentID)
                     for objGrade in arrGradeCodeIDs:    
@@ -547,7 +547,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             
         except Exception as e:
             # Error occured while uploading the content.
-            print e
+            #print e
             return Response({"response_message": constants.messages.uploadContent_content_upload_failed,
                      "data": []},
                      status = status.HTTP_400_BAD_REQUEST)
