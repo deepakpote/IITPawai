@@ -43,7 +43,7 @@ class contentGrade(models.Model):
     content = models.ForeignKey('content', db_column = 'contentID', null = False, related_name="contentGrade_contentID")
          
     class Meta:
-        db_table = 'con_contentgrade'
+        db_table = 'con_contentGrade'
         
 """
 content response model
