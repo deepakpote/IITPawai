@@ -86,7 +86,7 @@ public class BaseContentFragment extends Fragment {
 
     protected void setupFilterView(OnChipRemovedListener listener) {
         filterList = new ArrayList<>();
-        filterAdapter = new ChipLayoutAdapter(filterList);
+        filterAdapter = new ChipLayoutAdapter(filterList, getContext());
         filterAdapter.setShowRemoveButton(true);
         filterAdapter.setListener(listener);
 
@@ -110,6 +110,15 @@ public class BaseContentFragment extends Fragment {
         filterAdapter.setObjects(filterList);
         filterRecyclerView.swapAdapter(filterAdapter, false);
     }
+
+    protected void setItemInFilterList(CommonCode commonCode, int pos) {
+        filterRecyclerView.setVisibility(View.VISIBLE);
+        viewBelowFilterList.setVisibility(View.VISIBLE);
+        filterList.set(pos, new BaseObject(commonCode, true));
+        filterAdapter.setObjects(filterList);
+        filterRecyclerView.swapAdapter(filterAdapter, false);
+    }
+
 
     protected boolean isNextPageToBeLoaded(int newState, RecyclerView recyclerView) {
         if(newState == RecyclerView.SCROLL_STATE_IDLE) {

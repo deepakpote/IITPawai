@@ -273,11 +273,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         gradeRecyclerView.setHasFixedSize(true);
         gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
-        gradeRecyclerView.setAdapter(new ChipLayoutAdapter(selectedGradesList));
+        gradeRecyclerView.setAdapter(new ChipLayoutAdapter(selectedGradesList, getApplicationContext()));
 
         topicRecyclerView.setHasFixedSize(true);
         topicRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
-        topicRecyclerView.setAdapter(new ChipLayoutAdapter(selectedTopicsList));
+        topicRecyclerView.setAdapter(new ChipLayoutAdapter(selectedTopicsList, getApplicationContext()));
     }
 
     private void setDefaultValues(DbUser dbUser) {

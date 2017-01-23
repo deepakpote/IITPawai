@@ -17,4 +17,8 @@ public interface CommonCodeGroup {
     Integer SUBJECTS          =  103;
     Integer TOPICS            =  105;
     Integer USER_TYPES        =  109;
+
+    //For Local Use
+    Integer FROM_DATE = 800;
+    Integer TO_DATE = 801;
 }

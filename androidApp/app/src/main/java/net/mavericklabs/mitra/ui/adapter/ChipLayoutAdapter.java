@@ -1,5 +1,6 @@
 package net.mavericklabs.mitra.ui.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.listener.OnChipRemovedListener;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.ui.adapter.viewholder.ChipViewHolder;
+import net.mavericklabs.mitra.utils.DisplayUtils;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class ChipLayoutAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     private List<BaseObject> objects;
     private boolean showRemoveButton;
     private OnChipRemovedListener listener;
+    private int width;
 
     public List<BaseObject> getObjects() {
         return objects;
@@ -30,14 +33,21 @@ public class ChipLayoutAdapter extends RecyclerView.Adapter<ChipViewHolder> {
         this.objects = objects;
     }
 
-    public ChipLayoutAdapter(List<BaseObject> objects) {
+    public ChipLayoutAdapter(List<BaseObject> objects, Context context) {
         this.objects = objects;
+        width = DisplayUtils.dpToPx(120, context);
     }
 
+    public void setWidth(int width) {
+        this.width = width;
+    }
 
     @Override
     public ChipViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chip,parent,false);
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        params.width = width;
+        view.setLayoutParams(params);
         return new ChipViewHolder(view);
     }
 

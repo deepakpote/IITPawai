@@ -126,7 +126,7 @@ public class ProfileFragment extends Fragment {
                 gradeList.add(new BaseObject(CommonCodeUtils.getObjectFromCode(grade.getGradeCommonCode()),
                                         false));
             }
-            gradeRecyclerView.setAdapter(new ChipLayoutAdapter(gradeList));
+            gradeRecyclerView.setAdapter(new ChipLayoutAdapter(gradeList, getContext()));
             if(0 == gradeList.size()) {
                 gradeRecyclerView.setVisibility(GONE);
             } else {

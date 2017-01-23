@@ -1,0 +1,110 @@
+<!--
+  ~ /*
+  ~  * ************************************************************************
+  ~  *
+  ~  *  MAVERICK LABS CONFIDENTIAL
+  ~  *  __________________
+  ~  *
+  ~  *   [2015] Maverick Labs
+  ~  *   All Rights Reserved.
+  ~  *
+  ~  *  NOTICE:  All information contained herein is, and remains
+  ~  *  the property of Maverick Labs and its suppliers,
+  ~  *  if any.  The intellectual and technical concepts contained
+  ~  *  herein are proprietary to Maverick Labs
+  ~  *  and its suppliers and may be covered by U.S. and Foreign Patents,
+  ~  *  patents in process, and are protected by trade secret or copyright law.
+  ~  *  Dissemination of this information or reproduction of this material
+  ~  *  is strictly forbidden unless prior written permission is obtained
+  ~  *  from Maverick Labs.
+  ~  * /
+  ~  */
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="8dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="8dp">
+        <TextView
+            android:id="@+id/date_from_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DATE FROM"
+            style="@style/Base.Widget.AppCompat.Spinner">
+        </TextView>
+
+        <View
+            android:layout_width="1dp"
+            android:background="@color/default_grey"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/date_to_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DATE TO"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            style="@style/Base.Widget.AppCompat.Spinner">
+        </TextView>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/default_grey"
+        android:layout_marginTop="8dp">
+    </View>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/filter_recycler_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        />
+
+    <View
+        android:id="@+id/view_below_filter_list"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/default_grey"
+        android:visibility="gone"
+        android:layout_marginTop="8dp">
+    </View>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include layout="@layout/custom_loading_panel"
+            android:id="@+id/loading_panel"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/content_recycler_view"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/error_view"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+</LinearLayout>
