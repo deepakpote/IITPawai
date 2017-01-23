@@ -104,4 +104,5 @@
     <string name="toast_attend">आपण %1$s ला उपस्थित राहण्यासाठी साइन अप केले आहे</string>
     <string name="attend">उपस्थित राहणार</string>
     <string name="no">नाही</string>
+    <string name="download_file_location">"Downloading file at location %1$s"</string>
 </resources>

@@ -65,6 +65,7 @@ import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -401,11 +402,22 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
                     request.setTitle(content.getTitle());
                     request.allowScanningByMediaScanner();
                     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, content.getTitle());
 
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append(Environment.getExternalStorageDirectory());
+                    stringBuilder.append(File.separator);
+                    stringBuilder.append("MITRA");
+                    String mitraDirectoryPath = stringBuilder.toString();
+                    File mitraDirectory = new File(mitraDirectoryPath);
+                    Logger.d("Directory Path " + mitraDirectoryPath);
+                    mitraDirectory.mkdirs();
+                    request.setDestinationInExternalPublicDir(mitraDirectoryPath, content.getTitle());
                     // get download service and enqueue file
                     DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
                     manager.enqueue(request);
+                    Toast.makeText(context, context.getString(R.string.download_file_location,
+                            mitraDirectoryPath + File.separator +content.getTitle()),
+                            Toast.LENGTH_SHORT).show();
                 }
             }
 
