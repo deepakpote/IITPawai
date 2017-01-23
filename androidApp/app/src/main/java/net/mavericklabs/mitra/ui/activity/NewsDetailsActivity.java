@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.api.model.News;
+import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.utils.StringUtils;
 
 import butterknife.BindView;

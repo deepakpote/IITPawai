@@ -33,8 +33,8 @@ import android.widget.Spinner;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.SavedTeachingAidsRequest;
+import net.mavericklabs.mitra.model.api.BaseModel;
+import net.mavericklabs.mitra.model.api.SavedTeachingAidsRequest;
 import net.mavericklabs.mitra.listener.OnChipRemovedListener;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
@@ -47,7 +47,6 @@ import net.mavericklabs.mitra.utils.Constants;
 
 import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
-import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 
@@ -56,8 +55,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

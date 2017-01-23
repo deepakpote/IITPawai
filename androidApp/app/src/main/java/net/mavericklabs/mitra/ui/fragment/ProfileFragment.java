@@ -18,10 +18,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.database.model.DbGrade;
-import net.mavericklabs.mitra.database.model.DbSubject;
-import net.mavericklabs.mitra.database.model.DbTopic;
-import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.model.database.DbGrade;
+import net.mavericklabs.mitra.model.database.DbSubject;
+import net.mavericklabs.mitra.model.database.DbTopic;
+import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.activity.EditProfileActivity;

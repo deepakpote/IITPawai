@@ -25,8 +25,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.database.model.DbUser;
-import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.ui.fragment.EventCalendarFragment;
 import net.mavericklabs.mitra.ui.fragment.HomeFragment;

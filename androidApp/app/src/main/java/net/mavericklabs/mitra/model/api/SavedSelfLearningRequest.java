@@ -21,7 +21,7 @@
  *
  */
 
-package net.mavericklabs.mitra.api.model;
+package net.mavericklabs.mitra.model.api;
 
 import com.google.gson.annotations.SerializedName;
 

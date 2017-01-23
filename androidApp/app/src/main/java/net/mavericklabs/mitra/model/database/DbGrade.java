@@ -21,28 +21,29 @@
  *
  */
 
-package net.mavericklabs.mitra.api.model;
+package net.mavericklabs.mitra.model.database;
 
-import com.google.gson.annotations.SerializedName;
+import io.realm.RealmObject;
 
 /**
- * Created by vishakha on 12/12/16.
+ * Created by amoghpalnitkar on 12/2/16.
  */
 
-public class Attend {
+public class DbGrade extends RealmObject{
+    private Integer gradeCommonCode;
 
-    @SerializedName("eventID")
-    private String eventID;
-
-    public Attend(String eventID) {
-        this.eventID = eventID;
+    public DbGrade(Integer gradeCommonCode) {
+        this.gradeCommonCode = gradeCommonCode;
     }
 
-    public String getEventID() {
-        return eventID;
+    public DbGrade() {
     }
 
-    public void setEventID(String eventID) {
-        this.eventID = eventID;
+    public Integer getGradeCommonCode() {
+        return gradeCommonCode;
+    }
+
+    public void setGradeCommonCode(Integer gradeCommonCode) {
+        this.gradeCommonCode = gradeCommonCode;
     }
 }

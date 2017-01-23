@@ -9,18 +9,15 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
-import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.utils.Logger;
-import net.mavericklabs.mitra.database.model.DbNotification;
-import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.model.database.DbNotification;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * Created by amoghpalnitkar on 12/7/16.

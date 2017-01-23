@@ -24,23 +24,17 @@
 package net.mavericklabs.mitra.ui.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.SavedSelfLearningRequest;
-import net.mavericklabs.mitra.api.model.SavedTeachingAidsRequest;
-import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.model.api.BaseModel;
+import net.mavericklabs.mitra.model.api.SavedSelfLearningRequest;
 import net.mavericklabs.mitra.listener.OnChipRemovedListener;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
@@ -52,7 +46,6 @@ import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
-import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
@@ -60,8 +53,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

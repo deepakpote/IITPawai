@@ -1,44 +1,30 @@
 package net.mavericklabs.mitra.ui.fragment;
 
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.EventRequest;
-import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
+import net.mavericklabs.mitra.model.api.BaseModel;
+import net.mavericklabs.mitra.model.api.EventRequest;
 import net.mavericklabs.mitra.listener.OnMonthSelectedListener;
-import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Event;
-import net.mavericklabs.mitra.ui.activity.HomeActivity;
-import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.custom.CalendarView;
 import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.Logger;
-import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

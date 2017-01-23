@@ -21,28 +21,40 @@
  *
  */
 
-package net.mavericklabs.mitra.api.model;
+package net.mavericklabs.mitra.model.api;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by vishakha on 12/12/16.
+ * Created by amoghpalnitkar on 12/7/16.
  */
 
-public class ContentDataRequest {
+public class LikeRequest {
 
     @SerializedName("contentID")
-    private String contentID;
+    private String contentId;
 
-    public ContentDataRequest(String contentID) {
-        this.contentID = contentID;
+    @SerializedName("hasLiked")
+    private boolean hasLiked;
+
+    public LikeRequest(String contentId, boolean hasLiked) {
+        this.contentId = contentId;
+        this.hasLiked = hasLiked;
     }
 
-    public String getContentID() {
-        return contentID;
+    public String getContentId() {
+        return contentId;
     }
 
-    public void setContentID(String contentID) {
-        this.contentID = contentID;
+    public void setContentId(String contentId) {
+        this.contentId = contentId;
+    }
+
+    public boolean isHasLiked() {
+        return hasLiked;
+    }
+
+    public void setHasLiked(boolean hasLiked) {
+        this.hasLiked = hasLiked;
     }
 }

@@ -21,29 +21,21 @@
  *
  */
 
-package net.mavericklabs.mitra.api.model;
-
-import com.google.gson.annotations.SerializedName;
+package net.mavericklabs.mitra.model.api;
 
 /**
- * Created by amoghpalnitkar on 18/11/16.
+ * Created by amoghpalnitkar on 12/14/16.
  */
 
-public class ContentDataResponse {
-    @SerializedName("fileName")
-    private String fileName;
+public class EditPhoto {
+    private String byteArray;
 
-
-    public ContentDataResponse(String fileName) {
-        this.fileName = fileName;
+    public String getByteArray() {
+        return byteArray;
     }
 
-    public String getFileName() {
-        return fileName;
+    public void setByteArray(String byteArray) {
+        this.byteArray = byteArray;
     }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
+    
 }

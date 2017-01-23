@@ -2,37 +2,30 @@ package net.mavericklabs.mitra.ui.fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.GenericListDataModel;
-import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.model.api.BaseModel;
+import net.mavericklabs.mitra.model.api.GenericListDataModel;
+import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.LanguageUtils;
-import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

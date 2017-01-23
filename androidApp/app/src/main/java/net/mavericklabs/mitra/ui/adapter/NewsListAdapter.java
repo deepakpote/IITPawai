@@ -34,7 +34,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.api.model.News;
+import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.ui.activity.NewsDetailsActivity;
 
 import java.util.List;

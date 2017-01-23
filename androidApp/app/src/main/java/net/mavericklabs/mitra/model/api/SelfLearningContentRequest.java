@@ -21,7 +21,7 @@
  *
  */
 
-package net.mavericklabs.mitra.api.model;
+package net.mavericklabs.mitra.model.api;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -31,48 +31,37 @@ import java.io.Serializable;
  * Created by vishakha on 10/11/16.
  */
 
-public class TeachingAidsContentRequest implements Serializable{
+public class SelfLearningContentRequest implements Serializable{
 
-    @SerializedName("fileTypeCodeID")
-    private Integer fileType;
+    @SerializedName("languageCodeIDs")
+    private String language;
 
-    @SerializedName("subjectCodeIDs")
-    private String subject;
-
-    @SerializedName("gradeCodeIDs")
-    private String grade;
+    @SerializedName("topicCodeIDs")
+    private String topic;
 
     @SerializedName("pageNumber")
     private int pageNumber;
 
-    public TeachingAidsContentRequest(int fileType, String subject, String grade) {
-        this.fileType = fileType;
-        this.subject = subject;
-        this.grade = grade;
+    public SelfLearningContentRequest(String language, String topic) {
+        this.language = language;
+        this.topic = topic;
     }
 
-    public Integer getFileType() {
-        return fileType;
+
+    public String getLanguage() {
+        return language;
     }
 
-    public void setFileType(Integer fileType) {
-        this.fileType = fileType;
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
-    public String getSubject() {
-        return subject;
+    public String getTopic() {
+        return topic;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getGrade() {
-        return grade;
-    }
-
-    public void setGrade(String grade) {
-        this.grade = grade;
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 
     public int getPageNumber() {

@@ -24,7 +24,7 @@
 package net.mavericklabs.mitra.utils;
 
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.Content;
 
 import java.io.IOException;

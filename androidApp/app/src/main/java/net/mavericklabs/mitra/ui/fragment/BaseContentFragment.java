@@ -31,7 +31,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.listener.OnChipRemovedListener;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
@@ -39,7 +39,6 @@ import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.ChipLayoutAdapter;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
-import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.ArrayList;

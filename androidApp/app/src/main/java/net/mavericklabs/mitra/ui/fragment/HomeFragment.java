@@ -13,10 +13,10 @@ import android.widget.RelativeLayout;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.News;
-import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
-import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
+import net.mavericklabs.mitra.model.api.BaseModel;
+import net.mavericklabs.mitra.model.News;
+import net.mavericklabs.mitra.model.api.SelfLearningContentRequest;
+import net.mavericklabs.mitra.model.api.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;

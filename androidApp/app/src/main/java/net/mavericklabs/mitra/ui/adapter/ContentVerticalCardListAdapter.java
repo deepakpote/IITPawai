@@ -52,10 +52,10 @@ import com.google.android.youtube.player.YouTubeThumbnailView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.ContentDataRequest;
-import net.mavericklabs.mitra.api.model.ContentDataResponse;
-import net.mavericklabs.mitra.api.model.GenericListDataModel;
+import net.mavericklabs.mitra.model.api.BaseModel;
+import net.mavericklabs.mitra.model.api.ContentDataRequest;
+import net.mavericklabs.mitra.model.api.ContentDataResponse;
+import net.mavericklabs.mitra.model.api.GenericListDataModel;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
