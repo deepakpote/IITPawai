@@ -33,6 +33,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -431,6 +433,13 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
                                 BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
                                 sink.writeAll(response.body().source());
                                 sink.close();
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(context, context.getString(R.string.download_complete),
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
                         }
                     });
