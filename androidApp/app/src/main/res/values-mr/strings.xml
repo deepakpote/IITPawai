@@ -105,4 +105,5 @@
     <string name="attend">उपस्थित राहणार</string>
     <string name="no">नाही</string>
     <string name="download_file_location">"Downloading file at location %1$s"</string>
+    <string name="download_complete">Download Complete</string>
 </resources>
