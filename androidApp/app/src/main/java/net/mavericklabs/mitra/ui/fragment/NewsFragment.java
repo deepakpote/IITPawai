@@ -70,6 +70,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -313,33 +316,44 @@ public class NewsFragment extends Fragment{
 
         private void searchNews() {
             Logger.d(" searching ");
-            loadingPanel.setVisibility(View.VISIBLE);
-            contentRecyclerView.setVisibility(View.GONE);
 
-            RestClient.getApiService("").listNews().enqueue(new Callback<BaseModel<News>>() {
-                @Override
-                public void onResponse(Call<BaseModel<News>> call, Response<BaseModel<News>> response) {
-                    if(response.isSuccessful()) {
-                        loadingPanel.setVisibility(View.GONE);
-                        contentRecyclerView.setVisibility(View.VISIBLE);
-                        List<News> news = response.body().getData();
-                        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-                        contentRecyclerView.setLayoutManager(layoutManager);
-                        NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), news);
-                        contentRecyclerView.setAdapter(newsListAdapter);
-                    } else {
-                        String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessageForNews(response)).getCodeNameForCurrentLocale();
-                        loadingPanel.setVisibility(View.GONE);
-                        errorView.setVisibility(View.VISIBLE);
-                        errorView.setText(error);
-                    }
-                }
+            Realm realm = Realm.getDefaultInstance();
+            RealmResults<News> dbNews = realm.where(News.class).findAll();
 
-                @Override
-                public void onFailure(Call<BaseModel<News>> call, Throwable t) {
-                    loadingPanel.setVisibility(View.GONE);
-                }
-            });
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+            contentRecyclerView.setLayoutManager(layoutManager);
+            NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), dbNews);
+            contentRecyclerView.setAdapter(newsListAdapter);
+
+
+
+//            loadingPanel.setVisibility(View.VISIBLE);
+//            contentRecyclerView.setVisibility(View.GONE);
+//
+//            RestClient.getApiService("").listNews().enqueue(new Callback<BaseModel<News>>() {
+//                @Override
+//                public void onResponse(Call<BaseModel<News>> call, Response<BaseModel<News>> response) {
+//                    if(response.isSuccessful()) {
+//                        loadingPanel.setVisibility(View.GONE);
+//                        contentRecyclerView.setVisibility(View.VISIBLE);
+//                        List<News> news = response.body().getData();
+//                        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+//                        contentRecyclerView.setLayoutManager(layoutManager);
+//                        NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), news);
+//                        contentRecyclerView.setAdapter(newsListAdapter);
+//                    } else {
+//                        String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessageForNews(response)).getCodeNameForCurrentLocale();
+//                        loadingPanel.setVisibility(View.GONE);
+//                        errorView.setVisibility(View.VISIBLE);
+//                        errorView.setText(error);
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<BaseModel<News>> call, Throwable t) {
+//                    loadingPanel.setVisibility(View.GONE);
+//                }
+//            });
         }
     }
 

@@ -25,6 +25,7 @@ package net.mavericklabs.mitra.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -36,12 +37,17 @@ import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.News;
+import net.mavericklabs.mitra.model.database.DbGrade;
 import net.mavericklabs.mitra.ui.activity.NewsDetailsActivity;
+import net.mavericklabs.mitra.utils.DateUtils;
 
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmList;
 
 /**
  * Created by amoghpalnitkar on 9/11/16.
@@ -67,7 +73,14 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.CardVi
     @Override
     public void onBindViewHolder(final CardViewHolder holder, int position) {
         holder.title.setText(newsList.get(holder.getAdapterPosition()).getNewsTitle());
-        holder.text2.setText(newsList.get(holder.getAdapterPosition()).getContent());
+
+        Date date = DateUtils.convertToDate(newsList.get(holder.getAdapterPosition()).getCreatedOn(), "yyyy-MM-dd'T'HH:mm:ss'Z'");
+        String dateString = DateUtils.convertToString(date, "dd MMM, yyyy");
+
+        if(newsList.get(holder.getAdapterPosition()).isSeen()) {
+            holder.newsCard.setCardBackgroundColor(Color.WHITE);
+        }
+        holder.text2.setText(dateString);
         holder.newsCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,7 +88,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.CardVi
                 Intent details = new Intent(context, NewsDetailsActivity.class);
                 details.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("news_item",item);
+                bundle.putString("news_item", item.getNewsID());
                 details.putExtras(bundle);
                 context.startActivity(details);
             }

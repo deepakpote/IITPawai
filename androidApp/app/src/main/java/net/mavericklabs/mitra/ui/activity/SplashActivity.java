@@ -10,6 +10,7 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.CommonCodeWrapper;
+import net.mavericklabs.mitra.model.database.Migration;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
@@ -20,6 +21,7 @@ import net.mavericklabs.mitra.utils.UserDetailUtils;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,7 +34,15 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
+
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .schemaVersion(1) // Must be bumped when the schema changes
+                .migration(new Migration()) // Migration to run
+                .build();
+
+        Realm.setDefaultConfiguration(config);
+
+        RealmResults<CommonCode> commonCodes = Realm.getInstance(config)
                 .where(CommonCode.class).findAll();
         String codeVersion;
         if(!commonCodes.isEmpty()) {

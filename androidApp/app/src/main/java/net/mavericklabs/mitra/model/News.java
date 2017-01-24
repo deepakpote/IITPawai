@@ -25,11 +25,16 @@ package net.mavericklabs.mitra.model;
 
 import java.io.Serializable;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * Created by amoghpalnitkar on 12/12/16.
  */
 
-public class News implements Serializable {
+public class News extends RealmObject{
+
+    @PrimaryKey
     private String newsID;
     private String newsTitle;
     private String author;
@@ -37,6 +42,8 @@ public class News implements Serializable {
     private String content;
     private String createdOn;
     private String modifiedOn;
+
+    private boolean isSeen;
 
     public News() {
 
@@ -96,5 +103,13 @@ public class News implements Serializable {
 
     public void setModifiedOn(String modifiedOn) {
         this.modifiedOn = modifiedOn;
+    }
+
+    public void setSeen(boolean seen) {
+        isSeen = seen;
+    }
+
+    public boolean isSeen() {
+        return isSeen;
     }
 }

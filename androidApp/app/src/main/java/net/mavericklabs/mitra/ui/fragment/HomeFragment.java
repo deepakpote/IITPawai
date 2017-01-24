@@ -29,6 +29,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,6 +52,15 @@ public class HomeFragment extends Fragment{
 
     @BindView(R.id.teaching_aids_solid_button)
     Button teachingAidsSolidButton;
+
+    @OnClick(R.id.see_all_news)
+    void seeAllNews() {
+        if(getActivity() instanceof HomeActivity) {
+            HomeActivity homeActivity = (HomeActivity) getActivity();
+            homeActivity.selectDrawerItem(homeActivity.navigationView.getMenu()
+                    .getItem(homeActivity.DRAWER_ITEM_NEWS));
+        }
+    }
 
     @OnClick(R.id.teaching_aids_solid_button)
     void goToTeachingAids() {
@@ -118,10 +129,27 @@ public class HomeFragment extends Fragment{
             @Override
             public void onResponse(Call<BaseModel<News>> call, Response<BaseModel<News>> response) {
                 if(response.isSuccessful()) {
+                    Logger.d(" News success ");
+                    Realm realm = Realm.getDefaultInstance();
+                    realm.beginTransaction();
                     List<News> news = response.body().getData();
+
+                    for (News newsItem : news) {
+                        Logger.d(" seen item " + newsItem.isSeen());
+                        News newsInDb = realm.where(News.class).equalTo("newsID", newsItem.getNewsID()).findFirst();
+                        if(newsInDb != null) {
+                            Logger.d(" seen db " + newsItem.isSeen());
+                            newsItem.setSeen(newsInDb.isSeen());
+                        }
+                        realm.copyToRealmOrUpdate(newsItem);
+                    }
+
+                    realm.commitTransaction();
+
+                    RealmResults<News> dbNews = realm.where(News.class).findAll();
                     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                     newsRecyclerView.setLayoutManager(layoutManager);
-                    NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), news);
+                    NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), dbNews);
                     newsRecyclerView.setAdapter(newsListAdapter);
                 }
             }
