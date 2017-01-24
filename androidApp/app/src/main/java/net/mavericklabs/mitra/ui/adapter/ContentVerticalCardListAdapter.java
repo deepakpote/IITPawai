@@ -33,6 +33,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -65,6 +67,8 @@ import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +76,10 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okio.BufferedSink;
+import okio.Okio;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -90,6 +98,7 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
     private Fragment callingFragment;
     private boolean showDeleteOption = false;
     private int loaderPosition = -1;
+    private static final String PDF_EXTENSION = ".pdf";
 
     public ContentVerticalCardListAdapter(Context applicationContext, List<Content> contents, Fragment fragment) {
         this.context = applicationContext;
@@ -393,19 +402,50 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
                     List<ContentDataResponse> responseList = response.body().getData();
                     Logger.d(" file " + responseList.get(0).getFileName());
 
-                    Content content = contents.get(holder.getAdapterPosition());
+                    final Content content = contents.get(holder.getAdapterPosition());
 
                     String url = responseList.get(0).getFileName();
-                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-                    request.setMimeType("application/pdf");
-                    request.setTitle(content.getTitle());
-                    request.allowScanningByMediaScanner();
-                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, content.getTitle());
-
                     // get download service and enqueue file
-                    DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-                    manager.enqueue(request);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append(Environment.getExternalStorageDirectory());
+                    stringBuilder.append(File.separator);
+                    stringBuilder.append("MITRA");
+                    final String mitraDirectoryPath = stringBuilder.toString();
+                    File mitraDirectory = new File(mitraDirectoryPath);
+                    Logger.d("Directory Path " + mitraDirectoryPath);
+                    mitraDirectory.mkdirs();
+                    final OkHttpClient client = new OkHttpClient();
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .build();
+                    client.newCall(request).enqueue(new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(okhttp3.Call call, IOException e) {
+
+                        }
+
+                        @Override
+                        public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                            if(response.isSuccessful()) {
+                                String downloadFileName = mitraDirectoryPath +
+                                        File.separator + content.getTitle() + PDF_EXTENSION;
+                                File downloadedFile = new File(downloadFileName);
+                                BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
+                                sink.writeAll(response.body().source());
+                                sink.close();
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(context, context.getString(R.string.download_complete),
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    Toast.makeText(context, context.getString(R.string.download_file_location,
+                            mitraDirectoryPath + File.separator +content.getTitle()),
+                            Toast.LENGTH_SHORT).show();
                 }
             }
 

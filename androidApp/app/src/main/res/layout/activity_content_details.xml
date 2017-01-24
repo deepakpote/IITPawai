@@ -58,7 +58,7 @@
                     <RelativeLayout
                         android:id="@+id/content_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:background="@drawable/gradient_background">
 
                         <RelativeLayout
@@ -79,7 +79,23 @@
                             android:id="@+id/content_image_view"
                             android:layout_width="64dp"
                             android:layout_height="64dp"
-                            android:layout_centerInParent="true"/>
+                            android:layout_centerInParent="true"
+                            />
+
+                        <WebView
+                            android:id="@+id/content_web_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            />
+
+                        <include layout="@layout/custom_loading_panel"
+                            android:id="@+id/loading_panel_for_web_view"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_marginTop="8dp"
+                            android:visibility="gone"
+                            />
 
                     </RelativeLayout>
 

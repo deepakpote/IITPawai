@@ -113,6 +113,8 @@
     <string name="school_udise">School UDISE</string>
     <string name="attend">Attend</string>
     <string name="toast_attend">You have signed up to attend %1$s</string>
+    <string name="download_file_location">"Downloading file at location %1$s"</string>
+    <string name="download_complete">Download Complete</string>
 
 
 </resources>
