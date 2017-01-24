@@ -167,7 +167,7 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
 
             ViewGroup.LayoutParams layoutParams = holder.contentView.getLayoutParams();
             layoutParams.width = displayMetrics.widthPixels / 3;
-            layoutParams.height = layoutParams.width - (DisplayUtils.dpToPx(16, context));
+            layoutParams.height = layoutParams.width;
             holder.contentView.setLayoutParams(layoutParams);
 
             if(showDeleteOption) {
