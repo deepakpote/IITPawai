@@ -28,6 +28,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
@@ -46,6 +49,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -72,12 +76,18 @@ import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okio.BufferedSink;
+import okio.Okio;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -96,6 +106,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
     @BindView(R.id.loading_panel) RelativeLayout loadingPanel;
     @BindView(R.id.like_icon) ImageView likeIcon;
     @BindView(R.id.save_icon) ImageView saveIcon;
+    @BindView(R.id.download_icon) ImageView downloadIcon;
     @BindView(R.id.share_icon) ImageView shareIcon;
     @BindView(R.id.youtube_layout) RelativeLayout youTubeLayout;
     @BindView(R.id.content_layout) RelativeLayout contentLayout;
@@ -216,6 +227,78 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                 });
     }
 
+    @OnClick(R.id.download_icon)
+    void downloadContent() {
+        Logger.d(" download ");
+        String token = UserDetailUtils.getToken(getApplicationContext());
+        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService(token)
+                .download(new ContentDataRequest(content.getContentID()));
+
+        saveRequest.enqueue(new Callback<BaseModel<ContentDataResponse>>() {
+            @Override
+            public void onResponse(Call<BaseModel<ContentDataResponse>> call, Response<BaseModel<ContentDataResponse>> response) {
+                if(response.isSuccessful()) {
+                    List<ContentDataResponse> responseList = response.body().getData();
+                    Logger.d(" file " + responseList.get(0).getFileName());
+
+                    String url = responseList.get(0).getFileName();
+                    // get download service and enqueue file
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append(Environment.getExternalStorageDirectory());
+                    stringBuilder.append(File.separator);
+                    stringBuilder.append("MITRA");
+                    final String mitraDirectoryPath = stringBuilder.toString();
+                    File mitraDirectory = new File(mitraDirectoryPath);
+                    Logger.d("Directory Path " + mitraDirectoryPath);
+                    mitraDirectory.mkdirs();
+                    final OkHttpClient client = new OkHttpClient();
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .build();
+                    final String extension;
+                    if(content.getFileType() == Constants.FileTypeAudio) {
+                        extension = ".mp3";
+                    } else {
+                        extension = ".pdf";
+                    }
+                    client.newCall(request).enqueue(new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(okhttp3.Call call, IOException e) {
+
+                        }
+
+                        @Override
+                        public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                            if(response.isSuccessful()) {
+                                String downloadFileName = mitraDirectoryPath +
+                                        File.separator + content.getTitle() + extension;
+                                File downloadedFile = new File(downloadFileName);
+                                BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
+                                sink.writeAll(response.body().source());
+                                sink.close();
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), getString(R.string.download_complete),
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    Toast.makeText(getApplicationContext(), getString(R.string.download_file_location,
+                            mitraDirectoryPath + File.separator +content.getTitle()),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<ContentDataResponse>> call, Throwable t) {
+                Logger.d(" on failure ");
+            }
+        });
+    }
+
     BaseHorizontalCardListAdapter similarContentsAdapter;
     private Content content;
     private YouTubePlayer player;
@@ -279,6 +362,7 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                 contentImageView.setVisibility(View.GONE);
                 contentWebView.setVisibility(View.GONE);
                 contentLayout.setBackgroundColor(Color.BLACK);
+                downloadIcon.setVisibility(View.GONE);
                 YouTubePlayerSupportFragment frag =
                         (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
                 frag.initialize(Constants.youtubeDeveloperKey, this);
