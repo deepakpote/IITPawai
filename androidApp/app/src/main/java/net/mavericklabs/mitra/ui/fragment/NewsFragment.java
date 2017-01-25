@@ -72,6 +72,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -195,6 +196,7 @@ public class NewsFragment extends Fragment{
                         } else {
                             fromDate = "";
                             removeFromFilterList(position);
+                            dateToSpinner.setEnabled(false);
                         }
 
                     } else {
@@ -318,12 +320,41 @@ public class NewsFragment extends Fragment{
             Logger.d(" searching ");
 
             Realm realm = Realm.getDefaultInstance();
-            RealmResults<News> dbNews = realm.where(News.class).findAll();
 
+
+            RealmResults<News> dbNews;
+
+            if(!StringUtils.isEmpty(fromDate) && !fromDate.equals("-") && !StringUtils.isEmpty(toDate)) {
+                dbNews = realm.where(News.class)
+                        .lessThanOrEqualTo("dateToCompare", DateUtils.convertToDate(toDate, "d MMM yyyy"))
+                        .greaterThanOrEqualTo("dateToCompare", DateUtils.convertToDate(fromDate, "d MMM yyyy"))
+                        .findAll();
+            } else if(!StringUtils.isEmpty(fromDate) && !fromDate.equals("-")) {
+                dbNews = realm.where(News.class)
+                        .greaterThanOrEqualTo("dateToCompare", DateUtils.convertToDate(fromDate, "d MMM yyyy"))
+                        .findAll();
+            } else if(!StringUtils.isEmpty(toDate)) {
+                dbNews = realm.where(News.class)
+                        .lessThanOrEqualTo("dateToCompare", DateUtils.convertToDate(toDate, "d MMM yyyy"))
+                        .findAll();
+            } else {
+                dbNews = realm.where(News.class)
+                        .findAll();
+            }
+
+
+            errorView.setVisibility(View.GONE);
             LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
             contentRecyclerView.setLayoutManager(layoutManager);
             NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), dbNews);
             contentRecyclerView.setAdapter(newsListAdapter);
+
+
+            if(dbNews.isEmpty()) {
+                errorView.setVisibility(View.VISIBLE);
+                errorView.setText(R.string.no_results);
+            }
+
 
 
 

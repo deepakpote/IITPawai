@@ -21,6 +21,7 @@ import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.NewsListAdapter;
+import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
@@ -141,6 +142,7 @@ public class HomeFragment extends Fragment{
                             Logger.d(" seen db " + newsItem.isSeen());
                             newsItem.setSeen(newsInDb.isSeen());
                         }
+                        newsItem.setDateToCompare(DateUtils.convertToDate(newsItem.getCreatedOn(), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
                         realm.copyToRealmOrUpdate(newsItem);
                     }
 

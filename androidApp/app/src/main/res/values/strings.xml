@@ -115,6 +115,9 @@
     <string name="toast_attend">You have signed up to attend %1$s</string>
     <string name="download_file_location">"Downloading file at location %1$s"</string>
     <string name="download_complete">Download Complete</string>
+    <string name="no_results">No results found</string>
+    <string name="date_from">DATE FROM</string>
+    <string name="date_to">DATE TO</string>
 
 
 </resources>

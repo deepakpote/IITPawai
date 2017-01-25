@@ -24,6 +24,7 @@
 package net.mavericklabs.mitra.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -44,6 +45,7 @@ public class News extends RealmObject{
     private String modifiedOn;
 
     private boolean isSeen;
+    private Date dateToCompare;
 
     public News() {
 
@@ -111,5 +113,13 @@ public class News extends RealmObject{
 
     public boolean isSeen() {
         return isSeen;
+    }
+
+    public Date getDateToCompare() {
+        return dateToCompare;
+    }
+
+    public void setDateToCompare(Date dateToCompare) {
+        this.dateToCompare = dateToCompare;
     }
 }

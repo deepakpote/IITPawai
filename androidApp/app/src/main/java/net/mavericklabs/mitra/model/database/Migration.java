@@ -25,6 +25,8 @@ package net.mavericklabs.mitra.model.database;
 
 import net.mavericklabs.mitra.utils.Logger;
 
+import java.util.Date;
+
 import io.realm.DynamicRealm;
 import io.realm.FieldAttribute;
 import io.realm.RealmMigration;
@@ -52,6 +54,7 @@ public class Migration implements RealmMigration {
                     .addField("imageURL", String.class)
                     .addField("content", String.class)
                     .addField("createdOn", String.class)
+                    .addField("dateToCompare", Date.class)
                     .addField("modifiedOn", String.class)
                     .addField("isSeen", boolean.class);
 
