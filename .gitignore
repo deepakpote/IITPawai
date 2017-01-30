@@ -93,3 +93,8 @@ migrations/
 
 # png file
 .png
+
+webPortal/node_modules/
+endPoints/test.py
+webPortal/.tern-project
+endPoints/npm-debug.log.1298203348

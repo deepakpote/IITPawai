@@ -1,33 +1,34 @@
-<div class="loginController" ng-controller="LoginController"> 
-<form name="loginForm">
-<table class="center-block">
-		<tr class="form-group">
-			<td class="vtop">
-				Enter Phone Number
-			</td>
-			<td class="vtop">
-				<input type="text" id="phoneno" name="phonno" ng-model="phoneno" required><br/>
-				<span class="has-error" ng-if="loginForm.phonno.$error.required">
-				<label class="control-label">*Phone number is required</label>
-				</span>
-			</td>
-		</tr>
-		<tr class="form-group">
-			<td class="vtop">
-				Enter Passkey
-			</td>
-			<td class="vtop">
-				<input type="password" id="passkey" name="passkey" ng-model="passkey" required><br/>
-				<span class="has-error" ng-if="loginForm.passkey.$error.required">
-				<label class="control-label">*Passkey is required</label>
-				</span>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2" class="vtop">
-				<input type="button" class="button" id="login" value="Login" ng-click="loginForm.$valid && validate()">
-			</td>
-		</tr>
-	</table>
-</form>
+<div ng-controller="loginController"> 
+	<div class="container">
+		<form name="loginForm" class="form-horizontal">
+			<div class="form-group" ng-class="{'has-error': loginForm.txtPhoneNumber.$dirty && loginForm.txtPhoneNumber.$invalid}">
+				<label for="txtPhoneNumber" class="col-md-2 control-label">Phone Number</label>
+				<div class="col-md-5">
+					<div class="input-group">
+						<span class="input-group-addon">+ 91</span>
+			      		<input type="text" class="form-control" id="txtPhoneNumber" name="txtPhoneNumber" 
+			      			placeholder="Phone Number"  ng-model="phoneno" required ng-pattern=/[789]\d{9}/g>
+			      	</div>
+			    </div>
+				<div class="col-md-5" ng-messages="loginForm.txtPhoneNumber.$error" ng-if="loginForm.txtPhoneNumber.$dirty">
+					<span class="error-message" ng-show="loginForm.txtPhoneNumber.$error.required">Phone number is required.</span>
+					<span class="error-message" ng-show="loginForm.txtPhoneNumber.$error.pattern">Invalid Phone number.</span>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="txtPassword" class="col-md-2 control-label">Password</label>
+				<div class="col-md-5">
+					<input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password" ng-model="passkey" required>
+				</div>
+				<div class="col-md-5" ng-if="loginForm.pristine">
+					<span class="has-error" ng-if="loginForm.txtPassword.$error.required">
+					<label class="control-label">Passkey is required</label>
+					</span>
+				</div>
+			</div>
+			<div class="col-md-offset-2">
+				<input type="button" class="btn btn-warning" id="login" value="Login" ng-click="loginForm.$valid && validate()">
+			</div>
+		</form>
+	</div>
 </div>
