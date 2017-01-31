@@ -2,7 +2,7 @@ BEGIN;
 --
 -- Create model contentGrade
 --
-CREATE TABLE `con_contentGrade` (`contentgradeID` integer AUTO_INCREMENT NOT NULL PRIMARY KEY);
+CREATE TABLE `con_contentGrade` (`contentGradeID` integer AUTO_INCREMENT NOT NULL PRIMARY KEY);
 --
 -- Remove field grade from content
 --
