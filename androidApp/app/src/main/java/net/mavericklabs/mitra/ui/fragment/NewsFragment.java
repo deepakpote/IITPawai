@@ -155,7 +155,7 @@ public class NewsFragment extends Fragment{
         @BindView(R.id.date_to_spinner)
         TextView dateToSpinner;
 
-        private int department;
+        private int department, tabNumber;
         String fromDate, toDate;
 
         public NewsContentFragment() {
@@ -179,7 +179,7 @@ public class NewsFragment extends Fragment{
             View rootView = inflater.inflate(R.layout.fragment_news_list, container, false);
             ButterKnife.bind(this, rootView);
 
-            int tabNumber = getArguments().getInt("tabNumber");
+            tabNumber = getArguments().getInt("tabNumber");
             final Integer fileType = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
             //department = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
 
@@ -323,30 +323,35 @@ public class NewsFragment extends Fragment{
 
 
             RealmResults<News> dbNews;
+            RealmQuery<News> realmQuery = realm.where(News.class);
 
-            if(!StringUtils.isEmpty(fromDate) && !fromDate.equals("-") && !StringUtils.isEmpty(toDate)) {
-                dbNews = realm.where(News.class)
-                        .lessThanOrEqualTo("dateToCompare", DateUtils.convertToDate(toDate, "d MMM yyyy"))
-                        .greaterThanOrEqualTo("dateToCompare", DateUtils.convertToDate(fromDate, "d MMM yyyy"))
-                        .findAll();
-            } else if(!StringUtils.isEmpty(fromDate) && !fromDate.equals("-")) {
-                dbNews = realm.where(News.class)
-                        .greaterThanOrEqualTo("dateToCompare", DateUtils.convertToDate(fromDate, "d MMM yyyy"))
-                        .findAll();
-            } else if(!StringUtils.isEmpty(toDate)) {
-                dbNews = realm.where(News.class)
-                        .lessThanOrEqualTo("dateToCompare", DateUtils.convertToDate(toDate, "d MMM yyyy"))
-                        .findAll();
-            } else {
-                dbNews = realm.where(News.class)
-                        .findAll();
+            switch (tabNumber) {
+                case 1 :
+                    realmQuery = realmQuery.equalTo("isSaved", Boolean.TRUE);
+                    break;
+
+                case 2 :
+                    realmQuery = realmQuery.equalTo("showOnMainPage", Boolean.TRUE);
+                    break;
             }
+
+
+            if(!StringUtils.isEmpty(fromDate) && !fromDate.equals("-")) {
+                realmQuery = realmQuery
+                        .greaterThanOrEqualTo("dateToCompare", DateUtils.convertToDate(fromDate, "d MMM yyyy"));
+            }
+            if(!StringUtils.isEmpty(toDate)) {
+                realmQuery = realmQuery
+                        .lessThanOrEqualTo("dateToCompare", DateUtils.convertToDate(toDate, "d MMM yyyy"));
+            }
+
+            dbNews = realmQuery.findAll();
 
 
             errorView.setVisibility(View.GONE);
             LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
             contentRecyclerView.setLayoutManager(layoutManager);
-            NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), dbNews);
+            NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), realm.copyFromRealm(dbNews));
             contentRecyclerView.setAdapter(newsListAdapter);
 
 
@@ -404,18 +409,22 @@ public class NewsFragment extends Fragment{
 
         @Override
         public int getCount() {
-            // Show 5 total pages.
+            // Show pages based on number of departments + 1
             Logger.d(" pages " + CommonCodeUtils.getFileTypeCount());
-            return CommonCodeUtils.getFileTypeCount();
+            return CommonCodeUtils.getFileTypeCount() + 1;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Logger.d(" title " + CommonCodeUtils.getFileTypeAtPosition(position).getCodeNameForCurrentLocale());
-            return CommonCodeUtils.getFileTypeAtPosition(position).getCodeNameForCurrentLocale();
+            if(position == 0) {
+                return CommonCodeUtils.getFileTypeAtPosition(position).getCodeNameForCurrentLocale();
+            }
+            if(position == 1) {
+                return "Saved";
+            }
+
+            return CommonCodeUtils.getFileTypeAtPosition(position - 1).getCodeNameForCurrentLocale();
+
         }
-
     }
-
-
 }

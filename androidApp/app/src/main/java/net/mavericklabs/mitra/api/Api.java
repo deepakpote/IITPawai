@@ -111,7 +111,7 @@ public interface Api {
     @POST("events/listEvents/")
     Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);
 
-    @GET("news/")
+    @POST("news/newslist/")
     Call<BaseModel<News>> listNews();
 
 }

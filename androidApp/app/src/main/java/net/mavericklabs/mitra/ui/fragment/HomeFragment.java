@@ -141,17 +141,24 @@ public class HomeFragment extends Fragment{
                         if(newsInDb != null) {
                             Logger.d(" seen db " + newsItem.isSeen());
                             newsItem.setSeen(newsInDb.isSeen());
+                            newsItem.setSaved(newsInDb.isSaved());
+                            newsItem.setShowOnMainPage(newsInDb.isShowOnMainPage());
+                        } else {
+                            newsItem.setSeen(false);
+                            newsItem.setSaved(false);
+                            newsItem.setShowOnMainPage(true);
                         }
-                        newsItem.setDateToCompare(DateUtils.convertToDate(newsItem.getCreatedOn(), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                        newsItem.setDateToCompare(DateUtils.convertToDate(newsItem.getPublishDate(), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
                         realm.copyToRealmOrUpdate(newsItem);
                     }
 
                     realm.commitTransaction();
 
-                    RealmResults<News> dbNews = realm.where(News.class).findAll();
+                    RealmResults<News> dbNews = realm.where(News.class).equalTo("showOnMainPage",
+                            Boolean.TRUE).findAll();
                     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                     newsRecyclerView.setLayoutManager(layoutManager);
-                    NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), dbNews);
+                    NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), realm.copyFromRealm(dbNews));
                     newsRecyclerView.setAdapter(newsListAdapter);
                 }
             }

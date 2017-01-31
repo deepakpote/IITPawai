@@ -43,9 +43,13 @@ public class News extends RealmObject{
     private String content;
     private String createdOn;
     private String modifiedOn;
+    private Integer department;
+    private String publishDate;
 
     private boolean isSeen;
     private Date dateToCompare;
+    private boolean isSaved;
+    private boolean showOnMainPage;
 
     public News() {
 
@@ -121,5 +125,37 @@ public class News extends RealmObject{
 
     public void setDateToCompare(Date dateToCompare) {
         this.dateToCompare = dateToCompare;
+    }
+
+    public boolean isSaved() {
+        return isSaved;
+    }
+
+    public void setSaved(boolean saved) {
+        isSaved = saved;
+    }
+
+    public boolean isShowOnMainPage() {
+        return showOnMainPage;
+    }
+
+    public void setShowOnMainPage(boolean showOnMainPage) {
+        this.showOnMainPage = showOnMainPage;
+    }
+
+    public Integer getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Integer department) {
+        this.department = department;
+    }
+
+    public String getPublishDate() {
+        return publishDate;
+    }
+
+    public void setPublishDate(String publishDate) {
+        this.publishDate = publishDate;
     }
 }

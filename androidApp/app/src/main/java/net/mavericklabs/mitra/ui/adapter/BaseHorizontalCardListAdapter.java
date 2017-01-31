@@ -90,9 +90,9 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
             String subject = CommonCodeUtils.getObjectFromCode(subjectCode).getCodeNameForCurrentLocale();
 
             Integer gradeCode = contents.get(holder.getAdapterPosition()).getGrade();
-            String grade = CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale();
+//            String grade = CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale();
 
-            holder.details.setText(subject +  " | "  + context.getResources().getString(R.string.grade) + " " + grade);
+//            holder.details.setText(subject +  " | "  + context.getResources().getString(R.string.grade) + " " + grade);
         } else {
             Integer topicCode = contents.get(holder.getAdapterPosition()).getTopic();
             String topic = CommonCodeUtils.getObjectFromCode(topicCode).getCodeNameForCurrentLocale();

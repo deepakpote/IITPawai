@@ -54,9 +54,13 @@ public class Migration implements RealmMigration {
                     .addField("imageURL", String.class)
                     .addField("content", String.class)
                     .addField("createdOn", String.class)
+                    .addField("publishDate", String.class)
+                    .addField("department", Integer.class)
                     .addField("dateToCompare", Date.class)
                     .addField("modifiedOn", String.class)
-                    .addField("isSeen", boolean.class);
+                    .addField("isSeen", boolean.class)
+                    .addField("isSaved", boolean.class)
+                    .addField("showOnMainPage", boolean.class);
 
         }
 

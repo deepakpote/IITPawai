@@ -40,6 +40,7 @@ import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.model.database.DbGrade;
 import net.mavericklabs.mitra.ui.activity.NewsDetailsActivity;
 import net.mavericklabs.mitra.utils.DateUtils;
+import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.Date;
 import java.util.List;
@@ -74,7 +75,8 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.CardVi
     public void onBindViewHolder(final CardViewHolder holder, int position) {
         holder.title.setText(newsList.get(holder.getAdapterPosition()).getNewsTitle());
 
-        Date date = DateUtils.convertToDate(newsList.get(holder.getAdapterPosition()).getCreatedOn(), "yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date date = DateUtils.convertToDate(newsList.get(holder.getAdapterPosition()).getPublishDate(),
+                "yyyy-MM-dd'T'HH:mm:ss'Z'");
         String dateString = DateUtils.convertToString(date, "dd MMM, yyyy");
 
         if(newsList.get(holder.getAdapterPosition()).isSeen()) {
@@ -97,6 +99,18 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.CardVi
             @Override
             public void onClick(View view) {
 
+                News item = newsList.get(holder.getAdapterPosition());
+                newsList.remove(holder.getAdapterPosition());
+                notifyItemRemoved(holder.getAdapterPosition());
+
+                Realm realm = Realm.getDefaultInstance();
+
+                //Get RealmObject
+                News news = realm.where(News.class).equalTo("newsID", item.getNewsID()).findFirst();
+
+                realm.beginTransaction();
+                news.setShowOnMainPage(false);
+                realm.commitTransaction();
             }
         });
     }

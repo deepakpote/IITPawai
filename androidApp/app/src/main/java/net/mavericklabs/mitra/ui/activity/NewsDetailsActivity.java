@@ -43,6 +43,9 @@ public class NewsDetailsActivity extends AppCompatActivity {
     @BindView(R.id.news_title)
     TextView title;
 
+    @BindView(R.id.save_news)
+    ImageView saveNews;
+
     ImagePagerAdapter pagerAdapter;
     List<String> imageList;
 
@@ -71,8 +74,8 @@ public class NewsDetailsActivity extends AppCompatActivity {
         if(getIntent().getExtras() != null) {
             Bundle bundle = getIntent().getExtras();
             String newsID = bundle.getString("news_item");
-            Realm realm = Realm.getDefaultInstance();
-            News news = realm.where(News.class).equalTo("newsID", newsID).findFirst();
+            final Realm realm = Realm.getDefaultInstance();
+            final News news = realm.where(News.class).equalTo("newsID", newsID).findFirst();
 
             if(news != null) {
                 Date date = DateUtils.convertToDate(news.getCreatedOn(), "yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -88,7 +91,28 @@ public class NewsDetailsActivity extends AppCompatActivity {
                 realm.beginTransaction();
                 news.setSeen(true);
                 realm.commitTransaction();
+                setBookmarkIcon(news);
+
+                saveNews.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        realm.beginTransaction();
+                        //Toggle
+                        news.setSaved(!news.isSaved());
+                        realm.commitTransaction();
+                        setBookmarkIcon(news);
+                    }
+                });
             }
+        }
+    }
+
+    private void setBookmarkIcon(News news) {
+        //If saved news now,
+        if(news.isSaved()) {
+            saveNews.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+        } else {
+            saveNews.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_bookmark_grey_24dp));
         }
     }
 

@@ -42,7 +42,7 @@ public class SplashActivity extends AppCompatActivity {
 
         Realm.setDefaultConfiguration(config);
 
-        RealmResults<CommonCode> commonCodes = Realm.getInstance(config)
+        RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
                 .where(CommonCode.class).findAll();
         String codeVersion;
         if(!commonCodes.isEmpty()) {
