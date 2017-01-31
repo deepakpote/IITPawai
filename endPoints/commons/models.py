@@ -43,9 +43,11 @@ class news(models.Model):
     newsID = models.AutoField(primary_key = True)
     newsTitle = models.CharField(null = False , max_length = 255)
     author = models.CharField(null = False, max_length = 255)
-    imageURL = models.CharField(null = True, max_length = 255)
     content = models.TextField(null = True)
-     
+    department = models.ForeignKey('commons.code', db_column = 'departmentCodeID', null = True, blank = False, related_name = 'news_departmentCodeID')
+    publishDate = models.DateTimeField(auto_now_add = True, null = False)
+    pdfFileURL = models.CharField(null = True, max_length = 255)
+    
     createdBy = models.ForeignKey('users.user', related_name='news_createdBy', db_column = 'createdBy')
     createdOn = models.DateTimeField(auto_now_add=True)
     modifiedBy = models.ForeignKey('users.user', related_name='news_modifiedBy', db_column = 'modifiedBy')
@@ -54,7 +56,21 @@ class news(models.Model):
     class Meta:
         db_table = 'com_news'
         get_latest_by = 'createdOn'
-        
+ 
+"""
+news image model
+"""      
+class newsImage(models.Model):
+    newsImageID = models.AutoField(primary_key = True)
+    news = models.ForeignKey('news', db_column = 'newsID', null = False, related_name = 'newsImage_newsID')
+    imageURL = models.CharField(null = False, max_length = 255)
+    
+    createdBy = models.ForeignKey('users.user', related_name='newsImage_createdBy', db_column = 'createdBy')
+    createdOn = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'com_newsImage'        
+               
 """
 configuration model
 """

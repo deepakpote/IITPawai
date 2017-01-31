@@ -13,7 +13,8 @@ class codeSerializer(serializers.ModelSerializer):
         fields = ('codeID', 'codeGroup','codeNameEn','codeNameMr','displayOrder')    
         
 class newsSerializer(serializers.ModelSerializer):
+    imageURL = serializers.CharField()
+    department = serializers.IntegerField(source= 'department_id')
     class Meta:
         model = news
-        fields = ('newsID', 'newsTitle','author','imageURL','content','createdOn','modifiedOn')
-
+        fields = ('newsID', 'newsTitle','author','imageURL','pdfFileURL','department','publishDate','content','createdOn','modifiedOn')

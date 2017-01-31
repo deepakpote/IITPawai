@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import list_route
 
-from commons.models import code , news, configuration
+from commons.models import code , news, configuration, newsImage
 from commons.serializers import codeSerializer , newsSerializer 
 from mitraEndPoints import constants
 from datetime import datetime
@@ -67,7 +67,12 @@ class NewsViewSet(viewsets.ModelViewSet):
 
     permission_classes=[permissions.AllowAny]    
     def list(self, request):
-        queryset = news.objects.all().order_by('-createdOn')
+        queryset = news.objects.all().order_by('-createdOn').values()
+                
+        for objNew in queryset:
+            imageList = getNewsImageURL(objNew)            
+            objNew['imageURL'] =  getNewsImageURL(objNew)          
+                    
         serializer = newsSerializer(queryset, many = True)
         return Response({"response_message": constants.messages.success, "data": serializer.data})
     
@@ -114,3 +119,12 @@ def getUserIDFromAuthToken(authToken):
     userID = int(objToken.user.userID)
     # return userID
     return userID
+
+def getNewsImageURL(NewsObject):
+    #declare array
+    arrOut = []
+    objImageList = newsImage.objects.filter(news= NewsObject['newsID'])
+    for objImage in objImageList:
+        arrOut.append(objImage.imageURL)
+    
+    return arrOut;    
