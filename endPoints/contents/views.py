@@ -3,14 +3,18 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets,permissions
 from rest_framework.permissions import IsAuthenticated
-from contents.serializers import contentSerializer 
+from contents.serializers import teachingAidSerializer , contentSerializer
 from users.authentication import TokenAuthentication
+import re
+import string
+from django.db import connection
 from contents.models import content , contentResponse  , contentGrade
 from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent
 from mitraEndPoints import constants , utils
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
-import re
+
+
 
 
 class ContentViewSet(viewsets.ModelViewSet):
@@ -72,18 +76,83 @@ class ContentViewSet(viewsets.ModelViewSet):
         #Get the applicable subject list for the respective user.    
         arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs , objUser)         
 
+        arrSubjectCodeIDs = tuple(map(int, arrSubjectCodeIDs))
+        
+        print "arrSubjectCodeIDs : ",arrSubjectCodeIDs
+        
+        if len(arrSubjectCodeIDs) ==1:
+            arrSubjectCodeIDs =  '(%s)' % ', '.join(map(repr, arrSubjectCodeIDs))
+        
         #Get the applicable grade list for the respective user.
-        arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs , objUser)       
+        arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs , objUser) 
         
-        #Get the applicable content for GradeCodeID.
-        arrContentID = contentGrade.objects.filter(grade__in = arrGradeCodeIDs).values_list('content').distinct()
+        arrGradeCodeIDs = tuple(map(int, arrGradeCodeIDs))
         
-        #Get the query set using filter on filetype, subject, grade     
-        contentQuerySet = content.objects.filter(fileType = fileTypeCodeID, 
-                                                  contentType = constants.mitraCode.teachingAids,
-                                                  subject__in = arrSubjectCodeIDs, 
-                                                  contentID__in = arrContentID).order_by('-contentID')[fromRecord:pageNumber]
+        if len(arrGradeCodeIDs) == 1:
+            arrGradeCodeIDs =  '(%s)' % ', '.join(map(repr, arrGradeCodeIDs))
         
+        # Connection
+        cursor = connection.cursor()  
+        
+        # SQL Query
+        searchTeachingAidQuery = """ select CC.contentID,
+                                            CC.contentTitle,
+                                            CC.requirement,
+                                            CC.instruction,
+                                            CC.fileName,
+                                            CC.author,
+                                            CC.objectives,
+                                            CC.contentTypeCodeID,
+                                            CC.fileTypeCodeID,
+                                            CC.languageCodeID,
+                                            CC.subjectCodeID,
+                                            CC.topicCodeID,
+                                            group_concat(CG.gradeCodeID) as gradeCodeIDs
+                                            from con_content CC INNER JOIN con_contentGrade CG 
+                                            ON CC.contentID = CG.contentID 
+                                            where CC.fileTypeCodeID = %s 
+                                            and CC.contentTypeCodeID = %s 
+                                            and CC.subjectCodeID IN %s 
+                                            and CG.gradeCodeID IN %s 
+                                            group by CC.contentID,
+                                            CC.contentTitle,
+                                            CC.requirement,
+                                            CC.instruction,
+                                            CC.fileName,
+                                            CC.author,
+                                            CC.objectives,
+                                            CC.contentTypeCodeID,
+                                            CC.fileTypeCodeID,
+                                            CC.languageCodeID,
+                                            CC.subjectCodeID,
+                                            CC.topicCodeID"""%(fileTypeCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs))
+
+
+        cursor.execute(searchTeachingAidQuery)
+        
+        #Queryset
+        contentQuerySet = cursor.fetchall()
+        
+        response_data = []
+        
+        for item in contentQuerySet:
+            objResponse_data = {
+                                    'contentID': item[0], 
+                                    'contentTitle': item[1], 
+                                    'contentType': item[7],
+                                    'gradeCodeID': str(item[12]),
+                                    'subjectCodeID': item[10],
+                                    'topicCodeID' : item[11],
+                                    'requirement':item[02],
+                                    'instruction': item[03],
+                                    'fileType' : item[8],
+                                    'fileName':item[04],
+                                    'author': item[05],
+                                    'objectives' : item[06],
+                                    'language':item[9]
+                                    }
+            response_data.append(objResponse_data)
+
         #Check for the no of records fetched.
         if not contentQuerySet:
             return Response({"response_message": constants.messages.teaching_aid_search_no_records_found,
@@ -91,7 +160,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                     status = status.HTTP_200_OK) 
         
         #Set query string to the contentSerializer
-        objContentserializer = contentSerializer(contentQuerySet, many = True)
+        objContentserializer = teachingAidSerializer(response_data, many = True)
         
         #Set serializer data to the response 
         response = objContentserializer.data
@@ -395,7 +464,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         topicCodeID = request.data.get('topicCodeID')
         requirement = request.data.get('requirement')
         instruction = request.data.get('instruction')
-        fileType = request.data.get('fileTypeCodeID')
+        fileTypeCodeID = request.data.get('fileTypeCodeID')
         fileName = request.data.get('fileName')
         author = request.data.get('author')
         objectives = request.data.get('objectives')
@@ -420,13 +489,13 @@ class ContentViewSet(viewsets.ModelViewSet):
                      status = status.HTTP_401_UNAUTHORIZED) 
             
         # Check if contentType CodeID is passed in post param
-        if not contentTypeCodeID:
+        if not contentTypeCodeID and contentTypeCodeID != 0:
             return Response({"response_message": constants.messages.uploadContent_contentType_cannot_be_empty,
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED) 
         
         # Check if fileType is passed in post param
-        if not fileType:
+        if not fileTypeCodeID and fileTypeCodeID != 0:
             return Response({"response_message": constants.messages.uploadContent_fileType_cannot_be_empty,
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED) 
@@ -437,14 +506,22 @@ class ContentViewSet(viewsets.ModelViewSet):
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED)
             
-        #Validate youtube URL.
-        ObjResponse = validateYoutubeURL(fileName)
+        # Check if language is passed in post param
+        if not language:
+            return Response({"response_message": constants.messages.uploadContent_Language_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
         
-        #If Youtube URL is Invaild 
-        if ObjResponse is None:
-            return Response({"response_message": constants.messages.uploadContent_fileName_invaild,
-                     "data": []},
-                     status = status.HTTP_400_BAD_REQUEST)
+        
+        if fileTypeCodeID ==  constants.mitraCode.video:
+            #Validate youtube URL.
+            objResponse = validateYoutubeURL(fileName)
+            
+            #If Youtube URL is Invaild 
+            if objResponse is None:
+                return Response({"response_message": constants.messages.uploadContent_fileName_invaild,
+                         "data": []},
+                         status = status.HTTP_400_BAD_REQUEST)
             
         # If userID parameter is passed, then check user exists or not
         try:
@@ -504,7 +581,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         # If fileType parameter is passed, then check fileType exists or not    
         try:
-            objFileType = code.objects.get(codeID = fileType)
+            objFileType = code.objects.get(codeID = fileTypeCodeID)
         except code.DoesNotExist:
             return Response({"response_message": constants.messages.uploadContent_fileType_does_not_exists,
                      "data": []},
@@ -521,12 +598,12 @@ class ContentViewSet(viewsets.ModelViewSet):
         # If any response for content exists or not.
         try:
             # Save the content.
-            ObjRec =content.objects.create(contentTitle = contentTitle, 
+            ObjRec =content.objects.create(contentTitle = contentTitle.strip(), 
                     contentType = objContentType, 
                     subject = objSubject,
                     topic = objTopic,
                     requirement = requirement,
-                    instruction = instruction,
+                    instruction = instruction.strip(),
                     fileType = objFileType,
                     fileName= fileName,
                     author = author,
@@ -538,8 +615,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             ObjRec.save()        
             
             # Check content type of uploaded file.If teachingAids then save GradeCodeIDs     
-            if contentTypeCodeID == constants.mitraCode.teachingAids:  
-                if content.objects.filter(contentID = ObjRec.contentID).exists():
+            if contentTypeCodeID == constants.mitraCode.teachingAids:
                     objContent = content.objects.get(contentID = ObjRec.contentID)
                     for objGrade in arrGradeCodeIDs:    
                         objGradeCode = code.objects.get(codeID = objGrade)  

@@ -82,6 +82,7 @@ class messages():
     uploadContent_content_upload_failed = 100170 
     uploadContent_gradeCodeID_cannot_be_empty = 100171
     uploadContent_fileName_invaild = 100172
+    uploadContent_Language_cannot_be_empty = 100173
     
 
 class webportalmessages():    
@@ -117,6 +118,8 @@ class mitraCode():
     like = 111100
     download = 111101
     share = 111102
+    video = 108100
+
     
 class contentSearchRecords():
     default = 20

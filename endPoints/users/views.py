@@ -16,12 +16,14 @@ import random
 import plivo
 import base64
 import os,time
+import string
+from django.db import connection
 from datetime import datetime, timedelta
 from django.utils import timezone
 from contents.models import content , contentGrade
 from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs
 from time import gmtime, strftime
-from contents.serializers import contentSerializer
+from contents.serializers import contentSerializer , teachingAidSerializer
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from commons.models import code 
 from pyfcm import FCMNotification
@@ -610,17 +612,30 @@ class UserViewSet(viewsets.ModelViewSet):
                     
         # Get list of contentIDs of login user
         objUserContent = list(userContent.objects.filter(user = objUser).values_list('content_id',flat = True))
-        print "objUserContent:",objUserContent
+        #print "objUserContent:",objUserContent
         
         # Declare empty user content type code.
         objUserContentTypeCode = None
         
         #If content type is Teaching Aids.
         if contentTypeCodeID == constants.mitraCode.teachingAids:
+                   
             #Get the applicable subject list for the respective user.    
             arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs , objUser)  
+            
+            arrSubjectCodeIDs = tuple(map(int, arrSubjectCodeIDs))
+
+            if len(arrSubjectCodeIDs) == 1:
+                arrSubjectCodeIDs =  '(%s)' % ', '.join(map(repr, arrSubjectCodeIDs))
+                
             #Get the applicable grade list for the respective user.
             arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs , objUser)
+            
+            arrGradeCodeIDs = tuple(map(int, arrGradeCodeIDs))
+        
+            if len(arrGradeCodeIDs) == 1:
+                arrGradeCodeIDs =  '(%s)' % ', '.join(map(repr, arrGradeCodeIDs))
+                
             #Get correct/valid FileTypeCodeID 
             arrContentFileTypeCodeID = []
             if not fileTypeCodeIDs:
@@ -630,22 +645,69 @@ class UserViewSet(viewsets.ModelViewSet):
                 #Get the array from comma sep string of fileTypeCodeIDs.
                 arrContentFileTypeCodeID = getArrayFromCommaSepString(fileTypeCodeIDs)
                 
-            #Get the applicable content for GradeCodeID.
-            arrContentID = list(contentGrade.objects.filter(grade__in = arrGradeCodeIDs).values_list('content',flat = True).distinct())
-
-            # combine list of contentIDs of login user and contentID for respective gradeCodeID's
-            #arrContentIDList = objUserContent + arrContentID
-            #arrContentIDList = set(objUserContent) and set(arrContentID)
-            
-            # Get the content details.
-            objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, 
-                                                            contentID__in = objUserContent,
-                                                            subject__in = arrSubjectCodeIDs,
-                                                            fileType__in = arrContentFileTypeCodeID).filter(contentID__in = arrContentID)
+            arrContentFileTypeCodeID = tuple(map(int, arrContentFileTypeCodeID))
         
+            #If the length of filetypecodeID is 1 then remove last comma.
+            if len(arrContentFileTypeCodeID) == 1:
+                arrContentFileTypeCodeID =  '(%s)' % ', '.join(map(repr, arrContentFileTypeCodeID))
+                
+            #Get the applicable content for GradeCodeID.
+            #arrContentID = list(contentGrade.objects.filter(grade__in = arrGradeCodeIDs).values_list('content',flat = True).distinct())
+       
+            # Connection
+            cursor = connection.cursor()  
             
-            #objUserContentTypeCode = objUserContentTypeCode.filter(contentID__in = arrContentID)
+            # SQL Query
+            searchTeachingAidQuery = """ select CC.contentID,
+                                                CC.contentTitle,
+                                                CC.requirement,
+                                                CC.instruction,
+                                                CC.fileName,
+                                                CC.author,
+                                                CC.objectives,
+                                                CC.contentTypeCodeID,
+                                                CC.fileTypeCodeID,
+                                                CC.languageCodeID,
+                                                CC.subjectCodeID,
+                                                CC.topicCodeID,
+                                                group_concat(CG.gradeCodeID) as gradeCodeIDs
+                                                from con_content CC 
+                                                INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
+                                                INNER JOIN usr_userContent UC ON CC.contentID = UC.contentID
+                                                where UC.userID = %s
+                                                and CC.fileTypeCodeID IN %s 
+                                                and CC.contentTypeCodeID = %s 
+                                                and CC.subjectCodeID IN %s 
+                                                and CG.gradeCodeID IN %s 
+                                                group by CC.contentID, CC.contentTitle, CC.requirement, CC.instruction, CC.fileName, CC.author, CC.objectives, CC.contentTypeCodeID, CC.fileTypeCodeID, CC.languageCodeID, CC.subjectCodeID,
+                                                CC.topicCodeID"""%(userID,arrContentFileTypeCodeID,107100,str(arrSubjectCodeIDs),str(arrGradeCodeIDs))
+                                          
+            cursor.execute(searchTeachingAidQuery)
+            
+            #Queryset
+            contentQuerySet = cursor.fetchall()
+            
+            response_data = []
+        
+            for item in contentQuerySet:
+                objResponse_data = {
+                                        'contentID':    item[0], 
+                                        'contentTitle': item[1], 
+                                        'contentType':  item[7],
+                                        'gradeCodeID':  str(item[12]),
+                                        'subjectCodeID':item[10],
+                                        'topicCodeID' : item[11],
+                                        'requirement':  item[02],
+                                        'instruction':  item[03],
+                                        'fileType' :    item[8],
+                                        'fileName':     item[04],
+                                        'author':       item[05],
+                                        'objectives' :  item[06],
+                                        'language':item[9]
+                                        }
+                response_data.append(objResponse_data)
 
+            objUserContentTypeCode = response_data
             
         elif contentTypeCodeID == constants.mitraCode.selfLearning:
             #Get the applicable topic list for the respective user.    
@@ -665,14 +727,21 @@ class UserViewSet(viewsets.ModelViewSet):
                                                             contentID__in = objUserContent,
                                                             topic__in = arrTopicCodeIDs,
                                                             language__in = arrLanguageCodeID)
-              
+                   
         #Check for the no of records fetched.
         if not objUserContentTypeCode:
             return Response({"response_message": constants.messages.usercontent_list_no_records_found,
                     "data": []},
                     status = status.HTTP_200_OK) 
-        # Set query string to contentSerializer
-        objContentSerializer = contentSerializer(objUserContentTypeCode, many = True)
+            
+        #If content type is Teaching Aids.
+        if contentTypeCodeID == constants.mitraCode.teachingAids:
+            # Call to the custome ContentSerializer
+            objContentSerializer = teachingAidSerializer(objUserContentTypeCode, many = True)
+        elif contentTypeCodeID == constants.mitraCode.selfLearning:
+            # Call to the contentSerializer
+            objContentSerializer = contentSerializer(objUserContentTypeCode, many = True)
+            
 
         #Set objContentSerializer data to response
         response = objContentSerializer.data
