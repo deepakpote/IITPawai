@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import list_route
 
-from commons.models import code , news, configuration
+from commons.models import code , news, configuration, newsImage
 from commons.serializers import codeSerializer , newsSerializer 
 from mitraEndPoints import constants
 from datetime import datetime
@@ -65,9 +65,38 @@ class NewsViewSet(viewsets.ModelViewSet):
     queryset = news.objects.all().order_by('-createdOn')
     serializer_class = newsSerializer
 
-    permission_classes=[permissions.AllowAny]    
-    def list(self, request):
-        queryset = news.objects.all().order_by('-createdOn')
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def newslist(self, request):
+        """ Get the news list
+        args:
+            request: passed departmentCodeID, publishFromDate and publishToDate as parameter
+        returns:
+            Response: list of news
+
+        """      
+        departmentCodeID = request.data.get('departmentCodeID')        
+        publishFromDate = request.data.get('publishFromDate') 
+        publishToDate = request.data.get('publishToDate')        
+       
+        if not departmentCodeID and not publishFromDate and not publishToDate :
+            queryset = news.objects.all().order_by('-createdOn').values()
+        elif not departmentCodeID:
+            if not publishFromDate:
+                queryset = news.objects.filter(publishDate__lte = publishToDate).order_by('-createdOn').values()
+            else:
+                queryset = news.objects.filter( publishDate__gte = publishFromDate).order_by('-createdOn').values()
+        else:
+            if not publishFromDate and not publishToDate:
+                queryset =  news.objects.filter(department = departmentCodeID).order_by('-createdOn').values()                
+            elif not publishToDate :
+                queryset =  news.objects.filter(department = departmentCodeID, publishDate__gte = publishFromDate).order_by('-createdOn').values()
+            else:
+                queryset = news.objects.filter(department = departmentCodeID, publishDate__lte = publishToDate).order_by('-createdOn').values()
+                         
+        for objNew in queryset:
+            imageList = getNewsImageURL(objNew)            
+            objNew['imageURL'] =  getNewsImageURL(objNew)          
+        #print queryset         
         serializer = newsSerializer(queryset, many = True)
         return Response({"response_message": constants.messages.success, "data": serializer.data})
     
@@ -114,3 +143,12 @@ def getUserIDFromAuthToken(authToken):
     userID = int(objToken.user.userID)
     # return userID
     return userID
+
+def getNewsImageURL(NewsObject):
+    #declare array
+    arrOut = []
+    objImageList = newsImage.objects.filter(news= NewsObject['newsID'])
+    for objImage in objImageList:
+        arrOut.append(objImage.imageURL)
+    
+    return arrOut;    
