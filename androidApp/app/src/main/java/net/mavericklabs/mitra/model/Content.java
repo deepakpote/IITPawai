@@ -45,8 +45,8 @@ public class Content implements Serializable{
     @SerializedName("subject")
     private Integer subject;
 
-    @SerializedName("grade")
-    private Integer grade;
+    @SerializedName("gradeCodeIDs")
+    private String grade;
 
     @SerializedName("topic")
     private Integer topic;
@@ -76,7 +76,7 @@ public class Content implements Serializable{
 
     }
 
-    public Content(String contentID, String title, Integer contentTypeCodeID, Integer subject, Integer grade, String requirement, String instruction, Integer fileType, String fileName, String author, String objectives, Integer language) {
+    public Content(String contentID, String title, Integer contentTypeCodeID, Integer subject, String grade, String requirement, String instruction, Integer fileType, String fileName, String author, String objectives, Integer language) {
         this.contentID = contentID;
         this.title = title;
         this.contentTypeCodeID = contentTypeCodeID;
@@ -123,11 +123,11 @@ public class Content implements Serializable{
         this.subject = subject;
     }
 
-    public Integer getGrade() {
+    public String getGrade() {
         return grade;
     }
 
-    public void setGrade(Integer grade) {
+    public void setGrade(String grade) {
         this.grade = grade;
     }
 

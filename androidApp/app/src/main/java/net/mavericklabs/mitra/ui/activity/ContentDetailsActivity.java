@@ -372,10 +372,12 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                 Integer subjectCode = content.getSubject();
                 String subject = CommonCodeUtils.getObjectFromCode(subjectCode).getCodeNameForCurrentLocale();
 
-                Integer gradeCode = content.getGrade();
-                String grade = CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale();
-
-                details.setText(subject +  " | "  + getResources().getString(R.string.grade) + " " + grade);
+                List<Integer> gradeCodes = StringUtils.splitCommas(content.getGrade());
+                String grades = "";
+                for (Integer gradeCode : gradeCodes) {
+                    grades = CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale();
+                }
+                details.setText(subject +  " | "  + getResources().getString(R.string.grade) + " " + grades);
 
                 loadSimilarTeachingAids();
 
