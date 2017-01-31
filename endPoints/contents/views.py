@@ -515,12 +515,10 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         if fileTypeCodeID ==  constants.mitraCode.video:
             #Validate youtube URL.
-            objResponse = validateYoutubeURL(fileName)
-            
-            print "validateYoutubeURL : ",objResponse
+            isValidYoutubeURL = validateYoutubeURL(fileName)
             
             #If Youtube URL is Invaild 
-            if not objResponse:
+            if not isValidYoutubeURL:
                 return Response({"response_message": constants.messages.uploadContent_fileName_invaild,
                          "data": []},
                          status = status.HTTP_400_BAD_REQUEST)

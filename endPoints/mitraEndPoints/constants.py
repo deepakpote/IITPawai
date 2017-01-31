@@ -82,7 +82,7 @@ class messages():
     uploadContent_content_upload_failed = 100170 
     uploadContent_gradeCodeID_cannot_be_empty = 100171
     uploadContent_fileName_invaild = 100172
-    uploadContent_Language_cannot_be_empty = 100173
+    uploadContent_languageCodeID_cannot_be_empty = 100173
     
 
 class webportalmessages():    
