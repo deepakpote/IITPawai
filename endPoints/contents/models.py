@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
-from commons.models import code 
+from commons.models import code
 
 """
 content model
@@ -10,7 +10,7 @@ class content(models.Model):
     contentTitle = models.CharField(null = False, unique = False, max_length = 255)
     contentType = models.ForeignKey('commons.code', db_column='contentTypeCodeID', related_name='content_contentTypeCodeID')
     subject = models.ForeignKey('commons.code', db_column='subjectCodeID', related_name='content_subjectCodeID', null = True)
-    grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='content_gradeCodeID', null = True)
+    #grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='content_gradeCodeID', null = True)
     topic = models.ForeignKey('commons.code', db_column='topicCodeID', related_name='content_topicCodeID', null = True)
     
     requirement = models.TextField(null = True)
@@ -33,6 +33,17 @@ class content(models.Model):
         db_table = 'con_content'
         get_latest_by = 'contentTitle' 
         
+"""
+content grade model
+"""                 
+class contentGrade(models.Model):
+    contentGradeID = models.AutoField(primary_key = True)
+    grade = models.ForeignKey('commons.code', db_column = 'gradeCodeID', null = False, related_name="contentGrade_gradeCodeID")
+    content = models.ForeignKey('content', db_column = 'contentID', null = False, related_name="contentGrade_contentID")
+    
+    class Meta:
+        db_table = 'con_contentGrade'
+          
 """
 content response model
 """                 
