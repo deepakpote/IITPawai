@@ -9,18 +9,18 @@ teachingAidSerializer serializer
 """
 class teachingAidSerializer(serializers.ModelSerializer):
      
-    # Access custome field.
-    gradeCodeID = serializers.CharField()
+    # Access custom field.
+    gradeCodeIDs = serializers.CharField()
     contentType = serializers.CharField()
-    subjectCodeID = serializers.CharField()
-    topicCodeID = serializers.CharField()
+    subject = serializers.CharField()
+    topic = serializers.CharField()
     fileType = serializers.CharField()
     language = serializers.CharField()
   
 
     class Meta:
         model = content
-        fields = ('contentID', 'contentTitle', 'contentType' ,'gradeCodeID','subjectCodeID','topicCodeID','requirement','instruction','fileType','fileName','author','objectives','language')
+        fields = ('contentID', 'contentTitle', 'contentType' ,'gradeCodeIDs','subject','topic','requirement','instruction','fileType','fileName','author','objectives','language')
 
 class contentSerializer(serializers.ModelSerializer):
      

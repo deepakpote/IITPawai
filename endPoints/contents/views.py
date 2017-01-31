@@ -3,11 +3,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets,permissions
 from rest_framework.permissions import IsAuthenticated
-from contents.serializers import teachingAidSerializer , contentSerializer
-from users.authentication import TokenAuthentication
 import re
 import string
 from django.db import connection
+from contents.serializers import teachingAidSerializer , contentSerializer
+from users.authentication import TokenAuthentication
 from contents.models import content , contentResponse  , contentGrade
 from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent
@@ -140,17 +140,17 @@ class ContentViewSet(viewsets.ModelViewSet):
                                     'contentID': item[0], 
                                     'contentTitle': item[1], 
                                     'contentType': item[7],
-                                    'gradeCodeID': str(item[12]),
-                                    'subjectCodeID': item[10],
-                                    'topicCodeID' : item[11],
-                                    'requirement':item[02],
-                                    'instruction': item[03],
+                                    'gradeCodeIDs': str(item[12]),
+                                    'subject': item[10],
+                                    'topic' : item[11],
+                                    'requirement':item[2],
+                                    'instruction': item[3],
                                     'fileType' : item[8],
-                                    'fileName':item[04],
-                                    'author': item[05],
-                                    'objectives' : item[06],
+                                    'fileName':item[4],
+                                    'author': item[5],
+                                    'objectives' : item[6],
                                     'language':item[9]
-                                    }
+                                }
             response_data.append(objResponse_data)
 
         #Check for the no of records fetched.
@@ -160,10 +160,10 @@ class ContentViewSet(viewsets.ModelViewSet):
                     status = status.HTTP_200_OK) 
         
         #Set query string to the contentSerializer
-        objContentserializer = teachingAidSerializer(response_data, many = True)
+        objContentSerializer = teachingAidSerializer(response_data, many = True)
         
         #Set serializer data to the response 
-        response = objContentserializer.data
+        response = objContentSerializer.data
         
         #Return the response
         return Response({"response_message": constants.messages.success, "data": response})
@@ -468,7 +468,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         fileName = request.data.get('fileName')
         author = request.data.get('author')
         objectives = request.data.get('objectives')
-        language = request.data.get('languageCodeID')
+        languageCodeID = request.data.get('languageCodeID')
         
         #Get user token
         authToken = request.META.get('HTTP_AUTHTOKEN')
@@ -507,7 +507,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                      status = status.HTTP_401_UNAUTHORIZED)
             
         # Check if language is passed in post param
-        if not language:
+        if not languageCodeID:
             return Response({"response_message": constants.messages.uploadContent_Language_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
@@ -517,8 +517,10 @@ class ContentViewSet(viewsets.ModelViewSet):
             #Validate youtube URL.
             objResponse = validateYoutubeURL(fileName)
             
+            print "validateYoutubeURL : ",objResponse
+            
             #If Youtube URL is Invaild 
-            if objResponse is None:
+            if not objResponse:
                 return Response({"response_message": constants.messages.uploadContent_fileName_invaild,
                          "data": []},
                          status = status.HTTP_400_BAD_REQUEST)
@@ -540,7 +542,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         # Check content type of uploaded file.    
         if contentTypeCodeID == constants.mitraCode.teachingAids:
             # If content type is teaching Aid then subjetCodeID & gradeCodeIDs can not be empty.
-            if not subjectCodeID:
+            if not subjectCodeID or subjectCodeID == 0:
                 return Response({"response_message": constants.messages.uploadContent_subjectCodeID_cannot_be_empty,
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED)
@@ -589,7 +591,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         # If language parameter is passed, then check language exists or not        
         try:
-            objLanguage = code.objects.get(codeID = language)
+            objLanguage = code.objects.get(codeID = languageCodeID)
         except code.DoesNotExist:
             return Response({"response_message": constants.messages.uploadContent_language_does_not_exists,
                      "data": []},
@@ -807,11 +809,11 @@ def validateYoutubeURL(url):
         '(youtube|youtu|youtube-nocookie)\.(com|be)/'
         '(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})')
     
-        # Match youtube URL againest regex
+        # Match youtube URL against regex
         youtube_regex_match = re.match(youtube_regex, url)
         
-        if youtube_regex_match:
-            return youtube_regex_match.group(6)
-          
-        return youtube_regex_match
+        if not youtube_regex_match:
+            return False
+        else:
+            return True
     

@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
-from commons.models import code 
-from users.models import userGrade
+from commons.models import code
 
 """
 content model
@@ -41,12 +40,10 @@ class contentGrade(models.Model):
     contentGradeID = models.AutoField(primary_key = True)
     grade = models.ForeignKey('commons.code', db_column = 'gradeCodeID', null = False, related_name="contentGrade_gradeCodeID")
     content = models.ForeignKey('content', db_column = 'contentID', null = False, related_name="contentGrade_contentID")
-
-
+    
     class Meta:
         db_table = 'con_contentGrade'
-    
-        
+          
 """
 content response model
 """                 
