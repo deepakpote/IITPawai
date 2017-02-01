@@ -26,6 +26,7 @@ import net.mavericklabs.mitra.utils.DisplayUtils;
 import net.mavericklabs.mitra.utils.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,10 +91,11 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
             String subject = CommonCodeUtils.getObjectFromCode(subjectCode).getCodeNameForCurrentLocale();
 
             List<Integer> gradeCodes = StringUtils.splitCommas(contents.get(holder.getAdapterPosition()).getGrade());
-            String grades = "";
+            List<String> gradeNames = new ArrayList<>();
             for (Integer gradeCode : gradeCodes) {
-                grades = CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale();
+                gradeNames.add(CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale());
             }
+            String grades = StringUtils.stringify(gradeNames);
 
             holder.details.setText(subject +  " | "  + context.getResources().getString(R.string.grade) + " " + grades);
         } else {

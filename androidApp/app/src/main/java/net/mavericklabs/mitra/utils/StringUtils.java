@@ -93,10 +93,10 @@ public class StringUtils {
         return str.replaceAll("\\s+","");
     }
 
-    public static String stringify(List<Integer> list) {
+    public static <T> String stringify(List<T> list) {
         StringBuilder sb = new StringBuilder();
         int i = 0;
-        for(Integer e : list) {
+        for(T e : list) {
             sb.append(e);
             i++;
             if(i == list.size()) {
