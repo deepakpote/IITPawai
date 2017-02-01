@@ -82,15 +82,15 @@ public class SplashActivity extends AppCompatActivity {
                         }
                     }
 
-                    int languageCode = LanguageUtils.getCurrentLanguage();
-                    String languageName = CommonCodeUtils.getObjectFromCode(languageCode).getCodeNameEnglish();
-                    Logger.d(" code " + CommonCodeUtils.getObjectFromCode(languageCode));
-                    String lang = "en";
-                    if(languageName.equals("Marathi")) {
-                        lang = "mr";
-                    }
-
-                    LanguageUtils.setLocale(lang, getApplicationContext());
+//                    int languageCode = LanguageUtils.getCurrentLanguage();
+//                    String languageName = CommonCodeUtils.getObjectFromCode(languageCode).getCodeNameEnglish();
+//                    Logger.d(" code " + CommonCodeUtils.getObjectFromCode(languageCode));
+//                    String lang = "en";
+//                    if(languageName.equals("Marathi")) {
+//                        lang = "mr";
+//                    }
+//
+//                    LanguageUtils.setLocale(lang, getApplicationContext());
 
                     Thread timerThread = new Thread() {
                         public void run() {

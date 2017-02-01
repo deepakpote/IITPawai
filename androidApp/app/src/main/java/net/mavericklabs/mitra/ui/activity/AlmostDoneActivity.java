@@ -13,7 +13,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnTouch;
 
-public class AlmostDoneActivity extends AppCompatActivity {
+public class AlmostDoneActivity extends BaseActivity {
 
     @BindView(R.id.activity_almost_done)
     RelativeLayout layout;

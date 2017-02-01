@@ -1,5 +1,6 @@
 package net.mavericklabs.mitra.ui.fragment;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
@@ -138,11 +140,9 @@ public class SettingsFragment extends Fragment {
     }
 
     private void setDefaultLanguage(CommonCode code) {
-        String language = "en";
-        if(code.getCodeNameEnglish().equals("English")) {
-            language = "en";
-        } else if(code.getCodeNameEnglish().equals("Marathi")) {
-            language = "mr";
+        int language = Constants.LanguageEnglish;
+        if(code.getCodeNameEnglish().equals("Marathi")) {
+            language = Constants.LanguageMarathi;
         }
 
         LanguageUtils.setLocale(language, getContext());

@@ -82,7 +82,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ContentDetailsActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener {
+public class ContentDetailsActivity extends BaseActivity implements YouTubePlayer.OnInitializedListener {
 
     @BindView(R.id.similar_contents_recycler_view) RecyclerView contentRecyclerView;
     @BindView(R.id.content_card_view) CardView contentCardView;

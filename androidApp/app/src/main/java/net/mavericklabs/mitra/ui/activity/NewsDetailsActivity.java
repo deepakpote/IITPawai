@@ -29,7 +29,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class NewsDetailsActivity extends AppCompatActivity {
+public class NewsDetailsActivity extends BaseActivity {
 
     @BindView(R.id.news_details)
     TextView newsDetails;

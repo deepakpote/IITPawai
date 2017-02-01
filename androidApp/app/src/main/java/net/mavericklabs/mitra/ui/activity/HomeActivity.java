@@ -46,7 +46,7 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends BaseActivity {
 
 
     @BindView(R.id.faded_background_view)

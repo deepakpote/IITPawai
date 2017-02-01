@@ -23,6 +23,7 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
@@ -42,7 +44,7 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class SelectLanguageActivity extends AppCompatActivity {
+public class SelectLanguageActivity extends BaseActivity {
 
     @BindView(R.id.select_english_button)
     Button selectEnglish;
@@ -55,11 +57,11 @@ public class SelectLanguageActivity extends AppCompatActivity {
 
     @OnClick(R.id.select_english_button) void selectEnglish() {
         Logger.d("selected english");
-        setLocale("en");
+        setLocale(Constants.LanguageEnglish);
     }
 
     @OnClick(R.id.select_marathi_button) void selectMarathi() {
-        setLocale("mr");
+        setLocale(Constants.LanguageMarathi);
     }
 
     @Override
@@ -83,7 +85,7 @@ public class SelectLanguageActivity extends AppCompatActivity {
         }
     }
 
-    private void setLocale(String lang) {
+    private void setLocale(int lang) {
         LanguageUtils.setLocale(lang, getApplicationContext());
 
         RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()

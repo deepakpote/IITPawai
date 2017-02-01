@@ -19,7 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ChooseSignInOrRegisterActivity extends AppCompatActivity {
+public class ChooseSignInOrRegisterActivity extends BaseActivity {
 
     @BindView(R.id.activity_choose_sign_in_or_register)
     RelativeLayout relativeLayout;

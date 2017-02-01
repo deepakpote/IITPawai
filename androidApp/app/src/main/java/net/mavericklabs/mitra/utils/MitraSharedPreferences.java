@@ -39,6 +39,13 @@ public class MitraSharedPreferences {
         editor.apply();
     }
 
+    public static <T extends Integer> void saveToPreferences(Context context, String preferenceName, T preferenceValue) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Prefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong(preferenceName, (Integer) preferenceValue);
+        editor.apply();
+    }
+
     public static <T extends String> void saveToPreferences(Context context, String preferenceName, T preferenceValue) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("Prefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -56,6 +63,11 @@ public class MitraSharedPreferences {
     public static <T extends String> String readFromPreferences(Context context, String preferenceName, T defaultValue) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("Prefs", Context.MODE_PRIVATE);
         return sharedPreferences.getString(preferenceName, defaultValue);
+    }
+
+    public static <T extends Integer> Integer readFromPreferences(Context context, String preferenceName, T defaultValue) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Prefs", Context.MODE_PRIVATE);
+        return sharedPreferences.getInt(preferenceName, defaultValue);
     }
 
     public static <T extends Long> Long readFromPreferences(Context context, String preferenceName, T defaultValue) {

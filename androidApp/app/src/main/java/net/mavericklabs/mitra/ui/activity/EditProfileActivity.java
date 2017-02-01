@@ -60,6 +60,7 @@ import net.mavericklabs.mitra.ui.fragment.SubjectFragment;
 import net.mavericklabs.mitra.ui.fragment.TopicFragment;
 import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.EditProfileDialogFragment;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
@@ -85,7 +86,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class EditProfileActivity extends AppCompatActivity implements OnDialogFragmentDismissedListener {
+public class EditProfileActivity extends BaseActivity implements OnDialogFragmentDismissedListener {
 
     private boolean isAdditionalViewExpanded;
 
@@ -670,8 +671,9 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         Logger.d(" language " + Locale.getDefault().getLanguage() + " " + Locale.getDefault().getDisplayLanguage());
 
         //Get the current language name in English
-        String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
-        Integer languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+
+        Integer languageCode = MitraSharedPreferences.readFromPreferences(getApplicationContext(),
+                "selected_language", Integer.valueOf(Constants.LanguageEnglish));
 
         RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(),
                 getSelectedUserTypeId(), languageCode);

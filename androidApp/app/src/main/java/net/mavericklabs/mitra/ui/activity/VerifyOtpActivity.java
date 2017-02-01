@@ -31,6 +31,7 @@ import net.mavericklabs.mitra.model.database.DbTopic;
 import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
@@ -51,7 +52,7 @@ import retrofit2.Response;
 
 import static android.os.Build.VERSION.SDK_INT;
 
-public class VerifyOtpActivity extends AppCompatActivity {
+public class VerifyOtpActivity extends BaseActivity {
 
     @BindView(R.id.entered_phone_number_edit_text)
     EditText enteredPhoneNumberEditText;
@@ -219,9 +220,9 @@ public class VerifyOtpActivity extends AppCompatActivity {
 
                             CommonCode language = CommonCodeUtils.getObjectFromCode(user.getPreferredLanguage());
                             Logger.d(" language " + language.getCodeID() + language.getCodeNameEnglish());
-                            String lang = "en";
+                            int lang = Constants.LanguageEnglish;
                             if(language.getCodeNameEnglish().equals("Marathi")) {
-                                lang = "mr";
+                                lang = Constants.LanguageMarathi;
                             }
                             LanguageUtils.setLocale(lang, getApplicationContext());
 
