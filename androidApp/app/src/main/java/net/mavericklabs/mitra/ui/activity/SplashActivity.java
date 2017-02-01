@@ -1,7 +1,6 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -10,13 +9,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.CommonCodeWrapper;
+import net.mavericklabs.mitra.model.database.Migration;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.HttpUtils;
@@ -28,11 +26,9 @@ import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.List;
-import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,6 +40,14 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .schemaVersion(1) // Must be bumped when the schema changes
+                .migration(new Migration()) // Migration to run
+                .build();
+
+        Realm.setDefaultConfiguration(config);
 
         RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
                 .where(CommonCode.class).findAll();

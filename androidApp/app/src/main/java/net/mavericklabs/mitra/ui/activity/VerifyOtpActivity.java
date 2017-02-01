@@ -19,17 +19,16 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.GenericListDataModel;
-import net.mavericklabs.mitra.api.model.LoginUser;
-import net.mavericklabs.mitra.api.model.NewUser;
-import net.mavericklabs.mitra.api.model.RegisterUser;
-import net.mavericklabs.mitra.api.model.Token;
-import net.mavericklabs.mitra.api.model.VerifyUserOtp;
-import net.mavericklabs.mitra.database.model.DbGrade;
-import net.mavericklabs.mitra.database.model.DbSubject;
-import net.mavericklabs.mitra.database.model.DbTopic;
-import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.model.api.BaseModel;
+import net.mavericklabs.mitra.model.api.GenericListDataModel;
+import net.mavericklabs.mitra.model.api.LoginUser;
+import net.mavericklabs.mitra.model.api.NewUser;
+import net.mavericklabs.mitra.model.api.Token;
+import net.mavericklabs.mitra.model.api.VerifyUserOtp;
+import net.mavericklabs.mitra.model.database.DbGrade;
+import net.mavericklabs.mitra.model.database.DbSubject;
+import net.mavericklabs.mitra.model.database.DbTopic;
+import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.LanguageUtils;
@@ -37,8 +36,6 @@ import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
-
-import org.json.JSONArray;
 
 import java.util.List;
 

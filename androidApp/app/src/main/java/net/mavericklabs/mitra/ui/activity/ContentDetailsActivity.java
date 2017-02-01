@@ -24,6 +24,7 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,8 +35,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -47,14 +53,14 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.ContentDataRequest;
-import net.mavericklabs.mitra.api.model.ContentDataResponse;
-import net.mavericklabs.mitra.api.model.MetaContent;
-import net.mavericklabs.mitra.api.model.GenericListDataModel;
-import net.mavericklabs.mitra.api.model.LikeRequest;
-import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
-import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
+import net.mavericklabs.mitra.model.api.BaseModel;
+import net.mavericklabs.mitra.model.api.ContentDataRequest;
+import net.mavericklabs.mitra.model.api.ContentDataResponse;
+import net.mavericklabs.mitra.model.api.MetaContent;
+import net.mavericklabs.mitra.model.api.GenericListDataModel;
+import net.mavericklabs.mitra.model.api.LikeRequest;
+import net.mavericklabs.mitra.model.api.SelfLearningContentRequest;
+import net.mavericklabs.mitra.model.api.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Requirements;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
@@ -78,50 +84,23 @@ import retrofit2.Response;
 
 public class ContentDetailsActivity extends AppCompatActivity implements YouTubePlayer.OnInitializedListener {
 
-    @BindView(R.id.similar_contents_recycler_view)
-    RecyclerView contentRecyclerView;
-
-    @BindView(R.id.content_card_view)
-    CardView contentCardView;
-
-    @BindView(R.id.content_image_view)
-    ImageView contentImageView;
-
-    @BindView(R.id.requirements_grid_view)
-    RecyclerView requirementsGridView;
-
-    @BindView(R.id.content_title)
-    TextView title;
-
-    @BindView(R.id.author_name)
-    TextView authorName;
-
-    @BindView(R.id.details)
-    TextView details;
-
-    @BindView(R.id.description)
-    TextView description;
-
-    @BindView(R.id.requirements_layout)
-    LinearLayout requirementsLayout;
-
-    @BindView(R.id.loading_panel)
-    RelativeLayout loadingPanel;
-
-    @BindView(R.id.like_icon)
-    ImageView likeIcon;
-
-    @BindView(R.id.save_icon)
-    ImageView saveIcon;
-
-    @BindView(R.id.share_icon)
-    ImageView shareIcon;
-
-    @BindView(R.id.youtube_layout)
-    RelativeLayout youTubeLayout;
-
-    @BindView(R.id.content_layout)
-    RelativeLayout contentLayout;
+    @BindView(R.id.similar_contents_recycler_view) RecyclerView contentRecyclerView;
+    @BindView(R.id.content_card_view) CardView contentCardView;
+    @BindView(R.id.content_image_view) ImageView contentImageView;
+    @BindView(R.id.requirements_grid_view) RecyclerView requirementsGridView;
+    @BindView(R.id.content_title) TextView title;
+    @BindView(R.id.author_name) TextView authorName;
+    @BindView(R.id.details) TextView details;
+    @BindView(R.id.description) TextView description;
+    @BindView(R.id.requirements_layout) LinearLayout requirementsLayout;
+    @BindView(R.id.loading_panel) RelativeLayout loadingPanel;
+    @BindView(R.id.like_icon) ImageView likeIcon;
+    @BindView(R.id.save_icon) ImageView saveIcon;
+    @BindView(R.id.share_icon) ImageView shareIcon;
+    @BindView(R.id.youtube_layout) RelativeLayout youTubeLayout;
+    @BindView(R.id.content_layout) RelativeLayout contentLayout;
+    @BindView(R.id.content_web_view) WebView contentWebView;
+    @BindView(R.id.loading_panel_for_web_view) RelativeLayout loadingPanelForWebView;
 
     @OnClick(R.id.share_icon)
     void shareContent() {
@@ -298,26 +277,70 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
 
                 youTubeLayout.setVisibility(View.VISIBLE);
                 contentImageView.setVisibility(View.GONE);
+                contentWebView.setVisibility(View.GONE);
                 contentLayout.setBackgroundColor(Color.BLACK);
                 YouTubePlayerSupportFragment frag =
                         (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
                 frag.initialize(Constants.youtubeDeveloperKey, this);
 
+            } else if (content.getFileType().equals(Constants.FileTypePPT) ||
+                    content.getFileType().equals(Constants.FileTypeWorksheet) ||
+                    content.getFileType().equals(Constants.FileTypePDF)) {
+                youTubeLayout.setVisibility(View.GONE);
+                contentImageView.setVisibility(View.GONE);
+                ViewGroup.LayoutParams webViewLayoutParams = contentWebView.getLayoutParams();
+                webViewLayoutParams.height = (int)(displayMetrics.heightPixels / 2.62);
+                contentWebView.setLayoutParams(webViewLayoutParams);
+                contentWebView.setWebViewClient(new WebViewClient(){
+                    @Override
+                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                        super.onPageStarted(view, url, favicon);
+                        loadingPanelForWebView.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onLoadResource(WebView view, String url) {
+                        super.onLoadResource(view, url);
+                        Logger.d("on load resource..");
+                    }
+
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        super.onPageFinished(view, url);
+                        Logger.d("on page finished..");
+                        loadingPanelForWebView.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                        super.onReceivedError(view, request, error);
+                        Logger.d("error : " + error.toString());
+                        loadingPanelForWebView.setVisibility(View.GONE);
+                    }
+                });
+                Logger.d("file path " + content.getFileName());
+                contentWebView.loadUrl(content.getFileName());
+
+                contentWebView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(content.getFileName()));
+                            startActivity(browserIntent);
+                            return true;
+                        }
+                        return false;
+                    }
+                });
             } else {
                 //Show file Icon
                 contentImageView.setVisibility(View.VISIBLE);
                 youTubeLayout.setVisibility(View.GONE);
+                contentWebView.setVisibility(View.GONE);
                 contentLayout.setBackgroundResource(R.drawable.gradient_background);
                 contentImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(content.getFileType().equals(Constants.FileTypePPT) ||
-                                content.getFileType().equals(Constants.FileTypeWorksheet) ||
-                                content.getFileType().equals(Constants.FileTypePDF)) {
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(content.getFileName()));
-                            startActivity(browserIntent);
-                        }
-
                         if(content.getFileType().equals(Constants.FileTypeAudio)) {
                             Intent intent = new Intent();
                             intent.setAction(Intent.ACTION_VIEW);
@@ -349,10 +372,13 @@ public class ContentDetailsActivity extends AppCompatActivity implements YouTube
                 Integer subjectCode = content.getSubject();
                 String subject = CommonCodeUtils.getObjectFromCode(subjectCode).getCodeNameForCurrentLocale();
 
-                Integer gradeCode = content.getGrade();
-                String grade = CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale();
-
-                details.setText(subject +  " | "  + getResources().getString(R.string.grade) + " " + grade);
+                List<Integer> gradeCodes = StringUtils.splitCommas(content.getGrade());
+                List<String> gradeNames = new ArrayList<>();
+                for (Integer gradeCode : gradeCodes) {
+                    gradeNames.add(CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale());
+                }
+                String grades = StringUtils.stringify(gradeNames);
+                details.setText(subject +  " | "  + getResources().getString(R.string.grade) + " " + grades);
 
                 loadSimilarTeachingAids();
 

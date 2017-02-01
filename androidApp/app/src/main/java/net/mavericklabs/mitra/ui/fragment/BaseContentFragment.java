@@ -31,7 +31,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.listener.OnChipRemovedListener;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
@@ -39,7 +39,6 @@ import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.adapter.ChipLayoutAdapter;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
-import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.ArrayList;
@@ -87,7 +86,7 @@ public class BaseContentFragment extends Fragment {
 
     protected void setupFilterView(OnChipRemovedListener listener) {
         filterList = new ArrayList<>();
-        filterAdapter = new ChipLayoutAdapter(filterList);
+        filterAdapter = new ChipLayoutAdapter(filterList, getContext());
         filterAdapter.setShowRemoveButton(true);
         filterAdapter.setListener(listener);
 
@@ -112,6 +111,15 @@ public class BaseContentFragment extends Fragment {
         filterRecyclerView.swapAdapter(filterAdapter, false);
     }
 
+    protected void setItemInFilterList(CommonCode commonCode, int pos) {
+        filterRecyclerView.setVisibility(View.VISIBLE);
+        viewBelowFilterList.setVisibility(View.VISIBLE);
+        filterList.set(pos, new BaseObject(commonCode, true));
+        filterAdapter.setObjects(filterList);
+        filterRecyclerView.swapAdapter(filterAdapter, false);
+    }
+
+
     protected boolean isNextPageToBeLoaded(int newState, RecyclerView recyclerView) {
         if(newState == RecyclerView.SCROLL_STATE_IDLE) {
             Logger.d(" scrolled idle");
@@ -133,6 +141,10 @@ public class BaseContentFragment extends Fragment {
         errorView.setVisibility(View.GONE);
         contentRecyclerView.clearOnScrollListeners();
         Logger.d(" Succes");
+        if(pageNumber > 0) {
+            adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+            adapter.stopLoading();
+        }
         if(response.body().getData() != null) {
             List<Content> contents = response.body().getData();
             Logger.d(" contents " + contents.size());

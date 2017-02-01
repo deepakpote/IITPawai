@@ -25,35 +25,27 @@ package net.mavericklabs.mitra.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
-import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.model.api.BaseModel;
+import net.mavericklabs.mitra.model.api.SelfLearningContentRequest;
 import net.mavericklabs.mitra.listener.OnChipRemovedListener;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
-import net.mavericklabs.mitra.ui.adapter.ChipLayoutAdapter;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
-import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.ArrayList;
@@ -61,13 +53,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.view.View.GONE;
 
 public class SelfLearningFragment extends BaseContentFragment {
 
@@ -113,7 +101,7 @@ public class SelfLearningFragment extends BaseContentFragment {
         });
 
         final List<CommonCode> topics = new ArrayList<>(CommonCodeUtils.getTopics());
-        final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getLanguages());
+        final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getContentLanguages());
 
         //Header - not a valid value
         topics.add(0, new CommonCode(0, 0,getString(R.string.topic_only), getString(R.string.topic_only), 0));
@@ -204,16 +192,12 @@ public class SelfLearningFragment extends BaseContentFragment {
                         @Override
                         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                             super.onScrollStateChanged(recyclerView, newState);
-                            if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                                Logger.d(" scrolled idle");
-                                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                                int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
-                                int childCount = contentRecyclerView.getAdapter().getItemCount();
+                            //On Scroll, show loading panel at bottom
+                            adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+                            adapter.showLoading();
 
-                                Logger.d(" lastVisibleItem " + lastVisibleItem  + " childCount " + childCount);
-                                if(lastVisibleItem == childCount - 1) {
-                                    searchSelfLearning(1);
-                                }
+                            if(isNextPageToBeLoaded(newState, recyclerView)) {
+                                searchSelfLearning(1);
                             }
                         }
 
@@ -232,6 +216,9 @@ public class SelfLearningFragment extends BaseContentFragment {
                     contentRecyclerView.setVisibility(View.GONE);
                     errorView.setVisibility(View.VISIBLE);
                     errorView.setText(error);
+                } else {
+                    adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+                    adapter.stopLoading();
                 }
 
             }
@@ -239,6 +226,10 @@ public class SelfLearningFragment extends BaseContentFragment {
             @Override
             public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
                 Logger.d(" on fail");
+                if(pageNumber > 0) {
+                    adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
+                    adapter.stopLoading();
+                }
             }
         });
     }

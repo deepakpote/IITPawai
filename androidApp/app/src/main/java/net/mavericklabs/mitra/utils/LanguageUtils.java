@@ -29,10 +29,8 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
-import net.mavericklabs.mitra.database.model.DbUser;
-import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.model.database.DbUser;
 
-import java.util.List;
 import java.util.Locale;
 
 import io.realm.Realm;

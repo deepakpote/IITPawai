@@ -24,7 +24,8 @@
 package net.mavericklabs.mitra.utils;
 
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
+import net.mavericklabs.mitra.model.News;
+import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.Content;
 
 import java.io.IOException;
@@ -41,6 +42,19 @@ import retrofit2.Response;
 public class HttpUtils {
 
     public static Integer getErrorMessage(Response<BaseModel<Content>> response) {
+        Converter<ResponseBody, BaseModel> errorConverter =
+                RestClient.getRetrofitInstance().responseBodyConverter(BaseModel.class, new Annotation[0]);
+        try {
+            BaseModel error = errorConverter.convert(response.errorBody());
+            Logger.d(" " + error.getResponseMessage());
+            return error.getResponseMessage();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Integer getErrorMessageForNews(Response<BaseModel<News>> response) {
         Converter<ResponseBody, BaseModel> errorConverter =
                 RestClient.getRetrofitInstance().responseBodyConverter(BaseModel.class, new Annotation[0]);
         try {

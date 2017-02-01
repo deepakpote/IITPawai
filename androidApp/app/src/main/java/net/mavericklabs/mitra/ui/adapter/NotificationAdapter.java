@@ -8,10 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.database.model.DbNotification;
+import net.mavericklabs.mitra.model.database.DbNotification;
 import net.mavericklabs.mitra.utils.DateUtils;
-
-import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

@@ -26,8 +26,9 @@
     android:id="@android:id/text1"
     style="?android:attr/spinnerItemStyle"
     android:maxLines="1"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:ellipsize="marquee"
+    android:gravity="end"
     android:textColor="@color/primary_text"
     android:textAlignment="inherit"/>

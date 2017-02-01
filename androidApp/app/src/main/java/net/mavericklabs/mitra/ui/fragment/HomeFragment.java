@@ -13,24 +13,25 @@ import android.widget.RelativeLayout;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.News;
-import net.mavericklabs.mitra.api.model.SelfLearningContentRequest;
-import net.mavericklabs.mitra.api.model.TeachingAidsContentRequest;
+import net.mavericklabs.mitra.model.api.BaseModel;
+import net.mavericklabs.mitra.model.News;
+import net.mavericklabs.mitra.model.api.SelfLearningContentRequest;
+import net.mavericklabs.mitra.model.api.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.NewsListAdapter;
-import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -52,6 +53,15 @@ public class HomeFragment extends Fragment{
 
     @BindView(R.id.teaching_aids_solid_button)
     Button teachingAidsSolidButton;
+
+    @OnClick(R.id.see_all_news)
+    void seeAllNews() {
+        if(getActivity() instanceof HomeActivity) {
+            HomeActivity homeActivity = (HomeActivity) getActivity();
+            homeActivity.selectDrawerItem(homeActivity.navigationView.getMenu()
+                    .getItem(homeActivity.DRAWER_ITEM_NEWS));
+        }
+    }
 
     @OnClick(R.id.teaching_aids_solid_button)
     void goToTeachingAids() {
@@ -102,7 +112,7 @@ public class HomeFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.content_home,container,false);
+        return inflater.inflate(R.layout.fragment_home,container,false);
     }
 
     @Override
@@ -120,10 +130,35 @@ public class HomeFragment extends Fragment{
             @Override
             public void onResponse(Call<BaseModel<News>> call, Response<BaseModel<News>> response) {
                 if(response.isSuccessful()) {
+                    Logger.d(" News success ");
+                    Realm realm = Realm.getDefaultInstance();
+                    realm.beginTransaction();
                     List<News> news = response.body().getData();
+
+                    for (News newsItem : news) {
+                        Logger.d(" seen item " + newsItem.isSeen());
+                        News newsInDb = realm.where(News.class).equalTo("newsID", newsItem.getNewsID()).findFirst();
+                        if(newsInDb != null) {
+                            Logger.d(" seen db " + newsItem.isSeen());
+                            newsItem.setSeen(newsInDb.isSeen());
+                            newsItem.setSaved(newsInDb.isSaved());
+                            newsItem.setShowOnMainPage(newsInDb.isShowOnMainPage());
+                        } else {
+                            newsItem.setSeen(false);
+                            newsItem.setSaved(false);
+                            newsItem.setShowOnMainPage(true);
+                        }
+                        newsItem.setDateToCompare(DateUtils.convertToDate(newsItem.getPublishDate(), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                        realm.copyToRealmOrUpdate(newsItem);
+                    }
+
+                    realm.commitTransaction();
+
+                    RealmResults<News> dbNews = realm.where(News.class).equalTo("showOnMainPage",
+                            Boolean.TRUE).findAll();
                     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                     newsRecyclerView.setLayoutManager(layoutManager);
-                    NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), news);
+                    NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), realm.copyFromRealm(dbNews));
                     newsRecyclerView.setAdapter(newsListAdapter);
                 }
             }

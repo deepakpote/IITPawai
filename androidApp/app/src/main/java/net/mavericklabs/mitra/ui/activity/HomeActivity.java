@@ -25,12 +25,12 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import net.mavericklabs.mitra.R;
-import net.mavericklabs.mitra.database.model.DbUser;
-import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.ui.fragment.EventCalendarFragment;
 import net.mavericklabs.mitra.ui.fragment.HomeFragment;
 import net.mavericklabs.mitra.ui.fragment.MyResourcesFragment;
+import net.mavericklabs.mitra.ui.fragment.NewsFragment;
 import net.mavericklabs.mitra.ui.fragment.NotificationFragment;
 import net.mavericklabs.mitra.ui.fragment.ProfileFragment;
 import net.mavericklabs.mitra.ui.fragment.SelfLearningFragment;
@@ -88,9 +88,10 @@ public class HomeActivity extends AppCompatActivity {
     public int DRAWER_ITEM_SELF_LEARNING = 2;
     public int DRAWER_ITEM_TRAINING_CALENDAR = 3;
     public int DRAWER_ITEM_MY_RESOURCES = 4;
-    public int DRAWER_ITEM_NOTIFICATION = 5;
-    public int DRAWER_ITEM_PROFILE = 6;
-    public int DRAWER_ITEM_SETTINGS = 7;
+    public int DRAWER_ITEM_NEWS = 5;
+    public int DRAWER_ITEM_NOTIFICATION = 6;
+    public int DRAWER_ITEM_PROFILE = 7;
+    public int DRAWER_ITEM_SETTINGS = 8;
 
 
     @Override
@@ -159,6 +160,7 @@ public class HomeActivity extends AppCompatActivity {
                 break;
 
             case R.id.nav_self_learning_videos :
+                AnimationUtils.fadeOutView(tabLayout);
                 tabLayout.setVisibility(View.GONE);
                 fragmentClass = SelfLearningFragment.class;
                 break;
@@ -169,18 +171,27 @@ public class HomeActivity extends AppCompatActivity {
                 break;
 
             case R.id.nav_training_calendar:
+                AnimationUtils.fadeOutView(tabLayout);
                 tabLayout.setVisibility(View.GONE);
                 fragmentClass = EventCalendarFragment.class;
                 break;
+            case R.id.nav_news:
+                AnimationUtils.fadeInView(tabLayout, null);
+                fragmentClass = NewsFragment.class;
+                break;
+
             case R.id.nav_notification:
+                AnimationUtils.fadeOutView(tabLayout);
                 tabLayout.setVisibility(View.GONE);
                 fragmentClass = NotificationFragment.class;
                 break;
             case R.id.nav_profile:
+                AnimationUtils.fadeOutView(tabLayout);
                 tabLayout.setVisibility(View.GONE);
                 fragmentClass = ProfileFragment.class;
                 break;
             case R.id.nav_settings:
+                AnimationUtils.fadeOutView(tabLayout);
                 tabLayout.setVisibility(View.GONE);
                 fragmentClass = SettingsFragment.class;
                 break;

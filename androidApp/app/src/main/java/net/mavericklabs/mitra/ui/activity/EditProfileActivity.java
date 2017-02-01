@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Environment;
@@ -30,6 +29,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,16 +37,16 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 
 import net.mavericklabs.mitra.api.RestClient;
-import net.mavericklabs.mitra.api.model.BaseModel;
-import net.mavericklabs.mitra.api.model.EditPhoto;
-import net.mavericklabs.mitra.api.model.EditUser;
-import net.mavericklabs.mitra.api.model.GenericListDataModel;
-import net.mavericklabs.mitra.api.model.RegisterUser;
-import net.mavericklabs.mitra.api.model.RegisterUserResponse;
-import net.mavericklabs.mitra.database.model.DbGrade;
-import net.mavericklabs.mitra.database.model.DbSubject;
-import net.mavericklabs.mitra.database.model.DbTopic;
-import net.mavericklabs.mitra.database.model.DbUser;
+import net.mavericklabs.mitra.model.api.BaseModel;
+import net.mavericklabs.mitra.model.api.EditPhoto;
+import net.mavericklabs.mitra.model.api.EditUser;
+import net.mavericklabs.mitra.model.api.GenericListDataModel;
+import net.mavericklabs.mitra.model.api.RegisterUser;
+import net.mavericklabs.mitra.model.api.RegisterUserResponse;
+import net.mavericklabs.mitra.model.database.DbGrade;
+import net.mavericklabs.mitra.model.database.DbSubject;
+import net.mavericklabs.mitra.model.database.DbTopic;
+import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.listener.OnDialogFragmentDismissedListener;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.BaseObject;
@@ -104,6 +104,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
     @BindView(R.id.name_edit_text) EditText nameEditText;
     @BindView(R.id.udise_edit_text) EditText udiseEditText;
     @BindView(R.id.topic_recycler_view) RecyclerView topicRecyclerView;
+    @BindView(R.id.scroll_view) ScrollView scrollView;
 
     private Uri imageCaptureUri;
     private final int PICK_PROFILE_PHOTO = 0;
@@ -197,6 +198,14 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
         } else {
             moreOrLessButtun.setText(R.string.less);
             moreLayout.setVisibility(View.VISIBLE);
+            Logger.d("bottom of more layout : " + moreLayout.getBottom());
+            scrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    scrollView.fullScroll(View.FOCUS_DOWN);
+                }
+            });
+            scrollView.postInvalidate();
             isAdditionalViewExpanded = true;
             moreImage.setVisibility(View.GONE);
             lessImage.setVisibility(View.VISIBLE);
@@ -264,11 +273,11 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         gradeRecyclerView.setHasFixedSize(true);
         gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
-        gradeRecyclerView.setAdapter(new ChipLayoutAdapter(selectedGradesList));
+        gradeRecyclerView.setAdapter(new ChipLayoutAdapter(selectedGradesList, getApplicationContext()));
 
         topicRecyclerView.setHasFixedSize(true);
         topicRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
-        topicRecyclerView.setAdapter(new ChipLayoutAdapter(selectedTopicsList));
+        topicRecyclerView.setAdapter(new ChipLayoutAdapter(selectedTopicsList, getApplicationContext()));
     }
 
     private void setDefaultValues(DbUser dbUser) {
@@ -382,7 +391,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         //Get the current language name in English
         String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
-        Integer languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+        Integer languageCode = CommonCodeUtils.getAppLanguageCode(currentLocale);
         user.setPreferredLanguageCodeID(languageCode);
 
         //set udise
@@ -662,7 +671,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         //Get the current language name in English
         String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
-        Integer languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+        Integer languageCode = CommonCodeUtils.getAppLanguageCode(currentLocale);
 
         RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(),
                 getSelectedUserTypeId(), languageCode);

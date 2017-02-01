@@ -26,6 +26,7 @@ import net.mavericklabs.mitra.utils.DisplayUtils;
 import net.mavericklabs.mitra.utils.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
 
         ViewGroup.LayoutParams layoutParams = holder.contentView.getLayoutParams();
-        layoutParams.width = displayMetrics.widthPixels / 2 - (DisplayUtils.dpToPx(24, context));
+        layoutParams.width = displayMetrics.widthPixels / 2 - (DisplayUtils.dpToPx(36, context));
         layoutParams.height = layoutParams.width + (DisplayUtils.dpToPx(8, context));
         holder.contentView.setLayoutParams(layoutParams);
 
@@ -89,10 +90,14 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
             Integer subjectCode = contents.get(holder.getAdapterPosition()).getSubject();
             String subject = CommonCodeUtils.getObjectFromCode(subjectCode).getCodeNameForCurrentLocale();
 
-            Integer gradeCode = contents.get(holder.getAdapterPosition()).getGrade();
-            String grade = CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale();
+            List<Integer> gradeCodes = StringUtils.splitCommas(contents.get(holder.getAdapterPosition()).getGrade());
+            List<String> gradeNames = new ArrayList<>();
+            for (Integer gradeCode : gradeCodes) {
+                gradeNames.add(CommonCodeUtils.getObjectFromCode(gradeCode).getCodeNameForCurrentLocale());
+            }
+            String grades = StringUtils.stringify(gradeNames);
 
-            holder.details.setText(subject +  " | "  + context.getResources().getString(R.string.grade) + " " + grade);
+            holder.details.setText(subject +  " | "  + context.getResources().getString(R.string.grade) + " " + grades);
         } else {
             Integer topicCode = contents.get(holder.getAdapterPosition()).getTopic();
             String topic = CommonCodeUtils.getObjectFromCode(topicCode).getCodeNameForCurrentLocale();
