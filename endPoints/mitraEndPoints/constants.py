@@ -84,6 +84,8 @@ class messages():
     uploadContent_fileName_invaild = 100172
     uploadContent_languageCodeID_cannot_be_empty = 100173
     
+    news_list_department_does_not_exists = 100175
+    news_list_publishDate_invalid = 100176
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
