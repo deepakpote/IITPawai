@@ -508,7 +508,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             
         # Check if language is passed in post param
         if not languageCodeID:
-            return Response({"response_message": constants.messages.uploadContent_Language_cannot_be_empty,
+            return Response({"response_message": constants.messages.uploadContent_languageCodeID_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
         
