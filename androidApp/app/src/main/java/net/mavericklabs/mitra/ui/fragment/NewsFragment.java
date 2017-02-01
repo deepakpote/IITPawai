@@ -115,7 +115,7 @@ public class NewsFragment extends Fragment{
         Logger.d("News on view created ");
 
         tabLayout = (TabLayout) getActivity().findViewById(R.id.tabs_my_resources);
-        if(CommonCodeUtils.getFileTypeCount() > 4) {
+        if(CommonCodeUtils.getDepartmentTypeCount() > 4) {
             tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         } else {
             tabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -180,8 +180,8 @@ public class NewsFragment extends Fragment{
             ButterKnife.bind(this, rootView);
 
             tabNumber = getArguments().getInt("tabNumber");
-            final Integer fileType = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
-            //department = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
+
+            department = CommonCodeUtils.getDepartmentCode(tabNumber).getCodeID();
 
             setupFilterView(new OnChipRemovedListener() {
                 @Override
@@ -330,9 +330,8 @@ public class NewsFragment extends Fragment{
                     realmQuery = realmQuery.equalTo("isSaved", Boolean.TRUE);
                     break;
 
-                case 2 :
-                    realmQuery = realmQuery.equalTo("showOnMainPage", Boolean.TRUE);
-                    break;
+                default:
+                    realmQuery = realmQuery.equalTo("department", department);
             }
 
 
@@ -359,37 +358,6 @@ public class NewsFragment extends Fragment{
                 errorView.setVisibility(View.VISIBLE);
                 errorView.setText(R.string.no_results);
             }
-
-
-
-
-//            loadingPanel.setVisibility(View.VISIBLE);
-//            contentRecyclerView.setVisibility(View.GONE);
-//
-//            RestClient.getApiService("").listNews().enqueue(new Callback<BaseModel<News>>() {
-//                @Override
-//                public void onResponse(Call<BaseModel<News>> call, Response<BaseModel<News>> response) {
-//                    if(response.isSuccessful()) {
-//                        loadingPanel.setVisibility(View.GONE);
-//                        contentRecyclerView.setVisibility(View.VISIBLE);
-//                        List<News> news = response.body().getData();
-//                        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-//                        contentRecyclerView.setLayoutManager(layoutManager);
-//                        NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), news);
-//                        contentRecyclerView.setAdapter(newsListAdapter);
-//                    } else {
-//                        String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessageForNews(response)).getCodeNameForCurrentLocale();
-//                        loadingPanel.setVisibility(View.GONE);
-//                        errorView.setVisibility(View.VISIBLE);
-//                        errorView.setText(error);
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call<BaseModel<News>> call, Throwable t) {
-//                    loadingPanel.setVisibility(View.GONE);
-//                }
-//            });
         }
     }
 
@@ -410,21 +378,12 @@ public class NewsFragment extends Fragment{
         @Override
         public int getCount() {
             // Show pages based on number of departments + 1
-            Logger.d(" pages " + CommonCodeUtils.getFileTypeCount());
-            return CommonCodeUtils.getFileTypeCount() + 1;
+            return CommonCodeUtils.getDepartmentTypeCount() + 1;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            if(position == 0) {
-                return CommonCodeUtils.getFileTypeAtPosition(position).getCodeNameForCurrentLocale();
-            }
-            if(position == 1) {
-                return "Saved";
-            }
-
-            return CommonCodeUtils.getFileTypeAtPosition(position - 1).getCodeNameForCurrentLocale();
-
+            return CommonCodeUtils.getDepartmentCode(position).getCodeNameForCurrentLocale();
         }
     }
 }

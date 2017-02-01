@@ -57,6 +57,27 @@ public class CommonCodeUtils {
                         CommonCodeGroup.FILE_TYPES).findAll();
     }
 
+
+    public static CommonCode getDepartmentAtPosition(int position) {
+        RealmResults<CommonCode> contentTypeResult =
+                Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
+                        CommonCodeGroup.DEPARTMENT_TYPES).findAll();
+        return contentTypeResult.get(position);
+
+    }
+    public static int getDepartmentTypeCount() {
+        RealmResults<CommonCode> contentTypeResult =
+                Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
+                        CommonCodeGroup.DEPARTMENT_TYPES).findAll();
+        return contentTypeResult.size();
+
+    }
+
+    public static List<CommonCode> getDepartmentTypes() {
+        return  Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
+                CommonCodeGroup.DEPARTMENT_TYPES).findAll();
+    }
+
     public static List<CommonCode> getSubjects() {
         return Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
                         CommonCodeGroup.SUBJECTS).findAll();
@@ -78,12 +99,19 @@ public class CommonCodeUtils {
 
     }
 
-    public static List<CommonCode> getLanguages() {
+    public static List<CommonCode> getAppLanguages() {
         return Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
-                CommonCodeGroup.LANGUAGE).findAll();
+                CommonCodeGroup.APP_LANGUAGE).findAll();
 
 
     }
+    public static List<CommonCode> getContentLanguages() {
+        return Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeGroupID",
+                CommonCodeGroup.CONTENT_LANGUAGE).findAll();
+
+
+    }
+
 
     public static CommonCode getObjectFromCode(Integer code) {
         RealmResults<CommonCode> contentTypeResult =
@@ -93,10 +121,10 @@ public class CommonCodeUtils {
 
     }
 
-    public static Integer getLanguageCode(String language) {
+    public static Integer getAppLanguageCode(String language) {
         RealmResults<CommonCode> contentTypeResult =
                 Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeNameEnglish",
-                        language).equalTo("codeGroupID", CommonCodeGroup.LANGUAGE) .findAll();
+                        language).equalTo("codeGroupID", CommonCodeGroup.APP_LANGUAGE) .findAll();
         return contentTypeResult.get(0).getCodeID();
 
     }
@@ -115,4 +143,14 @@ public class CommonCodeUtils {
 
     }
 
+    public static CommonCode getDepartmentCode(int position) {
+        if(position == 0) {
+            return CommonCodeUtils.getDepartmentAtPosition(position);
+        }
+        if(position == 1) {
+            return new CommonCode(0,0, "Saved", "Saved", 0);
+        }
+
+        return CommonCodeUtils.getDepartmentAtPosition(position - 1);
+    }
 }

@@ -63,7 +63,7 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
 
-        languageList = CommonCodeUtils.getLanguages();
+        languageList = CommonCodeUtils.getAppLanguages();
         languageSpinner.setAdapter(new SpinnerArrayAdapter(getContext(),R.layout.custom_spinner_dropdown_item
                 ,languageList));
 

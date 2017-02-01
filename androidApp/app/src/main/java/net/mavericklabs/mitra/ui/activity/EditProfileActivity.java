@@ -391,7 +391,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         //Get the current language name in English
         String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
-        Integer languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+        Integer languageCode = CommonCodeUtils.getAppLanguageCode(currentLocale);
         user.setPreferredLanguageCodeID(languageCode);
 
         //set udise
@@ -671,7 +671,7 @@ public class EditProfileActivity extends AppCompatActivity implements OnDialogFr
 
         //Get the current language name in English
         String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
-        Integer languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+        Integer languageCode = CommonCodeUtils.getAppLanguageCode(currentLocale);
 
         RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(),
                 getSelectedUserTypeId(), languageCode);
