@@ -457,6 +457,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def uploadContent(self,request):
         # get inputs
+        contentID = request.data.get('contentID')
         contentTitle = request.data.get('contentTitle')
         contentTypeCodeID = request.data.get('contentTypeCodeID')
         subjectCodeID = request.data.get('subjectCodeID')
@@ -595,33 +596,55 @@ class ContentViewSet(viewsets.ModelViewSet):
                      "data": []},
                     status = status.HTTP_404_NOT_FOUND)
         
-        # If any response for content exists or not.
         try:
-            # Save the content.
-            ObjRec =content.objects.create(contentTitle = contentTitle.strip(), 
-                    contentType = objContentType, 
-                    subject = objSubject,
-                    topic = objTopic,
-                    requirement = requirement,
-                    instruction = instruction.strip(),
-                    fileType = objFileType,
-                    fileName= fileName,
-                    author = author,
-                    objectives = objectives,
-                    language = objLanguage,
-                    createdBy = objUser,
-                    modifiedBy = objUser)
+            # Check contentID is provided or not.
+            if not contentID or contentID == 0:
+                # Save the content.
+                ObjRec =content.objects.create(contentTitle = contentTitle.strip(), 
+                        contentType = objContentType, 
+                        subject = objSubject,
+                        topic = objTopic,
+                        requirement = requirement,
+                        instruction = instruction.strip(),
+                        fileType = objFileType,
+                        fileName= fileName,
+                        author = author,
+                        objectives = objectives,
+                        language = objLanguage,
+                        createdBy = objUser,
+                        modifiedBy = objUser)
+                
+                ObjRec.save()      
+                
+                contentID =  ObjRec.contentID 
             
-            ObjRec.save()        
+            else:
+                # If contentID parameter is passed, then check contentID exists or not and update the content details.       
+                try:
+                    objcontent = content.objects.get(contentID = contentID)
+                except content.DoesNotExist:
+                    return Response({"response_message": constants.messages.uploadContent_contentID_does_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+                 
+                # If contentID valid, update the details.
+                content.objects.filter(contentID = contentID).update(contentTitle = contentTitle.strip(),  
+                                                                     contentType = objContentType, 
+                                                                     subject = objSubject,
+                                                                     topic = objTopic,
+                                                                     requirement = requirement,
+                                                                     instruction = instruction.strip(),
+                                                                     fileType = objFileType,
+                                                                     fileName= fileName,
+                                                                     author = author,
+                                                                     objectives = objectives,
+                                                                     language = objLanguage,
+                                                                     modifiedBy = objUser)
             
             # Check content type of uploaded file.If teachingAids then save GradeCodeIDs     
             if contentTypeCodeID == constants.mitraCode.teachingAids:
-                    objContent = content.objects.get(contentID = ObjRec.contentID)
-                    for objGrade in arrGradeCodeIDs:    
-                        objGradeCode = code.objects.get(codeID = objGrade)  
-                        # Save the grades
-                        contentGrade(grade = objGradeCode , content = objContent).save()
-            
+                saveContentGrade(arrGradeCodeIDs , contentID)
+                                   
         except Exception as e:
             # Error occured while uploading the content.
             #print e
@@ -814,4 +837,23 @@ def validateYoutubeURL(url):
             return False
         else:
             return True
+"""
+Function to save the content Grade.
+"""
+def saveContentGrade(arrGradeCodeIDs , contentID): 
+    objContent = content.objects.get(contentID = contentID)
+    # Delete all the contentGrade of respective content from contentGrade.
+    contentGrade.objects.filter(content = objContent).delete()
     
+    if not arrGradeCodeIDs:
+        return
+    
+    for objGrade in arrGradeCodeIDs:    
+        objGradeCode = code.objects.get(codeID = objGrade)  
+        # Save the grades
+        contentGrade(grade = objGradeCode , content = objContent).save()
+    
+    return
+
+
+                        
