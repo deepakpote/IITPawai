@@ -508,7 +508,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             
         # Check if language is passed in post param
         if not languageCodeID:
-            return Response({"response_message": constants.messages.uploadContent_Language_cannot_be_empty,
+            return Response({"response_message": constants.messages.uploadContent_languageCodeID_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
         
@@ -639,18 +639,18 @@ def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs, objUser):
         arrSubjectCodeIDs = subjectCodeIDs.split(',')
         return arrSubjectCodeIDs
     
-    # If subjectCodeIDs parameter is NOT passed, then fetch the subject set in profile info of that user
-    objUserSubjectList = userSubject.objects.filter(user = objUser)
-    
     # Initialize the array for storing subject code ids
     arrSubjectCodeIDs = []
     
-    # Iterate through the subject list to build the array of subject code ids
-    for objUserSubject in objUserSubjectList:
-        arrSubjectCodeIDs.append(objUserSubject.subject.codeID)
+    # If subjectCodeIDs is empty then, no need to make search on user profile (i.e on user subjects). Bring all subjectCodeIDs
+    #objUserSubjectList = userSubject.objects.filter(user = objUser)
     
-    if len(arrSubjectCodeIDs) > 0:
-        return arrSubjectCodeIDs
+    # Iterate through the subject list to build the array of subject code ids
+#     for objUserSubject in objUserSubjectList:
+#         arrSubjectCodeIDs.append(objUserSubject.subject.codeID)
+#     
+#     if len(arrSubjectCodeIDs) > 0:
+#         return arrSubjectCodeIDs
     
     # If no subjects are found, under user profile, 
     # then the content must be searched across all the 
@@ -668,18 +668,18 @@ def getSearchContentApplicableGradeCodeIDs(gradeCodeIDs, objUser):
         arrGradeCodeIDs = gradeCodeIDs.split(',')
         return arrGradeCodeIDs
     
-    # If gradeCodeIDs parameter is NOT passed, then fetch the grade set in profile info of that user
-    objUserGradeList = userGrade.objects.filter(user = objUser)
-    
     # Initialize the array for storing grade code ids
     arrGradeCodeIDs = []
     
-    # Iterate through the grade list to build the array of grade code ids
-    for objUserGrade in objUserGradeList:
-        arrGradeCodeIDs.append(objUserGrade.grade.codeID)
+    # If gradeCodeIDs is empty then, no need to make search on user profile (i.e on user grades). Bring all gradeCodeIDs
+    #objUserGradeList = userGrade.objects.filter(user = objUser)
     
-    if len(arrGradeCodeIDs) > 0:
-        return arrGradeCodeIDs
+    # Iterate through the grade list to build the array of grade code ids
+#     for objUserGrade in objUserGradeList:
+#         arrGradeCodeIDs.append(objUserGrade.grade.codeID)
+#     
+#     if len(arrGradeCodeIDs) > 0:
+#         return arrGradeCodeIDs
     
     # If no Grade are found, under user profile, 
     # then the content must be searched across all the 
@@ -697,18 +697,18 @@ def getSearchContentApplicableTopicCodeIDs(topicCodeIDs, objUser):
         arrTopicCodeIDs = topicCodeIDs.split(',')
         return arrTopicCodeIDs
     
-    # If topicCodeIDs parameter is NOT passed, then fetch the topic set in profile info of that user
-    objUserTopicList = userTopic.objects.filter(user = objUser)
-    
     # Initialize the array for storing topic code ids
     arrTopicCodeIDs = []
     
-    # Iterate through the grade list to build the array of topic code ids
-    for objUserTopic in objUserTopicList:
-        arrTopicCodeIDs.append(objUserTopic.topic.codeID)
+    # If topicCodeIDs is empty then, no need to make search on user profile (i.e on userTopic). Bring all topicCodeIDs
+    #objUserTopicList = userTopic.objects.filter(user = objUser)
     
-    if len(arrTopicCodeIDs) > 0:
-        return arrTopicCodeIDs
+    # Iterate through the grade list to build the array of topic code ids
+#     for objUserTopic in objUserTopicList:
+#         arrTopicCodeIDs.append(objUserTopic.topic.codeID)
+#     
+#     if len(arrTopicCodeIDs) > 0:
+#         return arrTopicCodeIDs
     
     # If no topic are found, under user profile, 
     # then the content must be searched across all the 
