@@ -23,9 +23,7 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.widget.Button;
@@ -57,11 +55,11 @@ public class SelectLanguageActivity extends BaseActivity {
 
     @OnClick(R.id.select_english_button) void selectEnglish() {
         Logger.d("selected english");
-        setLocale(Constants.LanguageEnglish);
+        setLocale(Constants.AppLanguageEnglish);
     }
 
     @OnClick(R.id.select_marathi_button) void selectMarathi() {
-        setLocale(Constants.LanguageMarathi);
+        setLocale(Constants.AppLanguageMarathi);
     }
 
     @Override

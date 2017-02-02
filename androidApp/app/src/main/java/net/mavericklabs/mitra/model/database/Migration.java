@@ -38,6 +38,18 @@ import io.realm.RealmSchema;
 
 public class Migration implements RealmMigration {
 
+    //Hacky crash fix - http://stackoverflow.com/a/36919305
+
+    @Override
+    public int hashCode() {
+        return 37;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return (o instanceof Migration);
+    }
+
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
 
@@ -62,6 +74,8 @@ public class Migration implements RealmMigration {
                     .addField("isSaved", boolean.class)
                     .addField("showOnMainPage", boolean.class);
 
+            schema.create("Language")
+                    .addField("language", Integer.class);
         }
 
     }

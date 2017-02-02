@@ -62,6 +62,7 @@ import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.EditProfileDialogFragment;
+import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
@@ -392,7 +393,7 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
 
         //Get the current language name in English
         String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
-        Integer languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+        Integer languageCode = CommonCodeUtils.getAppLanguageCode(currentLocale);
         user.setPreferredLanguageCodeID(languageCode);
 
         //set udise
@@ -672,8 +673,7 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
 
         //Get the current language name in English
 
-        Integer languageCode = MitraSharedPreferences.readFromPreferences(getApplicationContext(),
-                "selected_language", Integer.valueOf(Constants.LanguageEnglish));
+        Integer languageCode = LanguageUtils.getCurrentLanguage();
 
         RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(),
                 getSelectedUserTypeId(), languageCode);

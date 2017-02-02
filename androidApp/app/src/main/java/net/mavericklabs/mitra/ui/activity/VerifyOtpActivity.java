@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
 import android.view.Menu;
@@ -220,9 +219,9 @@ public class VerifyOtpActivity extends BaseActivity {
 
                             CommonCode language = CommonCodeUtils.getObjectFromCode(user.getPreferredLanguage());
                             Logger.d(" language " + language.getCodeID() + language.getCodeNameEnglish());
-                            int lang = Constants.LanguageEnglish;
+                            int lang = Constants.AppLanguageEnglish;
                             if(language.getCodeNameEnglish().equals("Marathi")) {
-                                lang = Constants.LanguageMarathi;
+                                lang = Constants.AppLanguageMarathi;
                             }
                             LanguageUtils.setLocale(lang, getApplicationContext());
 

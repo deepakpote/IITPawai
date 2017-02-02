@@ -1,6 +1,5 @@
 package net.mavericklabs.mitra.ui.fragment;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -65,7 +64,7 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
 
-        languageList = CommonCodeUtils.getLanguages();
+        languageList = CommonCodeUtils.getAppLanguages();
         languageSpinner.setAdapter(new SpinnerArrayAdapter(getContext(),R.layout.custom_spinner_dropdown_item
                 ,languageList));
 
@@ -140,9 +139,9 @@ public class SettingsFragment extends Fragment {
     }
 
     private void setDefaultLanguage(CommonCode code) {
-        int language = Constants.LanguageEnglish;
+        int language = Constants.AppLanguageEnglish;
         if(code.getCodeNameEnglish().equals("Marathi")) {
-            language = Constants.LanguageMarathi;
+            language = Constants.AppLanguageMarathi;
         }
 
         LanguageUtils.setLocale(language, getContext());

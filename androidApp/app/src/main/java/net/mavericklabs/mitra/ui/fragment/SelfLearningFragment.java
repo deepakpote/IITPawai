@@ -101,7 +101,7 @@ public class SelfLearningFragment extends BaseContentFragment {
         });
 
         final List<CommonCode> topics = new ArrayList<>(CommonCodeUtils.getTopics());
-        final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getLanguages());
+        final List<CommonCode> languages = new ArrayList<>(CommonCodeUtils.getContentLanguages());
 
         //Header - not a valid value
         topics.add(0, new CommonCode(0, 0,getString(R.string.topic_only), getString(R.string.topic_only), 0));

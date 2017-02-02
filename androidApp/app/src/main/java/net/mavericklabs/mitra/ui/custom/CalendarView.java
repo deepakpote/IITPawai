@@ -1,6 +1,5 @@
 package net.mavericklabs.mitra.ui.custom;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -13,8 +12,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -22,13 +19,11 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.listener.OnMonthSelectedListener;
 import net.mavericklabs.mitra.utils.Constants;
-import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 
@@ -41,7 +36,6 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by amoghpalnitkar on 15/11/16.
@@ -121,7 +115,7 @@ public class CalendarView extends RelativeLayout {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         String currentMonth = new DateFormatSymbols().getMonths()[calendar.get(Calendar.MONTH)];
-        if(LanguageUtils.getCurrentLanguage() == Constants.LanguageEnglish) {
+        if(LanguageUtils.getCurrentLanguage() == Constants.AppLanguageEnglish) {
             monthYearSelector.setText(currentMonth.substring(0,3) + " " + calendar.get(Calendar.YEAR));
         } else {
             monthYearSelector.setText(currentMonth + " " + calendar.get(Calendar.YEAR));
@@ -214,7 +208,7 @@ public class CalendarView extends RelativeLayout {
                 currentSelectedYear = datePicker.getYear();
                 currentDate.set(currentSelectedYear,currentSelectedMonth,1);
                 String monthName = new DateFormatSymbols().getMonths()[currentSelectedMonth];
-                if(LanguageUtils.getCurrentLanguage() == Constants.LanguageEnglish) {
+                if(LanguageUtils.getCurrentLanguage() == Constants.AppLanguageEnglish) {
                     String substring = monthName.substring(0,3);
                     monthYearSelector.setText(substring + " " + currentSelectedYear);
                 } else {

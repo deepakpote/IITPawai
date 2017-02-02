@@ -24,13 +24,13 @@
 package net.mavericklabs.mitra.utils;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
 import net.mavericklabs.mitra.model.database.DbUser;
+import net.mavericklabs.mitra.model.database.Language;
 
 import java.util.Locale;
 
@@ -51,49 +51,56 @@ public class LanguageUtils {
             realm.beginTransaction();
             user.setPreferredLanguage(languageCode);
             realm.commitTransaction();
-        } else {
-            MitraSharedPreferences.saveToPreferences(context, "selected_language", languageCode);
         }
 
-//        Resources res = context.getResources();
-//        DisplayMetrics dm = res.getDisplayMetrics();
-//        Configuration conf = res.getConfiguration();
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-//            conf.setLocale(myLocale);
-//        } else {
-//            conf.locale = myLocale;
-//        }
-//        Logger.d(" set locale " + languageShortCode);
-//        Logger.d(" country default " + Locale.getDefault().getCountry());
-//
-//        //Deprecated api - but still works. workaround is complicated
-//        res.updateConfiguration(conf, dm);
+        Language language = new Language();
+        language.setAppLanguage(languageCode);
+
+        realm.beginTransaction();
+
+        //Delete existing rows in table
+        realm.delete(Language.class);
+        realm.copyToRealm(language);
+        realm.commitTransaction();
+
+        //Set app locale as well
+        Locale myLocale;
+
+        if(languageCode == Constants.AppLanguageEnglish) {
+            myLocale = new Locale("en", "IN");
+        } else {
+            myLocale = new Locale("mr", "IN");
+        }
+        Resources res = context.getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            conf.setLocale(myLocale);
+        } else {
+            conf.locale = myLocale;
+        }
+        Logger.d(" country default " + Locale.getDefault().getCountry());
+
+        //Deprecated api - but still works. workaround is complicated
+        res.updateConfiguration(conf, dm);
     }
 
     public static int getCurrentLanguage() {
 
-        RealmResults<DbUser> dbUser = Realm.getDefaultInstance().where(DbUser.class).findAll();
-        if(dbUser.size() > 0) {
-            DbUser user = dbUser.get(0);
-            return user.getPreferredLanguage();
+        RealmResults<Language> language = Realm.getDefaultInstance().where(Language.class).findAll();
+        if(language.size() > 0) {
+            Language appLanguage = language.get(0);
+            return appLanguage.getAppLanguage();
         }
-        return Constants.LanguageEnglish;
+        return Constants.AppLanguageEnglish;
 
     }
 
     public static Locale getCurrentLocale() {
 
-        //If not saved in db, read locale
-        String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
-        Integer languageCode = CommonCodeUtils.getLanguageCode(currentLocale);
+        int languageCode = getCurrentLanguage();
 
-        RealmResults<DbUser> dbUser = Realm.getDefaultInstance().where(DbUser.class).findAll();
-        if(dbUser.size() > 0) {
-            DbUser user = dbUser.get(0);
-            languageCode = user.getPreferredLanguage();
-        }
-
-        if(languageCode == Constants.LanguageEnglish) {
+        if(languageCode == Constants.AppLanguageEnglish) {
             return new Locale("en", "IN");
         } else {
             return new Locale("mr", "IN");
