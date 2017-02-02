@@ -1,4 +1,4 @@
-webPortal.controller("NotificationsController", function($scope,$rootScope, NotificationsService) {
+angular.module("mitraPortal").controller("NotificationsController", function($scope,$rootScope, NotificationsService) {
 	$scope.sendDataNotifications = function(){
 		dataMessage = $scope.notificationDataMessage;
 		alert("Token: " + $rootScope.globals.currentUser.token);

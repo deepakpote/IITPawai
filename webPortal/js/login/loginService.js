@@ -1,4 +1,4 @@
-webPortal.service('loginService', function($http, $window){
+angular.module("mitraPortal").service('loginService', function($http, $window){
     
    this.validate = function(phoneno, passkey) {
 	   var postData = {"phoneno": phoneno,"passkey": passkey};

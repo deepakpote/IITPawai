@@ -97,3 +97,10 @@ a:hover, a:focus {
 -moz-box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 }
+.required:before {
+    content: "\f0da";
+    font-family: FontAwesome;
+    color: red;
+    padding-right: 10px;
+    font-size:15px;
+}
