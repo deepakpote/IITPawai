@@ -53,7 +53,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:background="@drawable/gradient_background">
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
             <com.google.android.youtube.player.YouTubeThumbnailView
                 android:id="@+id/youtube_thumbnail"
@@ -99,13 +100,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/content_title"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:textColor="@color/colorAccent"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/details"
-                android:layout_marginTop="8dp"
+                android:layout_alignParentBottom="true"
                 android:layout_marginBottom="8dp">
 
                 <TextView
