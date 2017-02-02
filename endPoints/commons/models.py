@@ -23,7 +23,7 @@ class codeGroup(models.Model):
 class code(models.Model):
     codeID = models.IntegerField(primary_key = True)
     codeGroup = models.ForeignKey('codeGroup', db_column = 'codeGroupID', null = False, related_name="code_codeGroupID")
-    codeNameEn = models.CharField(max_length = 255, null = True)
+    codeNameEn = models.CharField(max_length = 255, null = False)
     codeNameMr = models.CharField(max_length = 255, null = True)
     displayOrder = models.IntegerField(null = True, blank = True)
     comment = models.CharField(max_length = 255,null = True)

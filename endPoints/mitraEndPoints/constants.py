@@ -85,6 +85,14 @@ class messages():
     uploadContent_languageCodeID_cannot_be_empty = 100173
     uploadContent_contentID_does_not_exists = 100174
     
+    saveCode_userID_cannot_be_empty = 100177
+    saveCode_codeGroupID_cannot_be_empty = 100178
+    saveCode_codeGroupID_not_exists = 100179
+    saveCode_codeNameEn_cannot_be_empty = 100180
+    saveCode_userID_not_exists = 100181
+    saveCode_codeID_not_exists = 100182
+    saveCode_save_code_failed = 100183
+    
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
