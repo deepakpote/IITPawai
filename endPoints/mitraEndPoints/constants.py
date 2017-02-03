@@ -97,6 +97,8 @@ class messages():
     setPassword_password_should_not_contain_space = 100185
     setPassword_password_cannot_be_empty_it_must_be_gretter_then_six_character = 100186
     
+    news_list_department_does_not_exists = 100175
+    news_list_publishDate_invalid = 100176
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
