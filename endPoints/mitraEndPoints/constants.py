@@ -93,6 +93,10 @@ class messages():
     saveCode_codeID_not_exists = 100182
     saveCode_save_code_failed = 100183
     
+    setPassword_user_not_exists = 100184
+    setPassword_password_should_not_contain_space = 100185
+    setPassword_password_cannot_be_empty_it_must_be_gretter_then_six_character = 100186
+    
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
