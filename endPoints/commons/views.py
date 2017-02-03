@@ -168,7 +168,7 @@ class NewsViewSet(viewsets.ModelViewSet):
     serializer_class = newsSerializer
 
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
-    def newslist(self, request):
+    def newsList(self, request):
         """ Get the news list
         args:
             request: passed departmentCodeID, publishFromDate and publishToDate as parameter
@@ -178,27 +178,38 @@ class NewsViewSet(viewsets.ModelViewSet):
         """      
         departmentCodeID = request.data.get('departmentCodeID')        
         publishFromDate = request.data.get('publishFromDate') 
-        publishToDate = request.data.get('publishToDate')        
-       
-        if not departmentCodeID and not publishFromDate and not publishToDate :
-            queryset = news.objects.all().order_by('-createdOn').values()
-        elif not departmentCodeID:
-            if not publishFromDate:
-                queryset = news.objects.filter(publishDate__lte = publishToDate).order_by('-createdOn').values()
-            else:
-                queryset = news.objects.filter( publishDate__gte = publishFromDate).order_by('-createdOn').values()
-        else:
-            if not publishFromDate and not publishToDate:
-                queryset =  news.objects.filter(department = departmentCodeID).order_by('-createdOn').values()                
-            elif not publishToDate :
-                queryset =  news.objects.filter(department = departmentCodeID, publishDate__gte = publishFromDate).order_by('-createdOn').values()
-            else:
-                queryset = news.objects.filter(department = departmentCodeID, publishDate__lte = publishToDate).order_by('-createdOn').values()
-                         
+        publishToDate = request.data.get('publishToDate')    
+        
+        queryset = news.objects.all().order_by('-createdOn')
+            
+       # check input department code exists or not
+        if departmentCodeID:            
+            try:
+                objDepartmentCodeID = code.objects.get(codeID = departmentCodeID)
+            except code.DoesNotExist:
+                return Response({"response_message": constants.messages.news_list_department_does_not_exists,
+                             "data": []},status = status.HTTP_404_NOT_FOUND )
+            # if department codeID is passed then add filter for department
+            queryset = queryset.filter(department = departmentCodeID)
+        
+        # check publish from date is less than publish to date, otherwise raise an error 
+        if publishFromDate and publishToDate and publishFromDate > publishToDate :
+            return Response({"response_message": constants.messages.news_list_publishDate_invalid,
+                             "data": []},status = status.HTTP_401_UNAUTHORIZED )
+        #if published from date is passed then add filter
+        if publishFromDate:
+            queryset = queryset.filter(publishDate__gte = publishFromDate)
+            
+        #if published to date is passed then add filter     
+        if publishToDate:
+            queryset = queryset.filter(publishDate__lte = publishToDate)
+        
+        queryset = queryset.order_by('-publishDate').values()
+                   
         for objNew in queryset:
             imageList = getNewsImageURL(objNew)            
             objNew['imageURL'] =  getNewsImageURL(objNew)          
-        #print queryset         
+             
         serializer = newsSerializer(queryset, many = True)
         return Response({"response_message": constants.messages.success, "data": serializer.data})
     
@@ -247,7 +258,9 @@ def getUserIDFromAuthToken(authToken):
     userID = int(objToken.user.userID)
     # return userID
     return userID
-
+"""
+fuction to get array of Image URLs for a news
+"""
 def getNewsImageURL(NewsObject):
     #declare array
     arrOut = []

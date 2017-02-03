@@ -85,6 +85,9 @@ class messages():
     uploadContent_languageCodeID_cannot_be_empty = 100173
     uploadContent_contentID_does_not_exists = 100174
     
+    news_list_department_does_not_exists = 100175
+    news_list_publishDate_invalid = 100176
+    
     saveCode_userID_cannot_be_empty = 100177
     saveCode_codeGroupID_cannot_be_empty = 100178
     saveCode_codeGroupID_not_exists = 100179
