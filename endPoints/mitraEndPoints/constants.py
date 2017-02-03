@@ -97,6 +97,11 @@ class messages():
     setPassword_password_should_not_contain_space = 100185
     setPassword_password_cannot_be_empty_it_must_be_gretter_then_six_character = 100186
     
+    webSignIn_phone_number_cannot_be_empty = 100187
+    webSignIn_password_cannot_be_empty = 100188
+    webSignIn_phone_number_is_invalid = 100189
+    webSignIn_invalid_credentials = 100190
+    
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
