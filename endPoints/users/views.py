@@ -256,6 +256,47 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.success, "data": [response]})
         
     """
+    API to set user password.
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def setPassword(self,request):
+        # Get input data
+        password = request.data.get('password') 
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+        
+        # validate user information
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.setPassword_user_not_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
+            
+        # Password must contain six character and not more then 255 character.    
+        if ( (len(password) < 6) or (len(password) > 255)):
+            return Response({"response_message": constants.messages.setPassword_password_cannot_be_empty_it_must_be_gretter_then_six_character,
+                         "data": []},
+                        status = status.HTTP_401_UNAUTHORIZED)
+        
+        # Check for white space in password.
+        if ' ' in password:
+            return Response({"response_message": constants.messages.setPassword_password_should_not_contain_space,
+                         "data": []},
+                        status = status.HTTP_401_UNAUTHORIZED)
+            
+        
+        # If user valid, update user password.
+        userAuth.objects.filter(authToken = authToken).update(
+                                                                password = password.strip(),
+                                                                modifiedBy = objUser
+                                                              )
+    
+        return Response({"response_message": constants.messages.success, "data": []})
+      
+    """
     API to register user
     """
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
