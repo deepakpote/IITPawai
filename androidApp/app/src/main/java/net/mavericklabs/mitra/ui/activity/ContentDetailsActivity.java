@@ -47,6 +47,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
@@ -241,6 +243,12 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
         }
 
         if(content != null) {
+
+            Answers.getInstance().logContentView(new ContentViewEvent()
+                    .putContentName(content.getTitle())
+                    .putContentType(CommonCodeUtils.getObjectFromCode(content.getContentTypeCodeID()).getCodeNameEnglish())
+                    .putContentId(content.getContentID()));
+
 
             String token = UserDetailUtils.getToken(getApplicationContext());
             RestClient.getApiService(token).metaContent(content.getContentID())
