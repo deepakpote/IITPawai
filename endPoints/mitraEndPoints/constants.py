@@ -106,10 +106,9 @@ class messages():
     save_userNews_news_id_cannot_be_empty = 100194
     save_userNews_newsID_already_saved = 100197
     
-    userNews_list_user_does_not_exist = 100198
-    userNews_list_user_id_cannot_be_empty = 100199
-    userNews_list_department_does_not_exists = 100195
-    userNews_list_publishDate_invalid = 100196
+    userNews_list_user_does_not_exist = 100195
+    userNews_list_user_id_cannot_be_empty = 100196
+   
     
 
 class webportalmessages():    

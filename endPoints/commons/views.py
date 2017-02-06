@@ -180,37 +180,14 @@ class NewsViewSet(viewsets.ModelViewSet):
         publishFromDate = request.data.get('publishFromDate') 
         publishToDate = request.data.get('publishToDate')    
         
-        queryset = news.objects.all().order_by('-createdOn')
+        responseData = validateNewListParameters(departmentCodeID, publishFromDate, publishToDate)
+        if responseData:
+            return Response({"response_message": responseData['message'], "data": []}, status= responseData['status'])
             
-       # check input department code exists or not
-        if departmentCodeID:            
-            try:
-                objDepartmentCodeID = code.objects.get(codeID = departmentCodeID)
-            except code.DoesNotExist:
-                return Response({"response_message": constants.messages.news_list_department_does_not_exists,
-                             "data": []},status = status.HTTP_404_NOT_FOUND )
-            # if department codeID is passed then add filter for department
-            queryset = queryset.filter(department = departmentCodeID)
-        
-        # check publish from date is less than publish to date, otherwise raise an error 
-        if publishFromDate and publishToDate and publishFromDate > publishToDate :
-            return Response({"response_message": constants.messages.news_list_publishDate_invalid,
-                             "data": []},status = status.HTTP_401_UNAUTHORIZED )
-        #if published from date is passed then add filter
-        if publishFromDate:
-            queryset = queryset.filter(publishDate__gte = publishFromDate)
-            
-        #if published to date is passed then add filter     
-        if publishToDate:
-            queryset = queryset.filter(publishDate__lte = publishToDate)
-        
-        queryset = queryset.order_by('-publishDate').values()
-                   
-        for objNew in queryset:
-            imageList = getNewsImageURL(objNew)            
-            objNew['imageURL'] =  getNewsImageURL(objNew)          
-             
-        serializer = newsSerializer(queryset, many = True)
+       
+        newsData = getNewsList(departmentCodeID, publishFromDate, publishToDate, None)     
+                     
+        serializer = newsSerializer(newsData, many = True)   
         return Response({"response_message": constants.messages.success, "data": serializer.data})
      
     """
@@ -274,41 +251,14 @@ class NewsViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.userNews_list_user_does_not_exist, "data": []}, status = status.HTTP_404_NOT_FOUND)
         
        
-        # Get list of newsID of login user
-        objNewsList = list(userNews.objects.filter(user = objUser).values_list('news_id',flat = True))
-        
-        queryset = news.objects.filter(newsID__in=objNewsList)
-        # check input department code exists or not
-        if departmentCodeID:            
-            try:
-                objDepartmentCodeID = code.objects.get(codeID = departmentCodeID)
-            except code.DoesNotExist:
-                return Response({"response_message": constants.messages.userNews_list_department_does_not_exists,
-                             "data": []},status = status.HTTP_404_NOT_FOUND )
-            # if department codeID is passed then add filter for department
-            queryset = queryset.filter(department = departmentCodeID)
-        
-        # check publish from date is less than publish to date, otherwise raise an error 
-        if publishFromDate and publishToDate and publishFromDate > publishToDate :
-            return Response({"response_message": constants.messages.userNews_list_publishDate_invalid,
-                             "data": []},status = status.HTTP_401_UNAUTHORIZED )
-        
-                
-        #if published from date is passed then add filter
-        if publishFromDate:
-            queryset = queryset.filter(publishDate__gte = publishFromDate)
+        responseData = validateNewListParameters(departmentCodeID, publishFromDate, publishToDate)
+        if responseData:
+            return Response({"response_message": responseData['message'], "data": []}, status= responseData['status'])
             
-        #if published to date is passed then add filter     
-        if publishToDate:
-            queryset = queryset.filter(publishDate__lte = publishToDate)
-        #descending order of publish date
-        queryset = queryset.order_by('-publishDate').values()
-                   
-        for objNew in queryset:
-            imageList = getNewsImageURL(objNew)            
-            objNew['imageURL'] =  getNewsImageURL(objNew)          
-             
-        serializer = newsSerializer(queryset, many = True)
+       
+        newsData = getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser)     
+                     
+        serializer = newsSerializer(newsData, many = True)
         return Response({"response_message": constants.messages.success, "data": serializer.data})
         
         
@@ -386,3 +336,55 @@ def getLatestCodeIDfromCodeGroup(codeGroupID):
     # Increment codeID and return codeId
     codeID = objCode['codeID__max'] + 1
     return codeID
+
+"""
+Common function to get news List
+"""
+def getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser):
+    
+    if not objUser:
+        queryset = news.objects.all()
+    else:
+        # Get list of newsID of login user
+        objNewsList = list(userNews.objects.filter(user=objUser).values_list('news_id', flat=True))        
+        queryset = news.objects.filter(newsID__in=objNewsList)
+     
+    # check input department code exists or not
+    if departmentCodeID:            
+        # if department codeID is passed then add filter for department
+        queryset = queryset.filter(department=departmentCodeID)    
+             
+    # if published from date is passed then add filter
+    if publishFromDate:
+        queryset = queryset.filter(publishDate__gte=publishFromDate)
+        
+    # if published to date is passed then add filter     
+    if publishToDate:
+        queryset = queryset.filter(publishDate__lte=publishToDate)
+    # descending order of publish date
+    queryset = queryset.order_by('-publishDate').values()
+               
+    for objNew in queryset:
+        imageList = getNewsImageURL(objNew)            
+        objNew['imageURL'] = getNewsImageURL(objNew)     
+   
+    return queryset
+"""
+common function for news filter validation
+"""
+def validateNewListParameters(departmentCodeID, publishFromDate, publishToDate):
+      # check input department code exists or not
+    errors ={}
+    if departmentCodeID:            
+        try:
+            objDepartmentCodeID = code.objects.get(codeID=departmentCodeID)
+        except code.DoesNotExist:
+            errors['message'] = constants.messages.news_list_department_does_not_exists
+            errors['status'] = status.HTTP_404_NOT_FOUND     
+                 
+    # check publish from date is less than publish to date, otherwise raise an error 
+    if publishFromDate and publishToDate and publishFromDate > publishToDate :
+        errors['message'] = constants.messages.news_list_publishDate_invalid
+        errors['status'] = status.HTTP_404_NOT_FOUND
+        
+    return errors
