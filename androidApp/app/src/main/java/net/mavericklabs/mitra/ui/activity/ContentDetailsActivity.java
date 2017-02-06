@@ -23,7 +23,9 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -31,7 +33,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -115,6 +119,8 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
     @BindView(R.id.content_layout) RelativeLayout contentLayout;
     @BindView(R.id.content_web_view) WebView contentWebView;
     @BindView(R.id.loading_panel_for_web_view) RelativeLayout loadingPanelForWebView;
+
+    private static final int EXTERNAL_STORE_WRITE_REQUEST_CODE = 1;
 
     @OnClick(R.id.share_icon)
     void shareContent() {
@@ -233,6 +239,25 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
     @OnClick(R.id.download_icon)
     void downloadContent() {
         Logger.d(" download ");
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(ContentDetailsActivity.this,
+                Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(ContentDetailsActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        EXTERNAL_STORE_WRITE_REQUEST_CODE);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+        } else {
+            downloadPdf();
+        }
+    }
+
+    private void downloadPdf() {
         String token = UserDetailUtils.getToken(getApplicationContext());
         Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService(token)
                 .download(new ContentDataRequest(content.getContentID()));
@@ -646,6 +671,18 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
         if(similarContentsAdapter != null) {
             similarContentsAdapter.releaseLoaders();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == EXTERNAL_STORE_WRITE_REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                downloadPdf();
+            } else {
+                Toast.makeText(this, "Permission denied. Unable to download.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
