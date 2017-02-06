@@ -119,7 +119,7 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
 
     public void stopLoading() {
         Logger.d("stop loading " + loaderPosition);
-        if(loaderPosition > 0) {
+        if(loaderPosition > 0 && contents.size() > loaderPosition) {
             contents.remove(loaderPosition);
             loaderPosition = -1;
             notifyDataSetChanged();
@@ -127,6 +127,7 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
     }
 
     public void setContents(List<Content> contents) {
+        loaderPosition = -1;
         this.contents = contents;
     }
     public List<Content> getContents() {

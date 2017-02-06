@@ -45,6 +45,9 @@ import net.mavericklabs.mitra.listener.OnChipRemovedListener;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.model.database.DbGrade;
+import net.mavericklabs.mitra.model.database.DbSubject;
+import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeGroup;
@@ -58,6 +61,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -189,6 +195,22 @@ public class TeachingAidsFragment extends Fragment{
             grades.add(0,new CommonCode(0,0,getString(R.string.grade),getString(R.string.grade),0));
 
 
+            //From profile, set initial filters
+            RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
+                    .where(DbUser.class).findAll();
+            if(dbUser.size() == 1) {
+                DbUser user = dbUser.get(0);
+                RealmList<DbSubject> dbSubjects = user.getSubjects();
+                for(DbSubject subject : dbSubjects) {
+                    addSubject(CommonCodeUtils.getObjectFromCode(subject.getSubjectCommonCode()));
+                }
+
+                RealmList<DbGrade> dbGrades = user.getGrades();
+                for(DbGrade grade : dbGrades) {
+                    addGrade(CommonCodeUtils.getObjectFromCode(grade.getGradeCommonCode()));
+                }
+            }
+
             SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
                     subjects);
             adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
@@ -200,10 +222,8 @@ public class TeachingAidsFragment extends Fragment{
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     if(subjects.get(i).getCodeID() != 0) {
-                        filterSubjectList.add(subjects.get(i));
-                        addItemToFilterList(subjects.get(i));
+                        addSubject(subjects.get(i));
                         searchTeachingAids(fileType, 0);
-                        subjectSpinner.setSelection(0 ,false);
                     }
                 }
 
@@ -223,10 +243,8 @@ public class TeachingAidsFragment extends Fragment{
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     if(grades.get(i).getCodeID() != 0) {
-                        filterGradeList.add(grades.get(i));
-                        addItemToFilterList(grades.get(i));
+                        addGrade(grades.get(i));
                         searchTeachingAids(fileType , 0);
-                        gradeSpinner.setSelection(0 ,false);
                     }
                 }
 
@@ -257,6 +275,17 @@ public class TeachingAidsFragment extends Fragment{
             }
         }
 
+        private void addSubject(CommonCode subject) {
+            filterSubjectList.add(subject);
+            addItemToFilterList(subject);
+            subjectSpinner.setSelection(0 ,false);
+        }
+
+        private void addGrade(CommonCode grade) {
+            filterGradeList.add(grade);
+            addItemToFilterList(grade);
+            gradeSpinner.setSelection(0 ,false);
+        }
 
         private void searchTeachingAids(final int fileType, final int pageNumber) {
             Logger.d(" searching ");

@@ -40,6 +40,10 @@ import net.mavericklabs.mitra.listener.OnChipRemovedListener;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.model.database.DbGrade;
+import net.mavericklabs.mitra.model.database.DbSubject;
+import net.mavericklabs.mitra.model.database.DbTopic;
+import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeGroup;
@@ -53,6 +57,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -107,6 +114,20 @@ public class SelfLearningFragment extends BaseContentFragment {
         topics.add(0, new CommonCode(0, 0,getString(R.string.topic_only), getString(R.string.topic_only), 0));
         languages.add(0,new CommonCode(0,0,getString(R.string.language),getString(R.string.language),0));
 
+
+        //From profile, set initial filters
+        RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
+                .where(DbUser.class).findAll();
+        if(dbUser.size() == 1) {
+            DbUser user = dbUser.get(0);
+
+            RealmList<DbTopic> dbTopics = user.getTopics();
+            for(DbTopic topic : dbTopics) {
+                addTopic(CommonCodeUtils.getObjectFromCode(topic.getTopicCommonCode()));
+            }
+        }
+
+
         SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(),
                 R.layout.custom_spinner_item_header,
                 topics);
@@ -119,10 +140,8 @@ public class SelfLearningFragment extends BaseContentFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(topics.get(i).getCodeID() != 0) {
-                    filterTopicList.add(topics.get(i));
-                    addItemToFilterList(topics.get(i));
+                    addTopic(topics.get(i));
                     searchSelfLearning(0);
-                    topicSpinner.setSelection(0 ,false);
                 }
             }
 
@@ -142,10 +161,8 @@ public class SelfLearningFragment extends BaseContentFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(languages.get(i).getCodeID() != 0) {
-                    filterLanguageList.add(languages.get(i));
-                    addItemToFilterList(languages.get(i));
+                    addLanguage(languages.get(i));
                     searchSelfLearning(0);
-                    languageSpinner.setSelection(0 ,false);
                 }
             }
 
@@ -158,7 +175,17 @@ public class SelfLearningFragment extends BaseContentFragment {
 
     }
 
+    private void addTopic(CommonCode topic) {
+        filterTopicList.add(topic);
+        addItemToFilterList(topic);
+        topicSpinner.setSelection(0 ,false);
+    }
 
+    private void addLanguage(CommonCode language) {
+        filterLanguageList.add(language);
+        addItemToFilterList(language);
+        languageSpinner.setSelection(0 ,false);
+    }
 
     @Override
     public void onDestroy() {
