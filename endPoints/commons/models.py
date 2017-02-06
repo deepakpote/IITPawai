@@ -70,7 +70,20 @@ class newsImage(models.Model):
     
     class Meta:
         db_table = 'com_newsImage'        
-               
+
+"""
+user news
+"""      
+class userNews(models.Model):
+    userNewsID = models.AutoField(primary_key = True)
+    news = models.ForeignKey('news', db_column = 'newsID', null = False, related_name = 'userNews_newsID')   
+    user = models.ForeignKey('users.user', db_column = 'userID', null = False, related_name = 'userNews_userID')   
+    createdOn = models.DateTimeField(auto_now_add = True)   
+    
+    class Meta:
+        unique_together = ("news", "user")
+        db_table = 'com_userNews'
+        
 """
 configuration model
 """

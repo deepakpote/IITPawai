@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import list_route
 from django.db.models import Max
 
-from commons.models import code , news, configuration, newsImage , codeGroup
+from commons.models import code , news, configuration, newsImage , codeGroup, userNews
 from commons.serializers import codeSerializer , newsSerializer 
 from mitraEndPoints import constants
 from datetime import datetime
@@ -212,9 +212,106 @@ class NewsViewSet(viewsets.ModelViewSet):
              
         serializer = newsSerializer(queryset, many = True)
         return Response({"response_message": constants.messages.success, "data": serializer.data})
-    
-
-    
+     
+    """
+     saves users preferred news
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def saveUserNews(self, request):
+        #get Input data
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        newsID = request.data.get('newsID')
+        
+        #get UserID from auth token
+        userID  =  getUserIDFromAuthToken(authToken)
+        
+        # check user is not null 
+        if not userID or userID == 0:
+            return Response({"response_message": constants.messages.save_userNews_user_id_cannot_be_empty, "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+        
+        if not newsID :
+            return Response({"response_message": constants.messages.save_userNews_news_id_cannot_be_empty, "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+        # check userID exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.save_userNews_user_does_not_exist, "data": []}, status = status.HTTP_404_NOT_FOUND)
+        
+        # check news exists or not
+        try:
+            objNews = news.objects.get(newsID = newsID)
+        except news.DoesNotExist:
+            return Response({"response_message": constants.messages.save_userNews_news_does_not_exist, "data": []}, status = status.HTTP_404_NOT_FOUND)  
+        
+        if userNews.objects.filter(user = userID, news = newsID).exists()  :
+            return Response({"response_message": constants.messages.save_userNews_newsID_already_saved, "data": []}, status = status.HTTP_200_OK)
+                       
+        objUserNews = userNews(news = objNews, user = objUser)
+        objUserNews.save()
+        
+        return Response({"response_message": constants.messages.success, "data": []})
+    """
+    Get user's preferred news
+    """   
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def userNewsList(self, request):
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        departmentCodeID = request.data.get('departmentCodeID')        
+        publishFromDate = request.data.get('publishFromDate') 
+        publishToDate = request.data.get('publishToDate')  
+        
+        #get UserID from auth token
+        userID  =  getUserIDFromAuthToken(authToken)
+        
+        # check user is not null 
+        if not userID or userID == 0:
+            return Response({"response_message": constants.messages.userNews_list_user_id_cannot_be_empty, "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+              
+        # check userID exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.userNews_list_user_does_not_exist, "data": []}, status = status.HTTP_404_NOT_FOUND)
+        
+       
+        # Get list of newsID of login user
+        objNewsList = list(userNews.objects.filter(user = objUser).values_list('news_id',flat = True))
+        
+        queryset = news.objects.filter(newsID__in=objNewsList)
+        # check input department code exists or not
+        if departmentCodeID:            
+            try:
+                objDepartmentCodeID = code.objects.get(codeID = departmentCodeID)
+            except code.DoesNotExist:
+                return Response({"response_message": constants.messages.userNews_list_department_does_not_exists,
+                             "data": []},status = status.HTTP_404_NOT_FOUND )
+            # if department codeID is passed then add filter for department
+            queryset = queryset.filter(department = departmentCodeID)
+        
+        # check publish from date is less than publish to date, otherwise raise an error 
+        if publishFromDate and publishToDate and publishFromDate > publishToDate :
+            return Response({"response_message": constants.messages.userNews_list_publishDate_invalid,
+                             "data": []},status = status.HTTP_401_UNAUTHORIZED )
+        
+                
+        #if published from date is passed then add filter
+        if publishFromDate:
+            queryset = queryset.filter(publishDate__gte = publishFromDate)
+            
+        #if published to date is passed then add filter     
+        if publishToDate:
+            queryset = queryset.filter(publishDate__lte = publishToDate)
+        #descending order of publish date
+        queryset = queryset.order_by('-publishDate').values()
+                   
+        for objNew in queryset:
+            imageList = getNewsImageURL(objNew)            
+            objNew['imageURL'] =  getNewsImageURL(objNew)          
+             
+        serializer = newsSerializer(queryset, many = True)
+        return Response({"response_message": constants.messages.success, "data": serializer.data})
+        
+        
 def getCodeIDs(codeGroupID):
     
     #Declare array.

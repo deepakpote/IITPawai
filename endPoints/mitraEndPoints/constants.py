@@ -99,6 +99,18 @@ class messages():
     
     news_list_department_does_not_exists = 100175
     news_list_publishDate_invalid = 100176
+    
+    save_userNews_user_does_not_exist = 100191
+    save_userNews_news_does_not_exist = 100192
+    save_userNews_user_id_cannot_be_empty = 100193
+    save_userNews_news_id_cannot_be_empty = 100194
+    save_userNews_newsID_already_saved = 100197
+    
+    userNews_list_user_does_not_exist = 100198
+    userNews_list_user_id_cannot_be_empty = 100199
+    userNews_list_department_does_not_exists = 100195
+    userNews_list_publishDate_invalid = 100196
+    
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
