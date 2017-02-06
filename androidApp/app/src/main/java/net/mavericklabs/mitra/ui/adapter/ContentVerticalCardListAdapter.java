@@ -99,7 +99,6 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
     private Fragment callingFragment;
     private boolean showDeleteOption = false;
     private int loaderPosition = -1;
-    private static final String PDF_EXTENSION = ".pdf";
 
     public ContentVerticalCardListAdapter(Context applicationContext, List<Content> contents, Fragment fragment) {
         this.context = applicationContext;
@@ -423,6 +422,12 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
                     Request request = new Request.Builder()
                             .url(url)
                             .build();
+                    final String extension;
+                    if(content.getFileType() == Constants.FileTypeAudio) {
+                        extension = ".mp3";
+                    } else {
+                        extension = ".pdf";
+                    }
                     client.newCall(request).enqueue(new okhttp3.Callback() {
                         @Override
                         public void onFailure(okhttp3.Call call, IOException e) {
@@ -433,7 +438,7 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
                         public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
                             if(response.isSuccessful()) {
                                 String downloadFileName = mitraDirectoryPath +
-                                        File.separator + content.getTitle() + PDF_EXTENSION;
+                                        File.separator + content.getTitle() + extension;
                                 File downloadedFile = new File(downloadFileName);
                                 BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
                                 sink.writeAll(response.body().source());
