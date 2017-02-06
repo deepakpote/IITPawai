@@ -43,6 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -290,7 +291,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                     });
                     Toast.makeText(getApplicationContext(), getString(R.string.download_file_location,
                             mitraDirectoryPath + File.separator +content.getTitle()),
-                            Toast.LENGTH_SHORT).show();
+                            Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -383,6 +384,8 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                 ViewGroup.LayoutParams webViewLayoutParams = contentWebView.getLayoutParams();
                 webViewLayoutParams.height = (int)(displayMetrics.heightPixels / 2.62);
                 contentWebView.setLayoutParams(webViewLayoutParams);
+                contentWebView.getSettings().setJavaScriptEnabled(true);
+                contentWebView.getSettings().setDomStorageEnabled(true);
                 contentWebView.setWebViewClient(new WebViewClient(){
                     @Override
                     public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -408,6 +411,13 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                         super.onReceivedError(view, request, error);
                         Logger.d("error : " + error.toString());
                         loadingPanelForWebView.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onReceivedHttpError(WebView view, WebResourceRequest request,
+                                                    WebResourceResponse errorResponse) {
+                        super.onReceivedHttpError(view, request, errorResponse);
+                        Logger.d("received http error : ");
                     }
                 });
                 Logger.d("file path " + content.getFileName());
