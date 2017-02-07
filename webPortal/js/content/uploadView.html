@@ -1,4 +1,27 @@
-<br/>
+<div class="gradient bottom-shadow">
+	<div class="container">
+	    <div class="content-top-box">
+      <div class="font-title pad5B">Select Category</div>
+	      <div class="row">
+	        <div ng-repeat="contentType in contentTypeList">
+	        <div class="col-md-3">
+	            <div class="card card-radio-selection">
+	                <div ng-class="isContentTypeSelected(contentType.codeID) ? 'selected-card':'unselected-card'" ng-click="contentTypeOnClick(contentType.codeID)">
+	                <div class="card-content card-icon">
+	                    <i class="fa fa-graduation-cap" aria-hidden="true"></i>
+	                </div>
+	                <div class="card-action">
+	                    {{contentType.codeNameEn}}
+	                </div>
+	                </div>
+	            </div>
+	        </div><div class="col-md-1"></div>
+	        </div>
+	      </div>
+	    </div>
+	</div>
+</div>
+
 <div class="col-md-1"></div>
 <div class="col-md-7">
 	<div class="page-header">

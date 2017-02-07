@@ -32,6 +32,14 @@ angular.module("mitraPortal").controller("uploadController",
   		return ($scope.content.fileTypeCodeID === 108100);
   	}
   	
+  	$scope.contentTypeOnClick = function (selectedContentTypeCodeID) {
+  		$scope.content.contentTypeCodeID = selectedContentTypeCodeID;  
+  	}
+  	
+  	$scope.isContentTypeSelected = function (contentTypeCodeID) {
+  		return ($scope.content.contentTypeCodeID === contentTypeCodeID);
+  	}
+  	
   	var getContentTypes = function () {
   		$scope.contentTypeList = commonService.getCodeListPerCodeGroup(
   				appConstants.codeGroup.contentType
@@ -79,7 +87,7 @@ angular.module("mitraPortal").controller("uploadController",
   	
   	var init = function () {
   		$scope.submitted = false;
-  		$scope.content = { "contentID": 0};
+  		$scope.content = { "contentID": 0, "contentTypeCodeID": 0};
   	  $scope.errorMessage = "";
   	  
   	  populateDropDowns();
