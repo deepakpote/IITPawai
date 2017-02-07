@@ -1,4 +1,4 @@
-webPortal.controller("loginController", function($scope, $location,$rootScope,$cookies, loginService){
+angular.module("mitraPortal").controller("loginController", function($scope, $location,$rootScope,$cookies, loginService){
 	$scope.errormessage = ""; 
 	$scope.validate = function(){
 		var phoneNumber = "+91" + $scope.phoneno;

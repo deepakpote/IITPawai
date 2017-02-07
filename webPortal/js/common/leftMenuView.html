@@ -4,7 +4,7 @@
 </div>
 <div class="left-menu-container">
 	<div class="left-menu-item">
-    <a ui-sref="#">
+    <a ui-sref="main.index.home">
 			<div class="col-md-2"><i class="fa fa-home" aria-hidden="true"></i></div>
 			<div class="col-md-10">Home</div>
 		</a><br/>
@@ -57,9 +57,22 @@
       <div class="col-md-10">About Us</div>
     </a><br/>
   </div>
+  <div class="left-menu-item">
+    <a  ui-sref="main.index.contentUpload">
+      <div class="col-md-2"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+      <div class="col-md-10">Login</div>
+    </a><br/>
+  </div>
+  
+  <div class="left-menu-item">
+    <a  ui-sref="main.index.contentUpload">
+      <div class="col-md-2"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+      <div class="col-md-10">Content Upload</div>
+    </a><br/>
+  </div>
 </div>
 
-<!-- OLD Code by Raghvendra 
+<!-- OLD Code 
 <div ng-controller="CommonController">
 <p><a href = "javascript:void(0)">Send Notifications</a></p>
 <p><a href = "javascript:void(0)" ng-click="logout()">Logout</a></p>

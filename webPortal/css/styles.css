@@ -9,6 +9,9 @@ a:hover, a:focus {
 	
 	margin-bottom: 0px!important;
 }
+.navbar-inverse {
+  background-color: #333;
+}
 /* APP CSS starts from here*/
 .gradient{
 	background-color:#FEDFAA;
@@ -21,11 +24,11 @@ a:hover, a:focus {
 	background-image:-webkit-gradient(linear, right top, right bottom, color-stop(0%,#FEDFAA), color-stop(100%,#CFE8E1));
 }
 .welcome-box {
-	padding: 3% 25% 3% 10% !important;
+	padding: 6% 25% 3% 10% !important;
 	text-align: justify;
 }
 .welcome-box p{
-	color:#666;
+  line-height: 1.6;
 }
 .mitra-hr {
 	border-color: #ccc;
@@ -70,13 +73,14 @@ a:hover, a:focus {
 	-moz-box-shadow: 0px 0px 9px 1px rgba(154,154,154,1);
 	box-shadow: 0px 0px 9px 1px rgba(154,154,154,1);
 }
+/*
 .maincontent{
 	width: 80%;
 	margin-left: 25%;
 }
 .menu{
 	list-style: none;
-}
+}*/
 .error-message {
 	color: red;
 }
@@ -96,4 +100,42 @@ a:hover, a:focus {
 	-webkit-box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 -moz-box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
+}
+.required:before {
+    content: "\f0da";
+    font-family: FontAwesome;
+    color: red;
+    padding-right: 10px;
+    font-size:15px;
+}
+.card-radio-selection {
+}
+.card-icon {
+	font-size:30px;
+  padding: 40px 20px 40px 20px !important;
+	text-align:center;
+	color: rgba(0,0,0,0.87);
+}
+.card-action {
+	color: #fff;
+  text-align:center;
+}
+.selected-card .card-action{
+  background-color:#FF9100;
+}
+.unselected-card .card-action{
+  background-color:#009698;
+}
+.selected-card {
+} 
+.unselected-card {
+	opacity:0.6;
+  cursor: pointer; cursor: hand;
+} 
+.unselected-card:hover{
+  opacity:1;
+}
+.content-top-box {
+  padding: 6% !important;
+  text-align: justify;
 }
