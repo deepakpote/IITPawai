@@ -104,7 +104,17 @@ class messages():
     webSignIn_password_cannot_be_empty = 100188
     webSignIn_phone_number_is_invalid = 100189
     webSignIn_invalid_credentials = 100190
+
     
+    save_userNews_user_does_not_exist = 100191
+    save_userNews_news_does_not_exist = 100192
+    save_userNews_user_id_cannot_be_empty = 100193
+    save_userNews_news_id_cannot_be_empty = 100194
+    
+    userNews_list_user_does_not_exist = 100195
+    userNews_list_user_id_cannot_be_empty = 100196
+    
+    save_userNews_newsID_already_saved = 100197
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
