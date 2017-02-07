@@ -85,6 +85,9 @@ class messages():
     uploadContent_languageCodeID_cannot_be_empty = 100173
     uploadContent_contentID_does_not_exists = 100174
     
+    news_list_department_does_not_exists = 100175
+    news_list_publishDate_invalid = 100176
+    
     saveCode_userID_cannot_be_empty = 100177
     saveCode_codeGroupID_cannot_be_empty = 100178
     saveCode_codeGroupID_not_exists = 100179
@@ -97,19 +100,21 @@ class messages():
     setPassword_password_should_not_contain_space = 100185
     setPassword_password_cannot_be_empty_it_must_be_gretter_then_six_character = 100186
     
-    news_list_department_does_not_exists = 100175
-    news_list_publishDate_invalid = 100176
+    webSignIn_phone_number_cannot_be_empty = 100187
+    webSignIn_password_cannot_be_empty = 100188
+    webSignIn_phone_number_is_invalid = 100189
+    webSignIn_invalid_credentials = 100190
+
     
     save_userNews_user_does_not_exist = 100191
     save_userNews_news_does_not_exist = 100192
     save_userNews_user_id_cannot_be_empty = 100193
     save_userNews_news_id_cannot_be_empty = 100194
-    save_userNews_newsID_already_saved = 100197
     
     userNews_list_user_does_not_exist = 100195
     userNews_list_user_id_cannot_be_empty = 100196
-   
     
+    save_userNews_newsID_already_saved = 100197
 
 class webportalmessages():    
     web_admin_invalid_token = 200100

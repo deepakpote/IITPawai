@@ -295,6 +295,47 @@ class UserViewSet(viewsets.ModelViewSet):
                                                               )
     
         return Response({"response_message": constants.messages.success, "data": []})
+    
+    """
+    API to sign-in to web portal.
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny],authentication_classes = [TokenAuthentication])
+    def webSignIn(self,request):
+        # get inputs
+        phoneNumber = request.data.get('phoneNumber')
+        password = request.data.get('password')
+
+        # Check if phoneNumber is passed in post param
+        if not phoneNumber:
+            return Response({"response_message": constants.messages.webSignIn_phone_number_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if password is passed in post param
+        if not password:
+            return Response({"response_message": constants.messages.webSignIn_password_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)          
+                 
+        # Check if phone number exists.
+        objUser = user.objects.filter(phoneNumber = phoneNumber).first()
+        if not objUser:
+            return Response({"response_message": constants.messages.webSignIn_phone_number_is_invalid, "data": []},
+                    status=status.HTTP_401_UNAUTHORIZED)
+
+
+        # authenticate user phoneNumber and password.
+        try:
+            authResponse = userAuth.objects.get(loginID = phoneNumber , password = password.strip())
+        except userAuth.DoesNotExist:
+            return Response({"response_message": constants.messages.webSignIn_invalid_credentials,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
+        
+        # Add user token to the response.
+        response = { 'token' : authResponse.authToken }
+            
+        return Response({"response_message": constants.messages.success, "data": [response]})
       
     """
     API to register user
