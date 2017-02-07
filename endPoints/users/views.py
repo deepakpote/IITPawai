@@ -762,7 +762,7 @@ class UserViewSet(viewsets.ModelViewSet):
                                                 and CC.subjectCodeID IN %s 
                                                 and CG.gradeCodeID IN %s 
                                                 group by CC.contentID, CC.contentTitle, CC.requirement, CC.instruction, CC.fileName, CC.author, CC.objectives, CC.contentTypeCodeID, CC.fileTypeCodeID, CC.languageCodeID, CC.subjectCodeID,
-                                                CC.topicCodeID"""%(userID,arrContentFileTypeCodeID,107100,str(arrSubjectCodeIDs),str(arrGradeCodeIDs))
+                                                CC.topicCodeID order by CC.contentID"""%(userID,arrContentFileTypeCodeID,107100,str(arrSubjectCodeIDs),str(arrGradeCodeIDs))
                                           
             cursor.execute(searchTeachingAidQuery)
             
