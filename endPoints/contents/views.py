@@ -125,8 +125,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.fileTypeCodeID,
                                             CC.languageCodeID,
                                             CC.subjectCodeID,
-                                            CC.topicCodeID"""%(fileTypeCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs))
-
+                                            CC.topicCodeID limit %s,%s"""%(fileTypeCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
 
         cursor.execute(searchTeachingAidQuery)
         
