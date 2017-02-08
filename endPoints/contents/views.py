@@ -37,7 +37,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         subjectCodeIDs = request.data.get('subjectCodeIDs') 
         gradeCodeIDs = request.data.get('gradeCodeIDs')
         pageNumber = request.data.get('pageNumber')
-        # On web portal, user no need to login to watch the video's so authontication is removed (commented) for now.
+        # On web portal, user no need to login to watch the video's so authentication is removed (commented) for now.
         #authToken = request.META.get('HTTP_AUTHTOKEN')
         
         #Get userID from authToken
@@ -179,7 +179,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         languageCodeIDs = request.data.get('languageCodeIDs')
         topicCodeIDs = request.data.get('topicCodeIDs') 
         pageNumber = request.data.get('pageNumber')
-        # On web portal, user no need to login to watch the video's so authontication is removed (commented) for now.
+        # On web portal, user no need to login to watch the video's so authentication  is removed (commented) for now.
 #         authToken = request.META.get('HTTP_AUTHTOKEN')
 #         
 #         #Get userID from authToken
