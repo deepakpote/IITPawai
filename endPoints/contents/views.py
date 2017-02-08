@@ -29,7 +29,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to search the content
     """
-    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication] )
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny] )
     def searchTeachingAid(self,request):
         # get inputs
         fileTypeCodeID = request.data.get('fileTypeCodeID')
@@ -37,24 +37,25 @@ class ContentViewSet(viewsets.ModelViewSet):
         subjectCodeIDs = request.data.get('subjectCodeIDs') 
         gradeCodeIDs = request.data.get('gradeCodeIDs')
         pageNumber = request.data.get('pageNumber')
-        authToken = request.META.get('HTTP_AUTHTOKEN')
+        # On web portal, user no need to login to watch the video's so authontication is removed (commented) for now.
+        #authToken = request.META.get('HTTP_AUTHTOKEN')
         
         #Get userID from authToken
-        userID = getUserIDFromAuthToken(authToken)
+        #userID = getUserIDFromAuthToken(authToken)
                 
         # Check if userID/languageID is passed in post param
-        if not userID:
-            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
-                             "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED)
+#         if not userID:
+#             return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+#                              "data": []},
+#                              status = status.HTTP_401_UNAUTHORIZED)
          
         # If userID parameter is passed, then check user is exists or not
-        try:
-            objUser = user.objects.get(userID = userID)
-        except user.DoesNotExist:
-            return Response({"response_message": constants.messages.teaching_aid_search_user_not_exists,
-                             "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
+#         try:
+#             objUser = user.objects.get(userID = userID)
+#         except user.DoesNotExist:
+#             return Response({"response_message": constants.messages.teaching_aid_search_user_not_exists,
+#                              "data": []},
+#                             status = status.HTTP_404_NOT_FOUND)
             
         # Check if fileTypeCodeID is passed in post param
         if not fileTypeCodeID:
@@ -74,7 +75,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             pageNumber = content.objects.all().count()
         
         #Get the applicable subject list for the respective user.    
-        arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs , objUser)         
+        arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs)         
 
         arrSubjectCodeIDs = tuple(map(int, arrSubjectCodeIDs))
         
@@ -84,7 +85,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             arrSubjectCodeIDs =  '(%s)' % ', '.join(map(repr, arrSubjectCodeIDs))
         
         #Get the applicable grade list for the respective user.
-        arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs , objUser) 
+        arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs) 
         
         arrGradeCodeIDs = tuple(map(int, arrGradeCodeIDs))
         
@@ -170,7 +171,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to search the self learning content
     """
-    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def searchSelfLearning(self,request):
         # get inputs
 
@@ -178,24 +179,25 @@ class ContentViewSet(viewsets.ModelViewSet):
         languageCodeIDs = request.data.get('languageCodeIDs')
         topicCodeIDs = request.data.get('topicCodeIDs') 
         pageNumber = request.data.get('pageNumber')
-        authToken = request.META.get('HTTP_AUTHTOKEN')
-        
-        #Get userID from authToken
-        userID = getUserIDFromAuthToken(authToken)
-                
-        # Check if userID/languageID is passed in post param
-        if not userID:
-            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
-                             "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED)
-         
-        # If userID parameter is passed, then check user is exists or not
-        try:
-            objUser = user.objects.get(userID = userID)
-        except user.DoesNotExist:
-            return Response({"response_message": constants.messages.self_learning_search_user_not_exists,
-                             "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
+        # On web portal, user no need to login to watch the video's so authontication is removed (commented) for now.
+#         authToken = request.META.get('HTTP_AUTHTOKEN')
+#         
+#         #Get userID from authToken
+#         userID = getUserIDFromAuthToken(authToken)
+#                 
+#         # Check if userID/languageID is passed in post param
+#         if not userID:
+#             return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+#                              "data": []},
+#                              status = status.HTTP_401_UNAUTHORIZED)
+#          
+#         # If userID parameter is passed, then check user is exists or not
+#         try:
+#             objUser = user.objects.get(userID = userID)
+#         except user.DoesNotExist:
+#             return Response({"response_message": constants.messages.self_learning_search_user_not_exists,
+#                              "data": []},
+#                             status = status.HTTP_404_NOT_FOUND)
          
         #Get Language
         arrLanguageCodeID = []
@@ -217,7 +219,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             pageNumber = content.objects.all().count()
         
         #Get the applicable topic list for the respective user.    
-        arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs , objUser)  
+        arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs)  
         
         #Get the query set using filter on filetype, topic & language     
         contentQuerySet = content.objects.filter(language__in = arrLanguageCodeID,
@@ -655,7 +657,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         return Response({"response_message": constants.messages.success, "data": []})
         
         
-def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs, objUser):
+def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array
     if subjectCodeIDs:
         arrSubjectCodeIDs = subjectCodeIDs.split(',')
@@ -684,7 +686,7 @@ def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs, objUser):
     if len(arrSubjectCodeIDs) > 0:
         return arrSubjectCodeIDs
     
-def getSearchContentApplicableGradeCodeIDs(gradeCodeIDs, objUser):
+def getSearchContentApplicableGradeCodeIDs(gradeCodeIDs):
     # If gradeCodeIDs parameter is passed, split it into an array
     if gradeCodeIDs:
         arrGradeCodeIDs = gradeCodeIDs.split(',')
@@ -713,7 +715,7 @@ def getSearchContentApplicableGradeCodeIDs(gradeCodeIDs, objUser):
     if len(arrGradeCodeIDs) > 0:
         return arrGradeCodeIDs
     
-def getSearchContentApplicableTopicCodeIDs(topicCodeIDs, objUser):
+def getSearchContentApplicableTopicCodeIDs(topicCodeIDs):
     # If topicCodeIDs parameter is passed, split it into an array
     if topicCodeIDs:
         arrTopicCodeIDs = topicCodeIDs.split(',')
