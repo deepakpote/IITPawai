@@ -306,16 +306,19 @@ def getUserIDFromAuthToken(authToken):
     # return userID
     return userID
 """
-fuction to get array of Image URLs for a news
+fuction to get comma separated string of Image URLs for a news
 """
 def getNewsImageURL(NewsObject):
     #declare array
     arrOut = []
+    userImageURL = None
     objImageList = newsImage.objects.filter(news= NewsObject['newsID'])
     for objImage in objImageList:
         arrOut.append(objImage.imageURL)
     
-    return arrOut;    
+    userImageURL = ",".join(arrOut)
+    # return image url string
+    return userImageURL;    
 
 """
 Common function used to get the userID from authToken.
