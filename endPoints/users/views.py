@@ -703,7 +703,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if contentTypeCodeID == constants.mitraCode.teachingAids:
                    
             #Get the applicable subject list for the respective user.    
-            arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs , objUser)  
+            arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs)  
             
             arrSubjectCodeIDs = tuple(map(int, arrSubjectCodeIDs))
 
@@ -711,7 +711,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 arrSubjectCodeIDs =  '(%s)' % ', '.join(map(repr, arrSubjectCodeIDs))
                 
             #Get the applicable grade list for the respective user.
-            arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs , objUser)
+            arrGradeCodeIDs = getSearchContentApplicableGradeCodeIDs(gradeCodeIDs)
             
             arrGradeCodeIDs = tuple(map(int, arrGradeCodeIDs))
         
@@ -793,7 +793,7 @@ class UserViewSet(viewsets.ModelViewSet):
             
         elif contentTypeCodeID == constants.mitraCode.selfLearning:
             #Get the applicable topic list for the respective user.    
-            arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs , objUser)  
+            arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs)  
 
             #Get Language
             arrLanguageCodeID = []
