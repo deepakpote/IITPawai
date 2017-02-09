@@ -24,6 +24,8 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -36,6 +38,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -669,9 +672,28 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
         Logger.d(" error " + youTubeInitializationResult.name());
-        if (youTubeInitializationResult.equals(YouTubeInitializationResult.SERVICE_VERSION_UPDATE_REQUIRED)) {
+
             //handle failure
-        }
+            AlertDialog alertDialog = new AlertDialog.Builder(ContentDetailsActivity.this)
+                    .setMessage("The Youtube Player is not working. Please try updating your YouTube App and try again.")
+                    .setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Uri uri = Uri.parse("market://details?id=com.google.android.youtube");
+                            Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                            try {
+                                myAppLinkToMarket.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(myAppLinkToMarket);
+                            } catch (ActivityNotFoundException e) {
+                                Toast.makeText(getApplicationContext(), " Unable to find market app", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    })
+                    .setNegativeButton("Not Now", null)
+                    .create();
+
+            alertDialog.show();
+
     }
 
     @Override

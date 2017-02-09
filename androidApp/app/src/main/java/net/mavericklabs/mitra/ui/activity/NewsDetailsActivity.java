@@ -55,7 +55,6 @@ public class NewsDetailsActivity extends BaseActivity {
     @BindView(R.id.share_news)
     ImageView shareNews;
 
-    ImagePagerAdapter pagerAdapter;
     List<String> imageList;
 
     @Override
@@ -83,12 +82,15 @@ public class NewsDetailsActivity extends BaseActivity {
                 imageList = StringUtils.splitCommasToStrings(news.getImageURL());
 
                 if(imageList != null && !imageList.isEmpty()) {
-                    // Create the adapter that will return a fragment for each of the three
-                    // primary sections of the activity.
-                    pagerAdapter = new ImagePagerAdapter(getApplicationContext());
+                    Logger.d(" image list is not empty " + imageList.size() + " url " + imageList.get(0));
+                    imageViewPager.setVisibility(View.VISIBLE);
+                    // Create the adapter that will return a fragment for each of images
+                    ImagePagerAdapter pagerAdapter = new ImagePagerAdapter(getApplicationContext());
 
                     // Set up the ViewPager with the sections adapter.
                     imageViewPager.setAdapter(pagerAdapter);
+                } else {
+                    imageViewPager.setVisibility(View.GONE);
                 }
 
                 realm.beginTransaction();
@@ -156,7 +158,7 @@ public class NewsDetailsActivity extends BaseActivity {
 
         @Override
         public int getCount() {
-            // Show 5 total pages.
+            // Show total pages.
             return imageList.size();
         }
 
