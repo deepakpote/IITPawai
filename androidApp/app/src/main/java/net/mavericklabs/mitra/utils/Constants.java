@@ -5,7 +5,7 @@ package net.mavericklabs.mitra.utils;
  */
 
 public interface Constants {
-    String youtubeDeveloperKey = "AIzaSyBbjz0Z4iYWFWSvbDRIrpeAz27FOqvX8VA";
+    String youtubeDeveloperKey = "AIzaSyBBIit7yko1Rqk4oU0ghD2PlSxZPaP_woA";
 
     //TODO : How to handle this?
     int FileTypeVideo = 108100;

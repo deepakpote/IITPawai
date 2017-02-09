@@ -117,6 +117,13 @@ public class StringUtils {
         return codes;
     }
 
+    public static List<String> splitCommasToStrings(String str) {
+        String[] parts = str.split(",");
+        List<String> codes = new ArrayList<>();
+        Collections.addAll(codes, parts);
+        return codes;
+    }
+
     public static String getVideoKeyFromUrl(String fileName) {
         String pattern = "(?:https?:\\/{2})?(?:w{3}\\.)?youtu(?:be)?\\.(?:com|be)(?:\\/watch\\?v=|\\/)([^\\s&]+)";
 

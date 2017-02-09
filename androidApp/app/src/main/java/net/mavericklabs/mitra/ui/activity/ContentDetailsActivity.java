@@ -61,6 +61,7 @@ import com.crashlytics.android.answers.ContentViewEvent;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
@@ -332,11 +333,15 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
     private YouTubePlayer player;
     private boolean isLiked;
     private boolean isSaved;
+    private FirebaseAnalytics firebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content_details);
+
+        // Obtain the FirebaseAnalytics instance.
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         ButterKnife.bind(this);
 
@@ -357,6 +362,13 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                     .putContentName(content.getTitle())
                     .putContentType(CommonCodeUtils.getObjectFromCode(content.getContentTypeCodeID()).getCodeNameEnglish())
                     .putContentId(content.getContentID()));
+
+            Bundle firebaseBundle = new Bundle();
+            firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_ID, content.getContentID());
+            firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_NAME, content.getTitle());
+            firebaseBundle.putString(FirebaseAnalytics.Param.VALUE, content.getContentID());
+            firebaseBundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, CommonCodeUtils.getObjectFromCode(content.getContentTypeCodeID()).getCodeNameEnglish());
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
 
             String token = UserDetailUtils.getToken(getApplicationContext());

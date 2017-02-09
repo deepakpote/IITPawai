@@ -115,11 +115,7 @@ public class NewsFragment extends Fragment{
         Logger.d("News on view created ");
 
         tabLayout = (TabLayout) getActivity().findViewById(R.id.tabs_my_resources);
-        if(CommonCodeUtils.getDepartmentTypeCount() > 4) {
-            tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        } else {
-            tabLayout.setTabMode(TabLayout.MODE_FIXED);
-        }
+        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.

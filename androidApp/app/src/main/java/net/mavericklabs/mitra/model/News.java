@@ -45,6 +45,7 @@ public class News extends RealmObject{
     private String modifiedOn;
     private Integer department;
     private String publishDate;
+    private String pdfFileURL;
 
     private boolean isSeen;
     private Date dateToCompare;
@@ -157,5 +158,9 @@ public class News extends RealmObject{
 
     public void setPublishDate(String publishDate) {
         this.publishDate = publishDate;
+    }
+
+    public String getPdfFileURL() {
+        return pdfFileURL;
     }
 }

@@ -1,6 +1,8 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.model.database.DbNotification;
 import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,8 +46,14 @@ public class NewsDetailsActivity extends BaseActivity {
     @BindView(R.id.news_title)
     TextView title;
 
+    @BindView(R.id.show_pdf)
+    ImageView showPDF;
+
     @BindView(R.id.save_news)
     ImageView saveNews;
+
+    @BindView(R.id.share_news)
+    ImageView shareNews;
 
     ImagePagerAdapter pagerAdapter;
     List<String> imageList;
@@ -54,22 +63,6 @@ public class NewsDetailsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_details);
         ButterKnife.bind(this);
-
-
-        imageList = new ArrayList<>();
-        imageList.add("http://placehold.it/500x400/ffff00/000000");
-        imageList.add("http://placehold.it/500x100/ff00ff/000000");
-        imageList.add("http://placehold.it/500x500/00ffff/000000");
-        imageList.add("http://placehold.it/500x150/ff0000/000000");
-        imageList.add("http://placehold.it/500x150/00ff00/000000");
-
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        pagerAdapter = new ImagePagerAdapter(getApplicationContext());
-
-        // Set up the ViewPager with the sections adapter.
-        imageViewPager.setAdapter(pagerAdapter);
 
         if(getIntent().getExtras() != null) {
             Bundle bundle = getIntent().getExtras();
@@ -87,6 +80,16 @@ public class NewsDetailsActivity extends BaseActivity {
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                     getSupportActionBar().setTitle(news.getNewsTitle());
                 }
+                imageList = StringUtils.splitCommasToStrings(news.getImageURL());
+
+                if(imageList != null && !imageList.isEmpty()) {
+                    // Create the adapter that will return a fragment for each of the three
+                    // primary sections of the activity.
+                    pagerAdapter = new ImagePagerAdapter(getApplicationContext());
+
+                    // Set up the ViewPager with the sections adapter.
+                    imageViewPager.setAdapter(pagerAdapter);
+                }
 
                 realm.beginTransaction();
                 news.setSeen(true);
@@ -101,6 +104,21 @@ public class NewsDetailsActivity extends BaseActivity {
                         news.setSaved(!news.isSaved());
                         realm.commitTransaction();
                         setBookmarkIcon(news);
+                    }
+                });
+
+                showPDF.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(news.getPdfFileURL()));
+                        startActivity(browserIntent);
+                    }
+                });
+
+                shareNews.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //What is to be done?
                     }
                 });
             }
@@ -139,7 +157,7 @@ public class NewsDetailsActivity extends BaseActivity {
         @Override
         public int getCount() {
             // Show 5 total pages.
-            return 5;
+            return imageList.size();
         }
 
         @Override

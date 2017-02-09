@@ -70,6 +70,7 @@ public class Migration implements RealmMigration {
                     .addField("department", Integer.class)
                     .addField("dateToCompare", Date.class)
                     .addField("modifiedOn", String.class)
+                    .addField("pdfFileURL", String.class)
                     .addField("isSeen", boolean.class)
                     .addField("isSaved", boolean.class)
                     .addField("showOnMainPage", boolean.class);
