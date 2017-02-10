@@ -7,7 +7,7 @@ from django.db.models import Max
 
 from commons.models import code , news, configuration, newsImage , codeGroup, userNews
 from commons.serializers import codeSerializer , newsSerializer 
-from mitraEndPoints import constants
+from mitraEndPoints import constants, settings
 from datetime import datetime
 from users.models import token , user
 from users.authentication import TokenAuthentication
@@ -310,10 +310,12 @@ fuction to get array of Image URLs for a news
 """
 def getNewsImageURL(NewsObject):
     #declare array
+    basicURL = getBasicURL('news')
     arrOut = []
     objImageList = newsImage.objects.filter(news= NewsObject['newsID'])
     for objImage in objImageList:
-        arrOut.append(objImage.imageURL)
+        if objImage.imageURL:
+            arrOut.append(basicURL + str(objImage.imageURL))
     
     return arrOut;    
 
@@ -365,8 +367,11 @@ def getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser):
     queryset = queryset.order_by('-publishDate').values()
                
     for objNew in queryset:
+        basicURL = getBasicURL('news')
         imageList = getNewsImageURL(objNew)            
-        objNew['imageURL'] = getNewsImageURL(objNew)     
+        objNew['imageURL'] = getNewsImageURL(objNew)
+        if objNew['pdfFileURL'] :
+              objNew['pdfFileURL'] = basicURL +str(objNew['pdfFileURL'])
    
     return queryset
 """
@@ -388,3 +393,10 @@ def validateNewListParameters(departmentCodeID, publishFromDate, publishToDate):
         errors['status'] = status.HTTP_404_NOT_FOUND
         
     return errors
+"""
+common function - to get basic url for all files
+"""
+def getBasicURL(moduleName):
+    basicURL  = settings.DOMAIN_NAME + settings.STATIC_URL + moduleName + '/'
+    return basicURL
+    
