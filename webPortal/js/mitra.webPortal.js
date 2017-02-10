@@ -11,20 +11,20 @@ config(['$stateProvider', '$urlRouterProvider',
 	.state('main', {
     abstract: true,
     url: '',
-    templateUrl: 'common/mitraLayoutView.html'
+    templateUrl: '/js/common/mitraLayoutView.html'
   })
   .state('main.index', {
 	abstract: true,
     url: '',
     views: {
     	'header': {
-    		templateUrl: 'common/headerView.html'
+    		templateUrl: '/js/common/headerView.html'
     	},
     	'leftMenu': {
-    		templateUrl: 'common/leftMenuView.html'
+    		templateUrl: '/js/common/leftMenuView.html'
     	},
     	'contentBox': {
-    		templateUrl: 'common/contentBoxView.html'
+    		templateUrl: '/js/common/contentBoxView.html'
     	},
     },
   })
@@ -32,15 +32,15 @@ config(['$stateProvider', '$urlRouterProvider',
   	url: '/home',
   	views: {
   		'content': {
-  			templateUrl: 'home/layoutView.html'
+  			templateUrl: '/js/home/layoutView.html'
   			//template: "Setting up home layout"
   		},
     	'welcome@main.index.home': {
-    		templateUrl: 'home/welcomeView.html',
+    		templateUrl: '/js/home/welcomeView.html',
     		controller: 'welcomeController'
     	},	
     	'map@main.index.home': {
-    		templateUrl: 'home/mapView.html',
+    		templateUrl: '/js/home/mapView.html',
         controller: function($scope) {
         	console.log('hit map controller');
         }
@@ -51,7 +51,7 @@ config(['$stateProvider', '$urlRouterProvider',
   	url: '/content/upload',
   	views: {
   		'content': {
-  			templateUrl: 'content/uploadView.html',
+  			templateUrl: '/js/content/uploadView.html',
   			controller: 'uploadController'
   		}
   	}
