@@ -310,7 +310,7 @@ fuction to get comma separated string of Image URLs for a news
 """
 def getNewsImageURL(NewsObject):
     #declare array
-    basicURL = getBasicURL('news')
+    basicURL = getBaseURL(constants.staticFileDir.newsImageDir)
     arrOut = []
     userImageURL = None
     objImageList = newsImage.objects.filter(news= NewsObject['newsID'])
@@ -370,7 +370,7 @@ def getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser):
     queryset = queryset.order_by('-publishDate').values()
                
     for objNew in queryset:
-        basicURL = getBasicURL('news')
+        basicURL = getBaseURL(constants.staticFileDir.newsPDFDir)
         imageList = getNewsImageURL(objNew)            
         objNew['imageURL'] = getNewsImageURL(objNew)
         if objNew['pdfFileURL'] :
@@ -399,7 +399,7 @@ def validateNewListParameters(departmentCodeID, publishFromDate, publishToDate):
 """
 common function - to get basic url for all files
 """
-def getBasicURL(moduleName):
-    basicURL  = settings.DOMAIN_NAME + settings.STATIC_URL + moduleName + '/'
+def getBaseURL(dirName):
+    basicURL  = settings.DOMAIN_NAME + settings.STATIC_URL + dirName 
     return basicURL
     

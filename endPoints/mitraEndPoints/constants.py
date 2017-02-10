@@ -165,6 +165,11 @@ class imageDir():
     currentDir = os.getcwd()
     currentDir = settings.PROJECT_DIR
     baseDir = currentDir + path
+
+class staticFileDir():
+    userDir = "user/"
+    newsImageDir = "news/image/"
+    newsPDFDir = 'news/pdf/'
     
 class fcm():
     FCM_SERVERKEY = "AAAAQH5DkUE:APA91bHzQT7zucQ6A807PrrQwzM63mUrUooqyUt_jJ4HTeR-QM-u2FW9dkAr4r_fOm7G0B2z7iFJdMDz2Nc3s4lZTrNYJ6mIovDvLSui0SpqZAiOZKCPhHsxYGCvDxDa3yo5niGsWd4haNyTKnHol1kCZEa3S2zZbw"
