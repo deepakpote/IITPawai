@@ -91,7 +91,8 @@
             android:name="io.fabric.ApiKey"
             android:value="308030be7c4bc5bc57284789a5d17a804939eebf" />
 
-        <activity android:name=".ui.activity.BaseActivity"></activity>
+        <activity android:name=".ui.activity.BaseActivity" />
+        <activity android:name=".ui.activity.PDFViewerActivity"></activity>
     </application>
 
 </manifest>

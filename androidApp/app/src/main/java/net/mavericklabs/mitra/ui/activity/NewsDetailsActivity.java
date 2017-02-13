@@ -64,7 +64,7 @@ public class NewsDetailsActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         if(getIntent().getExtras() != null) {
-            Bundle bundle = getIntent().getExtras();
+            final Bundle bundle = getIntent().getExtras();
             String newsID = bundle.getString("news_item");
             final Realm realm = Realm.getDefaultInstance();
             final News news = realm.where(News.class).equalTo("newsID", newsID).findFirst();
@@ -79,19 +79,22 @@ public class NewsDetailsActivity extends BaseActivity {
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                     getSupportActionBar().setTitle(news.getNewsTitle());
                 }
-                imageList = StringUtils.splitCommasToStrings(news.getImageURL());
+                if(!StringUtils.isEmpty(news.getImageURL())) {
+                    imageList = StringUtils.splitCommasToStrings(news.getImageURL());
 
-                if(imageList != null && !imageList.isEmpty()) {
-                    Logger.d(" image list is not empty " + imageList.size() + " url " + imageList.get(0));
-                    imageViewPager.setVisibility(View.VISIBLE);
-                    // Create the adapter that will return a fragment for each of images
-                    ImagePagerAdapter pagerAdapter = new ImagePagerAdapter(getApplicationContext());
+                    if(imageList != null && !imageList.isEmpty()) {
+                        Logger.d(" image list is not empty " + imageList.size() + " url " + imageList.get(0));
+                        imageViewPager.setVisibility(View.VISIBLE);
+                        // Create the adapter that will return a fragment for each of images
+                        ImagePagerAdapter pagerAdapter = new ImagePagerAdapter(getApplicationContext());
 
-                    // Set up the ViewPager with the sections adapter.
-                    imageViewPager.setAdapter(pagerAdapter);
-                } else {
-                    imageViewPager.setVisibility(View.GONE);
+                        // Set up the ViewPager with the sections adapter.
+                        imageViewPager.setAdapter(pagerAdapter);
+                    } else {
+                        imageViewPager.setVisibility(View.GONE);
+                    }
                 }
+
 
                 realm.beginTransaction();
                 news.setSeen(true);
@@ -109,13 +112,26 @@ public class NewsDetailsActivity extends BaseActivity {
                     }
                 });
 
-                showPDF.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(news.getPdfFileURL()));
-                        startActivity(browserIntent);
-                    }
-                });
+                if(StringUtils.isEmpty(news.getPdfFileURL())) {
+                    showPDF.setVisibility(View.GONE);
+                } else {
+                    showPDF.setVisibility(View.VISIBLE);
+                    showPDF.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Logger.d(" clicked " + news.getPdfFileURL());
+//                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(news.getPdfFileURL()));
+//                            startActivity(browserIntent);
+                            Intent pdfActivity = new Intent(NewsDetailsActivity.this, PDFViewerActivity.class);
+                            Bundle bundle1 = new Bundle();
+                            bundle1.putString("pdf_url", news.getPdfFileURL());
+                            pdfActivity.putExtras(bundle1);
+                            startActivity(pdfActivity);
+
+                        }
+                    });
+                }
+
 
                 shareNews.setOnClickListener(new View.OnClickListener() {
                     @Override
