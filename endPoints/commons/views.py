@@ -7,7 +7,7 @@ from django.db.models import Max
 
 from commons.models import code , news, configuration, newsImage , codeGroup, userNews
 from commons.serializers import codeSerializer , newsSerializer 
-from mitraEndPoints import constants
+from mitraEndPoints import constants, settings
 from datetime import datetime
 from users.models import token , user
 from users.authentication import TokenAuthentication
@@ -306,16 +306,21 @@ def getUserIDFromAuthToken(authToken):
     # return userID
     return userID
 """
-fuction to get array of Image URLs for a news
+fuction to get comma separated string of Image URLs for a news
 """
 def getNewsImageURL(NewsObject):
     #declare array
+    basicURL = getBaseURL(constants.staticFileDir.newsImageDir)
     arrOut = []
+    userImageURL = None
     objImageList = newsImage.objects.filter(news= NewsObject['newsID'])
     for objImage in objImageList:
-        arrOut.append(objImage.imageURL)
+        if objImage.imageURL:
+            arrOut.append(basicURL + str(objImage.imageURL))
     
-    return arrOut;    
+    userImageURL = ",".join(arrOut)
+    # return image url string
+    return userImageURL;    
 
 """
 Common function used to get the userID from authToken.
@@ -365,8 +370,11 @@ def getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser):
     queryset = queryset.order_by('-publishDate').values()
                
     for objNew in queryset:
+        basicURL = getBaseURL(constants.staticFileDir.newsPDFDir)
         imageList = getNewsImageURL(objNew)            
-        objNew['imageURL'] = getNewsImageURL(objNew)     
+        objNew['imageURL'] = getNewsImageURL(objNew)
+        if objNew['pdfFileURL'] :
+              objNew['pdfFileURL'] = basicURL +str(objNew['pdfFileURL'])
    
     return queryset
 """
@@ -388,3 +396,10 @@ def validateNewListParameters(departmentCodeID, publishFromDate, publishToDate):
         errors['status'] = status.HTTP_404_NOT_FOUND
         
     return errors
+"""
+common function - to get basic url for all files
+"""
+def getBaseURL(dirName):
+    basicURL  = settings.DOMAIN_NAME + settings.STATIC_URL + dirName 
+    return basicURL
+    
