@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 import re
 import string
 from django.db import connection
-from contents.serializers import teachingAidSerializer , contentSerializer
+from contents.serializers import teachingAidSerializer , contentSerializer , selfLearningSerializer
 from users.authentication import TokenAuthentication
 from contents.models import content , contentResponse  , contentGrade
 from commons.models import code
@@ -37,6 +37,9 @@ class ContentViewSet(viewsets.ModelViewSet):
         subjectCodeIDs = request.data.get('subjectCodeIDs') 
         gradeCodeIDs = request.data.get('gradeCodeIDs')
         pageNumber = request.data.get('pageNumber')
+        
+        appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
+        
         # On web portal, user no need to login to watch the video's so authentication is removed (commented) for now.
         #authToken = request.META.get('HTTP_AUTHTOKEN')
         
@@ -56,6 +59,21 @@ class ContentViewSet(viewsets.ModelViewSet):
 #             return Response({"response_message": constants.messages.teaching_aid_search_user_not_exists,
 #                              "data": []},
 #                             status = status.HTTP_404_NOT_FOUND)
+
+        
+        # Check if appLanguageCodeID is passed in header
+        if not appLanguageCodeID:
+            return Response({"response_message": constants.messages.contentSearch_appLanguageCodeID_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+          
+        # If appLanguageCodeID parameter is passed, then check appLanguageCodeID is exists or not
+        try:
+            objAppLanguageCode = code.objects.get(codeID = appLanguageCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.contentSearch_appLanguageCodeID_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
             
         # Check if fileTypeCodeID is passed in post param
         if not fileTypeCodeID:
@@ -79,9 +97,9 @@ class ContentViewSet(viewsets.ModelViewSet):
 
         arrSubjectCodeIDs = tuple(map(int, arrSubjectCodeIDs))
         
-        print "arrSubjectCodeIDs : ",arrSubjectCodeIDs
+        #print "arrSubjectCodeIDs : ",arrSubjectCodeIDs
         
-        if len(arrSubjectCodeIDs) ==1:
+        if len(arrSubjectCodeIDs) == 1:
             arrSubjectCodeIDs =  '(%s)' % ', '.join(map(repr, arrSubjectCodeIDs))
         
         #Get the applicable grade list for the respective user.
@@ -97,11 +115,11 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         # SQL Query
         searchTeachingAidQuery = """ select CC.contentID,
-                                            CC.contentTitle,
+                                            CCG.contentTitle,
                                             CC.requirement,
-                                            CC.instruction,
+                                            CCG.instruction,
                                             CC.fileName,
-                                            CC.author,
+                                            CCG.author,
                                             CC.objectives,
                                             CC.contentTypeCodeID,
                                             CC.fileTypeCodeID,
@@ -109,24 +127,26 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.subjectCodeID,
                                             CC.topicCodeID,
                                             group_concat(CG.gradeCodeID) as gradeCodeIDs
-                                            from con_content CC INNER JOIN con_contentGrade CG 
-                                            ON CC.contentID = CG.contentID 
-                                            where CC.fileTypeCodeID = %s 
+                                            from con_content CC 
+                                            INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
+                                            INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
+                                            where CCG.appLanguageCodeID = %s
+                                            and CC.fileTypeCodeID = %s 
                                             and CC.contentTypeCodeID = %s 
                                             and CC.subjectCodeID IN %s 
                                             and CG.gradeCodeID IN %s 
                                             group by CC.contentID,
-                                            CC.contentTitle,
+                                            CCG.contentTitle,
                                             CC.requirement,
-                                            CC.instruction,
+                                            CCG.instruction,
                                             CC.fileName,
-                                            CC.author,
+                                            CCG.author,
                                             CC.objectives,
                                             CC.contentTypeCodeID,
                                             CC.fileTypeCodeID,
                                             CC.languageCodeID,
                                             CC.subjectCodeID,
-                                            CC.topicCodeID order by CC.contentID limit %s,%s"""%(fileTypeCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
+                                            CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,fileTypeCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
 
         cursor.execute(searchTeachingAidQuery)
         
@@ -137,19 +157,19 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         for item in contentQuerySet:
             objResponse_data = {
-                                    'contentID': item[0], 
-                                    'contentTitle': item[1], 
-                                    'contentType': item[7],
-                                    'gradeCodeIDs': str(item[12]),
-                                    'subject': item[10],
-                                    'topic' : item[11],
-                                    'requirement':item[2],
-                                    'instruction': item[3],
-                                    'fileType' : item[8],
-                                    'fileName':item[4],
-                                    'author': item[5],
-                                    'objectives' : item[6],
-                                    'language':item[9]
+                                    'contentID':        item[0], 
+                                    'contentTitle':     item[1], 
+                                    'contentType':      item[7],
+                                    'gradeCodeIDs':     str(item[12]),
+                                    'subject':          item[10],
+                                    'topic' :           item[11],
+                                    'requirement':      item[2],
+                                    'instruction':      item[3],
+                                    'fileType' :        item[8],
+                                    'fileName':         item[4],
+                                    'author':           item[5],
+                                    'objectives' :      item[6],
+                                    'language':         item[9]
                                 }
             response_data.append(objResponse_data)
 
@@ -179,6 +199,8 @@ class ContentViewSet(viewsets.ModelViewSet):
         languageCodeIDs = request.data.get('languageCodeIDs')
         topicCodeIDs = request.data.get('topicCodeIDs') 
         pageNumber = request.data.get('pageNumber')
+        
+        appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
         # On web portal, user no need to login to watch the video's so authentication  is removed (commented) for now.
 #         authToken = request.META.get('HTTP_AUTHTOKEN')
 #         
@@ -198,6 +220,21 @@ class ContentViewSet(viewsets.ModelViewSet):
 #             return Response({"response_message": constants.messages.self_learning_search_user_not_exists,
 #                              "data": []},
 #                             status = status.HTTP_404_NOT_FOUND)
+
+        # Check if appLanguageCodeID is passed in header
+        if not appLanguageCodeID:
+            return Response({"response_message": constants.messages.contentSearch_appLanguageCodeID_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+          
+        # If appLanguageCodeID parameter is passed, then check appLanguageCodeID is exists or not
+        try:
+            objAppLanguageCode = code.objects.get(codeID = appLanguageCodeID)
+        except code.DoesNotExist:
+                return Response({"response_message": constants.messages.contentSearch_appLanguageCodeID_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+            
          
         #Get Language
         arrLanguageCodeID = []
@@ -206,7 +243,14 @@ class ContentViewSet(viewsets.ModelViewSet):
             arrLanguageCodeID = getCodeIDs(constants.mitraCodeGroup.language)
         else:
             #Get the array from comma sep string of languageCodeIDs.
-            arrLanguageCodeID = getArrayFromCommaSepString(languageCodeIDs)     
+            arrLanguageCodeID = getArrayFromCommaSepString(languageCodeIDs)    
+            
+        arrLanguageCodeID = tuple(map(int, arrLanguageCodeID))
+         
+         
+        if len(arrLanguageCodeID) ==1:
+            arrLanguageCodeID =  '(%s)' % ', '.join(map(repr, arrLanguageCodeID))    
+         
 
         #declare count for from which record number to fetch the records.
         fromRecord = 0
@@ -221,11 +265,71 @@ class ContentViewSet(viewsets.ModelViewSet):
         #Get the applicable topic list for the respective user.    
         arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs)  
         
-        #Get the query set using filter on filetype, topic & language     
-        contentQuerySet = content.objects.filter(language__in = arrLanguageCodeID,
-                                                  contentType = constants.mitraCode.selfLearning, 
-                                                  topic__in = arrTopicCodeIDs).order_by('-contentID')[fromRecord:pageNumber]
+        arrTopicCodeIDs = tuple(map(int, arrTopicCodeIDs))
+         
+         
+        if len(arrTopicCodeIDs) ==1:
+            arrTopicCodeIDs =  '(%s)' % ', '.join(map(repr, arrTopicCodeIDs))
         
+        
+        #Get the query set using filter on filetype, topic & language     
+#         contentQuerySet = content.objects.filter(language__in = arrLanguageCodeID,
+#                                                   contentType = constants.mitraCode.selfLearning, 
+#                                                   topic__in = arrTopicCodeIDs,
+#                                                   contentID = contentDetail_contentID__content).order_by('-contentID')[fromRecord:pageNumber]
+
+
+        # New code.
+        # Connection
+        cursor = connection.cursor()  
+         
+        # SQL Query
+        searchSelfLearningQuery = """ select CC.contentID, CCG.contentDetailID,
+                                            CCG.contentTitle ,
+                                            CC.requirement,
+                                            CCG.instruction  ,
+                                            CC.fileName,
+                                            CCG.author ,
+                                            CC.objectives,
+                                            CC.contentTypeCodeID,
+                                            CC.fileTypeCodeID,
+                                            CC.languageCodeID,
+                                            CC.subjectCodeID,
+                                            CC.topicCodeID
+                                            from con_content CC 
+                                            INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
+                                            where CC.languageCodeID IN %s 
+                                            and CC.contentTypeCodeID = %s 
+                                            and CC.topicCodeID IN %s 
+                                            and CCG.appLanguageCodeID = %s 
+                                            order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
+ 
+         
+        cursor.execute(searchSelfLearningQuery)
+         
+        #Queryset
+        contentQuerySet = cursor.fetchall()
+         
+        response_data = []
+         
+        for item in contentQuerySet:
+            objResponse_data = {
+                                'contentID':        item[0], 
+                                'contentTitle':     item[2], 
+                                'requirement':      item[3], 
+                                'instruction':      item[4], 
+                                'fileName':         item[5],
+                                'author':           item[6], 
+                                'objectives' :      item[7], 
+                                'contentType':      item[8],
+                                'fileType' :        item[9],
+                                'language':         item[10],
+                                'subject':          item[11],
+                                'topic' :           item[12]
+                                }
+             
+            response_data.append(objResponse_data)
+
         #Check for the no of records fetched.
         if not contentQuerySet:
             return Response({"response_message": constants.messages.self_learning_search_no_records_found,
@@ -233,10 +337,11 @@ class ContentViewSet(viewsets.ModelViewSet):
                     status = status.HTTP_200_OK) 
         
         #Set query string to the contentSerializer
-        objContentserializer = contentSerializer(contentQuerySet, many = True)
+        objContentserializer = selfLearningSerializer(response_data, many = True)
         
         #Set serializer data to the response 
         response = objContentserializer.data
+        #print(objContentserializer.data)
         
         #Return the response
         return Response({"response_message": constants.messages.success, "data": response})

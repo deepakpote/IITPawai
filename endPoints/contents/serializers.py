@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User 
 from rest_framework import serializers
-from contents.models import content , contentGrade
+from contents.models import content , contentGrade , contentDetail
 from django.core.validators import RegexValidator
 
 
@@ -16,6 +16,10 @@ class teachingAidSerializer(serializers.ModelSerializer):
     topic = serializers.CharField()
     fileType = serializers.CharField()
     language = serializers.CharField()
+    
+    contentTitle = serializers.CharField()
+    instruction = serializers.CharField()
+    author = serializers.CharField()
   
 
     class Meta:
@@ -28,4 +32,23 @@ class contentSerializer(serializers.ModelSerializer):
     class Meta:
         model = content
         fields = ('contentID', 'contentTitle' ,'contentType', 'subject' , 'topic' , 'requirement', 'instruction', 'fileType', 'fileName','author','objectives','language',)
-                
+
+class selfLearningSerializer(serializers.ModelSerializer):
+    # Access custom field.
+    contentID = serializers.CharField()
+    topic = serializers.CharField()
+    contentType = serializers.CharField()
+    #subject = serializers.CharField()
+    topic = serializers.CharField()
+    fileType = serializers.CharField()
+    language = serializers.CharField()
+    requirement = serializers.CharField()
+    fileName = serializers.CharField()
+    objectives = serializers.CharField()
+    
+
+    class Meta:
+        model = contentDetail
+        fields = ( 'contentID', 'contentTitle' , 'contentType', 'topic' , 'requirement', 'instruction', 'fileType', 'fileName','author','objectives','language',)
+   
+            
