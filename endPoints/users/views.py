@@ -23,6 +23,8 @@ from django.utils import timezone
 from contents.models import content , contentGrade
 from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs
 from time import gmtime, strftime
+from contents.serializers import contentSerializer , teachingAidSerializer , selfLearningSerializer
+from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from contents.serializers import contentSerializer , teachingAidSerializer
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken, getBaseURL
 from commons.models import code 
@@ -661,6 +663,8 @@ class UserViewSet(viewsets.ModelViewSet):
         languageCodeIDs = request.data.get('languageCodeIDs')
         authToken = request.META.get('HTTP_AUTHTOKEN')
         
+        appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
+        
         #Get userID from authToken
         userID = getUserIDFromAuthToken(authToken)
 
@@ -669,6 +673,20 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if appLanguageCodeID is passed in header
+        if not appLanguageCodeID:
+            return Response({"response_message": constants.messages.contentSearch_appLanguageCodeID_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+          
+        # If appLanguageCodeID parameter is passed, then check appLanguageCodeID is exists or not
+        try:
+            objAppLanguageCode = code.objects.get(codeID = appLanguageCodeID)
+        except code.DoesNotExist:
+                return Response({"response_message": constants.messages.contentSearch_appLanguageCodeID_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
 
         # check contentID is passed as parameter in post    
         if not contentTypeCodeID:
@@ -741,11 +759,11 @@ class UserViewSet(viewsets.ModelViewSet):
             
             # SQL Query
             searchTeachingAidQuery = """ select CC.contentID,
-                                                CC.contentTitle,
+                                                CCG.contentTitle,
                                                 CC.requirement,
-                                                CC.instruction,
+                                                CCG.instruction,
                                                 CC.fileName,
-                                                CC.author,
+                                                CCG.author,
                                                 CC.objectives,
                                                 CC.contentTypeCodeID,
                                                 CC.fileTypeCodeID,
@@ -756,13 +774,15 @@ class UserViewSet(viewsets.ModelViewSet):
                                                 from con_content CC 
                                                 INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
                                                 INNER JOIN usr_userContent UC ON CC.contentID = UC.contentID
+                                                INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
                                                 where UC.userID = %s
                                                 and CC.fileTypeCodeID IN %s 
                                                 and CC.contentTypeCodeID = %s 
                                                 and CC.subjectCodeID IN %s 
                                                 and CG.gradeCodeID IN %s 
-                                                group by CC.contentID, CC.contentTitle, CC.requirement, CC.instruction, CC.fileName, CC.author, CC.objectives, CC.contentTypeCodeID, CC.fileTypeCodeID, CC.languageCodeID, CC.subjectCodeID,
-                                                CC.topicCodeID order by CC.contentID"""%(userID,arrContentFileTypeCodeID,107100,str(arrSubjectCodeIDs),str(arrGradeCodeIDs))
+                                                and CCG.appLanguageCodeID = %s
+                                                group by CC.contentID, CCG.contentTitle, CC.requirement, CCG.instruction, CC.fileName, CCG.author, CC.objectives, CC.contentTypeCodeID, CC.fileTypeCodeID, CC.languageCodeID, CC.subjectCodeID,
+                                                CC.topicCodeID order by CC.contentID"""%(userID,arrContentFileTypeCodeID,107100,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),appLanguageCodeID)
                                           
             cursor.execute(searchTeachingAidQuery)
             
@@ -775,17 +795,17 @@ class UserViewSet(viewsets.ModelViewSet):
                 objResponse_data = {
                                         'contentID':    item[0], 
                                         'contentTitle': item[1], 
+                                        'requirement':  item[2],
+                                        'instruction':  item[3],
+                                        'fileName':     item[4],
+                                        'author':       item[5],
+                                        'objectives' :  item[6],
                                         'contentType':  item[7],
-                                        'gradeCodeIDs':  str(item[12]),
-                                        'subject':item[10],
-                                        'topic' : item[11],
-                                        'requirement':  item[02],
-                                        'instruction':  item[03],
                                         'fileType' :    item[8],
-                                        'fileName':     item[04],
-                                        'author':       item[05],
-                                        'objectives' :  item[06],
-                                        'language':item[9]
+                                        'language':     item[9],
+                                        'subject':      item[10],
+                                        'topic' :       item[11],
+                                        'gradeCodeIDs': str(item[12])
                                         }
                 response_data.append(objResponse_data)
 
@@ -793,7 +813,13 @@ class UserViewSet(viewsets.ModelViewSet):
             
         elif contentTypeCodeID == constants.mitraCode.selfLearning:
             #Get the applicable topic list for the respective user.    
-            arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs)  
+            arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs) 
+            
+            arrTopicCodeIDs = tuple(map(int, arrTopicCodeIDs))
+         
+         
+            if len(arrTopicCodeIDs) ==1:
+                arrTopicCodeIDs =  '(%s)' % ', '.join(map(repr, arrTopicCodeIDs)) 
 
             #Get Language
             arrLanguageCodeID = []
@@ -803,15 +829,74 @@ class UserViewSet(viewsets.ModelViewSet):
             else:
                 #Get the array from comma sep string of languageCodeIDs.
                 arrLanguageCodeID = getArrayFromCommaSepString(languageCodeIDs)
+                
+            arrLanguageCodeID = tuple(map(int, arrLanguageCodeID))
+         
+         
+            if len(arrLanguageCodeID) ==1:
+                arrLanguageCodeID =  '(%s)' % ', '.join(map(repr, arrLanguageCodeID))  
             
             #Build queryset               
-            objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, 
-                                                            contentID__in = objUserContent,
-                                                            topic__in = arrTopicCodeIDs,
-                                                            language__in = arrLanguageCodeID)
+#             objUserContentTypeCode = content.objects.filter(contentType = objContentTypeCodeID, 
+#                                                             contentID__in = objUserContent,
+#                                                             topic__in = arrTopicCodeIDs,
+#                                                             language__in = arrLanguageCodeID)
+            # New code.
+            # Connection
+            cursor = connection.cursor()  
+             
+            # SQL Query
+            searchSelfLearningQuery = """ select CC.contentID, CCG.contentDetailID,
+                                                CCG.contentTitle ,
+                                                CC.requirement,
+                                                CCG.instruction  ,
+                                                CC.fileName,
+                                                CCG.author ,
+                                                CC.objectives,
+                                                CC.contentTypeCodeID,
+                                                CC.fileTypeCodeID,
+                                                CC.languageCodeID,
+                                                CC.subjectCodeID,
+                                                CC.topicCodeID
+                                                from con_content CC 
+                                                INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
+                                                INNER JOIN usr_userContent UC ON CC.contentID = UC.contentID
+                                                where UC.userID = %s
+                                                and CC.languageCodeID IN %s 
+                                                and CCG.appLanguageCodeID = %s 
+                                                and CC.contentTypeCodeID = %s 
+                                                and CC.topicCodeID IN %s 
+                                                order by CC.contentID """%(userID,arrLanguageCodeID,appLanguageCodeID,constants.mitraCode.selfLearning,str(arrTopicCodeIDs))
+     
+             
+            cursor.execute(searchSelfLearningQuery)
+             
+            #Queryset
+            contentQuerySet = cursor.fetchall()
+             
+            response_data = []
+             
+            for item in contentQuerySet:
+                objResponse_data = {
+                                    'contentID':        item[0], 
+                                    'contentTitle':     item[2], 
+                                    'requirement':      item[3], 
+                                    'instruction':      item[4], 
+                                    'fileName':         item[5],
+                                    'author':           item[6], 
+                                    'objectives' :      item[7], 
+                                    'contentType':      item[8],
+                                    'fileType' :        item[9],
+                                    'language':         item[10],
+                                    'subject':          item[11],
+                                    'topic' :           item[12]
+                                    }
+                 
+                response_data.append(objResponse_data)
+
                    
         #Check for the no of records fetched.
-        if not objUserContentTypeCode:
+        if not objUserContentTypeCode and not response_data:
             return Response({"response_message": constants.messages.usercontent_list_no_records_found,
                     "data": []},
                     status = status.HTTP_200_OK) 
@@ -822,7 +907,7 @@ class UserViewSet(viewsets.ModelViewSet):
             objContentSerializer = teachingAidSerializer(objUserContentTypeCode, many = True)
         elif contentTypeCodeID == constants.mitraCode.selfLearning:
             # Call to the contentSerializer
-            objContentSerializer = contentSerializer(objUserContentTypeCode, many = True)
+            objContentSerializer = selfLearningSerializer(response_data, many = True)
             
 
         #Set objContentSerializer data to response

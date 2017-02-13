@@ -115,6 +115,9 @@ class messages():
     userNews_list_user_id_cannot_be_empty = 100196
     
     save_userNews_newsID_already_saved = 100197
+    
+    contentSearch_appLanguageCodeID_cannot_be_empty = 100198
+    contentSearch_appLanguageCodeID_not_exists = 100199
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
