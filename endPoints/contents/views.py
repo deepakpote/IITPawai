@@ -5,6 +5,7 @@ from rest_framework import viewsets,permissions
 from rest_framework.permissions import IsAuthenticated
 import re
 import string
+from django.core.files.storage import FileSystemStorage
 from django.db import connection
 from contents.serializers import teachingAidSerializer , contentSerializer , selfLearningSerializer
 from users.authentication import TokenAuthentication
@@ -752,7 +753,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                 saveContentGrade(arrGradeCodeIDs , contentID)
                                    
         except Exception as e:
-            # Error occured while uploading the content.
+            # Error occurred while uploading the content.
             #print e
             return Response({"response_message": constants.messages.uploadContent_content_upload_failed,
                      "data": []},
@@ -761,6 +762,22 @@ class ContentViewSet(viewsets.ModelViewSet):
         #Return the response
         return Response({"response_message": constants.messages.success, "data": []})
         
+    
+    """
+    API to upload files
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def uploadFiles(self,request):
+       
+        file = request.FILES['sampleFile'] 
+        fs = FileSystemStorage()
+        filename = fs.save(file.name, file)
+        uploadedFilePath = fs.path(filename)
+        print "file : ", uploadedFilePath
+         
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": name})
+    
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array
