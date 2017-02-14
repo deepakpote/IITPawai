@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
@@ -24,6 +25,7 @@ import net.mavericklabs.mitra.ui.adapter.SpinnerArrayAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.LanguageUtils;
+import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.util.List;
@@ -115,6 +117,8 @@ public class SettingsFragment extends Fragment {
                                                                               Throwable t) {
                                                             loadingPanel.setVisibility(View.GONE);
                                                             languageSpinner.setSelection(currentLanguageIndex,false);
+                                                            Toast.makeText(getContext(), getString(R.string.error_message),
+                                                                    Toast.LENGTH_SHORT).show();
                                                         }
                                                     });
                                         }
@@ -146,11 +150,6 @@ public class SettingsFragment extends Fragment {
 
         LanguageUtils.setLocale(language, getContext());
 
-        //Goto Home Activity
-        Intent intent = new Intent(getContext(), HomeActivity.class);
-        startActivity(intent);
-        getActivity().finishAffinity();
-
         //save new preferred language to database
         Realm realm = Realm.getDefaultInstance();
         RealmResults<DbUser> dbUser = realm.where(DbUser.class).findAll();
@@ -159,5 +158,11 @@ public class SettingsFragment extends Fragment {
         user.setPreferredLanguage(code.getCodeID());
         realm.insertOrUpdate(user);
         realm.commitTransaction();
+
+        //Goto Home Activity
+        Intent intent = new Intent(getContext(), HomeActivity.class);
+        startActivity(intent);
+        getActivity().finishAffinity();
+
     }
 }

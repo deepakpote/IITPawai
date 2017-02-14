@@ -46,6 +46,7 @@ import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 
 import net.mavericklabs.mitra.utils.HttpUtils;
+import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
@@ -224,7 +225,7 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
         SavedTeachingAidsRequest contentRequest = new SavedTeachingAidsRequest(
                 Constants.ContentTypeTeachingAids, typeList, subjectList, gradeList);
         String token = UserDetailUtils.getToken(getContext());
-        RestClient.getApiService(token).getSavedTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+        RestClient.getApiService(token).getSavedTeachingAids(LanguageUtils.getCurrentLanguage(), contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 loadingPanel.setVisibility(View.GONE);

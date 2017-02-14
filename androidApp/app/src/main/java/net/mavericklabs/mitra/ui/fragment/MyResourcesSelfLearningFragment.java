@@ -45,6 +45,7 @@ import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.HttpUtils;
+import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
@@ -194,7 +195,7 @@ public class MyResourcesSelfLearningFragment extends BaseContentFragment {
         SavedSelfLearningRequest contentRequest = new SavedSelfLearningRequest(Constants.ContentTypeSelfLearning,
                                                         languageList, topicList);
         String token = UserDetailUtils.getToken(getContext());
-        RestClient.getApiService(token).getSavedSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+        RestClient.getApiService(token).getSavedSelfLearning(LanguageUtils.getCurrentLanguage(), contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 loadingPanel.setVisibility(View.GONE);

@@ -36,6 +36,7 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -48,10 +49,12 @@ public interface Api {
     //Authenticated calls.
 
     @POST("content/searchTeachingAid/")
-    Call<BaseModel<Content>> searchTeachingAids(@Body TeachingAidsContentRequest contentRequest);
+    Call<BaseModel<Content>> searchTeachingAids(@Header("appLanguageCodeID") int appLanguageCodeID,
+                                                @Body TeachingAidsContentRequest contentRequest);
 
     @POST("content/searchSelfLearning/")
-    Call<BaseModel<Content>> searchSelfLearning(@Body SelfLearningContentRequest contentRequest);
+    Call<BaseModel<Content>> searchSelfLearning(@Header("appLanguageCodeID") int appLanguageCodeID,
+                                                @Body SelfLearningContentRequest contentRequest);
 
     @POST("content/like/")
     Call<BaseModel<GenericListDataModel>> likeContent(@Body LikeRequest likeRequest);
@@ -81,10 +84,12 @@ public interface Api {
                                                       @Field("saveContent") boolean value);
 
     @POST("user/contentList/")
-    Call<BaseModel<Content>> getSavedTeachingAids(@Body SavedTeachingAidsRequest contentRequest);
+    Call<BaseModel<Content>> getSavedTeachingAids(@Header("appLanguageCodeID") int appLanguageCodeID,
+                                                  @Body SavedTeachingAidsRequest contentRequest);
 
     @POST("user/contentList/")
-    Call<BaseModel<Content>> getSavedSelfLearning(@Body SavedSelfLearningRequest contentRequest);
+    Call<BaseModel<Content>> getSavedSelfLearning(@Header("appLanguageCodeID") int appLanguageCodeID,
+                                                  @Body SavedSelfLearningRequest contentRequest);
 
     @POST("user/saveLanguage/")
     @FormUrlEncoded

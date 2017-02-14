@@ -22,6 +22,7 @@ import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.NewsListAdapter;
 import net.mavericklabs.mitra.utils.DateUtils;
+import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
@@ -175,7 +176,7 @@ public class HomeFragment extends Fragment{
 
         TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(108100, "", "");
         String token = UserDetailUtils.getToken(getContext());
-        RestClient.getApiService(token).searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+        RestClient.getApiService(token).searchTeachingAids(LanguageUtils.getCurrentLanguage(), contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 Logger.d(" Succes");
@@ -203,7 +204,7 @@ public class HomeFragment extends Fragment{
         //TODO popular resources
         SelfLearningContentRequest contentRequest = new SelfLearningContentRequest("", "");
         String token = UserDetailUtils.getToken(getContext());
-        RestClient.getApiService(token).searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+        RestClient.getApiService(token).searchSelfLearning(LanguageUtils.getCurrentLanguage(), contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 Logger.d(" Succes");

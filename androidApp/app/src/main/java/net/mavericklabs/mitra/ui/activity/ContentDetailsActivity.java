@@ -83,6 +83,7 @@ import net.mavericklabs.mitra.ui.adapter.RequirementsListAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
+import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
@@ -560,7 +561,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                 content.getSubject().toString(),
                 content.getGrade().toString());
         String token = UserDetailUtils.getToken(getApplicationContext());
-        RestClient.getApiService(token).searchTeachingAids(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+        RestClient.getApiService(token).searchTeachingAids(LanguageUtils.getCurrentLanguage(), contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 Logger.d(" Succes");
@@ -603,7 +604,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
         SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(content.getLanguage().toString(),
                 content.getTopic().toString());
         String token = UserDetailUtils.getToken(getApplicationContext());
-        RestClient.getApiService(token).searchSelfLearning(contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+        RestClient.getApiService(token).searchSelfLearning(LanguageUtils.getCurrentLanguage(), contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 loadingPanel.setVisibility(View.GONE);
