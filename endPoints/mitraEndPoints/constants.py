@@ -118,6 +118,10 @@ class messages():
     
     contentSearch_appLanguageCodeID_cannot_be_empty = 100198
     contentSearch_appLanguageCodeID_not_exists = 100199
+    
+    uploadContent_statusCodeID_cannot_be_empty = 100201
+    uploadContent_status_not_exists = 100200
+
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
@@ -161,6 +165,10 @@ class contentSearchRecords():
 class language():
     english = 101100
     marathi = 101101
+    
+class appLanguage():
+    english = 113100
+    marathi = 113101
 
 class imageDir():
     path = "/static/user/"
@@ -168,11 +176,6 @@ class imageDir():
     currentDir = os.getcwd()
     currentDir = settings.PROJECT_DIR
     baseDir = currentDir + path
-
-class staticFileDir():
-    userDir = "user/"
-    newsImageDir = "news/image/"
-    newsPDFDir = 'news/pdf/'
     
 class fcm():
     FCM_SERVERKEY = "AAAAQH5DkUE:APA91bHzQT7zucQ6A807PrrQwzM63mUrUooqyUt_jJ4HTeR-QM-u2FW9dkAr4r_fOm7G0B2z7iFJdMDz2Nc3s4lZTrNYJ6mIovDvLSui0SpqZAiOZKCPhHsxYGCvDxDa3yo5niGsWd4haNyTKnHol1kCZEa3S2zZbw"
