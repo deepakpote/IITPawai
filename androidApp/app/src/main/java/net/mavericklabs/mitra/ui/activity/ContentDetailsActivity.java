@@ -370,8 +370,8 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
             Bundle firebaseBundle = new Bundle();
             firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_ID, content.getContentID());
             firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_NAME, content.getTitle());
-            firebaseBundle.putString(FirebaseAnalytics.Param.VALUE, content.getContentID());
-            firebaseBundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, CommonCodeUtils.getObjectFromCode(content.getContentTypeCodeID()).getCodeNameEnglish());
+            //firebaseBundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, CommonCodeUtils.getObjectFromCode(content.getContentTypeCodeID()).getCodeNameEnglish());
+            firebaseBundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, content.getContentID());
             firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
 

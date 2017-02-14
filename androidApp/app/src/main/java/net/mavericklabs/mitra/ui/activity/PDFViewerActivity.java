@@ -95,8 +95,7 @@ public class PDFViewerActivity extends AppCompatActivity {
             }
         });
         Logger.d("file path " + pdfURL);
-        contentWebView.loadUrl("http://docs.google.com/gview?embedded=true&url=" + "http://www.pdf995.com/samples/pdf.pdf");
-        //contentWebView.loadUrl("http://www.google.com");
+        contentWebView.loadUrl("http://docs.google.com/gview?embedded=true&url=" + pdfURL);
 
     }
 }
