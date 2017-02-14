@@ -2,9 +2,10 @@
 
 var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap']);
 mitraPortal.
-config(['$stateProvider', '$urlRouterProvider',
-    function config($stateProvider, $urlRouterProvider) {
+config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locationProvider',
+    function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
 
+    $locationProvider.html5Mode(true);
 	 $urlRouterProvider.otherwise('/home');
 
 	$stateProvider
@@ -55,46 +56,12 @@ config(['$stateProvider', '$urlRouterProvider',
   			controller: 'uploadController'
   		}
   	}
-  })
-  // define modal route "/modal"
-        .state('main.index.modal', {
-            url: '/modal',
-
-            // trigger the modal to open when this route is active
-            onEnter: ['$stateParams', '$state', '$modal',
-                function($stateParams, $state, $modal) {
-                    $modal
-
-                    // handle modal open
-                        .open({
-                            template: '<div class="modal-header"><h3 class="modal-title">Modal</h3></div><div class="modal-body">The modal body...</div><div class="modal-footer"><button class="btn btn-primary" ng-click="ok()">OK</button><button class="btn btn-warning" ng-click="cancel()">Cancel</button></div>',
-                            controller: ['$scope',
-                                function($scope) {
-                                    // handle after clicking Cancel button
-                                    $scope.cancel = function() {
-                                        $scope.$dismiss();
-                                    };
-                                    // close modal after clicking OK button
-                                    $scope.ok = function() {
-                                        $scope.$close(true);
-                                    };
-                                }
-                            ]
-                        })
-
-                        // change route after modal result
-                        .result.then(function() {
-                        // change route after clicking OK button
-                        $state.transitionTo('main.index.home');
-                    }, function() {
-                        // change route after clicking Cancel button or clicking background
-                        $state.transitionTo('main.index.home');
-                    });
-
-                }
-            ]
-
-        });
+  });
+  // define login route
+    loginModalStateProvider.state('main.index.home.login', {
+        url: '/login',
+        templateUrl : '/js/login/loginView.html'
+    });
 }]);
 /*
 angular.module("mitraPortal").run(

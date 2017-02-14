@@ -6,7 +6,7 @@ a:hover, a:focus {
 	-webkit-box-shadow: 1px 3px 14px -1px rgba(154,154,154,1);
 	-moz-box-shadow: 1px 3px 14px -1px rgba(154,154,154,1);
 	box-shadow: 1px 3px 14px -1px rgba(154,154,154,1);
-	
+
 	margin-bottom: 0px!important;
 }
 .navbar-inverse {
@@ -127,15 +127,31 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
   background-color:#009698;
 }
 .selected-card {
-} 
+}
 .unselected-card {
 	opacity:0.6;
   cursor: pointer; cursor: hand;
-} 
+}
 .unselected-card:hover{
   opacity:1;
 }
 .content-top-box {
   padding: 6% !important;
   text-align: justify;
+}
+
+.modal-dialog {
+    width:35%;
+}
+
+.primary-color {
+    color: #ff6d00;
+}
+
+.primary-text-color {
+    color: #ff9100;
+}
+
+.text-color-black {
+    color:#000000;
 }
