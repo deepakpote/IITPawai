@@ -801,12 +801,12 @@ class ContentViewSet(viewsets.ModelViewSet):
                 
                 # update content details for english language.
                 contentDetail.objects.filter(content = objcontent,
-                                             appLanguage = objappLanguageEng).update(contentTitle = engContentTitle.strip(),  
+                                             appLanguage = objAppLanguageEng).update(contentTitle = engContentTitle.strip(),  
                                                                                     instruction = engInstruction.strip(),
                                                                                     author = engAuthor)
                 # update content details for marathi language.
                 contentDetail.objects.filter(content = objcontent,
-                                             appLanguage = objappLanguageMar).update(contentTitle = marContentTitle.strip(),  
+                                             appLanguage = objAppLanguageMar).update(contentTitle = marContentTitle.strip(),  
                                                                                      instruction = marInstruction.strip(),
                                                                                      author = marAuthor)
             
