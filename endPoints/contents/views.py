@@ -577,6 +577,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         author = request.data.get('author')
         objectives = request.data.get('objectives')
         languageCodeID = request.data.get('languageCodeID')
+        # uploadedFile = request.FILES['uploadedFile'] 
         
         #Get user token
         authToken = request.META.get('HTTP_AUTHTOKEN')
@@ -630,6 +631,11 @@ class ContentViewSet(viewsets.ModelViewSet):
                 return Response({"response_message": constants.messages.uploadContent_fileName_invaild,
                          "data": []},
                          status = status.HTTP_400_BAD_REQUEST)
+                
+#         if uploadedFile:
+#             fs = FileSystemStorage()
+#             uploadedFileName = fs.save(file.name, file)
+#             uploadedFilePath = fs.path(uploadedFileName)
             
         # If userID parameter is passed, then check user exists or not
         try:
@@ -762,20 +768,21 @@ class ContentViewSet(viewsets.ModelViewSet):
         #Return the response
         return Response({"response_message": constants.messages.success, "data": []})
         
-    
+        
     """
     API to upload files
     """
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def uploadFiles(self,request):
-       
-        file = request.FILES['sampleFile'] 
-        fs = FileSystemStorage()
-        filename = fs.save(file.name, file)
-        uploadedFilePath = fs.path(filename)
          
+        uploadedFileType = request.data.get('uploadedFileType')
+        file = request.FILES['uploadedFile'] 
+        fs = FileSystemStorage()
+        uploadedFileName = fs.save(file.name, file)
+        uploadedFilePath = fs.path(uploadedFileName)
+        
         #Return the response
-        return Response({"response_message": constants.messages.success, "data": uploadedFilePath})
+        return Response({"response_message": constants.messages.success, "data": [uploadedFilePath, uploadedFileType]})
     
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
