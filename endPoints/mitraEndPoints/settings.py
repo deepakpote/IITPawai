@@ -141,6 +141,9 @@ STATICFILES_DIRS = (
     os.path.join(CURRENT_DIR, 'static/user'),
 )
 
+MEDIA_ROOT = os.path.join(PROJECT_DIR,'static/uploadedContent') 
+MEDIA_URL = '/uploadedContent/'
+
 DOMAIN_NAME = "http://127.0.0.1:8000"
 
 REST_FRAMEWORK = {
@@ -161,3 +164,5 @@ REST_FRAMEWORK = {
 #         'rest_framework.renderers.JSONRenderer',
 #     ),
 }
+
+

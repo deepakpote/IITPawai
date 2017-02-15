@@ -773,10 +773,9 @@ class ContentViewSet(viewsets.ModelViewSet):
         fs = FileSystemStorage()
         filename = fs.save(file.name, file)
         uploadedFilePath = fs.path(filename)
-        print "file : ", uploadedFilePath
          
         #Return the response
-        return Response({"response_message": constants.messages.success, "data": name})
+        return Response({"response_message": constants.messages.success, "data": uploadedFilePath})
     
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
