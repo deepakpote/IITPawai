@@ -667,7 +667,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             
         # If statusCodeID parameter is passed, then check status exists or not
         try:
-            objstatus = code.objects.get(codeID = statusCodeID)
+            objStatus = code.objects.get(codeID = statusCodeID)
         except code.DoesNotExist:
             return Response({"response_message": constants.messages.uploadContent_status_not_exists,
                              "data": []},
@@ -738,14 +738,14 @@ class ContentViewSet(viewsets.ModelViewSet):
                     status = status.HTTP_404_NOT_FOUND)
             
         # Get app language instances for english and marathi.
-        objappLanguageEng = code.objects.get(codeID = constants.appLanguage.english)
-        objappLanguageMar = code.objects.get(codeID = constants.appLanguage.marathi)
+        objAppLanguageEng = code.objects.get(codeID = constants.appLanguage.english)
+        objAppLanguageMar = code.objects.get(codeID = constants.appLanguage.marathi)
         
         try:
             # Check contentID is provided or not.
             if not contentID or contentID == 0:
                 # Save the content.
-                ObjRec =content.objects.create(contentType = objContentType, 
+                objRec =content.objects.create(contentType = objContentType, 
                         subject = objSubject,
                         topic = objTopic,
                         requirement = requirement,
@@ -757,18 +757,18 @@ class ContentViewSet(viewsets.ModelViewSet):
                         createdBy = objUser,
                         modifiedBy = objUser)
                 
-                ObjRec.save()
+                objRec.save()
                 
                 
                 #Save the content details for multiple language.
                 contentDetail.objects.bulk_create(
                                                     [
-                                                    contentDetail(content = ObjRec,
+                                                    contentDetail(content = objRec,
                                                                   appLanguage = objAppLanguageEng,
                                                                   contentTitle = engContentTitle.strip(),
                                                                   instruction = engInstruction , 
                                                                   author = engAuthor),
-                                                    contentDetail(content = ObjRec,
+                                                    contentDetail(content = objRec,
                                                                   appLanguage = objAppLanguageMar ,
                                                                   contentTitle = marContentTitle.strip(), 
                                                                   instruction = marInstruction , 
@@ -776,7 +776,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                     ]
                                                  )
              
-                contentID =  ObjRec.contentID 
+                contentID =  objRec.contentID 
             
             else:
                 # If contentID parameter is passed, then check contentID exists or not and update the content details.       
