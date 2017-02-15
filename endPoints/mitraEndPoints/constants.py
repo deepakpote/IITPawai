@@ -153,6 +153,10 @@ class mitraCode():
     download = 111101
     share = 111102
     video = 108100
+    audio = 108101
+    ppt = 108102
+    worksheet = 108103
+    pdf = 108104
 
     
 class contentSearchRecords():
@@ -171,12 +175,17 @@ class imageDir():
 
 class staticFileDir():
     userDir = "user/"
-    userAudioDir = "user/audio/"
-    userPDFDir = "user/pdf/"
-    userExcelDir = "user/excel/"
-    userPPTDir = "user/ppt/"
     newsImageDir = "news/image/"
     newsPDFDir = "news/pdf/"
+    
+class uploadedContentDir():
+    path = "/static/uploadedContent/"
+    currentDir = settings.PROJECT_DIR
+    baseDir = currentDir + path
+    pdfDir = baseDir + "pdf/"
+    pptDir = baseDir + "ppt/"
+    worksheetDir = baseDir + "worksheet/"
+    audioDir = baseDir + "audio/"
     
 class fcm():
     FCM_SERVERKEY = "AAAAQH5DkUE:APA91bHzQT7zucQ6A807PrrQwzM63mUrUooqyUt_jJ4HTeR-QM-u2FW9dkAr4r_fOm7G0B2z7iFJdMDz2Nc3s4lZTrNYJ6mIovDvLSui0SpqZAiOZKCPhHsxYGCvDxDa3yo5niGsWd4haNyTKnHol1kCZEa3S2zZbw"

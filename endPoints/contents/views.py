@@ -5,7 +5,6 @@ from rest_framework import viewsets,permissions
 from rest_framework.permissions import IsAuthenticated
 import re
 import string
-from django.core.files.storage import FileSystemStorage
 from django.db import connection
 from contents.serializers import teachingAidSerializer , contentSerializer , selfLearningSerializer
 from users.authentication import TokenAuthentication
@@ -14,8 +13,6 @@ from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent
 from mitraEndPoints import constants , utils
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
-
-
 
 
 class ContentViewSet(viewsets.ModelViewSet):
@@ -774,15 +771,38 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def uploadFiles(self,request):
-         
-        uploadedFileType = request.data.get('uploadedFileType')
-        file = request.FILES['uploadedFile'] 
-        fs = FileSystemStorage()
-        uploadedFileName = fs.save(file.name, file)
-        uploadedFilePath = fs.path(uploadedFileName)
         
+        uploadedFile = request.FILES['uploadedFile']
+        uploadedFileType = request.data.get('uploadedFileType')
+        
+        uploadedFileName = uploadedFile.name
+        baseDir = None
+        
+        if (uploadedFileType == constants.mitraCode.pdf):
+            baseDir = constants.uploadedContentDir.pdfDir
+            
+        elif (uploadedFileType == constants.mitraCode.ppt):
+            baseDir = constants.uploadedContentDir.pptDir
+            
+        elif (uploadedFileType == constants.mitraCode.worksheet):
+            baseDir = constants.uploadedContentDir.worksheetDir
+            
+        elif (uploadedFileType == constants.mitraCode.audio):
+            baseDir = constants.uploadedContentDir.audioDir
+            
+        else:
+             return Response({"response_message": constants.messages.uploadContent_content_upload_failed,
+                     "data": []},
+                     status = status.HTTP_400_BAD_REQUEST)
+            
+        completeFileName = str(baseDir) + str(uploadedFileName)
+        
+        with open(completeFileName, 'wb+') as destination:
+            for chunk in uploadedFile.chunks():
+                destination.write(chunk)
+    
         #Return the response
-        return Response({"response_message": constants.messages.success, "data": [uploadedFilePath, uploadedFileType]})
+        return Response({"response_message": constants.messages.success})
     
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
