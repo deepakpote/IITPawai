@@ -8,7 +8,7 @@ import string
 from django.db import connection
 from contents.serializers import teachingAidSerializer , contentSerializer , selfLearningSerializer
 from users.authentication import TokenAuthentication
-from contents.models import content , contentResponse  , contentGrade
+from contents.models import content , contentResponse  , contentGrade , contentDetail
 from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent
 from mitraEndPoints import constants , utils
@@ -564,18 +564,30 @@ class ContentViewSet(viewsets.ModelViewSet):
     def uploadContent(self,request):
         # get inputs
         contentID = request.data.get('contentID')
-        contentTitle = request.data.get('contentTitle')
+        
+        engContentTitle = request.data.get('engContentTitle')
+        marContentTitle = request.data.get('marContentTitle')
+        
+        engInstruction = request.data.get('engInstruction')
+        marInstruction = request.data.get('marInstruction')
+        
+        engAuthor = request.data.get('engAuthor')
+        marAuthor = request.data.get('marAuthor')
+        
         contentTypeCodeID = request.data.get('contentTypeCodeID')
         subjectCodeID = request.data.get('subjectCodeID')
         gradeCodeIDs = request.data.get('gradeCodeIDs')
         topicCodeID = request.data.get('topicCodeID')
         requirement = request.data.get('requirement')
-        instruction = request.data.get('instruction')
+
         fileTypeCodeID = request.data.get('fileTypeCodeID')
         fileName = request.data.get('fileName')
-        author = request.data.get('author')
-        objectives = request.data.get('objectives')
-        languageCodeID = request.data.get('languageCodeID')
+        
+        #This is not getting used any where in the webportal as well as app so commented for now.
+        #objectives = request.data.get('objectives')
+        languageCodeID = request.data.get('contentLanguageCodeID')
+        
+        statusCodeID = request.data.get('statusCodeID')
         
         #Get user token
         authToken = request.META.get('HTTP_AUTHTOKEN')
@@ -588,10 +600,17 @@ class ContentViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
+        
+        
+        # Check if contentTitle for english is passed in post param
+        if not engContentTitle or engContentTitle is None or engContentTitle.isspace():
+            return Response({"response_message": constants.messages.uploadContent_contentTitle_english_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
             
-        # Check if contentTitle is passed in post param
-        if not contentTitle:
-            return Response({"response_message": constants.messages.uploadContent_contentTitle_cannot_be_empty,
+        # Check if contentTitle for marathi is passed in post param
+        if not marContentTitle or marContentTitle is None or marContentTitle.isspace():
+            return Response({"response_message": constants.messages.uploadContent_contentTitle_marathi_cannot_be_empty,
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED) 
             
@@ -607,20 +626,28 @@ class ContentViewSet(viewsets.ModelViewSet):
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED) 
             
-        # Check if fileName is passed in post param
-        if not fileName:
-            return Response({"response_message": constants.messages.uploadContent_fileName_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED)
             
         # Check if language is passed in post param
         if not languageCodeID:
             return Response({"response_message": constants.messages.uploadContent_languageCodeID_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if statusCodeID is passed in post param
+        if not statusCodeID:
+            return Response({"response_message": constants.messages.uploadContent_statusCodeID_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
         
-        
+        # If the filetype is video then validate the URL.
         if fileTypeCodeID ==  constants.mitraCode.video:
+            
+            # Check if fileName is passed in post param
+            if not fileName:
+                return Response({"response_message": constants.messages.uploadContent_fileName_cannot_be_empty,
+                                 "data": []},
+                                status = status.HTTP_401_UNAUTHORIZED)
+            
             #Validate youtube URL.
             isValidYoutubeURL = validateYoutubeURL(fileName)
             
@@ -635,6 +662,14 @@ class ContentViewSet(viewsets.ModelViewSet):
             objUser = user.objects.get(userID = userID)
         except user.DoesNotExist:
             return Response({"response_message": constants.messages.uploadContent_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+            
+        # If statusCodeID parameter is passed, then check status exists or not
+        try:
+            objStatus = code.objects.get(codeID = statusCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.uploadContent_status_not_exists,
                              "data": []},
                             status = status.HTTP_404_NOT_FOUND)
             
@@ -701,28 +736,47 @@ class ContentViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.uploadContent_language_does_not_exists,
                      "data": []},
                     status = status.HTTP_404_NOT_FOUND)
+            
+        # Get app language instances for english and marathi.
+        objAppLanguageEng = code.objects.get(codeID = constants.appLanguage.english)
+        objAppLanguageMar = code.objects.get(codeID = constants.appLanguage.marathi)
         
         try:
             # Check contentID is provided or not.
             if not contentID or contentID == 0:
                 # Save the content.
-                ObjRec =content.objects.create(contentTitle = contentTitle.strip(), 
-                        contentType = objContentType, 
+                objRec =content.objects.create(contentType = objContentType, 
                         subject = objSubject,
                         topic = objTopic,
                         requirement = requirement,
-                        instruction = instruction.strip(),
                         fileType = objFileType,
                         fileName= fileName,
-                        author = author,
-                        objectives = objectives,
+                        #objectives = null,
                         language = objLanguage,
+                        status = objStatus,
                         createdBy = objUser,
                         modifiedBy = objUser)
                 
-                ObjRec.save()      
+                objRec.save()
                 
-                contentID =  ObjRec.contentID 
+                
+                #Save the content details for multiple language.
+                contentDetail.objects.bulk_create(
+                                                    [
+                                                    contentDetail(content = objRec,
+                                                                  appLanguage = objAppLanguageEng,
+                                                                  contentTitle = engContentTitle.strip(),
+                                                                  instruction = engInstruction , 
+                                                                  author = engAuthor),
+                                                    contentDetail(content = objRec,
+                                                                  appLanguage = objAppLanguageMar ,
+                                                                  contentTitle = marContentTitle.strip(), 
+                                                                  instruction = marInstruction , 
+                                                                  author = marAuthor),
+                                                    ]
+                                                 )
+             
+                contentID =  objRec.contentID 
             
             else:
                 # If contentID parameter is passed, then check contentID exists or not and update the content details.       
@@ -734,18 +788,27 @@ class ContentViewSet(viewsets.ModelViewSet):
                             status = status.HTTP_404_NOT_FOUND)
                  
                 # If contentID valid, update the details.
-                content.objects.filter(contentID = contentID).update(contentTitle = contentTitle.strip(),  
-                                                                     contentType = objContentType, 
+                content.objects.filter(contentID = contentID).update(contentType = objContentType, 
                                                                      subject = objSubject,
                                                                      topic = objTopic,
                                                                      requirement = requirement,
-                                                                     instruction = instruction.strip(),
                                                                      fileType = objFileType,
                                                                      fileName= fileName,
-                                                                     author = author,
-                                                                     objectives = objectives,
+                                                                     #objectives = objectives,
+                                                                     status = objstatus,
                                                                      language = objLanguage,
                                                                      modifiedBy = objUser)
+                
+                # update content details for english language.
+                contentDetail.objects.filter(content = objcontent,
+                                             appLanguage = objAppLanguageEng).update(contentTitle = engContentTitle.strip(),  
+                                                                                    instruction = engInstruction.strip(),
+                                                                                    author = engAuthor)
+                # update content details for marathi language.
+                contentDetail.objects.filter(content = objcontent,
+                                             appLanguage = objAppLanguageMar).update(contentTitle = marContentTitle.strip(),  
+                                                                                     instruction = marInstruction.strip(),
+                                                                                     author = marAuthor)
             
             # Check content type of uploaded file.If teachingAids then save GradeCodeIDs     
             if contentTypeCodeID == constants.mitraCode.teachingAids:
