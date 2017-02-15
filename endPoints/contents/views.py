@@ -629,10 +629,6 @@ class ContentViewSet(viewsets.ModelViewSet):
                          "data": []},
                          status = status.HTTP_400_BAD_REQUEST)
                 
-#         if uploadedFile:
-#             fs = FileSystemStorage()
-#             uploadedFileName = fs.save(file.name, file)
-#             uploadedFilePath = fs.path(uploadedFileName)
             
         # If userID parameter is passed, then check user exists or not
         try:
@@ -773,21 +769,21 @@ class ContentViewSet(viewsets.ModelViewSet):
     def uploadFiles(self,request):
         
         uploadedFile = request.FILES['uploadedFile']
-        uploadedFileType = request.data.get('uploadedFileType')
+        fileTypeCodeID = request.data.get('fileTypeCodeID')
         
         uploadedFileName = uploadedFile.name
         baseDir = None
         
-        if (uploadedFileType == constants.mitraCode.pdf):
+        if (fileTypeCodeID == constants.mitraCode.pdf):
             baseDir = constants.uploadedContentDir.pdfDir
             
-        elif (uploadedFileType == constants.mitraCode.ppt):
+        elif (fileTypeCodeID == constants.mitraCode.ppt):
             baseDir = constants.uploadedContentDir.pptDir
             
-        elif (uploadedFileType == constants.mitraCode.worksheet):
+        elif (fileTypeCodeID == constants.mitraCode.worksheet):
             baseDir = constants.uploadedContentDir.worksheetDir
             
-        elif (uploadedFileType == constants.mitraCode.audio):
+        elif (fileTypeCodeID == constants.mitraCode.audio):
             baseDir = constants.uploadedContentDir.audioDir
             
         else:
