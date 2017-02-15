@@ -582,9 +582,10 @@ class ContentViewSet(viewsets.ModelViewSet):
 
         fileTypeCodeID = request.data.get('fileTypeCodeID')
         fileName = request.data.get('fileName')
-  
-        objectives = request.data.get('objectives')
-        languageCodeID = request.data.get('languageCodeID')
+        
+        #This is not getting used any where in the webportal as well as app so commented for now.
+        #objectives = request.data.get('objectives')
+        languageCodeID = request.data.get('contentLanguageCodeID')
         
         statusCodeID = request.data.get('statusCodeID')
         
@@ -599,10 +600,17 @@ class ContentViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
+        
+        
+        # Check if contentTitle for english is passed in post param
+        if not engContentTitle or engContentTitle is None or engContentTitle.isspace():
+            return Response({"response_message": constants.messages.uploadContent_contentTitle_english_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
             
-        # Check if contentTitle is passed in post param
-        if not engContentTitle.strip() or not marContentTitle.strip():
-            return Response({"response_message": constants.messages.uploadContent_contentTitle_cannot_be_empty,
+        # Check if contentTitle for marathi is passed in post param
+        if not marContentTitle or marContentTitle is None or marContentTitle.isspace():
+            return Response({"response_message": constants.messages.uploadContent_contentTitle_marathi_cannot_be_empty,
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED) 
             
@@ -618,11 +626,6 @@ class ContentViewSet(viewsets.ModelViewSet):
                      "data": []},
                      status = status.HTTP_401_UNAUTHORIZED) 
             
-        # Check if fileName is passed in post param
-        if not fileName:
-            return Response({"response_message": constants.messages.uploadContent_fileName_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED)
             
         # Check if language is passed in post param
         if not languageCodeID:
@@ -638,6 +641,13 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         # If the filetype is video then validate the URL.
         if fileTypeCodeID ==  constants.mitraCode.video:
+            
+            # Check if fileName is passed in post param
+            if not fileName:
+                return Response({"response_message": constants.messages.uploadContent_fileName_cannot_be_empty,
+                                 "data": []},
+                                status = status.HTTP_401_UNAUTHORIZED)
+            
             #Validate youtube URL.
             isValidYoutubeURL = validateYoutubeURL(fileName)
             
@@ -741,9 +751,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                         requirement = requirement,
                         fileType = objFileType,
                         fileName= fileName,
-                        objectives = objectives,
+                        #objectives = null,
                         language = objLanguage,
-                        status = objstatus,
+                        status = objStatus,
                         createdBy = objUser,
                         modifiedBy = objUser)
                 
@@ -754,14 +764,14 @@ class ContentViewSet(viewsets.ModelViewSet):
                 contentDetail.objects.bulk_create(
                                                     [
                                                     contentDetail(content = ObjRec,
-                                                                  appLanguage = objappLanguageEng,
+                                                                  appLanguage = objAppLanguageEng,
                                                                   contentTitle = engContentTitle.strip(),
-                                                                  instruction = engInstruction.strip() , 
+                                                                  instruction = engInstruction , 
                                                                   author = engAuthor),
                                                     contentDetail(content = ObjRec,
-                                                                  appLanguage = objappLanguageMar ,
+                                                                  appLanguage = objAppLanguageMar ,
                                                                   contentTitle = marContentTitle.strip(), 
-                                                                  instruction = marInstruction.strip() , 
+                                                                  instruction = marInstruction , 
                                                                   author = marAuthor),
                                                     ]
                                                  )
@@ -784,7 +794,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                                      requirement = requirement,
                                                                      fileType = objFileType,
                                                                      fileName= fileName,
-                                                                     objectives = objectives,
+                                                                     #objectives = objectives,
                                                                      status = objstatus,
                                                                      language = objLanguage,
                                                                      modifiedBy = objUser)
