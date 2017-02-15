@@ -189,7 +189,7 @@ class staticFileDir():
     newsPDFDir = "news/pdf/"
     
 class uploadedContentDir():
-    path = "/static/uploadedContent/"
+    path = "/static/content/"
     currentDir = settings.PROJECT_DIR
     baseDir = currentDir + path
     pdfDir = baseDir + "pdf/"
