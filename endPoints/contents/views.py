@@ -5,6 +5,8 @@ from rest_framework import viewsets,permissions
 from rest_framework.permissions import IsAuthenticated
 import re
 import string
+from time import strftime
+import os,time
 from django.db import connection
 from contents.serializers import teachingAidSerializer , contentSerializer , selfLearningSerializer
 from users.authentication import TokenAuthentication
@@ -561,7 +563,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def uploadContent(self,request):
         # get inputs
-        contentID = request.data.get('contentID')
+        contentID = int(request.data.get('contentID'))
         
         engContentTitle = request.data.get('engContentTitle')
         marContentTitle = request.data.get('marContentTitle')
@@ -572,7 +574,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         engAuthor = request.data.get('engAuthor')
         marAuthor = request.data.get('marAuthor')
         
-        contentTypeCodeID = request.data.get('contentTypeCodeID')
+        contentTypeCodeID = int(request.data.get('contentTypeCodeID'))
         subjectCodeID = request.data.get('subjectCodeID')
         gradeCodeIDs = request.data.get('gradeCodeIDs')
         topicCodeID = request.data.get('topicCodeID')
@@ -581,14 +583,13 @@ class ContentViewSet(viewsets.ModelViewSet):
         fileTypeCodeID = request.data.get('fileTypeCodeID')
         fileName = request.data.get('fileName')
         author = request.data.get('author')
-#         objectives = request.data.get('objectives')
-#         languageCodeID = request.data.get('languageCodeID')
         
         #This is not getting used any where in the webportal as well as app so commented for now.
         #objectives = request.data.get('objectives')
         languageCodeID = request.data.get('contentLanguageCodeID')       
         statusCodeID = request.data.get('statusCodeID')
         uploadedFile = request.FILES['uploadedFile']
+        tempFileName, fileExtension = os.path.splitext(uploadedFile.name) 
         #Get user token
         authToken = request.META.get('HTTP_AUTHTOKEN')
         
@@ -648,45 +649,19 @@ class ContentViewSet(viewsets.ModelViewSet):
                                  "data": []},
                                 status = status.HTTP_401_UNAUTHORIZED)
             
-            #Validate youtube URL.
-            isValidYoutubeURL = validateYoutubeURL(fileName)
-            
-            #If Youtube URL is Invaild 
-            if not isValidYoutubeURL:
-                return Response({"response_message": constants.messages.uploadContent_fileName_invaild,
-                         "data": []},
-                         status = status.HTTP_400_BAD_REQUEST)
+            if fileTypeCodeID ==  constants.mitraCode.video:
+                #Validate youtube URL.
+                isValidYoutubeURL = validateYoutubeURL(fileName)
+                
+                #If Youtube URL is Invaild 
+                if not isValidYoutubeURL:
+                    return Response({"response_message": constants.messages.uploadContent_fileName_invaild,
+                             "data": []},
+                             status = status.HTTP_400_BAD_REQUEST)
         
         else:
-            print "*******************fileTypeCodeID:", fileTypeCodeID    
-            uploadedFileName = uploadedFile.name
-            baseDir = None
-            
-            print "*******************code", constants.mitraCode.a
-            
-            if fileTypeCodeID == constants.mitraCode.pdf:
-                baseDir = constants.uploadedContentDir.pdfDir
-            
-            elif fileTypeCodeID == constants.mitraCode.ppt:
-                baseDir = constants.uploadedContentDir.pptDir
-            
-            elif fileTypeCodeID == constants.mitraCode.worksheet:
-                baseDir = constants.uploadedContentDir.worksheetDir
-            
-            elif fileTypeCodeID == constants.mitraCode.audio:    
-                print "************reached in audio directory"
-                baseDir = constants.uploadedContentDir.audioDir
-                print "**********baseDir", baseDir
-                
-#             else:
-#                 print "*******reached under else of upload file"
-                
-            completeFileName = str(baseDir) + str(uploadedFileName)
-        
-            with open(completeFileName, 'wb+') as destination:
-                for chunk in uploadedFile.chunks():
-                    destination.write(chunk)
-            
+            fileName = "upload_pending"
+
         # If userID parameter is passed, then check user exists or not
         try:
             objUser = user.objects.get(userID = userID)
@@ -709,9 +684,8 @@ class ContentViewSet(viewsets.ModelViewSet):
         objTopic = None
         arrGradeCodeIDs = None
         
-        print "***********contentTypeCodeID :", contentTypeCodeID
         # Check content type of uploaded file.    
-        if contentTypeCodeID == constants.mitraCode.teachingAids:
+        if contentTypeCodeID == int(constants.mitraCode.teachingAids):
             # If content type is teaching Aid then subjetCodeID & gradeCodeIDs can not be empty.
             if not subjectCodeID or subjectCodeID == 0:
                 return Response({"response_message": constants.messages.uploadContent_subjectCodeID_cannot_be_empty,
@@ -844,55 +818,45 @@ class ContentViewSet(viewsets.ModelViewSet):
             # Check content type of uploaded file.If teachingAids then save GradeCodeIDs     
             if contentTypeCodeID == constants.mitraCode.teachingAids:
                 saveContentGrade(arrGradeCodeIDs , contentID)
-                                   
+            
+            if fileTypeCodeID != constants.mitraCode.video or fileTypeCodeID != constants.mitraCode.ekStep:
+
+                currentDateTime = strftime("%y%m%d%H%M%S", time.localtime())
+                baseDir = None
+                
+                if int(fileTypeCodeID) == int(constants.mitraCode.pdf):
+                    uploadedFileName = str(contentID) + "_" + currentDateTime + fileExtension
+                    baseDir = constants.uploadedContentDir.pdfDir
+                
+                elif int(fileTypeCodeID) == int(constants.mitraCode.ppt):
+                    uploadedFileName = str(contentID) + "_" + currentDateTime + fileExtension
+                    baseDir = constants.uploadedContentDir.pptDir
+                
+                elif int(fileTypeCodeID) == int(constants.mitraCode.worksheet):
+                    baseDir = constants.uploadedContentDir.worksheetDir
+                    uploadedFileName = str(contentID) + "_" + currentDateTime + fileExtension
+                
+                elif int(fileTypeCodeID) == int(constants.mitraCode.audio):    
+                    baseDir = constants.uploadedContentDir.audioDir 
+                    uploadedFileName = str(contentID) + "_"+ currentDateTime + fileExtension
+                                  
+                fileName = str(baseDir) + str(uploadedFileName)
+            
+                with open(fileName, 'wb+') as destination:
+                    for chunk in uploadedFile.chunks():
+                        destination.write(chunk)
+                        
+                content.objects.filter(contentID = contentID).update(fileName = uploadedFileName)
+                                                  
         except Exception as e:
             # Error occurred while uploading the content.
-            #print e
+#             print e
             return Response({"response_message": constants.messages.uploadContent_content_upload_failed,
                      "data": []},
                      status = status.HTTP_400_BAD_REQUEST)
 
         #Return the response
         return Response({"response_message": constants.messages.success, "data": []})
-        
-        
-    """
-    API to upload files
-    """
-#     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
-#     def uploadFiles(self,request):
-#         
-#         uploadedFile = request.FILES['uploadedFile']
-#         fileTypeCodeID = request.data.get('fileTypeCodeID')
-#         
-#         uploadedFileName = uploadedFile.name
-#         baseDir = None
-#         
-#         if (fileTypeCodeID == constants.mitraCode.pdf):
-#             baseDir = constants.uploadedContentDir.pdfDir
-#             
-#         elif (fileTypeCodeID == constants.mitraCode.ppt):
-#             baseDir = constants.uploadedContentDir.pptDir
-#             
-#         elif (fileTypeCodeID == constants.mitraCode.worksheet):
-#             baseDir = constants.uploadedContentDir.worksheetDir
-#             
-#         elif (fileTypeCodeID == constants.mitraCode.audio):
-#             baseDir = constants.uploadedContentDir.audioDir
-#             
-#         else:
-#              return Response({"response_message": constants.messages.uploadContent_content_upload_failed,
-#                      "data": []},
-#                      status = status.HTTP_400_BAD_REQUEST)
-#             
-#         completeFileName = str(baseDir) + str(uploadedFileName)
-#         
-#         with open(completeFileName, 'wb+') as destination:
-#             for chunk in uploadedFile.chunks():
-#                 destination.write(chunk)
-#     
-#         #Return the response
-#         return Response({"response_message": constants.messages.success})
 #     
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
