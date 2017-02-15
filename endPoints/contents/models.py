@@ -33,6 +33,7 @@ class content(models.Model):
     class Meta:
         db_table = 'con_content'
         
+     
 """
 content detail model
 """                 
@@ -42,23 +43,7 @@ class contentDetail(models.Model):
     appLanguage = models.ForeignKey('commons.code', db_column='appLanguageCodeID', related_name='contentDetail_appLanguageCodeID')
     contentTitle = models.CharField(null = False, unique = False, max_length = 255)
     instruction = models.TextField(null = True)
-    author = models.CharField(null = False, max_length = 255)
-       
-    class Meta:
-        db_table = 'con_contentDetail'
-        unique_together = ('content', 'appLanguage')
-        
-        
-"""
-content detail model
-"""                 
-class contentDetail(models.Model):
-    contentDetailID = models.AutoField(primary_key = True)
-    content = models.ForeignKey('content', db_column = 'contentID', null = False, related_name="contentDetail_contentID")
-    appLanguage = models.ForeignKey('commons.code', db_column='appLanguageCodeID', related_name='contentDetail_appLanguageCodeID')
-    contentTitle = models.CharField(null = False, unique = False, max_length = 255)
-    instruction = models.TextField(null = True)
-    author = models.CharField(null = False, max_length = 255)
+    author = models.CharField(null = True, max_length = 255)
        
     class Meta:
         db_table = 'con_contentDetail'

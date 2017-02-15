@@ -68,7 +68,7 @@ class messages():
     code_list_version_number_must_be_integer = 100157
     code_list_version_number_invalid = 100158
     
-    uploadContent_contentTitle_cannot_be_empty = 100159
+    uploadContent_contentTitle_english_cannot_be_empty = 100159
     uploadContent_contentType_cannot_be_empty = 100160
     uploadContent_fileType_cannot_be_empty = 100161
     uploadContent_fileName_cannot_be_empty = 100162
@@ -118,6 +118,11 @@ class messages():
     
     contentSearch_appLanguageCodeID_cannot_be_empty = 100198
     contentSearch_appLanguageCodeID_not_exists = 100199
+    
+    uploadContent_statusCodeID_cannot_be_empty = 100201
+    uploadContent_status_not_exists = 100200
+    uploadContent_contentTitle_marathi_cannot_be_empty = 100201
+
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
@@ -157,6 +162,7 @@ class mitraCode():
     ppt = 108102
     worksheet = 108103
     pdf = 108104
+    ekStep = 108105
 
     
 class contentSearchRecords():
@@ -165,6 +171,10 @@ class contentSearchRecords():
 class language():
     english = 101100
     marathi = 101101
+    
+class appLanguage():
+    english = 113100
+    marathi = 113101
 
 class imageDir():
     path = "/static/user/"
@@ -172,7 +182,7 @@ class imageDir():
     currentDir = os.getcwd()
     currentDir = settings.PROJECT_DIR
     baseDir = currentDir + path
-
+    
 class staticFileDir():
     userDir = "user/"
     newsImageDir = "news/image/"
