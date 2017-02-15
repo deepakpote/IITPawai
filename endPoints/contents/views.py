@@ -640,7 +640,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                              status = status.HTTP_401_UNAUTHORIZED)
         
         # If the filetype is video then validate the URL.
-        if fileTypeCodeID ==  constants.mitraCode.video:
+        if fileTypeCodeID ==  constants.mitraCode.video or fileTypeCodeID ==  constants.mitraCode.ekStep:
             
             # Check if fileName is passed in post param
             if not fileName:
@@ -656,7 +656,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                 return Response({"response_message": constants.messages.uploadContent_fileName_invaild,
                          "data": []},
                          status = status.HTTP_400_BAD_REQUEST)
-            
+                  
         # If userID parameter is passed, then check user exists or not
         try:
             objUser = user.objects.get(userID = userID)
@@ -795,7 +795,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                                      fileType = objFileType,
                                                                      fileName= fileName,
                                                                      #objectives = objectives,
-                                                                     status = objstatus,
+                                                                     status = objStatus,
                                                                      language = objLanguage,
                                                                      modifiedBy = objUser)
                 

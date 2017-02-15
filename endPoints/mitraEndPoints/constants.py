@@ -158,6 +158,7 @@ class mitraCode():
     download = 111101
     share = 111102
     video = 108100
+    ekStep = 108105
 
     
 class contentSearchRecords():
