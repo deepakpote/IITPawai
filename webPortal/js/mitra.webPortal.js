@@ -68,7 +68,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
         url: '/requestOtp',
         templateUrl : '/js/login/requestOtpView.html',
         controller:'requestOtpController',
-        controllerAs : 'requestOtp'
+        controllerAs : 'requestOTP'
     });
     loginModalStateProvider.state('main.index.home.setpassword', {
         url: '/setPassword',

@@ -35,7 +35,7 @@ angular.module("mitraPortal").controller("requestOtpController", function($locat
                     alert(response.data.response_message);
                 }
             );
-    };
+    }
 
     function closeModal() {
         $modalInstance.close();
