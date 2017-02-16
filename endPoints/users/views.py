@@ -5,11 +5,11 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 #from users.models import user 
 from rest_framework import viewsets,permissions
-from users.serializers import userSerializer, otpSerializer
+from users.serializers import userSerializer, otpSerializer, userRoleSerializer
 
 from rest_framework.permissions import IsAuthenticated
 from users.authentication import TokenAuthentication
-from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth, device, userContent
+from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth, device, userContent, role, userRole
 from commons.models import code
 from mitraEndPoints import constants , utils, settings 
 import random
@@ -1021,6 +1021,39 @@ class UserViewSet(viewsets.ModelViewSet):
         user.objects.filter(userID = userID).update(photoUrl = fileName)
 
         return Response({"response_message": constants.messages.success, "data": []})
+    
+    """
+    Get user's roles
+    """   
+    @list_route(methods=['GET'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def getUserRoleList(self, request):
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+
+        #get UserID from auth token
+        userID  =  getUserIDFromAuthToken(authToken)
+        
+        # check user is not null 
+        if not userID or userID == 0:
+            return Response({"response_message": constants.messages.userRole_list_user_id_cannot_be_empty, 
+                             "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+    
+        # check userID exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.userRole_list_user_does_not_exist, 
+                             "data": []}, status = status.HTTP_404_NOT_FOUND)
+        
+        userRoleQuerySet = userRole.objects.filter(user = objUser)
+        
+        if not userRoleQuerySet:
+            return Response({"response_message": constants.messages.userRole_list_no_records_found,
+                    "data": []},
+                    status = status.HTTP_200_OK)
+                     
+        serializer = userRoleSerializer(userRoleQuerySet, many = True)
+        
+        return Response({"response_message": constants.messages.success, "data": serializer.data})
 
 
 #     @list_route(methods=['get','post'], permission_classes=[permissions.AllowAny])
