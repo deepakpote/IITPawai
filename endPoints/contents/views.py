@@ -574,7 +574,11 @@ class ContentViewSet(viewsets.ModelViewSet):
         engAuthor = request.data.get('engAuthor')
         marAuthor = request.data.get('marAuthor')
         
-        contentTypeCodeID = int(request.data.get('contentTypeCodeID'))
+        if request.data.get('contentTypeCodeID'):
+            contentTypeCodeID = int(request.data.get('contentTypeCodeID'))
+        else:
+            contentTypeCodeID = None
+
         subjectCodeID = request.data.get('subjectCodeID')
         gradeCodeIDs = request.data.get('gradeCodeIDs')
         topicCodeID = request.data.get('topicCodeID')
@@ -583,63 +587,29 @@ class ContentViewSet(viewsets.ModelViewSet):
         fileTypeCodeID = request.data.get('fileTypeCodeID')
         fileName = request.data.get('fileName')
         author = request.data.get('author')
+        uploadedFile = request.FILES['uploadedFile']
+        
+        languageCodeID = request.data.get('contentLanguageCodeID')       
+        statusCodeID = request.data.get('statusCodeID')
         
         #This is not getting used any where in the webportal as well as app so commented for now.
         #objectives = request.data.get('objectives')
-        languageCodeID = request.data.get('contentLanguageCodeID')       
-        statusCodeID = request.data.get('statusCodeID')
-        uploadedFile = request.FILES['uploadedFile']
-        tempFileName, fileExtension = os.path.splitext(uploadedFile.name) 
+        
         #Get user token
         authToken = request.META.get('HTTP_AUTHTOKEN')
         
         #Get userID from authToken
         userID = getUserIDFromAuthToken(authToken)
-               
-        # Check if userID is passed in post param
-        if not userID:
-            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
-                             "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED)
         
+        responseMessage = validateRequest(userID, engContentTitle, marContentTitle, engInstruction, marInstruction, 
+                               contentTypeCodeID, fileTypeCodeID, languageCodeID, statusCodeID)
         
-        # Check if contentTitle for english is passed in post param
-        if not engContentTitle or engContentTitle is None or engContentTitle.isspace():
-            return Response({"response_message": constants.messages.uploadContent_contentTitle_english_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED) 
+        if responseMessage != 0:
+            return Response({"response_message": responseMessage,
+                            "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED)
+             
             
-        # Check if contentTitle for marathi is passed in post param
-        if not marContentTitle or marContentTitle is None or marContentTitle.isspace():
-            return Response({"response_message": constants.messages.uploadContent_contentTitle_marathi_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED) 
-            
-        # Check if contentType CodeID is passed in post param
-        if not contentTypeCodeID and contentTypeCodeID != 0:
-            return Response({"response_message": constants.messages.uploadContent_contentType_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED) 
-        
-        # Check if fileType is passed in post param
-        if not fileTypeCodeID and fileTypeCodeID != 0:
-            return Response({"response_message": constants.messages.uploadContent_fileType_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED) 
-            
-            
-        # Check if language is passed in post param
-        if not languageCodeID:
-            return Response({"response_message": constants.messages.uploadContent_languageCodeID_cannot_be_empty,
-                             "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED)
-            
-        # Check if statusCodeID is passed in post param
-        if not statusCodeID:
-            return Response({"response_message": constants.messages.uploadContent_statusCodeID_cannot_be_empty,
-                             "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED)
-        
         # If the filetype is video then validate the URL.
         if fileTypeCodeID ==  constants.mitraCode.video or fileTypeCodeID ==  constants.mitraCode.ekStep:
             
@@ -750,20 +720,19 @@ class ContentViewSet(viewsets.ModelViewSet):
             # Check contentID is provided or not.
             if not contentID or contentID == 0:
                 # Save the content.
-                objRec =content.objects.create(contentType = objContentType, 
-                        subject = objSubject,
-                        topic = objTopic,
-                        requirement = requirement,
-                        fileType = objFileType,
-                        fileName= fileName,
-                        #objectives = null,
-                        language = objLanguage,
-                        status = objStatus,
-                        createdBy = objUser,
-                        modifiedBy = objUser)
+                objRec = content.objects.create(contentType = objContentType, 
+                                                subject = objSubject,
+                                                topic = objTopic,
+                                                requirement = requirement,
+                                                fileType = objFileType,
+                                                fileName= fileName,
+                                                #objectives = null,
+                                                language = objLanguage,
+                                                status = objStatus,
+                                                createdBy = objUser,
+                                                modifiedBy = objUser)
                 
                 objRec.save()
-                
                 
                 #Save the content details for multiple language.
                 contentDetail.objects.bulk_create(
@@ -822,36 +791,11 @@ class ContentViewSet(viewsets.ModelViewSet):
                 saveContentGrade(arrGradeCodeIDs , contentID)
             
             if fileTypeCodeID != constants.mitraCode.video or fileTypeCodeID != constants.mitraCode.ekStep:
-
-                baseDir = None
-                
-                if int(fileTypeCodeID) == int(constants.mitraCode.pdf):
-                    baseDir = constants.uploadedContentDir.pdfDir
-                    uploadedFileName = constructFileName(contentID, fileExtension) 
-                
-                elif int(fileTypeCodeID) == int(constants.mitraCode.ppt):
-                    baseDir = constants.uploadedContentDir.pptDir
-                    uploadedFileName = constructFileName(contentID, fileExtension) 
-                
-                elif int(fileTypeCodeID) == int(constants.mitraCode.worksheet):
-                    baseDir = constants.uploadedContentDir.worksheetDir
-                    uploadedFileName = constructFileName(contentID, fileExtension) 
-                
-                elif int(fileTypeCodeID) == int(constants.mitraCode.audio):  
-                    baseDir = constants.uploadedContentDir.audioDir 
-                    uploadedFileName = constructFileName(contentID, fileExtension) 
-                                  
-                fileName = str(baseDir) + str(uploadedFileName)
-            
-                with open(fileName, 'wb+') as destination:
-                    for chunk in uploadedFile.chunks():
-                        destination.write(chunk)
-                        
-                content.objects.filter(contentID = contentID).update(fileName = uploadedFileName)
-                                                  
+                saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
+               
         except Exception as e:
             # Error occurred while uploading the content.
-#             print e
+            #print e
             return Response({"response_message": constants.messages.uploadContent_content_upload_failed,
                      "data": []},
                      status = status.HTTP_400_BAD_REQUEST)
@@ -1059,16 +1003,94 @@ def saveContentGrade(arrGradeCodeIDs , contentID):
     
     return
 
+"""
+Function to construct file names of uploaded files with time stamp and content ID
+"""
 def constructFileName(contentID, fileExtension):
     currentDateTime = strftime("%y%m%d%H%M%S", time.localtime())
     
     return (str(contentID) + "_" + currentDateTime + fileExtension)
 
+"""
+Function to remove an already stored file in case of an edit
+"""
 def removeUploadedFile(contentID):
     
+    #under the static/content directory, search for file that starts with the given contentID
     for root, dirs, files in os.walk(constants.uploadedContentDir.baseDir, topdown=False):
         for name in files:
             if(name.startswith(str(contentID))):
                 os.remove(os.path.join(root, name)) 
+
+"""
+Function to validate and send back response messages for several request parameters
+"""                
+def validateRequest(userID, engContentTitle, marContentTitle, engInstruction, marInstruction, 
+                               contentTypeCodeID, fileTypeCodeID, languageCodeID, statusCodeID):
+    
+        # Check if userID is passed in post param
+        if not userID:
+            return constants.messages.user_userid_cannot_be_empty
+                   
+        # Check if contentTitle for english is passed in post param
+        if not engContentTitle or engContentTitle is None or engContentTitle.isspace():
+            return constants.messages.uploadContent_contentTitle_english_cannot_be_empty
+            
+         # Check if contentTitle for marathi is passed in post param
+        if not marContentTitle or marContentTitle is None or marContentTitle.isspace():
+            return constants.messages.uploadContent_contentTitle_marathi_cannot_be_empty
+            
+        # Check if contentType CodeID is passed in post param
+        if not contentTypeCodeID and contentTypeCodeID != 0:
+            return constants.messages.uploadContent_contentType_cannot_be_empty
+        
+        # Check if fileType is passed in post param
+        if not fileTypeCodeID and fileTypeCodeID != 0:
+            return constants.messages.uploadContent_fileType_cannot_be_empty
                 
-                          
+        # Check if language is passed in post param
+        if not languageCodeID:
+            return constants.messages.uploadContent_languageCodeID_cannot_be_empty
+            
+        # Check if statusCodeID is passed in post param
+        if not statusCodeID:
+            return constants.messages.uploadContent_statusCodeID_cannot_be_empty
+
+        return 0
+ 
+"""
+Function to save the uploaded file
+"""   
+def saveUploadedFile(uploadedFile, fileTypeCodeID, contentID):
+    
+    tempFileName, fileExtension = os.path.splitext(uploadedFile.name) 
+    baseDir = None
+                
+    if int(fileTypeCodeID) == int(constants.mitraCode.pdf):
+        baseDir = constants.uploadedContentDir.pdfDir
+        uploadedFileName = constructFileName(contentID, fileExtension) 
+                
+    elif int(fileTypeCodeID) == int(constants.mitraCode.ppt):
+        baseDir = constants.uploadedContentDir.pptDir
+        uploadedFileName = constructFileName(contentID, fileExtension) 
+                
+    elif int(fileTypeCodeID) == int(constants.mitraCode.worksheet):
+        baseDir = constants.uploadedContentDir.worksheetDir
+        uploadedFileName = constructFileName(contentID, fileExtension) 
+                
+    elif int(fileTypeCodeID) == int(constants.mitraCode.audio):  
+        baseDir = constants.uploadedContentDir.audioDir 
+        uploadedFileName = constructFileName(contentID, fileExtension) 
+                                  
+    #path where the file should be stored
+    fileName = str(baseDir) + str(uploadedFileName)
+            
+    #open the file in chunks and write it the to the destination
+    with open(fileName, 'wb+') as destination:
+        for chunk in uploadedFile.chunks():
+            destination.write(chunk)
+    
+    #updating the corresponding entry in the database                    
+    content.objects.filter(contentID = contentID).update(fileName = uploadedFileName)          
+        
+                                  
