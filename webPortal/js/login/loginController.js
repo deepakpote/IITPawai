@@ -1,5 +1,8 @@
-angular.module("mitraPortal").controller("loginController", function($scope, $location, $modalInstance,
-                                                                     $rootScope,$cookies, loginService){
+angular.module("mitraPortal").controller("loginController", LoginController);
+
+LoginController.$inject = ['$location', '$modalInstance', '$rootScope' ,'$cookies', 'loginService'];
+
+function LoginController($location, $modalInstance, $rootScope,$cookies, loginService) {
 
     console.log("login controller called..");
     var vm = this;
@@ -29,10 +32,10 @@ angular.module("mitraPortal").controller("loginController", function($scope, $lo
 						}
 					}
 				);
-	};
+	}
 
 	function closeModal () {
 	    $modalInstance.close();
     }
 
-});
+}

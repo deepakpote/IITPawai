@@ -2,9 +2,11 @@
  * Created by amoghpalnitkar on 2/14/17.
  */
 
-angular.module("mitraPortal").controller("requestOtpController", function($location, $modalInstance,
-                                                                          HttpUtils,
-                                                                     $rootScope,$cookies, loginService, $state){
+angular.module("mitraPortal").controller("requestOtpController", RequestOtpController);
+
+RequestOtpController.$inject = ['$modalInstance', 'HttpUtils', '$rootScope' ,'loginService', '$state'];
+
+function RequestOtpController($modalInstance, HttpUtils, $rootScope , loginService, $state){
 
     console.log("request otp controller called..");
     var vm = this;
@@ -65,4 +67,4 @@ angular.module("mitraPortal").controller("requestOtpController", function($locat
             );
     }
 
-});
+}

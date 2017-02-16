@@ -2,8 +2,11 @@
  * Created by amoghpalnitkar on 2/15/17.
  */
 
-angular.module("mitraPortal").controller("setPasswordController", function($location, $modalInstance,HttpUtils,
-                                                                          $rootScope,$cookies, loginService, $state){
+angular.module("mitraPortal").controller("setPasswordController", SetPasswordController);
+
+SetPasswordController.$inject = ['$modalInstance','HttpUtils','loginService','$state'];
+
+function SetPasswordController($modalInstance,HttpUtils, loginService, $state){
 
     console.log("request otp controller called..");
     var vm = this;
@@ -29,10 +32,10 @@ angular.module("mitraPortal").controller("setPasswordController", function($loca
             }
         );
         $state.go('main.index.home');
-    };
+    }
 
     function closeModal () {
         $modalInstance.close();
     }
 
-});
+}
