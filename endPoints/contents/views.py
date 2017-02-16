@@ -814,6 +814,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                                              appLanguage = objAppLanguageMar).update(contentTitle = marContentTitle.strip(),  
                                                                                      instruction = marInstruction.strip(),
                                                                                      author = marAuthor)
+                
+                removeUploadedFile(contentID)
             
             # Check content type of uploaded file.If teachingAids then save GradeCodeIDs     
             if contentTypeCodeID == constants.mitraCode.teachingAids:
@@ -821,24 +823,23 @@ class ContentViewSet(viewsets.ModelViewSet):
             
             if fileTypeCodeID != constants.mitraCode.video or fileTypeCodeID != constants.mitraCode.ekStep:
 
-                currentDateTime = strftime("%y%m%d%H%M%S", time.localtime())
                 baseDir = None
                 
                 if int(fileTypeCodeID) == int(constants.mitraCode.pdf):
-                    uploadedFileName = str(contentID) + "_" + currentDateTime + fileExtension
                     baseDir = constants.uploadedContentDir.pdfDir
+                    uploadedFileName = constructFileName(contentID, fileExtension) 
                 
                 elif int(fileTypeCodeID) == int(constants.mitraCode.ppt):
-                    uploadedFileName = str(contentID) + "_" + currentDateTime + fileExtension
                     baseDir = constants.uploadedContentDir.pptDir
+                    uploadedFileName = constructFileName(contentID, fileExtension) 
                 
                 elif int(fileTypeCodeID) == int(constants.mitraCode.worksheet):
                     baseDir = constants.uploadedContentDir.worksheetDir
-                    uploadedFileName = str(contentID) + "_" + currentDateTime + fileExtension
+                    uploadedFileName = constructFileName(contentID, fileExtension) 
                 
-                elif int(fileTypeCodeID) == int(constants.mitraCode.audio):    
+                elif int(fileTypeCodeID) == int(constants.mitraCode.audio):  
                     baseDir = constants.uploadedContentDir.audioDir 
-                    uploadedFileName = str(contentID) + "_"+ currentDateTime + fileExtension
+                    uploadedFileName = constructFileName(contentID, fileExtension) 
                                   
                 fileName = str(baseDir) + str(uploadedFileName)
             
@@ -1058,5 +1059,16 @@ def saveContentGrade(arrGradeCodeIDs , contentID):
     
     return
 
+def constructFileName(contentID, fileExtension):
+    currentDateTime = strftime("%y%m%d%H%M%S", time.localtime())
+    
+    return (str(contentID) + "_" + currentDateTime + fileExtension)
 
-                        
+def removeUploadedFile(contentID):
+    
+    for root, dirs, files in os.walk(constants.uploadedContentDir.baseDir, topdown=False):
+        for name in files:
+            if(name.startswith(str(contentID))):
+                os.remove(os.path.join(root, name)) 
+                
+                          
