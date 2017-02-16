@@ -1,25 +1,26 @@
-<div ng-controller="loginController">
+<div>
 	<div class="">
-        <div class="text-center" style="font-size: large;
-    margin-top: 24px;">Sign In</div>
-        <i class="fa fa-times" style="position: absolute;
-    top: 0;
-    right: 0;
-    padding: 8px;
-    cursor: pointer;" aria-hidden="true"></i>
+        <div class="text-center sign-in-text" >Sign In</div>
+        <i class="fa fa-times close-modal" aria-hidden="true" ng-click="login.closeModal()"></i>
 		<form name="loginForm" class="form-horizontal" style="width: 70%;margin:auto;padding: 16px;">
             <div class="phone-number">
-                <input class="ng-pristine ng-untouched" type="tel" placeholder="User Name/Mobile" />
+                <input class="ng-pristine ng-untouched" minlength="10" maxlength="10"
+                       required ng-model="login.phoneno" type="tel" placeholder="10 digit mobile number" />
+                <div role="alert">
+                  <span class="error" ng-show="loginForm.phoneno.$error.required">
+                   Required!</span>
+                </div>
             </div>
             <div class="password">
-                <input class="ng-pristine ng-untouched" type="text" placeholder="Password" />
+                <input class="ng-pristine ng-untouched" ng-model="login.passkey" type="password" placeholder="Password" />
             </div>
             <div class="row clearfix" style="margin-bottom: 16px;margin-top: 8px;margin-left: 2px;margin-right:2px;">
                 <label class="pull-left text-color-black" style="font-weight: 400">Don't have a password?</label>
-                <label class="pull-right primary-text-color">REQUEST OTP</label>
+                <label ui-sref="main.index.home.requestotp"
+                       class="pull-right primary-text-color" style="cursor: pointer">REQUEST OTP</label>
             </div>
             <div class="text-center">
-                <button type="submit" class="btn btn-warning">Submit</button>
+                <button ng-click="login.validate()" type="button" class="btn btn-warning">Submit</button>
             </div>
 		</form>
 	</div>

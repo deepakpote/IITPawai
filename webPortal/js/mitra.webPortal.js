@@ -5,7 +5,7 @@ mitraPortal.
 config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locationProvider',
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
 
-    $locationProvider.html5Mode(true);
+    //$locationProvider.html5Mode(true);
 	 $urlRouterProvider.otherwise('/home');
 
 	$stateProvider
@@ -60,7 +60,21 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
   // define login route
     loginModalStateProvider.state('main.index.home.login', {
         url: '/login',
-        templateUrl : '/js/login/loginView.html'
+        templateUrl : '/js/login/loginView.html',
+        controller:'loginController',
+        controllerAs : 'login'
+    });
+    loginModalStateProvider.state('main.index.home.requestotp', {
+        url: '/requestOtp',
+        templateUrl : '/js/login/requestOtpView.html',
+        controller:'requestOtpController',
+        controllerAs : 'requestOtp'
+    });
+    loginModalStateProvider.state('main.index.home.setpassword', {
+        url: '/setPassword',
+        templateUrl : '/js/login/setPasswordView.html',
+        controller:'setPasswordController',
+        controllerAs : 'setPassword'
     });
 }]);
 /*
@@ -70,21 +84,21 @@ angular.module("mitraPortal").run(
 		  }
 		]);
 */
-run.$inject = ['$rootScope', '$location', '$cookies', '$http'];
-function run($rootScope, $location, $cookies, $http) {
-
-    // keep user logged in after page refresh
-    $rootScope.globals = $cookies.getObject('globals') || {};
-//    if ($rootScope.globals.currentUser) {
-//        $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.token;
-//    }
-
-    $rootScope.$on('$locationChangeStart', function (event, next, current) {
-        // redirect to login page if not logged in and trying to access a restricted page
-        var restrictedPage = ($location.path()).indexOf('/login') === -1;
-        var loggedIn = $rootScope.globals.currentUser;
-        if (restrictedPage && !loggedIn) {
-            $location.path('/login');
-        }
-    });
-}
+// run.$inject = ['$rootScope', '$location', '$cookies', '$http'];
+// function run($rootScope, $location, $cookies, $http) {
+//
+//     // keep user logged in after page refresh
+//     $rootScope.globals = $cookies.getObject('globals') || {};
+// //    if ($rootScope.globals.currentUser) {
+// //        $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.token;
+// //    }
+//
+//     $rootScope.$on('$locationChangeStart', function (event, next, current) {
+//         // redirect to login page if not logged in and trying to access a restricted page
+//         var restrictedPage = ($location.path()).indexOf('/login') === -1;
+//         var loggedIn = $rootScope.globals.currentUser;
+//         if (restrictedPage && !loggedIn) {
+//             $location.path('/login');
+//         }
+//     });
+// }
