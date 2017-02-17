@@ -8,14 +8,14 @@ SetPasswordController.$inject = ['$modalInstance','HttpUtils','loginService','$s
 
 function SetPasswordController($modalInstance,HttpUtils, loginService, $state){
 
-    console.log("request otp controller called..");
+    console.log("set password controller called..");
     var vm = this;
     vm.errormessage = "";
     vm.setPassword = setPassword;
     vm.closeModal = closeModal;
 
     function setPassword() {
-        console.log("get otp..");
+        console.log("set password");
         //TODO write server call to set password
         var password = vm.password;
         loginService.setPassword(password).then(
@@ -37,5 +37,4 @@ function SetPasswordController($modalInstance,HttpUtils, loginService, $state){
     function closeModal () {
         $modalInstance.close();
     }
-
 }
