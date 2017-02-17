@@ -1,4 +1,4 @@
-var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap']);
+var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap','ngRoute']);
 
 angular.module("mitraPortal").
 config(['$stateProvider', '$urlRouterProvider',
@@ -11,7 +11,8 @@ config(['$stateProvider', '$urlRouterProvider',
 	.state('main', {
     abstract: true,
     url: '',
-    templateUrl: '/js/common/mitraLayoutView.html'
+    templateUrl: '/js/common/mitraLayoutView.html',
+    controller: 'mainController'
   })
   .state('main.index', {
 	abstract: true,

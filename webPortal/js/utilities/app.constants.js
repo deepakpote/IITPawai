@@ -4,7 +4,7 @@ angular.module("mitraPortal").service('appConstants', [
 	var service = {};
 	
 	service.endpoint = {
-		baseUrl: 'http://localhost:8000/',
+		baseUrl: 'http://54.152.74.194:8000/',
 		code : {
 			list: 'code'
 		},

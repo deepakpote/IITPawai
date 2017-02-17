@@ -2,7 +2,9 @@ angular.module("mitraPortal").controller("uploadController",
   ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService',
   function($scope, $location, $log, appUtils, appConstants, contentService, commonService) {
   	
-  	var uploadContentSuccessCB = function (response) {
+
+
+    var uploadContentSuccessCB = function (response) {
   		$scope.submitted = false;
   		$log.debug('in success cb of upload content');
   		$log.debug(response);
@@ -39,7 +41,7 @@ angular.module("mitraPortal").controller("uploadController",
   	$scope.isContentTypeSelected = function (contentTypeCodeID) {
   		return ($scope.content.contentTypeCodeID === contentTypeCodeID);
   	}
-  	
+
   	var getContentTypes = function () {
   		$scope.contentTypeList = commonService.getCodeListPerCodeGroup(
   				appConstants.codeGroup.contentType
@@ -84,6 +86,11 @@ angular.module("mitraPortal").controller("uploadController",
   	  getTopics();
   	  getContentLanguages();
   	};
+
+    $scope.$on('codesAvailable', function(event,data){
+      $log.debug("codes available");
+      populateDropDowns();
+    });
   	
   	var init = function () {
   		$scope.submitted = false;
@@ -94,5 +101,6 @@ angular.module("mitraPortal").controller("uploadController",
   	};
   	
   	init();
+    getContentTypes();
   }
 ]);
