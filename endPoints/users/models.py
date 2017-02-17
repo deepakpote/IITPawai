@@ -74,6 +74,7 @@ class token(models.Model):
     tokenID = models.AutoField(primary_key=True)
     user = models.ForeignKey('user', related_name='token_user', db_column = 'userID')
     token = models.CharField(max_length = 255, unique=True)
+    password = models.CharField(max_length = 255, null = True)
 
     createdOn = models.DateTimeField(auto_now=False, auto_now_add=True)
     modifiedOn = models.DateTimeField(auto_now=True)
