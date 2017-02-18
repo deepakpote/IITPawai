@@ -4,9 +4,9 @@
 
 angular.module("mitraPortal").controller("requestOtpController", RequestOtpController);
 
-RequestOtpController.$inject = ['$modalInstance', 'HttpUtils', '$rootScope' ,'loginService', '$state'];
+RequestOtpController.$inject = ['$modalInstance', 'HttpUtils', '$rootScope' ,'loginService', '$state','appUtils'];
 
-function RequestOtpController($modalInstance, HttpUtils, $rootScope , loginService, $state){
+function RequestOtpController($modalInstance, HttpUtils, $rootScope , loginService, $state, appUtils){
 
     console.log("request otp controller called..");
     var vm = this;
@@ -51,6 +51,8 @@ function RequestOtpController($modalInstance, HttpUtils, $rootScope , loginServi
                 function onSuccess(response){
                     console.log(response);
                     if(HttpUtils.isSuccessful(response.data)){
+                        var data = response.data.data[0];
+                        appUtils.saveToLocalStorage("token",data.token);
                         $state.go('main.index.home.setpassword');
                     }else{
                         //TODO ask pradnya regarding $rootscope.

@@ -1,21 +1,14 @@
 "use strict";
 
-angular.module("mitraPortal").service('loginService', function($http){
+angular.module("mitraPortal").service('loginService', function($http,appUtils){
 
     var TYPE_SIGN_IN = 110101;
     //var TYPE_REGISTER = 110100;
 
-    var service = {
-        validate : validate,
-        requestOtp : requestOtp,
-        verifyOtp : verifyOtp,
-        setPassword : setPassword
-    };
-
-   function validate (phoneno, passkey) {
+   this.validate = function(phoneno, passkey) {
         var postData = {"phoneno": phoneno,"passkey": passkey};
         return $http({method:'POST', url: 'http://54.152.74.194:8000' + '/user/validateWebAdmin/', data: postData});
-   }
+   };
 
     this.requestOtp = function(phoneno) {
         var postData = {"phoneNumber": "+91" + phoneno,"authenticationType":TYPE_SIGN_IN};
@@ -30,7 +23,8 @@ angular.module("mitraPortal").service('loginService', function($http){
 
     this.setPassword = function(password) {
         var postData = {"password":password};
-        var header = {"authToken" : "OF3eOof1qa5bDkHQjwPjlT24sRWb42J1"};
+        var authToken = appUtils.getFromLocalStorage("token","");
+        var header = {"authToken" : authToken};
         return $http({method:'POST', url: 'http://54.152.74.194:8000' + '/user/setPassword/', data: postData,
                         headers : header});
     };
