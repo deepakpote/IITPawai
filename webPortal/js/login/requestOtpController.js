@@ -10,8 +10,9 @@ function RequestOtpController($modalInstance, HttpUtils, $rootScope , loginServi
 
     console.log("request otp controller called..");
     var vm = this;
-    vm.errormessage = "";
+    vm.errorMessage = "";
     vm.isOtpSent = false;
+    vm.hasError = false;
     vm.getOtp = getOtp;
     vm.closeModal = closeModal;
     vm.verifyOtp = verifyOtp;
@@ -27,14 +28,14 @@ function RequestOtpController($modalInstance, HttpUtils, $rootScope , loginServi
                     }else{
                         //TODO ask pradnya regarding $rootscope.
                         //TODO throw error here decide what is to be done
-                        $rootScope.globals.currentUser = undefined;
-                        alert(response.data.response_message);
+                        vm.hasError = true;
+                        vm.errorMessage = response.data.response_message;
                     }
                 },
                 function onError(response) {
                     //TODO throw error here decide what is to be done
-                    $rootScope.globals.currentUser = undefined;
-                    alert(response.data.response_message);
+                    vm.hasError = true;
+                    vm.errorMessage = response.data.response_message;
                 }
             );
     }
@@ -57,14 +58,18 @@ function RequestOtpController($modalInstance, HttpUtils, $rootScope , loginServi
                     }else{
                         //TODO ask pradnya regarding $rootscope.
                         //TODO throw error here decide what is to be done
-                        $rootScope.globals.currentUser = undefined;
-                        alert(response.data.response_message);
+                        // $rootScope.globals.currentUser = undefined;
+                        // alert(response.data.response_message);
+                        vm.hasError = true;
+                        vm.errorMessage = response.data.response_message;
                     }
                 },
                 function onError(response) {
                     //TODO throw error here decide what is to be done
-                    $rootScope.globals.currentUser = undefined;
-                    alert(response.data.response_message);
+                    // $rootScope.globals.currentUser = undefined;
+                    // alert(response.data.response_message);
+                    vm.hasError = true;
+                    vm.errorMessage = response.data.response_message;
                 }
             );
     }

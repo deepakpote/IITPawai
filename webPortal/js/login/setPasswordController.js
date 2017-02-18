@@ -25,10 +25,14 @@ function SetPasswordController($modalInstance,HttpUtils, loginService, $state){
                     $state.go('main.index.home');
                 } else {
                     //TODO decide what to do in error state
+                    vm.hasError = true;
+                    vm.errorMessage = response.data.response_message;
                 }
             },
             function onFailure(response) {
                 //TODO decide what to do in error state
+                vm.hasError = true;
+                vm.errorMessage = response.data.response_message;
             }
         );
         $state.go('main.index.home');
