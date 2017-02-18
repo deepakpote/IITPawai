@@ -4,9 +4,9 @@
 
 angular.module("mitraPortal").controller("requestOtpController", RequestOtpController);
 
-RequestOtpController.$inject = ['$modalInstance', 'HttpUtils', '$rootScope' ,'loginService', '$state','appUtils'];
+RequestOtpController.$inject = ['$modalInstance', 'HttpUtils','loginService', '$state','appUtils','commonService'];
 
-function RequestOtpController($modalInstance, HttpUtils, $rootScope , loginService, $state, appUtils){
+function RequestOtpController($modalInstance, HttpUtils, loginService, $state, appUtils, commonService){
 
     console.log("request otp controller called..");
     var vm = this;
@@ -29,13 +29,14 @@ function RequestOtpController($modalInstance, HttpUtils, $rootScope , loginServi
                         //TODO ask pradnya regarding $rootscope.
                         //TODO throw error here decide what is to be done
                         vm.hasError = true;
-                        vm.errorMessage = response.data.response_message;
+                        console.log(response.data.response_message);
+                        vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
                     }
                 },
                 function onError(response) {
                     //TODO throw error here decide what is to be done
                     vm.hasError = true;
-                    vm.errorMessage = response.data.response_message;
+                    vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
                 }
             );
     }
@@ -61,7 +62,7 @@ function RequestOtpController($modalInstance, HttpUtils, $rootScope , loginServi
                         // $rootScope.globals.currentUser = undefined;
                         // alert(response.data.response_message);
                         vm.hasError = true;
-                        vm.errorMessage = response.data.response_message;
+                        vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
                     }
                 },
                 function onError(response) {
@@ -69,7 +70,7 @@ function RequestOtpController($modalInstance, HttpUtils, $rootScope , loginServi
                     // $rootScope.globals.currentUser = undefined;
                     // alert(response.data.response_message);
                     vm.hasError = true;
-                    vm.errorMessage = response.data.response_message;
+                    vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
                 }
             );
     }
