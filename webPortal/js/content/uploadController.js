@@ -75,6 +75,9 @@ angular.module("mitraPortal").controller("uploadController",
 
     $scope.showContentObject = function(){
       $log.debug($scope.content);
+      $log.debug("a");
+      $log.debug($scope.myFile);
+      $log.debug("b");
     }
 
   	var getContentTypes = function () {
@@ -114,9 +117,12 @@ angular.module("mitraPortal").controller("uploadController",
   	};
   	
     var getRequirements = function () {
-      $scope.languageList = commonService.getCodeListPerCodeGroup(
-          appConstants.codeGroup.contentLanguage
-        );
+      $scope.requirementList = [
+        {'name':'computer', 'checked':false},
+        {'name':'laptop', 'checked':false},
+        {'name':'tab', 'checked':false},
+        {'name':'mobile', 'checked':false},
+      ]
     };
 
   	var populateDropDowns = function() {
@@ -144,4 +150,17 @@ angular.module("mitraPortal").controller("uploadController",
   	init();
     getContentTypes();
   }
-]);
+])
+.directive('fileModel', ['$parse', '$log', function ($parse, $log) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            
+            
+            element.bind('change', function(){
+                scope.$parent.myFile = element[0].files[0];
+                scope.$apply();
+            });
+        }
+    };
+}]);;
