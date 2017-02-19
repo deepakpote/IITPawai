@@ -1,8 +1,8 @@
 angular.module("mitraPortal").service('appConstants', [
   function() {
-    
+
 	var service = {};
-	
+
 	service.endpoint = {
 		baseUrl: 'http://54.152.74.194:8000/',
 		code : {
@@ -12,13 +12,13 @@ angular.module("mitraPortal").service('appConstants', [
 			upload: 'upload'
 		}
 	};
-	
+
 	service.localStorage = {
 		baseKey: 'mitra',
 		codeListKey: 'codeList',
 		codeListVersionKey: 'codeListVersion'
 	}
-	
+
 	service.codeGroup = {
 		contentLanguage: 101,
 		subject: 103,
@@ -27,7 +27,7 @@ angular.module("mitraPortal").service('appConstants', [
 		contentType: 107,
 		fileType: 108
 	}
-	
+
 	return service;
-   	  
+
 }]);

@@ -6,7 +6,7 @@ a:hover, a:focus {
 	-webkit-box-shadow: 1px 3px 14px -1px rgba(154,154,154,1);
 	-moz-box-shadow: 1px 3px 14px -1px rgba(154,154,154,1);
 	box-shadow: 1px 3px 14px -1px rgba(154,154,154,1);
-	
+
 	margin-bottom: 0px!important;
 }
 .navbar-inverse {
@@ -127,14 +127,18 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
   background-color:#009698;
 }
 .selected-card {
-} 
+}
 .unselected-card {
 	opacity:0.6;
   cursor: pointer; cursor: hand;
 }
+<<<<<<< HEAD
 .options-card {
 
 }
+=======
+
+>>>>>>> webportal-login
 .options-card .card-content{
 	padding: 20px 20px 20px 20px !important;
 	text-align: center;
@@ -150,6 +154,7 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 	text-align: center;
 	color: black;
 }
+
 .unselected-card:hover{
   opacity:1;
 }
@@ -182,4 +187,33 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 .upload-container .upload-title {
 	margin-top: 20px;
 	margin-bottom: 20px;
+}
+
+.modal-dialog {
+    width:35%;
+}
+
+.primary-color {
+    color: #ff6d00;
+}
+
+.primary-text-color {
+    color: #ff9100;
+}
+
+.text-color-black {
+    color:#000000;
+}
+
+.close-modal {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.sign-in-text {
+    font-size: large;
+    margin-top: 24px;
 }

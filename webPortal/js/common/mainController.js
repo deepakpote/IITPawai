@@ -1,9 +1,8 @@
 angular.module("mitraPortal").controller("mainController",
-  ['$scope', '$location', '$log', '$route', 'appUtils', 'appConstants', 'commonService',
-  function($scope, $location, $log, $route, appUtils, appConstants, commonService) {
+  ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'commonService',
+  function($scope, $location, $log, appUtils, appConstants, commonService) {
   	
   	var getCodeListSuccessCB = function (response) {
-  		$route.reload();
   		appUtils.saveToLocalStorage(appConstants.localStorage.codeListVersionKey, response.data[0].version);
   		appUtils.saveToLocalStorage(appConstants.localStorage.codeListKey, response.data[0].codeList);
   		$log.debug('in success cb of get code list');

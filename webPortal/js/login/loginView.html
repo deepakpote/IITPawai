@@ -1,34 +1,27 @@
-<div ng-controller="loginController"> 
-	<div class="container">
-		<form name="loginForm" class="form-horizontal">
-			<div class="form-group" ng-class="{'has-error': loginForm.txtPhoneNumber.$dirty && loginForm.txtPhoneNumber.$invalid}">
-				<label for="txtPhoneNumber" class="col-md-2 control-label">Phone Number</label>
-				<div class="col-md-5">
-					<div class="input-group">
-						<span class="input-group-addon">+ 91</span>
-			      		<input type="text" class="form-control" id="txtPhoneNumber" name="txtPhoneNumber" 
-			      			placeholder="Phone Number"  ng-model="phoneno" required ng-pattern=/[789]\d{9}/g>
-			      	</div>
-			    </div>
-				<div class="col-md-5" ng-messages="loginForm.txtPhoneNumber.$error" ng-if="loginForm.txtPhoneNumber.$dirty">
-					<span class="error-message" ng-show="loginForm.txtPhoneNumber.$error.required">Phone number is required.</span>
-					<span class="error-message" ng-show="loginForm.txtPhoneNumber.$error.pattern">Invalid Phone number.</span>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="txtPassword" class="col-md-2 control-label">Password</label>
-				<div class="col-md-5">
-					<input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password" ng-model="passkey" required>
-				</div>
-				<div class="col-md-5" ng-if="loginForm.pristine">
-					<span class="has-error" ng-if="loginForm.txtPassword.$error.required">
-					<label class="control-label">Passkey is required</label>
-					</span>
-				</div>
-			</div>
-			<div class="col-md-offset-2">
-				<input type="button" class="btn btn-warning" id="login" value="Login" ng-click="loginForm.$valid && validate()">
-			</div>
+<div>
+	<div class="">
+        <div class="text-center sign-in-text" >Sign In</div>
+        <i class="fa fa-times close-modal" aria-hidden="true" ng-click="login.closeModal()"></i>
+		<form name="loginForm" class="form-horizontal" style="width: 70%;margin:auto;padding: 16px;">
+            <div class="phone-number">
+                <input class="ng-pristine ng-untouched" minlength="10" maxlength="10"
+                       required ng-model="login.phoneno" type="tel" placeholder="10 digit mobile number" />
+                <div role="alert">
+                  <span class="error" ng-show="loginForm.phoneno.$error.required">
+                   Required!</span>
+                </div>
+            </div>
+            <div class="password">
+                <input class="ng-pristine ng-untouched" ng-model="login.passkey" type="password" placeholder="Password" />
+            </div>
+            <div class="row clearfix" style="margin-bottom: 16px;margin-top: 8px;margin-left: 2px;margin-right:2px;">
+                <label class="pull-left text-color-black" style="font-weight: 400">Don't have a password?</label>
+                <label ui-sref="main.index.home.requestotp"
+                       class="pull-right primary-text-color" style="cursor: pointer">REQUEST OTP</label>
+            </div>
+            <div class="text-center">
+                <button ng-click="login.validate()" type="button" class="btn btn-warning">Submit</button>
+            </div>
 		</form>
 	</div>
 </div>

@@ -1,0 +1,25 @@
+<div>
+    <div class="">
+        <div ng-hide="requestOTP.isOtpSent" class="text-center sign-in-text" >Request Otp</div>
+        <div ng-show="requestOTP.isOtpSent" class="text-center sign-in-text" >Verify Otp</div>
+        <i class="fa fa-times close-modal" aria-hidden="true" ng-click="requestOTP.closeModal()"></i>
+        <form name="requestOtp" class="form-horizontal" style="width: 70%;margin:auto;padding: 16px;">
+            <div class="phone-number">
+                <input class="ng-pristine ng-untouched" ng-model="requestOTP.phoneno"
+                       type="tel" placeholder="10 digit mobile number" maxlength="10" />
+            </div>
+            <div class="otp" ng-show="requestOTP.isOtpSent">
+                <input class="ng-pristine ng-untouched" ng-model="requestOTP.otp" type="text" placeholder="Otp" />
+            </div>
+            <div class="error-message" ng-show="requestOTP.hasError">{{requestOTP.errorMessage}}</div>
+            <div class="text-center">
+                <div ng-show="requestOTP.isOtpSent">
+                    <button ng-click="requestOTP.verifyOtp()" type="button" class="btn btn-warning">Verify</button>
+                </div>
+                <div ng-hide="requestOTP.isOtpSent">
+                    <button ng-click="requestOTP.getOtp()" type="button" class="btn btn-warning">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
