@@ -28,7 +28,7 @@
 
     <div class="upload-container">
       <div class="no-padding-container">
-        <h4>Content Details</h4>
+        <div class="upload-title">Content Details</div>
 
 
         <div class="col-md-3" ng-if="isContentTypeTeachingAid()">
@@ -143,11 +143,19 @@
 
         <div class="col-md-3" ng-if="isContentTypeSelfLearning()">
           <div class="card">
-            <div class="options-card">
+            <div class="options-card" ng-click=setSelectedOption("Topic")>
               <div class="card-content">
                 Topic
               </div>
-              <div class="card-action">
+              <div class="card-select">
+                <span ng-if="$parent.content.topicCodeID" ng-repeat="topic in topicList | filter:{codeID : $parent.content.topicCodeID}">
+                  {{topic.codeNameEn}}
+                </span>
+                <span ng-if="!$parent.content.topicCodeID">
+                  Select
+                </span>
+              </div>
+              <div class="card-action" ng-show="(selectedOption == 'Topic')">
                 <div ng-repeat="topic in topicList">
                   <input type="radio" ng-model="$parent.content.topicCodeID" ng-click = "showContentObject()" ng-value="topic.codeID" />
                   {{topic.codeNameEn}}
@@ -177,7 +185,7 @@
             <span class="error-message" ng-show="frmContentUpload.engContentTitle.$error.required">Please enter English content title</span>
           </div>
         </div>
-        
+
 
         <div class="form-group" ng-class="{'has-error': frmContentUpload.marContentTitle.$dirty && frmContentUpload.marContentTitle.$invalid}">
          <input type="text" class="form-control" id="marContentTitle" name="marContentTitle" placeholder="मराठी"
@@ -230,7 +238,7 @@
       <span class="error-message" ng-show="frmContentUpload.engInstruction.$error.required">Please enter English instruction</span>
     </div>
   </div>
-  
+
 
   <div class="form-group" ng-class="{'has-error': frmContentUpload.marInstruction.$dirty && frmContentUpload.marInstruction.$invalid}">
     <textarea form="frmContentUpload" class="form-control" id="marInstruction" name="marInstruction" placeholder="मराठी"

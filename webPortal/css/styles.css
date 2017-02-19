@@ -177,4 +177,9 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
   text-align: justify;
   overflow: hidden;
   padding-bottom: 0px !important;
+  padding-top: 0px !important;
+}
+.upload-container .upload-title {
+	margin-top: 20px;
+	margin-bottom: 20px;
 }
