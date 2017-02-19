@@ -173,3 +173,34 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
     font-size: large;
     margin-top: 24px;
 }
+
+ul.teaching-aids {
+    list-style-type: none;
+    margin: 0;
+    padding-left: 64px;
+    overflow: hidden;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
+li.teaching-aids {
+    float: left;
+}
+
+li.teaching-aids {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 24px 16px 24px 0;
+    text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li.teaching-aids:hover {
+    color:#ff6d00;
+}
+
+.divider {
+    height:1px;
+    background:#0f0f0f;
+}
