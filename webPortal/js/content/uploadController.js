@@ -1,9 +1,38 @@
 angular.module("mitraPortal").controller("uploadController",
-  ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService',
-  function($scope, $location, $log, appUtils, appConstants, contentService, commonService) {
-  	
+  ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService', '$filter',
+  function($scope, $location, $log, appUtils, appConstants, contentService, commonService, filter) {
+  
 
+    $scope.acceptedFileTypes = {
+      "108100" : "",    //Video
+      "108101" : "audio/*",    //Audio
+      "108102" : ".ppt,.pptx",    //PPT
+      "108103" : ".xls,.xlsx",    //Worksheet
+      "108104" : ".pdf",    //PDF
+      "108105" : "",    //Ek Step
+    }
 
+    $scope.selectedOption = "";
+
+    $scope.setSelectedOption = function (selectedOption){
+      $scope.selectedOption = selectedOption;
+    }
+
+    $scope.$watch('gradeList', function (gradeList){
+      var checkedGrades = gradeList.filter(function(grade){ return (grade.checked == true)});
+      var gradesString = "";
+      if (checkedGrades.length > 0){
+          gradesString = checkedGrades[0].codeID;
+      }
+      for (i=1;i<checkedGrades.length;i++){
+
+          gradesString += ',' + checkedGrades[i].codeID;
+      }
+      $scope.content.gradeCodeIDs = gradesString;
+      $log.debug(gradesString);
+      
+    }, true);
+  
     var uploadContentSuccessCB = function (response) {
   		$scope.submitted = false;
   		$log.debug('in success cb of upload content');
@@ -21,6 +50,8 @@ angular.module("mitraPortal").controller("uploadController",
   				uploadContentErrorCB);
   		$scope.submitted = true;
   	};
+
+    $scope.getCodeFromCodeList = function(codeID){};
 
   	$scope.isContentTypeTeachingAid = function (response) {
   		return ($scope.content.contentTypeCodeID === 107100);
@@ -41,6 +72,10 @@ angular.module("mitraPortal").controller("uploadController",
   	$scope.isContentTypeSelected = function (contentTypeCodeID) {
   		return ($scope.content.contentTypeCodeID === contentTypeCodeID);
   	}
+
+    $scope.showContentObject = function(){
+      $log.debug($scope.content);
+    }
 
   	var getContentTypes = function () {
   		$scope.contentTypeList = commonService.getCodeListPerCodeGroup(
@@ -73,11 +108,17 @@ angular.module("mitraPortal").controller("uploadController",
   	};
   	
   	var getContentLanguages = function () {
-  		$scope.contentLanguageList = commonService.getCodeListPerCodeGroup(
+  		$scope.languageList = commonService.getCodeListPerCodeGroup(
   				appConstants.codeGroup.contentLanguage
   			);
   	};
   	
+    var getRequirements = function () {
+      $scope.languageList = commonService.getCodeListPerCodeGroup(
+          appConstants.codeGroup.contentLanguage
+        );
+    };
+
   	var populateDropDowns = function() {
   		getContentTypes();
   	  getSubjects();
@@ -85,10 +126,10 @@ angular.module("mitraPortal").controller("uploadController",
   	  getFileTypes();
   	  getTopics();
   	  getContentLanguages();
+      getRequirements();
   	};
 
     $scope.$on('codesAvailable', function(event,data){
-      $log.debug("codes available");
       populateDropDowns();
     });
   	

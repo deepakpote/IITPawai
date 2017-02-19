@@ -1,6 +1,6 @@
+   
 <div class="gradient bottom-shadow">
-	<div class="container">
-   <div class="content-top-box">
+  <div class="content-top-box">
     <div class="font-title pad5B">Select Category</div>
     <div class="row">
      <div ng-repeat="contentType in contentTypeList">
@@ -20,163 +20,265 @@
    </div>
  </div>
 </div>
-</div>
 
-<div class="container" id="optionsCards">
-  <div class="col-md-3">
-    <div class="card">
-      <div ng-class="'unselected-card'" ng-click="contentTypeOnClick(contentType.codeID)">
-        <div class="options-card-content">
-          Grade
-        </div>
-        <div class="card-action">
-          <div ng-repeat="grade in gradeList">
-          {{grade.codeNameEn}}
+
+<div ng-if="isContentTypeTeachingAid() || isContentTypeSelfLearning()">
+	
+  <form name="frmContentUpload">
+
+    <div class="upload-container">
+      <div class="no-padding-container">
+        <h4>Content Details</h4>
+
+
+        <div class="col-md-3" ng-if="isContentTypeTeachingAid()">
+          <div class="card">
+            <div class="options-card" ng-click=setSelectedOption("Subject") >
+              <div class="card-content">
+                Subject
+              </div>
+              <div class="card-select">
+                <span ng-if="$parent.content.subjectCodeID" ng-repeat="subject in subjectList | filter:{codeID : $parent.content.subjectCodeID}">
+                  {{subject.codeNameEn}}
+                </span>
+                <span ng-if="!$parent.content.subjectCodeID">
+                  Select
+                </span>
+              </div>
+              <div class="card-action" ng-show="(selectedOption == 'Subject')">
+                <div ng-repeat="subject in subjectList">
+                  <input type="radio" ng-model="$parent.content.subjectCodeID" ng-click = "showContentObject()" ng-value="subject.codeID" />
+                  {{subject.codeNameEn}}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+        <div class="col-md-1" ng-if="isContentTypeTeachingAid()"></div>
+
+        <div class="col-md-3" ng-if="isContentTypeTeachingAid()">
+          <div class="card">
+            <div class="options-card" ng-click=setSelectedOption("Grade")>
+              <div class="card-content">
+                Grade
+              </div>
+              <div class="card-select">
+                <span ng-if="((gradeList | filter:{checked:true}).length > 0)" ng-repeat="grade in gradeList | filter:{checked:true}">
+                  {{grade.codeNameEn}}
+                </span>
+                <span ng-if="!((gradeList | filter:{checked:true}).length > 0)">
+                  Select
+                </span>
+              </div>
+              <div class="card-action" ng-show="(selectedOption == 'Grade')">
+                <div ng-repeat="grade in gradeList">
+                  <input type="checkbox" ng-model="grade.checked" ng-click = "showContentObject()" />
+                  {{grade.codeNameEn}}
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <div class="card" ng-if="isContentTypeTeachingAid()">
+            <div class="options-card">
+              <div class="card-content">
+                Classroom Requirements
+              </div>
+              <div class="card-select">
+                <span ng-if="((gradeList | filter:{checked:true}).length > 0)" ng-repeat="grade in gradeList | filter:{checked:true}">
+                  {{grade.codeNameEn}}
+                </span>
+                <span ng-if="!((gradeList | filter:{checked:true}).length > 0)">
+                  Select (X)
+                </span>
+              </div>
+              <!--div class="card-action">
+                <div ng-repeat="grade in gradeList">
+                  <input type="checkbox" ng-model="grade.checked" ng-click = "showContentObject()" />
+                  {{grade.codeNameEn}}
+
+                </div>
+              </div-->
+            </div>
+          </div>
+          <br />
+
+
+
+        </div>
+
+        <div class="col-md-1" ng-if="isContentTypeTeachingAid()"></div>
+        
+
+
+
+        <div class="col-md-3">
+          <div class="card">
+            <div class="options-card" ng-click=setSelectedOption("Language")>
+              <div class="card-content">
+                Language
+              </div>
+              <div class="card-select">
+                <span ng-if="$parent.content.languageCodeID" ng-repeat="language in languageList | filter:{codeID : $parent.content.languageCodeID}">
+                  {{language.codeNameEn}}
+                </span>
+                <span ng-if="!$parent.content.languageCodeID">
+                  Select
+                </span>
+              </div>
+              <div class="card-action" ng-show="(selectedOption == 'Language')">
+                <div ng-repeat="language in languageList">
+                  <input type="radio" ng-model="$parent.content.languageCodeID" ng-click = "showContentObject()" ng-value="language.codeID" />
+                  {{language.codeNameEn}}
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-1"></div>
+
+        <div class="col-md-3" ng-if="isContentTypeSelfLearning()">
+          <div class="card">
+            <div class="options-card">
+              <div class="card-content">
+                Topic
+              </div>
+              <div class="card-action">
+                <div ng-repeat="topic in topicList">
+                  <input type="radio" ng-model="$parent.content.topicCodeID" ng-click = "showContentObject()" ng-value="topic.codeID" />
+                  {{topic.codeNameEn}}
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-1" ng-if="isContentTypeSelfLearning()"></div>
       </div>
+    </div>
+
+    <div class = "hr"> </div>
+
+    <!-- Form entries below options -->
+
+
+    <div class="upload-container" >
+      <div class="no-padding-container">
+        <h4>Content Title</h4>
+        <div class="col-md-8">
+          <div class="form-group" ng-class="{'has-error': frmContentUpload.engContentTitle.$dirty && frmContentUpload.engContentTitle.$invalid}">
+           <input type="text" class="form-control" id="engContentTitle" name="engContentTitle" placeholder="English"
+           ng-model="content.engContentTitle" required />
+           <div ng-messages="frmContentUpload.engContentTitle.$error" ng-if="frmContentUpload.engContentTitle.$dirty">
+            <span class="error-message" ng-show="frmContentUpload.engContentTitle.$error.required">Please enter English content title</span>
+          </div>
+        </div>
+        
+
+        <div class="form-group" ng-class="{'has-error': frmContentUpload.marContentTitle.$dirty && frmContentUpload.marContentTitle.$invalid}">
+         <input type="text" class="form-control" id="marContentTitle" name="marContentTitle" placeholder="मराठी"
+         ng-model="content.marContentTitle" required />
+         <div ng-messages="frmContentUpload.marContentTitle.$error" ng-if="frmContentUpload.marContentTitle.$dirty">
+          <span class="error-message" ng-show="frmContentUpload.marContentTitle.$error.required">Please enter Marathi content title</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4" style="text-align:right"> 
+      Kindly enter all fields in English and Marathi. <br />
+      Use <a target="_blank" href = "https://translate.google.com/?hl=mr"> Google translate </a>
     </div>
   </div>
 
-  <div class="col-md-3">
-    <div class="card">
-      <div ng-class="'unselected-card'" ng-click="contentTypeOnClick(contentType.codeID)">
-        <div class="card-content card-icon">
-          <i class="fa fa-graduation-cap" aria-hidden="true"></i>
-        </div>
-        <div class="card-action">
-          Select
-        </div>
+  <div class = "hr"> </div>
+
+  <div class="no-padding-container">
+    <h4>Author Name</h4>
+    <div class="col-md-8">
+      <div class="form-group" ng-class="{'has-error': frmContentUpload.engAuthor.$dirty && frmContentUpload.engAuthor.$invalid}">
+       <input type="text" class="form-control" id="engAuthor" name="engAuthor" placeholder="English"
+       ng-model="content.engAuthor" required />
+       <div ng-messages="frmContentUpload.engAuthor.$error" ng-if="frmContentUpload.engAuthor.$dirty">
+        <span class="error-message" ng-show="frmContentUpload.engAuthor.$error.required">Please enter author's name in English</span>
       </div>
+    </div>
+    
+
+    <div class="form-group" ng-class="{'has-error': frmContentUpload.marAuthor.$dirty && frmContentUpload.marAuthor.$invalid}">
+     <input type="text" class="form-control" id="marAuthor" name="marAuthor" placeholder="मराठी"
+     ng-model="content.marAuthor" required />
+     <div ng-messages="frmContentUpload.marAuthor.$error" ng-if="frmContentUpload.marAuthor.$dirty">
+      <span class="error-message" ng-show="frmContentUpload.marAuthor.$error.required">Please enter author's name in Marathi</span>
     </div>
   </div>
 </div>
+</div>
 
+<div class = "hr"> </div>
 
-
-
-
-
-
-
-
-<div class="col-md-1"></div>
-<div class="col-md-7">
-	<div class="page-header">
-    <h2>Content Upload</h2>
-  </div>
-  <form name="frmContentUpload">
-    <div ng-class="{'alert alert-danger': submitted && form.email.$error.required}" role="alert">{{error}}</div>
-    <!-- Content Title -->
-    <div class="form-group" ng-class="{'has-error': frmContentUpload.txtContentTitle.$dirty && frmContentUpload.txtContentTitle.$invalid}">
-     <label for="txtContentTitle" class="required">Content Title</label>
-     <input type="text" class="form-control" id="txtContentTitle" name="txtContentTitle" placeholder="Enter the title of the content here"
-     ng-model="content.contentTitle" required>
-     <div ng-messages="frmContentUpload.txtContentTitle.$error" ng-if="frmContentUpload.txtContentTitle.$dirty">
-      <span class="error-message" ng-show="frmContentUpload.txtContentTitle.$error.required">Content Title is required.</span>
+<div class="no-padding-container">
+  <h4>Content Description / Instruction</h4>
+  <div class="col-md-8">
+    <div class="form-group" ng-class="{'has-error': frmContentUpload.engInstruction.$dirty && frmContentUpload.engInstruction.$invalid}">
+     <textarea form="frmContentUpload" class="form-control" id="engInstruction" name="engInstruction" placeholder="English"
+     ng-model="content.engInstruction" required ></textarea> 
+     <div ng-messages="frmContentUpload.engInstruction.$error" ng-if="frmContentUpload.engInstruction.$dirty">
+      <span class="error-message" ng-show="frmContentUpload.engInstruction.$error.required">Please enter English instruction</span>
     </div>
   </div>
+  
 
-  <!-- Content Type -->
-  <div class="form-group" ng-class="{'has-error': frmContentUpload.drpContentType.$dirty && frmContentUpload.drpContentType.$invalid}">
-   <label for="drpContentType" class="required">Content Type</label>
-   <select name="drpContentType" class="form-control" ng-model="content.contentTypeCodeID" required
-   ng-options="contentType.codeID as contentType.codeNameEn for contentType in contentTypeList">
+  <div class="form-group" ng-class="{'has-error': frmContentUpload.marInstruction.$dirty && frmContentUpload.marInstruction.$invalid}">
+    <textarea form="frmContentUpload" class="form-control" id="marInstruction" name="marInstruction" placeholder="मराठी"
+    ng-model="content.marInstruction" required ></textarea> 
+    <div ng-messages="frmContentUpload.marInstruction.$error" ng-if="frmContentUpload.marInstruction.$dirty">
+      <span class="error-message" ng-show="frmContentUpload.marInstruction.$error.required">Please enter Marathi instruction</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class = "hr"> </div>
+
+<div class="no-padding-container">
+  <h4>Content Link/Upload</h4>
+  <div class="form-group" ng-class="{'has-error': frmContentUpload.fileTypeDropdown.$dirty && frmContentUpload.fileTypeDropdown.$invalid}">
+   <label for="fileTypeDropdown" class="required">File Type</label>
+   <select name="fileTypeDropdown" class="form-control" ng-model="content.fileTypeCodeID" required
+   ng-options="fileType.codeID as fileType.codeNameEn for fileType in fileTypeList">
    <option value="">- Select -</option>
  </select>
- <div ng-messages="frmContentUpload.drpContentType.$error" ng-if="frmContentUpload.drpContentType.$dirty">
-  <span class="error-message" ng-show="frmContentUpload.drpContentType.$error.required">Content Title is required.</span>
+ <div ng-messages="frmContentUpload.fileTypeDropdown.$error" ng-if="frmContentUpload.fileTypeDropdown.$dirty">
+  <span class="error-message" ng-show="frmContentUpload.fileTypeDropdown.$error.required">File Type is required.</span>
 </div>
 </div>
 
-<!-- Subject -->
-<div class="form-group" ng-class="{'has-error': frmContentUpload.drpSubject.$dirty && frmContentUpload.drpSubject.$invalid}"
-ng-show="isContentTypeTeachingAid();">
-<label for="drpSubject" class="required">Subject</label>
-<select name="drpSubject" class="form-control"ng-model="content.subjectCodeID" ng-required="isContentTypeTeachingAid();"
-ng-options="subject.codeID as subject.codeNameEn for subject in subjectList">
-<option value="">- Select -</option>
-</select>
-<div ng-messages="frmContentUpload.drpSubject.$error" ng-if="frmContentUpload.drpSubject.$dirty">
-  <span class="error-message" ng-show="frmContentUpload.drpSubject.$error.required">Subject is required.</span>
-</div>
-</div>
-
-<!-- Grade -->
-<div class="form-group" ng-class="{'has-error': frmContentUpload.drpGrade.$dirty && frmContentUpload.drpGrade.$invalid}"
-ng-show="isContentTypeTeachingAid();">
-<label for="drpGrade" class="required">Grade</label>
-<select multiple name="drpGrade" class="form-control" ng-model="content.gradeCodeID" ng-required="isContentTypeTeachingAid();"
-ng-options="grade.codeID as grade.codeNameEn for grade in gradeList">
-</select>
-<div ng-messages="frmContentUpload.drpGrade.$error" ng-if="frmContentUpload.drpGrade.$dirty">
-  <span class="error-message" ng-show="frmContentUpload.drpGrade.$error.required">Grade is required.</span>
-</div>
-</div>
-
-<!-- Topic -->
-<div class="form-group" ng-class="{'has-error': frmContentUpload.drpTopic.$dirty && frmContentUpload.drpTopic.$invalid}"
-ng-show="isContentTypeSelfLearning();">
-<label for="drpTopic" class="required">Topic</label>
-<select name="drpTopic" class="form-control"ng-model="content.topicCodeID" ng-required="isContentTypeSelfLearning();"
-ng-options="topic.codeID as topic.codeNameEn for topic in topicList">
-<option value="">- Select -</option>
-</select>
-<div ng-messages="frmContentUpload.drpTopic.$error" ng-if="frmContentUpload.drpTopic.$dirty">
-  <span class="error-message" ng-show="frmContentUpload.drpTopic.$error.required">Topic is required.</span>
-</div>
-</div>
-
-<!-- ContentLanguage -->
-<div class="form-group" ng-class="{'has-error': frmContentUpload.drpContentLanguage.$dirty && frmContentUpload.drpContentLanguage.$invalid}"
-ng-show="isContentTypeSelfLearning();">
-<label for="drpContentLanguage" class="required">Content Language</label>
-<select name="drpContentLanguage" class="form-control"ng-model="content.contentLanguageCodeID" ng-required="isContentTypeSelfLearning();"
-ng-options="contentLanguage.codeID as contentLanguage.codeNameEn for contentLanguage in contentLanguageList">
-<option value="">- Select -</option>
-</select>
-<div ng-messages="frmContentUpload.drpContentLanguage.$error" ng-if="frmContentUpload.drpContentLanguage.$dirty">
-  <span class="error-message" ng-show="frmContentUpload.drpContentLanguage.$error.required">Content Language is required.</span>
-</div>
-</div>
-
-<!-- FileType -->
-<div class="form-group" ng-class="{'has-error': frmContentUpload.drpFileType.$dirty && frmContentUpload.drpFileType.$invalid}"
-ng-show="isContentTypeTeachingAid();">
-<label for="drpFileType" class="required">FileType</label>
-<select name="drpFileType" class="form-control"ng-model="content.fileTypeCodeID" ng-required="isContentTypeTeachingAid();"
-ng-options="fileType.codeID as fileType.codeNameEn for fileType in fileTypeList">
-<option value="">- Select -</option>
-</select>
-<div ng-messages="frmContentUpload.drpFileType.$error" ng-if="frmContentUpload.drpFileType.$dirty">
-  <span class="error-message" ng-show="frmContentUpload.drpFileType.$error.required">File Type is required.</span>
-</div>
-</div>
-
-<!-- File URL -->
 <div class="form-group" ng-class="{'has-error': frmContentUpload.txtFileUrl.$dirty && frmContentUpload.txtFileUrl.$invalid}">
-  <label for="txtFileUrl" class="required">File URL</label>
   <input type="text" class="form-control" id="txtFileUrl" name="txtFileUrl" 
   placeholder="{{ isFileTypeVideo() ? 'Enter Youtube url' : 'Enter url of the Google drive file'}}"
-  ng-model="content.fileName" required>
+  ng-model="content.fileUrl" required>
   <div ng-messages="frmContentUpload.txtFileUrl.$error" ng-if="frmContentUpload.txtFileUrl.$dirty">
     <span class="error-message" ng-show="frmContentUpload.txtFileUrl.$error.required">File URL is required.</span>
   </div>
 </div>
-
-<!-- Instructions -->
-<div class="form-group" ng-class="{'has-error': frmContentUpload.txtInstruction.$dirty && frmContentUpload.txtInstruction.$invalid}">
-  <label for="txtInstruction">Instructions</label>
-  <textarea class="form-control" rows="3"id="txtInstruction" name="txtInstruction" placeholder="Enter instructions"
-  ng-model="content.instruction"></textarea>
-  <div ng-messages="frmContentUpload.txtInstruction.$error" ng-if="frmContentUpload.txtInstruction.$dirty">
-    <span class="error-message" ng-show="frmContentUpload.txtInstruction.$error.required">File URL is required.</span>
+<p>Or</p>
+<div class="form-group" ng-class="{'has-error': frmContentUpload.fileUpload.$dirty && frmContentUpload.fileUpload.$invalid}">
+  <input type="file" class="form-control" id="fileUpload" name="fileUpload" ng-disabled="isFileTypeVideo()"
+  ng-model="content.fileUploadPath" accept="{{acceptedFileTypes[content.fileTypeCodeID]}}" ng-click="showAccepted()" required>
+  <div ng-messages="frmContentUpload.fileUpload.$error" ng-if="frmContentUpload.fileUpload.$dirty">
+    <span class="error-message" ng-show="frmContentUpload.fileUpload.$error.required">File upload is required.</span>
   </div>
 </div>
 
+</div>
+
 <div name="divButtonGroups">
- <button type="button" class="btn btn-warning" ng-disabled="frmContentUpload.$invalid" ng-click="uploadContent();">Save</button>
- <button type="button" class="btn btn-default">Cancel</button>
+ <button type="button" class="btn btn-warning" ng-disableda="frmContentUpload.$invalid" ng-click="uploadContent();">Send For Review</button>
+</div>
 </div>
 </form>
 </div>

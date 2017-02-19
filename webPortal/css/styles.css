@@ -132,8 +132,23 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 	opacity:0.6;
   cursor: pointer; cursor: hand;
 }
+.options-card {
+
+}
 .options-card .card-content{
-	
+	padding: 20px 20px 20px 20px !important;
+	text-align: center;
+	color: black;
+}
+.options-card .card-select{
+	padding: 20px 20px 20px 20px !important;
+	text-align: center;
+	color: black;
+}
+
+.options-card .card-action{
+	text-align: center;
+	color: black;
 }
 .unselected-card:hover{
   opacity:1;
@@ -141,4 +156,25 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 .content-top-box {
   padding: 6% !important;
   text-align: justify;
+}
+.hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-bottom: 1px solid #ccc;
+    margin: 1em 0;
+    padding-top: 16px;
+    width:100%;
+}
+.no-padding-container {
+	margin-bottom: 20px;
+	padding:0px!important;
+	width:100%;
+	overflow: hidden;
+}
+.upload-container {
+  padding: 6%;
+  text-align: justify;
+  overflow: hidden;
+  padding-bottom: 0px !important;
 }
