@@ -563,7 +563,10 @@ class ContentViewSet(viewsets.ModelViewSet):
     @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def uploadContent(self,request):
         # get inputs
-        contentID = int(request.data.get('contentID'))
+        if request.data.get('contentID'):
+            contentID = int(request.data.get('contentID'))
+        else:
+            contentID = 0
         
         engContentTitle = request.data.get('engContentTitle')
         marContentTitle = request.data.get('marContentTitle')
@@ -585,15 +588,21 @@ class ContentViewSet(viewsets.ModelViewSet):
         requirement = request.data.get('requirement')
 
         fileTypeCodeID = request.data.get('fileTypeCodeID')
-        fileName = request.data.get('fileName')
-        author = request.data.get('author')
-        uploadedFile = request.FILES['uploadedFile']
+        
+        if request.data.get('fileName'):
+            fileName = request.data.get('fileName')
+        else:
+            try:
+                uploadedFile = request.FILES['uploadedFile']
+            except Exception as e:
+                return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
         
         languageCodeID = request.data.get('contentLanguageCodeID')       
         statusCodeID = request.data.get('statusCodeID')
         
         #This is not getting used any where in the webportal as well as app so commented for now.
         #objectives = request.data.get('objectives')
+        #author = request.data.get('author')
         
         #Get user token
         authToken = request.META.get('HTTP_AUTHTOKEN')
@@ -605,49 +614,55 @@ class ContentViewSet(viewsets.ModelViewSet):
                                contentTypeCodeID, fileTypeCodeID, languageCodeID, statusCodeID)
         
         if responseMessage != 0:
-            return Response({"response_message": responseMessage,
-                            "data": []},
-                            status = status.HTTP_401_UNAUTHORIZED)
-             
-            
-        # If the filetype is video then validate the URL.
-        if fileTypeCodeID ==  constants.mitraCode.video or fileTypeCodeID ==  constants.mitraCode.ekStep:
-            
+            return statusHttpUnauthorized(responseMessage)
+        
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:         
+            return statusHttpNotFound(constants.messages.uploadContent_user_not_exists)
+                   
+        # If statusCodeID parameter is passed, then check status exists or not
+        try:
+            objStatus = code.objects.get(codeID = statusCodeID)
+        except code.DoesNotExist:
+            return statusHttpNotFound(constants.messages.uploadContent_status_not_exists)
+        
+        # If contentType parameter is passed, then check contentType CodeID exists or not
+        try:
+            objContentType = code.objects.get(codeID = contentTypeCodeID)
+        except code.DoesNotExist:
+            return statusHttpNotFound(constants.messages.uploadContent_contentType_does_not_exists)
+         
+        # If fileType parameter is passed, then check fileType exists or not    
+        try:
+            objFileType = code.objects.get(codeID = fileTypeCodeID)
+        except code.DoesNotExist:
+            return statusHttpNotFound(constants.messages.uploadContent_fileType_does_not_exists)
+         
+        # If language parameter is passed, then check language exists or not        
+        try:
+            objLanguage = code.objects.get(codeID = languageCodeID)
+        except code.DoesNotExist:
+            return statusHttpNotFound(constants.messages.uploadContent_language_does_not_exists)  
+                
+        # If the filetype is video or ekStep then validate the URL.
+        if isVideoOrEkStep(fileTypeCodeID) == True:   
             # Check if fileName is passed in post param
             if not fileName:
-                return Response({"response_message": constants.messages.uploadContent_fileName_cannot_be_empty,
-                                 "data": []},
-                                status = status.HTTP_401_UNAUTHORIZED)
+                return statusHttpUnauthorized(constants.messages.uploadContent_fileName_cannot_be_empty)
             
-            if fileTypeCodeID ==  constants.mitraCode.video:
+            if fileTypeCodeID == constants.mitraCode.video:
                 #Validate youtube URL.
                 isValidYoutubeURL = validateYoutubeURL(fileName)
                 
                 #If Youtube URL is Invaild 
                 if not isValidYoutubeURL:
-                    return Response({"response_message": constants.messages.uploadContent_fileName_invaild,
-                             "data": []},
-                             status = status.HTTP_400_BAD_REQUEST)
-        
+                    return statusHttpBadRequest(constants.messages.uploadContent_fileName_invaild)
+
         else:
             fileName = "upload_pending"
-
-        # If userID parameter is passed, then check user exists or not
-        try:
-            objUser = user.objects.get(userID = userID)
-        except user.DoesNotExist:
-            return Response({"response_message": constants.messages.uploadContent_user_not_exists,
-                             "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
-            
-        # If statusCodeID parameter is passed, then check status exists or not
-        try:
-            objStatus = code.objects.get(codeID = statusCodeID)
-        except code.DoesNotExist:
-            return Response({"response_message": constants.messages.uploadContent_status_not_exists,
-                             "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
-            
+        
         #Declare empty object for subject,Grade and topic
         objSubject = None
         objGrade = None
@@ -658,17 +673,13 @@ class ContentViewSet(viewsets.ModelViewSet):
         if contentTypeCodeID == int(constants.mitraCode.teachingAids):
             # If content type is teaching Aid then subjetCodeID & gradeCodeIDs can not be empty.
             if not subjectCodeID or subjectCodeID == 0:
-                return Response({"response_message": constants.messages.uploadContent_subjectCodeID_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED)
+                return statusHttpUnauthorized(constants.messages.uploadContent_subjectCodeID_cannot_be_empty)
+            
             if not gradeCodeIDs:
-                return Response({"response_message": constants.messages.uploadContent_gradeCodeID_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED)
+                return statusHttpUnauthorized(constants.messages.uploadContent_gradeCodeID_cannot_be_empty)
                 
             # Get the respective instance of subject and grade
             objSubject = code.objects.get(codeID = subjectCodeID)
-            #objGrade = code.objects.get(codeID = gradeCodeID)
             
             # Build array from comma seprated string (Comma seprated GradeCodeIDs)
             arrGradeCodeIDs = getArrayFromCommaSepString(gradeCodeIDs)
@@ -676,42 +687,14 @@ class ContentViewSet(viewsets.ModelViewSet):
         elif contentTypeCodeID == constants.mitraCode.selfLearning:
             # If content type is selfLearning then topicCodeID can not be empty.
             if not topicCodeID:
-                return Response({"response_message": constants.messages.uploadContent_topicCodeID_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED)
+                return statusHttpUnauthorized(constants.messages.uploadContent_topicCodeID_cannot_be_empty)
             else:
                 # Get the respective instance topic.
                 objTopic = code.objects.get(codeID = topicCodeID)
         # Invalid content type.
         else:
-            return Response({"response_message": constants.messages.uploadContent_contentType_invalid,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED)
+            return statusHttpUnauthorized(constants.messages.uploadContent_contentType_invalid)
         
-        # If contentType parameter is passed, then check contentType CodeID exists or not
-        try:
-            objContentType = code.objects.get(codeID = contentTypeCodeID)
-        except code.DoesNotExist:
-            return Response({"response_message": constants.messages.uploadContent_contentType_does_not_exists,
-                     "data": []},
-                    status = status.HTTP_404_NOT_FOUND)
-        
-        # If fileType parameter is passed, then check fileType exists or not    
-        try:
-            objFileType = code.objects.get(codeID = fileTypeCodeID)
-        except code.DoesNotExist:
-            return Response({"response_message": constants.messages.uploadContent_fileType_does_not_exists,
-                     "data": []},
-                    status = status.HTTP_404_NOT_FOUND)
-        
-        # If language parameter is passed, then check language exists or not        
-        try:
-            objLanguage = code.objects.get(codeID = languageCodeID)
-        except code.DoesNotExist:
-            return Response({"response_message": constants.messages.uploadContent_language_does_not_exists,
-                     "data": []},
-                    status = status.HTTP_404_NOT_FOUND)
-            
         # Get app language instances for english and marathi.
         objAppLanguageEng = code.objects.get(codeID = constants.appLanguage.english)
         objAppLanguageMar = code.objects.get(codeID = constants.appLanguage.marathi)
@@ -757,9 +740,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                 try:
                     objcontent = content.objects.get(contentID = contentID)
                 except content.DoesNotExist:
-                    return Response({"response_message": constants.messages.uploadContent_contentID_does_not_exists,
-                             "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
+                    return statusHttpNotFound(constants.messages.uploadContent_contentID_does_not_exists)
                  
                 # If contentID valid, update the details.
                 content.objects.filter(contentID = contentID).update(contentType = objContentType, 
@@ -767,7 +748,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                                      topic = objTopic,
                                                                      requirement = requirement,
                                                                      fileType = objFileType,
-                                                                     fileName= fileName,
+                                                                     fileName = fileName,
                                                                      #objectives = objectives,
                                                                      status = objStatus,
                                                                      language = objLanguage,
@@ -784,25 +765,23 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                                                      instruction = marInstruction.strip(),
                                                                                      author = marAuthor)
                 
-                removeUploadedFile(contentID)
+                if (isVideoOrEkStep(fileTypeCodeID) == False):
+                    removeUploadedFile(contentID)
             
             # Check content type of uploaded file.If teachingAids then save GradeCodeIDs     
             if contentTypeCodeID == constants.mitraCode.teachingAids:
                 saveContentGrade(arrGradeCodeIDs , contentID)
             
-            if fileTypeCodeID != constants.mitraCode.video or fileTypeCodeID != constants.mitraCode.ekStep:
+            if (isVideoOrEkStep(fileTypeCodeID) == False):
                 saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
                
         except Exception as e:
             # Error occurred while uploading the content.
-            #print e
-            return Response({"response_message": constants.messages.uploadContent_content_upload_failed,
-                     "data": []},
-                     status = status.HTTP_400_BAD_REQUEST)
+            # print e
+            return statusHttpBadRequest(constants.messages.uploadContent_content_upload_failed)
 
         #Return the response
-        return Response({"response_message": constants.messages.success, "data": []})
-#     
+        return Response({"response_message": constants.messages.success, "data": []})     
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array
@@ -1016,9 +995,10 @@ Function to remove an already stored file in case of an edit
 """
 def removeUploadedFile(contentID):
     
-    #under the static/content directory, search for file that starts with the given contentID
+    #under the static/content directory, search for file that starts with the given contentID 
     for root, dirs, files in os.walk(constants.uploadedContentDir.baseDir, topdown=False):
         for name in files:
+            #if the file is found, remove it
             if(name.startswith(str(contentID))):
                 os.remove(os.path.join(root, name)) 
 
@@ -1065,7 +1045,7 @@ def saveUploadedFile(uploadedFile, fileTypeCodeID, contentID):
     
     tempFileName, fileExtension = os.path.splitext(uploadedFile.name) 
     baseDir = None
-                
+    
     if int(fileTypeCodeID) == int(constants.mitraCode.pdf):
         baseDir = constants.uploadedContentDir.pdfDir
         uploadedFileName = constructFileName(contentID, fileExtension) 
@@ -1091,6 +1071,38 @@ def saveUploadedFile(uploadedFile, fileTypeCodeID, contentID):
             destination.write(chunk)
     
     #updating the corresponding entry in the database                    
-    content.objects.filter(contentID = contentID).update(fileName = uploadedFileName)          
+    content.objects.filter(contentID = contentID).update(fileName = uploadedFileName)  
+     
+"""
+Function to check if the file type is video or ekStep
+"""    
+def isVideoOrEkStep(fileTypeCodeID):
+    if int(fileTypeCodeID) == int(constants.mitraCode.video) or int(fileTypeCodeID) == int(constants.mitraCode.ekStep):
+        return True
+    else:
+        return False         
+ 
+"""
+Function to return HTTP 404
+"""              
+def statusHttpNotFound(responseMessage):
+        return Response({"response_message": responseMessage,
+                                 "data": []},
+                                status = status.HTTP_404_NOT_FOUND)
         
-                                  
+"""
+Function to return HTTP 401
+"""         
+def statusHttpUnauthorized(responseMessage):
+        return Response({"response_message": responseMessage,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED)
+
+"""
+Function to return HTTP 400
+""" 
+def statusHttpBadRequest(responseMessage):
+        return Response({"response_message": responseMessage,
+                     "data": []},
+                     status = status.HTTP_400_BAD_REQUEST)
+    

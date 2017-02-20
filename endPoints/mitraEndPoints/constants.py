@@ -122,6 +122,7 @@ class messages():
     uploadContent_statusCodeID_cannot_be_empty = 100201
     uploadContent_status_not_exists = 100200
     uploadContent_contentTitle_marathi_cannot_be_empty = 100201
+    uploadContent_upload_file_or_give_filename = 100202
 
 
 class webportalmessages():    
