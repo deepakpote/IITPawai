@@ -23,13 +23,9 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
-import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.webkit.WebChromeClient;
+import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.Content;
@@ -55,6 +51,8 @@ public class GenieActivity extends AppCompatActivity {
         if(bundle != null) {
             content = (Content) bundle.getSerializable("content");
         }
+
+        //Content file name contains the appropriate Genie URL
 
         contentWebView.getSettings().setJavaScriptEnabled(true);
         contentWebView.getSettings().setDomStorageEnabled(true);
