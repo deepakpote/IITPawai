@@ -98,7 +98,7 @@ class messages():
     
     setPassword_user_not_exists = 100184
     setPassword_password_should_not_contain_space = 100185
-    setPassword_password_cannot_be_empty_it_must_be_gretter_then_six_character = 100186
+    setPassword_password_cannot_be_empty_it_must_be_greater_then_six_characters_and_lessThen_16_characters = 100186
     
     webSignIn_phone_number_cannot_be_empty = 100187
     webSignIn_password_cannot_be_empty = 100188
@@ -126,6 +126,9 @@ class messages():
     userRole_list_user_id_cannot_be_empty = 100203
     userRole_list_user_does_not_exist = 100204
     userRole_list_no_records_found = 100205
+    
+    registration_fcmRegistrationRequired_cannot_be_empty = 100206
+    registration_fcmRegistrationRequired_value_must_be_boolean = 100207
 
 
 class webportalmessages():    

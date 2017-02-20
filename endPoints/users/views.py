@@ -193,6 +193,7 @@ class UserViewSet(viewsets.ModelViewSet):
         authenticationType = request.data.get('authenticationType')
         otp_string = request.data.get('otp')
         fcmDeviceID = request.data.get('fcmDeviceID')
+        fcmRegistrationRequired = request.data.get('fcmRegistrationRequired')
         
         # Check if phone # is passed in post param
         if not phoneNumber:
@@ -205,11 +206,30 @@ class UserViewSet(viewsets.ModelViewSet):
         if not objOtp.is_valid():
             return Response({"response_message": constants.messages.registration_phone_number_is_invalid, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if fcmRegistrationRequired # is passed in post param
+        if not fcmRegistrationRequired:
+            return Response({"response_message": constants.messages.registration_fcmRegistrationRequired_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Create object of common class 
+        objCommon = utils.common()     
+
+        # Check value of registration is boolean or NOT.
+        if not objCommon.isBool(fcmRegistrationRequired):
+            return Response({"response_message": constants.messages.registration_fcmRegistrationRequired_value_must_be_boolean,
+                            "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED)   
+            
+        #Get boolean value of fcmRegistrationRequired
+        isfcmRegistrationRequired = objCommon.getBoolValue(fcmRegistrationRequired)
         
-        # validate FCM device id. This is later on used for sending push notifications
-        if not fcmDeviceID:
-            return Response({"response_message": constants.messages.registration_fcm_device_id_cannot_be_empty, "data":[]},
-                            status=status.HTTP_401_UNAUTHORIZED)
+        if isfcmRegistrationRequired == True:
+            # validate FCM device id. This is later on used for sending push notifications
+            if not fcmDeviceID:
+                return Response({"response_message": constants.messages.registration_fcm_device_id_cannot_be_empty, "data":[]},
+                                status=status.HTTP_401_UNAUTHORIZED)
         
         # Check if authentication type is not empty
         if not authenticationType:
@@ -242,8 +262,9 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.registration_otp_is_invalid, "data": []},
                         status=status.HTTP_401_UNAUTHORIZED)
         
-        #Finally save the user device id, required for push notifications
-        userDeviceSave(phoneNumber, fcmDeviceID)
+        if isfcmRegistrationRequired == True:
+            #Finally save the user device id, required for push notifications
+            userDeviceSave(phoneNumber, fcmDeviceID)
         
         # For registration call, do not send auth token
         if authenticationType == constants.authenticationTypes.registration:
@@ -277,9 +298,17 @@ class UserViewSet(viewsets.ModelViewSet):
                          "data": []},
                         status = status.HTTP_404_NOT_FOUND)
             
+        # validate user information
+        try:
+            objToken = token.objects.get(user = objUser)
+        except token.DoesNotExist:
+            return Response({"response_message": constants.messages.setPassword_user_not_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
+            
         # Password must contain six character and not more then 255 character.    
-        if ( (len(password) < 6) or (len(password) > 255)):
-            return Response({"response_message": constants.messages.setPassword_password_cannot_be_empty_it_must_be_gretter_then_six_character,
+        if ( (len(password) < 6) or (len(password) > 16)):
+            return Response({"response_message": constants.messages.setPassword_password_cannot_be_empty_it_must_be_greater_then_six_characters_and_lessThen_16_characters,
                          "data": []},
                         status = status.HTTP_401_UNAUTHORIZED)
         
@@ -288,14 +317,12 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.setPassword_password_should_not_contain_space,
                          "data": []},
                         status = status.HTTP_401_UNAUTHORIZED)
-            
         
         # If user valid, update user password.
-        userAuth.objects.filter(authToken = authToken).update(
-                                                                password = password.strip(),
-                                                                modifiedBy = objUser
-                                                              )
-    
+        token.objects.filter(token = authToken , user = objUser).update(
+                                                                        password = password.strip()
+                                                                       )
+
         return Response({"response_message": constants.messages.success, "data": []})
     
     """
@@ -328,14 +355,15 @@ class UserViewSet(viewsets.ModelViewSet):
 
         # authenticate user phoneNumber and password.
         try:
-            authResponse = userAuth.objects.get(loginID = phoneNumber , password = password.strip())
-        except userAuth.DoesNotExist:
+            #authResponse = userAuth.objects.get(loginID = phoneNumber , password = password.strip())
+            authResponse = token.objects.get(user = objUser , password = password.strip())
+        except token.DoesNotExist:
             return Response({"response_message": constants.messages.webSignIn_invalid_credentials,
                          "data": []},
                         status = status.HTTP_404_NOT_FOUND)
         
         # Add user token to the response.
-        response = { 'token' : authResponse.authToken }
+        response = { 'token' : authResponse.token }
             
         return Response({"response_message": constants.messages.success, "data": [response]})
       
@@ -457,65 +485,66 @@ class UserViewSet(viewsets.ModelViewSet):
         userTopicSave(topicCodeIDs, objUser)
 #         
         return Response({"response_message": constants.messages.success, "data": []})
-    
-    """
-    API to login
-    """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny],authentication_classes = [TokenAuthentication])
-    def login(self,request):
-        # get inputs
-        phoneNumber = request.data.get('phoneNumber')
-        authtoken = request.data.get('token')
-        fcmDeviceID = request.data.get('fcmDeviceID')
-        
-        # Check if phoneNumber is passed in post param
-        if not phoneNumber:
-            return Response({"response_message": constants.messages.registration_phone_number_cannot_be_empty,
-                             "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED)
-            
-        # Check if token is passed in post param
-        if not authtoken:
-            return Response({"response_message": constants.messages.login_token_cannot_be_empty,
-                             "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED) 
-        
-        # validate FCM device id. This is later on used for sending push notifications
-        if not fcmDeviceID:
-            return Response({"response_message": constants.messages.signin_fcm_device_id_cannot_be_empty, "data":[]},
-                            status=status.HTTP_401_UNAUTHORIZED)           
-                 
-        # Check if phone number exists.
-        objUser = user.objects.filter(phoneNumber = phoneNumber).first()
-        if not objUser:
-            return Response({"response_message": constants.messages.registration_phone_number_is_invalid, "data": []},
-                    status=status.HTTP_401_UNAUTHORIZED)
 
-        
-        #authenticate user with it's token.
-        tokenList = token.objects.filter(user = objUser , token = authtoken).first()
-        
-        # Check authentication result.
-        if not tokenList:
-            return Response({"response_message": constants.messages.login_user_token_invalid, "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
-        
-        # Fetch userAuth for respective phoneNumber
-        objuserAuth = userAuth.objects.filter(loginID = phoneNumber).first()
-        
-        # If first time login then make entry into the userAuth
-        if not objuserAuth:
-            userAuth(loginID = phoneNumber, authToken = authtoken, createdBy = objUser , modifiedBy = objUser).save()  
-        else:
-            #Update the lastLoggedInOn and modifiedOn
-#             objuserAuth.lastLoggedInOn = datetime.datetime.now()
-#             objuserAuth.modifiedOn = datetime.datetime.now()
-            objuserAuth.save()
-        
-        #Finally save the user device id, required for push notifications
-        userDeviceSave(objUser, fcmDeviceID)
-        
-        return Response({"response_message": constants.messages.success, "data": []})
+# Login API is no more in use. So commented.    
+#     """
+#     API to login
+#     """
+#     @list_route(methods=['post'], permission_classes=[permissions.AllowAny],authentication_classes = [TokenAuthentication])
+#     def login(self,request):
+#         # get inputs
+#         phoneNumber = request.data.get('phoneNumber')
+#         authtoken = request.data.get('token')
+#         fcmDeviceID = request.data.get('fcmDeviceID')
+#         
+#         # Check if phoneNumber is passed in post param
+#         if not phoneNumber:
+#             return Response({"response_message": constants.messages.registration_phone_number_cannot_be_empty,
+#                              "data": []},
+#                              status = status.HTTP_401_UNAUTHORIZED)
+#             
+#         # Check if token is passed in post param
+#         if not authtoken:
+#             return Response({"response_message": constants.messages.login_token_cannot_be_empty,
+#                              "data": []},
+#                              status = status.HTTP_401_UNAUTHORIZED) 
+#         
+#         # validate FCM device id. This is later on used for sending push notifications
+#         if not fcmDeviceID:
+#             return Response({"response_message": constants.messages.signin_fcm_device_id_cannot_be_empty, "data":[]},
+#                             status=status.HTTP_401_UNAUTHORIZED)           
+#                  
+#         # Check if phone number exists.
+#         objUser = user.objects.filter(phoneNumber = phoneNumber).first()
+#         if not objUser:
+#             return Response({"response_message": constants.messages.registration_phone_number_is_invalid, "data": []},
+#                     status=status.HTTP_401_UNAUTHORIZED)
+# 
+#         
+#         #authenticate user with it's token.
+#         tokenList = token.objects.filter(user = objUser , token = authtoken).first()
+#         
+#         # Check authentication result.
+#         if not tokenList:
+#             return Response({"response_message": constants.messages.login_user_token_invalid, "data": []},
+#                             status=status.HTTP_401_UNAUTHORIZED)
+#         
+#         # Fetch userAuth for respective phoneNumber
+#         objuserAuth = userAuth.objects.filter(loginID = phoneNumber).first()
+#         
+#         # If first time login then make entry into the userAuth
+#         if not objuserAuth:
+#             userAuth(loginID = phoneNumber, authToken = authtoken, createdBy = objUser , modifiedBy = objUser).save()  
+#         else:
+#             #Update the lastLoggedInOn and modifiedOn
+# #             objuserAuth.lastLoggedInOn = datetime.datetime.now()
+# #             objuserAuth.modifiedOn = datetime.datetime.now()
+#             objuserAuth.save()
+#         
+#         #Finally save the user device id, required for push notifications
+#         userDeviceSave(objUser, fcmDeviceID)
+#         
+#         return Response({"response_message": constants.messages.success, "data": []})
 
     """
     APT to get user details
