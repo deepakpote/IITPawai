@@ -86,6 +86,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             controllerAs : 'setPassword'
         });
     }]);
+
 /*
  angular.module("mitraPortal").run(
  ['$templateCache', function($templateCache){
