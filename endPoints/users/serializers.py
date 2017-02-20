@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User 
 import re
 from rest_framework import serializers
-from users.models import user 
+from users.models import user, userRole
 from django.core.validators import RegexValidator
 from users.models import user, otp
 
@@ -36,3 +36,16 @@ class otpSerializer(serializers.ModelSerializer):
     class Meta:
         model = otp
         fields = ('phoneNumber', 'otp')
+        
+"""
+user role Serializer
+"""
+class userRoleSerializer(serializers.ModelSerializer):
+    
+    roleName = serializers.CharField(source='role.roleName')
+    roleID = serializers.CharField(source='role.roleID')
+    
+    class Meta:
+        model = userRole
+        fields = ('roleID','roleName')
+

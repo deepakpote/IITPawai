@@ -74,6 +74,7 @@ class token(models.Model):
     tokenID = models.AutoField(primary_key=True)
     user = models.ForeignKey('user', related_name='token_user', db_column = 'userID')
     token = models.CharField(max_length = 255, unique=True)
+    password = models.CharField(max_length = 255, null = True)
 
     createdOn = models.DateTimeField(auto_now=False, auto_now_add=True)
     modifiedOn = models.DateTimeField(auto_now=True)
@@ -179,8 +180,31 @@ class userContent(models.Model):
     class Meta:
         db_table = 'usr_userContent'
         unique_together = ('content', 'user')     
+        
+"""
+role model
+"""
+class role(models.Model):
+    roleID = models.AutoField(primary_key=True)
+    roleName = models.CharField(max_length = 255, null = False)
+    createdOn = models.DateTimeField(auto_now_add=True)
 
-#      
+    class Meta:
+        db_table = 'usr_role' 
+        
+"""
+user role model
+"""
+class userRole(models.Model):
+    userRoleID = models.AutoField(primary_key=True)
+    user = models.ForeignKey('user', db_column='userID', related_name='userRole_userID')
+    role = models.ForeignKey('role', db_column='roleID', related_name='userRole_roleID')
+    createdOn = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'usr_userRole' 
+        unique_together = ('user', 'role') 
+
 # class language(models.Model):
 #     languageID = models.AutoField(primary_key = True)
 #     languageName =  models.CharField(max_length = 255)
