@@ -221,8 +221,11 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.registration_fcmRegistrationRequired_value_must_be_boolean,
                             "data": []},
                             status = status.HTTP_401_UNAUTHORIZED)   
+            
+        #Get boolean value of fcmRegistrationRequired
+        isfcmRegistrationRequired = objCommon.getBoolValue(fcmRegistrationRequired)
         
-        if objCommon.getBoolValue(fcmRegistrationRequired) == True:
+        if isfcmRegistrationRequired == True:
             # validate FCM device id. This is later on used for sending push notifications
             if not fcmDeviceID:
                 return Response({"response_message": constants.messages.registration_fcm_device_id_cannot_be_empty, "data":[]},
@@ -259,7 +262,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.registration_otp_is_invalid, "data": []},
                         status=status.HTTP_401_UNAUTHORIZED)
         
-        if objCommon.getBoolValue(fcmRegistrationRequired) == True:
+        if isfcmRegistrationRequired == True:
             #Finally save the user device id, required for push notifications
             userDeviceSave(phoneNumber, fcmDeviceID)
         
@@ -305,7 +308,7 @@ class UserViewSet(viewsets.ModelViewSet):
             
         # Password must contain six character and not more then 255 character.    
         if ( (len(password) < 6) or (len(password) > 16)):
-            return Response({"response_message": constants.messages.setPassword_password_cannot_be_empty_it_must_be_gretter_then_six_character_and_lessThen_16_character,
+            return Response({"response_message": constants.messages.setPassword_password_cannot_be_empty_it_must_be_greater_then_six_characters_and_lessThen_16_characters,
                          "data": []},
                         status = status.HTTP_401_UNAUTHORIZED)
         

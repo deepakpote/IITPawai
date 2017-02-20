@@ -3,7 +3,7 @@ Insert into com_code(codeID, codeGroupID, codeNameEn, codeNameMr, createdBy, cre
 Select 100206 as codeID, 100 as codeGroupID, 'fcmRegistrationRequired cannot be empty' as codeNameEn, '' as codeNameMr, 1 as createdBy, now() as createdOn,  1 as modifiedBy, now() as modifiedOn , 'VerifyOTP ' as comment union
 Select 100207 as codeID, 100 as codeGroupID, 'fcmRegistrationRequired value must be boolean' as codeNameEn, '' as codeNameMr, 1 as createdBy, now() as createdOn,  1 as modifiedBy, now() as modifiedOn , 'VerifyOTP ' as comment;
 
-update com_code set codeNameEn = 'Password cannot be empty.It should be gretter then 6 character and less then 16 character' 
+update com_code set codeNameEn = 'Password cannot be empty.It should be greater then 6 characters and less then 16 characters' 
 where codeID = 100186;
 
 
