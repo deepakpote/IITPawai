@@ -32,7 +32,7 @@ class CodeViewSet(viewsets.ModelViewSet):
         
         # verify that the version number passed in, is an integer.
         try:
-            versionNumber = int(appCodeVersionNumber)
+            intAppVersionNumber = int(appCodeVersionNumber)
         except:
             return Response({"response_message": constants.messages.code_list_version_number_must_be_integer, "data": []},
                             status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -40,9 +40,10 @@ class CodeViewSet(viewsets.ModelViewSet):
         # Get the version # stored in DB
         objConfiguration = configuration.objects.filter(key = constants.configurationKey.comCodeVersion).first();
         dbCodeVersionNumber = objConfiguration.value
+        intDBVersionNumber = int(dbCodeVersionNumber)
          
-        if dbCodeVersionNumber < appCodeVersionNumber:
-                return Response({"response_message": constants.messages.code_list_version_number_invalid, "data": []},
+        if intDBVersionNumber < intAppVersionNumber:
+            return Response({"response_message": constants.messages.code_list_version_number_invalid, "data": []},
                             status=status.HTTP_417_EXPECTATION_FAILED)
         
         
