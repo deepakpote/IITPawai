@@ -43,11 +43,16 @@ public class VerifyUserOtp {
     @SerializedName("fcmDeviceID")
     private String fcmToken;
 
-    public VerifyUserOtp(String mobileNumber, String otp, int authenticationType, String fcmToken) {
+    @SerializedName("fcmRegistrationRequired")
+    private String fcmRegistrationRequired;
+
+    public VerifyUserOtp(String mobileNumber, String otp, int authenticationType, String fcmToken,
+                         String fcmRegistrationRequired) {
         this.mobileNumber = mobileNumber;
         this.otp = otp;
         this.authenticationType = authenticationType;
         this.fcmToken = fcmToken;
+        this.fcmRegistrationRequired = fcmRegistrationRequired;
     }
 
     public String getMobileNumber() {
