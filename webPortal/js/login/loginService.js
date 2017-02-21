@@ -17,7 +17,7 @@ angular.module("mitraPortal").service('loginService', function($http,appUtils){
 
     this.verifyOtp = function(phoneno,otp) {
         var postData = {"phoneNumber": "+91" + phoneno,"authenticationType":TYPE_SIGN_IN,"otp":otp,
-            "fcmDeviceID":"hardcoded_id_from_web_portal"};
+            "fcmRegistrationRequired":"false"};
         return $http({method:'POST', url: 'http://54.152.74.194:8000' + '/user/verifyOtp/', data: postData});
     };
 

@@ -180,11 +180,11 @@ ul.teaching-aids {
     padding-left: 64px;
     overflow: hidden;
     background-color: #ffffff;
-    cursor: pointer;
 }
 
 li.teaching-aids {
     float: left;
+    cursor: pointer;
 }
 
 li.teaching-aids {
