@@ -1,26 +1,41 @@
 angular.module("mitraPortal").controller("teachingAidsController", TeachingAidsController);
 
-TeachingAidsController.$inject = [];
+TeachingAidsController.$inject = ['TeachingAidsService'];
 
-function TeachingAidsController() {
+function TeachingAidsController(TeachingAidsService) {
     var vm = this;
-    vm.setFilter = setFilter;
-    vm.filter = "";
+    vm.setStatus = setStatus;
+    vm.setFileType = setFileType;
+    vm.status = "";
+    vm.fileType = 108104;
+    vm.data = {};
 
-    teachingAidsService.fetch().then(
-        function onSuccess(response) {
+    fetchTeachingAids();
 
-        },
-        function onFailure(response) {
+    function setStatus(status) {
+        //TODO set other attributes of the view if needed
+        vm.status = status;
+        fetchTeachingAids();
+    }
 
-        }
-    );
+    function setFileType(fileType) {
+        //TODO set other attributes of the view if needed
+        vm.fileType = fileType;
+        vm.fileType = 108100;
+        fetchTeachingAids();
+    }
 
+    function fetchTeachingAids() {
+        TeachingAidsService.fetch(vm.fileType).then(
+            function onSuccess(response) {
+                console.log("response received : ");
+                vm.data = response.data.data;
+                console.log(vm.data);
+            },
+            function onFailure(response) {
 
-
-    function setFilter(filterType) {
-        console.log("filter set  : " + filterType);
-        vm.filter = filterType;
+            }
+        );
     }
 
 }

@@ -13,10 +13,10 @@ padding: 64px;">
 <!-- content status filter -->
 <div>
     <ul class="teaching-aids">
-        <li class="teaching-aids" ng-click=teachingAids.setFilter('review')>Review</li>
-        <li class="teaching-aids">Drafts</li>
-        <li class="teaching-aids">Published</li>
-        <li class="teaching-aids">All</li>
+        <li class="teaching-aids" ng-click=teachingAids.setStatus('review')>Review</li>
+        <li class="teaching-aids" ng-click=teachingAids.setStatus('drafts')>Drafts</li>
+        <li class="teaching-aids" ng-click=teachingAids.setStatus('published')>Published</li>
+        <li class="teaching-aids" ng-click=teachingAids.setStatus('all')>All</li>
     </ul>
 </div>
 
@@ -25,12 +25,12 @@ padding: 64px;">
 <!-- content type filter -->
 <div>
     <ul class="teaching-aids">
-        <li class="teaching-aids">Video</li>
-        <li class="teaching-aids">Audio</li>
-        <li class="teaching-aids">PPT</li>
-        <li class="teaching-aids">Worksheet</li>
-        <li class="teaching-aids">Genie</li>
-        <li class="teaching-aids">All</li>
+        <li class="teaching-aids" ng-click=teachingAids.setFileType('video')>Video</li>
+        <li class="teaching-aids" ng-click=teachingAids.setFileType('audio')>Audio</li>
+        <li class="teaching-aids" ng-click=teachingAids.setFileType('ppt')>PPT</li>
+        <li class="teaching-aids" ng-click=teachingAids.setFileType('worksheet')>Worksheet</li>
+        <li class="teaching-aids" ng-click=teachingAids.setFileType('genie')>Genie</li>
+        <li class="teaching-aids" ng-click=teachingAids.setFileType('all')>All</li>
     </ul>
 </div>
 
@@ -38,16 +38,20 @@ padding: 64px;">
 
 <!-- content below -->
 
-<!--Card-->
-<div class="card" style="height: 200px;width: 200px;margin: 24px 32px">
+<div class="card-content-wrapper">
+    <div ng-repeat="teachingAid in teachingAids.data" style="float:left;">
+        <!--Card-->
+        <div class="card" style="height: 200px;width: 200px;margin: 24px 32px">
 
-    <!--Card image-->
-    <div class="view overlay hm-white-slight" style="background-color: gray">
-        <!--Card content-->
+            <!--Card image-->
+            <div class="view overlay hm-white-slight" style="background-color: gray">
+                <!--Card content-->
 
-        <!--/.Card content-->
+                <!--/.Card content-->
+            </div>
+            <!--/.Card image-->
+
+        </div>
+        <!--/.Card-->
     </div>
-    <!--/.Card image-->
-
 </div>
-<!--/.Card-->
