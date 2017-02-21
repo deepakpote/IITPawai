@@ -21,7 +21,6 @@ function TeachingAidsController(TeachingAidsService) {
     function setFileType(fileType) {
         //TODO set other attributes of the view if needed
         vm.fileType = fileType;
-        vm.fileType = 108100;
         fetchTeachingAids();
     }
 
