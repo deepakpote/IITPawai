@@ -15,22 +15,19 @@ function SetPasswordController($modalInstance,HttpUtils, loginService, $state, c
     vm.closeModal = closeModal;
 
     function setPassword() {
-        console.log("set password");
-        //TODO write server call to set password
+        
         var password = vm.password;
         loginService.setPassword(password).then(
             function onSuccess(response) {
                 if(HttpUtils.isSuccessful(response.data)) {
-                    //TODO Access-Controler-Allow-Headers should be handled by the server
+                    //TODO go to logged in state
                     $state.go('main.index.home');
                 } else {
-                    //TODO decide what to do in error state
                     vm.hasError = true;
                     vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
                 }
             },
             function onFailure(response) {
-                //TODO decide what to do in error state
                 vm.hasError = true;
                 vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
             }

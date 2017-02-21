@@ -6,8 +6,8 @@ angular.module("mitraPortal").service('loginService', function($http,appUtils){
     //var TYPE_REGISTER = 110100;
 
    this.validate = function(phoneno, passkey) {
-        var postData = {"phoneno": phoneno,"passkey": passkey};
-        return $http({method:'POST', url: 'http://54.152.74.194:8000' + '/user/validateWebAdmin/', data: postData});
+        var postData = {"phoneNumber": phoneno,"password": passkey};
+        return $http({method:'POST', url: 'http://54.152.74.194:8000' + '/user/webSignIn/', data: postData});
    };
 
     this.requestOtp = function(phoneno) {
