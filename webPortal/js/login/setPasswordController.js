@@ -15,7 +15,7 @@ function SetPasswordController($modalInstance,HttpUtils, loginService, $state, c
     vm.closeModal = closeModal;
 
     function setPassword() {
-        
+
         var password = vm.password;
         loginService.setPassword(password).then(
             function onSuccess(response) {
