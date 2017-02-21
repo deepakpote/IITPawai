@@ -1,4 +1,4 @@
-var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap']);
+var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap','ngLoadingSpinner']);
 mitraPortal.
 config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locationProvider',
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {

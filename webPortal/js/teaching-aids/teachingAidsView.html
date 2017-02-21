@@ -25,12 +25,18 @@ padding: 64px;">
 <!-- content type filter -->
 <div>
     <ul class="teaching-aids">
-        <li class="teaching-aids" ng-click=teachingAids.setFileType(108100)>Video</li>
-        <li class="teaching-aids" ng-click=teachingAids.setFileType(108101)>Audio</li>
-        <li class="teaching-aids" ng-click=teachingAids.setFileType(108102)>PPT</li>
-        <li class="teaching-aids" ng-click=teachingAids.setFileType(108103)>Worksheet</li>
-        <li class="teaching-aids" ng-click=teachingAids.setFileType(108104)>PDF</li>
-        <li class="teaching-aids" ng-click=teachingAids.setFileType(108105)>Genie</li>
+        <li class="teaching-aids" ng-class="{selected : teachingAids.fileType === 108100}"
+            ng-click=teachingAids.setFileType(108100)>Video</li>
+        <li class="teaching-aids" ng-class="{selected : teachingAids.fileType === 108101}"
+            ng-click=teachingAids.setFileType(108101)>Audio</li>
+        <li class="teaching-aids" ng-class="{selected : teachingAids.fileType === 108102}"
+            ng-click=teachingAids.setFileType(108102)>PPT</li>
+        <li class="teaching-aids" ng-class="{selected : teachingAids.fileType === 108103}"
+            ng-click=teachingAids.setFileType(108103)>Worksheet</li>
+        <li class="teaching-aids" ng-class="{selected : teachingAids.fileType === 108104}"
+            ng-click=teachingAids.setFileType(108104)>PDF</li>
+        <li class="teaching-aids" ng-class="{selected : teachingAids.fileType === 108105}"
+            ng-click=teachingAids.setFileType(108105)>Genie</li>
         <li class="teaching-aids" ng-click=teachingAids.setFileType()>All</li>
     </ul>
 </div>
@@ -40,19 +46,37 @@ padding: 64px;">
 <!-- content below -->
 
 <div class="card-content-wrapper">
-    <div ng-repeat="teachingAid in teachingAids.data" style="float:left;">
-        <!--Card-->
-        <div class="card" style="height: 200px;width: 200px;margin: 24px 32px">
+    <span class="spinner" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
+    <div class="repeater" ng-repeat="teachingAid in teachingAids.data">
+        <div class="card" style="height: 210px;width: 200px;display: flex;flex-direction: column;">
+            <div class="content-panel"
+                 style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.74), rgba(0, 0, 0, 0.1)),
+                                        url({{teachingAid.thumbnailUrl}});
+                                        background-size: contain;">
+                <div class="right-panel">
 
-            <!--Card image-->
-            <div class="view overlay hm-white-slight" style="background-color: gray">
-                <!--Card content-->
+                    <i class="material-icons icon-white">mode_edit</i>
+                    <div class="text">EDIT</div>
 
-                <!--/.Card content-->
+                    <i style="margin-top: 16px;" class="material-icons icon-white">close</i>
+                    <div class="text">REMOVE</div>
+
+                </div>
             </div>
-            <!--/.Card image-->
-
+            <div class="mid-content">
+                <div class="single-line">
+                    {{teachingAid.contentTitle}}
+                </div>
+                <div style="font-size: smaller;">
+                    {{teachingAid.subjectName}} | {{teachingAid.grades}}
+                </div>
+            </div>
+            <div class="bottom-content">
+                <div style="flex: 1;padding-left: 8px;padding-top: 4px;">
+                    Uploaded by : {{teachingAid.author}}
+                </div>
+            </div>
         </div>
-        <!--/.Card-->
     </div>
+    <div ng-hide="teachingAids.data.length" style="line-height: 12em;text-align: center">No resources found!</div>
 </div>
