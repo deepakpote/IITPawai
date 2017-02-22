@@ -39,6 +39,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         pageNumber = request.data.get('pageNumber')
         
         appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
+        statusCodeID = request.data.get('statusCodeID')
         
         # On web portal, user no need to login to watch the video's so authentication is removed (commented) for now.
         #authToken = request.META.get('HTTP_AUTHTOKEN')
@@ -91,6 +92,18 @@ class ContentViewSet(viewsets.ModelViewSet):
         else:
             fromRecord = constants.contentSearchRecords.default
             pageNumber = content.objects.all().count()
+            
+        # Check if statusCodeID is passed in header
+        if not statusCodeID or statusCodeID is None:
+            statusCodeID = constants.mitraCode.published
+        else:
+            # If statusCodeID parameter is passed, then check user is exists or not
+            try:
+                objStatusCode = code.objects.get(codeID = statusCodeID)
+            except code.DoesNotExist:
+                return Response({"response_message": constants.messages.search_content_status_not_exists,
+                                 "data": []},
+                                status = status.HTTP_404_NOT_FOUND)
         
         #Get the applicable subject list for the respective user.    
         arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs)         
@@ -132,6 +145,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
                                             where CCG.appLanguageCodeID = %s
                                             and CC.fileTypeCodeID = %s 
+                                            and CC.statusCodeID = %s
                                             and CC.contentTypeCodeID = %s 
                                             and CC.subjectCodeID IN %s 
                                             and CG.gradeCodeID IN %s 
@@ -146,10 +160,10 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.fileTypeCodeID,
                                             CC.languageCodeID,
                                             CC.subjectCodeID,
-                                            CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,fileTypeCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
+                                            CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,fileTypeCodeID,statusCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
 
         cursor.execute(searchTeachingAidQuery)
-        
+    
         #Queryset
         contentQuerySet = cursor.fetchall()
         
@@ -200,7 +214,9 @@ class ContentViewSet(viewsets.ModelViewSet):
         topicCodeIDs = request.data.get('topicCodeIDs') 
         pageNumber = request.data.get('pageNumber')
         
-        appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
+        appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID') 
+        
+        statusCodeID = request.data.get('statusCodeID') 
         # On web portal, user no need to login to watch the video's so authentication  is removed (commented) for now.
 #         authToken = request.META.get('HTTP_AUTHTOKEN')
 #         
@@ -261,6 +277,18 @@ class ContentViewSet(viewsets.ModelViewSet):
         else:
             fromRecord = constants.contentSearchRecords.default
             pageNumber = content.objects.all().count()
+            
+        # Check if statusCodeID is passed in header
+        if not statusCodeID or statusCodeID is None:
+            statusCodeID = constants.mitraCode.published
+        else:
+            # If statusCodeID parameter is passed, then check user is exists or not
+            try:
+                objStatusCode = code.objects.get(codeID = statusCodeID)
+            except code.DoesNotExist:
+                return Response({"response_message": constants.messages.search_content_status_not_exists,
+                                 "data": []},
+                                status = status.HTTP_404_NOT_FOUND)
         
         #Get the applicable topic list for the respective user.    
         arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs)  
@@ -300,9 +328,10 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
                                             where CC.languageCodeID IN %s 
                                             and CC.contentTypeCodeID = %s 
+                                            and CC.statusCodeID = %s
                                             and CC.topicCodeID IN %s 
                                             and CCG.appLanguageCodeID = %s 
-                                            order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
+                                            order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,statusCodeID,str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
  
          
         cursor.execute(searchSelfLearningQuery)
