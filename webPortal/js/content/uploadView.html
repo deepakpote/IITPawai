@@ -297,16 +297,16 @@
 
 <div class="form-group" ng-class="{'has-error': frmContentUpload.txtFileUrl.$dirty && frmContentUpload.txtFileUrl.$invalid}">
   <input type="text" class="form-control" id="txtFileUrl" name="txtFileUrl" 
-  placeholder="Enter URL"
+  placeholder="Enter URL" ng-disabled="!content.fileTypeCodeID"
   ng-model="content.fileUrl" required>
   <div ng-messages="frmContentUpload.txtFileUrl.$error" ng-if="frmContentUpload.txtFileUrl.$dirty">
     <span class="error-message" ng-show="frmContentUpload.txtFileUrl.$error.required">File URL is required.</span>
   </div>
 </div>
-<p>Or</p>
+<p> <b>OR</b></p>
 <div class="form-group" ng-class="{'has-error': frmContentUpload.fileUpload.$dirty && frmContentUpload.fileUpload.$invalid}">
-  <label for="fileUpload" class="btn teal-background upload-button">Upload</label>
-  <input type="file" class="form-control" style="display:none" id="fileUpload" name="fileUpload" ng-disabled="isFileTypeVideo()"
+  <label for="fileUpload" class="btn teal-background upload-button" ng-disabled="isFileTypeVideo() || !content.fileTypeCodeID"> Upload</label> {{myFile.name}}
+  <input type="file" class="form-control" style="display:none" id="fileUpload" name="fileUpload" 
   file-model="myFile" accept="{{acceptedFileTypes[content.fileTypeCodeID]}}" ng-click="showAccepted()" required />
   <div ng-messages="frmContentUpload.fileUpload.$error" ng-if="frmContentUpload.fileUpload.$dirty">
     <span class="error-message" ng-show="frmContentUpload.fileUpload.$error.required">File upload is required.</span>
@@ -319,6 +319,7 @@
 
 <div class="upload-container">
  <input type="submit" value="Send For Review" class="btn btn-warning" ng-disableda="frmContentUpload.$invalid"  /> 
+
 </div>
 </div>
 </form>
