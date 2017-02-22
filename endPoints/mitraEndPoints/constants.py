@@ -131,6 +131,9 @@ class messages():
     
     registration_fcmRegistrationRequired_cannot_be_empty = 100206
     registration_fcmRegistrationRequired_value_must_be_boolean = 100207
+    
+    search_content_status_not_exists = 100208
+
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
@@ -171,6 +174,9 @@ class mitraCode():
     worksheet = 108103
     pdf = 108104
     ekStep = 108105
+    created = 114100
+    sentForReview = 114101
+    published = 114102
 
     
 class contentSearchRecords():
