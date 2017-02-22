@@ -6,4 +6,4 @@ Select 100208 as codeID, 100 as codeGroupID, 'Status does not exists' as codeNam
 update com_configuration set value = value + 1 where `key` = 'comCodeVersion';
 
 -- update into com_configuration
-update com_configuration set `value` = '37-mitraDBmessagesForStatusCodeID' where `key` = 'dbScriptExecutedUntil';
+update com_configuration set `value` = '33-mitraDBmessagesForStatusCodeID' where `key` = 'dbScriptExecutedUntil';
