@@ -1,4 +1,4 @@
-var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap']);
+var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap','ngLoadingSpinner']);
 mitraPortal.
 config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locationProvider',
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
@@ -25,8 +25,8 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     },
                     'contentBox': {
                         templateUrl: '/js/common/contentBoxView.html'
-                    },
-                },
+                    }
+                }
             })
             .state('main.index.home', {
                 url: '/home',
@@ -53,6 +53,16 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     'content': {
                         templateUrl: '/js/content/uploadView.html',
                         controller: 'uploadController'
+                    }
+                }
+            })
+            .state('main.index.teachingAids', {
+                url: '/teachingAids',
+                views : {
+                    'content' : {
+                        templateUrl : '/js/teaching-aids/teachingAidsView.html',
+                        controller : 'teachingAidsController',
+                        controllerAs : 'teachingAids'
                     }
                 }
             });

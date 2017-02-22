@@ -57,10 +57,6 @@ function RequestOtpController($modalInstance, HttpUtils, loginService, $state, a
                         appUtils.saveToLocalStorage("token",data.token);
                         $state.go('main.index.home.setpassword');
                     }else{
-                        //TODO ask pradnya regarding $rootscope.
-                        //TODO throw error here decide what is to be done
-                        // $rootScope.globals.currentUser = undefined;
-                        // alert(response.data.response_message);
                         vm.hasError = true;
                         vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
                     }
