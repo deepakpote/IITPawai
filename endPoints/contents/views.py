@@ -614,7 +614,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         subjectCodeID = request.data.get('subjectCodeID')
         gradeCodeIDs = request.data.get('gradeCodeIDs')
         topicCodeID = request.data.get('topicCodeID')
-        requirement = request.data.get('requirement')
+        requirementCodeIDs = request.data.get('requirementCodeIDs')
 
         fileTypeCodeID = request.data.get('fileTypeCodeID')
         
@@ -735,7 +735,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                 objRec = content.objects.create(contentType = objContentType, 
                                                 subject = objSubject,
                                                 topic = objTopic,
-                                                requirement = requirement,
+                                                requirement = requirementCodeIDs,
                                                 fileType = objFileType,
                                                 fileName= fileName,
                                                 #objectives = null,
@@ -775,7 +775,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                 content.objects.filter(contentID = contentID).update(contentType = objContentType, 
                                                                      subject = objSubject,
                                                                      topic = objTopic,
-                                                                     requirement = requirement,
+                                                                     requirement = requirementCodeIDs,
                                                                      fileType = objFileType,
                                                                      fileName = fileName,
                                                                      #objectives = objectives,
@@ -806,7 +806,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                
         except Exception as e:
             # Error occurred while uploading the content.
-            # print e
+            print e
             return statusHttpBadRequest(constants.messages.uploadContent_content_upload_failed)
 
         #Return the response
