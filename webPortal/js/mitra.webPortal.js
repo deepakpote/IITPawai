@@ -61,7 +61,7 @@ config(['$stateProvider', '$urlRouterProvider',
  	views: {
   		'content': {
   			templateUrl: 'dashboard/dashboardView.html',
-//  			controller: 'uploadController'
+ 			controller: 'dashboardController'
   		}
   	}
 });
