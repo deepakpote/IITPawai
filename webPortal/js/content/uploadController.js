@@ -4,12 +4,12 @@ angular.module("mitraPortal").controller("uploadController",
   
 
     $scope.acceptedFileTypes = {
-      "108100" : "",    //Video
-      "108101" : "audio/*",    //Audio
+      "108100" : "",              //Video
+      "108101" : "audio/*",       //Audio
       "108102" : ".ppt,.pptx",    //PPT
       "108103" : ".xls,.xlsx",    //Worksheet
-      "108104" : ".pdf",    //PDF
-      "108105" : "",    //Ek Step
+      "108104" : ".pdf",          //PDF
+      "108105" : "",              //Ek Step
     }
 
     $scope.selectedOption = "";
