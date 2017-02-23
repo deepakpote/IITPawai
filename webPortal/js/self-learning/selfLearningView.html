@@ -1,0 +1,82 @@
+<!-- unnecessary header -->
+<div style="
+padding: 64px;">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+    labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+    nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
+    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+    culpa qui officia deserunt mollit anim id est laborum
+</div>
+
+<div class="divider"></div>
+
+<!-- content status filter -->
+<div>
+    <ul class="filter-type">
+        <li class="filter-type" ng-click=selfLearning.setStatus('review')>Review</li>
+        <li class="filter-type" ng-click=selfLearning.setStatus('drafts')>Drafts</li>
+        <li class="filter-type" ng-click=selfLearning.setStatus('published')>Published</li>
+        <li class="filter-type" ng-click=selfLearning.setStatus('all')>All</li>
+    </ul>
+</div>
+
+<div class="divider"></div>
+
+<!-- content type filter -->
+<!--<div>-->
+    <!--<ul class="filter-type">-->
+        <!--<li class="filter-type" ng-class="{selected : selfLearning.fileType === 108100}"-->
+            <!--ng-click=selfLearning.setFileType(108100)>Video</li>-->
+        <!--<li class="filter-type" ng-class="{selected : selfLearning.fileType === 108101}"-->
+            <!--ng-click=selfLearning.setFileType(108101)>Audio</li>-->
+        <!--<li class="filter-type" ng-class="{selected : selfLearning.fileType === 108102}"-->
+            <!--ng-click=selfLearning.setFileType(108102)>PPT</li>-->
+        <!--<li class="filter-type" ng-class="{selected : selfLearning.fileType === 108103}"-->
+            <!--ng-click=selfLearning.setFileType(108103)>Worksheet</li>-->
+        <!--<li class="filter-type" ng-class="{selected : selfLearning.fileType === 108104}"-->
+            <!--ng-click=selfLearning.setFileType(108104)>PDF</li>-->
+        <!--<li class="filter-type" ng-class="{selected : selfLearning.fileType === 108105}"-->
+            <!--ng-click=selfLearning.setFileType(108105)>Genie</li>-->
+        <!--<li class="filter-type" ng-click=selfLearning.setFileType()>All</li>-->
+    <!--</ul>-->
+<!--</div>-->
+
+<!--<div class="divider"></div>-->
+
+<!-- content below -->
+
+<div class="card-content-wrapper">
+    <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
+    <div class="repeater" ng-repeat="data in selfLearning.data">
+        <div class="card" style="height: 210px;width: 200px;display: flex;flex-direction: column;">
+            <div class="content-panel"
+                 style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.74), rgba(0, 0, 0, 0.1)),
+                                        url({{data.thumbnailUrl}});
+                                        background-size: contain;">
+                <div class="right-panel">
+
+                    <i class="material-icons icon-white">mode_edit</i>
+                    <div class="text">EDIT</div>
+
+                    <i style="margin-top: 16px;" class="material-icons icon-white">close</i>
+                    <div class="text">REMOVE</div>
+
+                </div>
+            </div>
+            <div class="mid-content">
+                <div class="single-line">
+                    {{data.contentTitle}}
+                </div>
+                <div style="font-size: smaller;">
+                    {{data.subjectName}} | {{data.grades}}
+                </div>
+            </div>
+            <div class="bottom-content">
+                <div style="flex: 1;padding-left: 8px;padding-top: 4px;">
+                    Uploaded by : {{data.author}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-hide="selfLearning.data.length" style="line-height: 12em;text-align: center">No resources found!</div>
+</div>

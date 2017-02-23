@@ -12,11 +12,11 @@ padding: 64px;">
 
 <!-- content status filter -->
 <div>
-    <ul class="teaching-aids">
-        <li class="teaching-aids" ng-click=teachingAids.setStatus('review')>Review</li>
-        <li class="teaching-aids" ng-click=teachingAids.setStatus('drafts')>Drafts</li>
-        <li class="teaching-aids" ng-click=teachingAids.setStatus('published')>Published</li>
-        <li class="teaching-aids" ng-click=teachingAids.setStatus('all')>All</li>
+    <ul class="filter-type">
+        <li class="filter-type" ng-click=teachingAids.setStatus('review')>Review</li>
+        <li class="filter-type" ng-click=teachingAids.setStatus('drafts')>Drafts</li>
+        <li class="filter-type" ng-click=teachingAids.setStatus('published')>Published</li>
+        <li class="filter-type" ng-click=teachingAids.setStatus('all')>All</li>
     </ul>
 </div>
 
@@ -24,20 +24,20 @@ padding: 64px;">
 
 <!-- content type filter -->
 <div>
-    <ul class="teaching-aids">
-        <li class="teaching-aids" ng-class="{selected : teachingAids.fileType === 108100}"
+    <ul class="filter-type">
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108100}"
             ng-click=teachingAids.setFileType(108100)>Video</li>
-        <li class="teaching-aids" ng-class="{selected : teachingAids.fileType === 108101}"
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108101}"
             ng-click=teachingAids.setFileType(108101)>Audio</li>
-        <li class="teaching-aids" ng-class="{selected : teachingAids.fileType === 108102}"
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108102}"
             ng-click=teachingAids.setFileType(108102)>PPT</li>
-        <li class="teaching-aids" ng-class="{selected : teachingAids.fileType === 108103}"
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108103}"
             ng-click=teachingAids.setFileType(108103)>Worksheet</li>
-        <li class="teaching-aids" ng-class="{selected : teachingAids.fileType === 108104}"
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108104}"
             ng-click=teachingAids.setFileType(108104)>PDF</li>
-        <li class="teaching-aids" ng-class="{selected : teachingAids.fileType === 108105}"
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108105}"
             ng-click=teachingAids.setFileType(108105)>Genie</li>
-        <li class="teaching-aids" ng-click=teachingAids.setFileType()>All</li>
+        <li class="filter-type" ng-click=teachingAids.setFileType()>All</li>
     </ul>
 </div>
 
@@ -46,7 +46,7 @@ padding: 64px;">
 <!-- content below -->
 
 <div class="card-content-wrapper">
-    <span class="spinner" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
+    <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
     <div class="repeater" ng-repeat="teachingAid in teachingAids.data">
         <div class="card" style="height: 210px;width: 200px;display: flex;flex-direction: column;">
             <div class="content-panel"

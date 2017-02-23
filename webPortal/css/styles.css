@@ -174,20 +174,21 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
     margin-top: 24px;
 }
 
-ul.teaching-aids {
+ul.filter-type {
     list-style-type: none;
     margin: 0;
-    padding-left: 64px;
     overflow: hidden;
     background-color: #ffffff;
+    width: 840px;
+    margin: auto;
 }
 
-li.teaching-aids {
+li.filter-type {
     float: left;
     cursor: pointer;
 }
 
-li.teaching-aids {
+li.filter-type {
     display: block;
     color: black;
     text-align: center;
@@ -196,7 +197,7 @@ li.teaching-aids {
 }
 
 /* Change the link color to #111 (black) on hover */
-li.teaching-aids:hover {
+li.filter-type:hover {
     color:#ff6d00;
 }
 
@@ -230,7 +231,7 @@ li.selected  {
 
 .repeater{
     float:left;
-    margin:24px 32px;
+    margin: 24px 64px 24px 0;
 }
 
 .spinner{
@@ -263,4 +264,10 @@ li.selected  {
 
 .icon-white {
     color:whitesmoke;
+}
+
+.card-content-wrapper {
+    width: 840px;
+    height: 100%;
+    margin: auto;
 }

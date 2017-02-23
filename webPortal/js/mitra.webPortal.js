@@ -56,6 +56,16 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
+            .state('main.index.selfLearning', {
+                url: '/selfLearning',
+                views: {
+                    'content': {
+                        templateUrl : '/js/self-learning/selfLearningView.html',
+                        controller : 'selfLearningController',
+                        controllerAs : 'selfLearning'
+                    }
+                }
+            })
             .state('main.index.teachingAids', {
                 url: '/teachingAids',
                 views : {

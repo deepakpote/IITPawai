@@ -10,18 +10,27 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope) {
     vm.fileType = 108100;
     vm.data = {};
 
-    $scope.$on('codesAvailable', function(event,data){
-        fetchTeachingAids();
-    });
+    activate();
+
+    ////////////////
+
+    function activate() {
+        console.log(commonService.isCodeListEmpty());
+        if (commonService.isCodeListEmpty()) {
+            $scope.$on('codesAvailable', function(event,data){
+                fetchTeachingAids();
+            });
+        } else {
+            fetchTeachingAids();
+        }
+    }
 
     function setStatus(status) {
-        //TODO set other attributes of the view if needed
         vm.status = status;
         fetchTeachingAids();
     }
 
     function setFileType(fileType) {
-        //TODO set other attributes of the view if needed
         vm.fileType = fileType;
         fetchTeachingAids();
     }
