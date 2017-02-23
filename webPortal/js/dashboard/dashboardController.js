@@ -1,11 +1,10 @@
 angular.module("mitraPortal").controller("dashboardController",
-  ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService',
-  function($scope, $location, $log, appUtils, appConstants, contentService, commonService) {
+  ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService', '$state',
+  function($scope, $location, $log, appUtils, appConstants, contentService, commonService, $state) {
   	
-	$scope.goTo = function ( path ) {
-		$location.path( path );
+	$scope.goTo = function ( state ) {
+		$state.go(state)
 	};
-	
 	  
   	var init = function () {
 //  		$scope.submitted = false;
