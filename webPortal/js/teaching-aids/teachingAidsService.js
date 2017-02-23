@@ -19,9 +19,9 @@
 
         function fetch(fileTypeCodeId) {
 
-            var postData = {"fileTypeCodeID":fileTypeCodeId,"languageCodeID":101100};
+            var postData = {"fileTypeCodeID":fileTypeCodeId,"languageCodeIDs":101100};
             var header = {"authToken":"OF3eOof1qa5bDkHQjwPjlT24sRWb42J1",
-                            "appLanguageCodeID":"113100"};
+                            "appLanguageCodeID":"113101"};
             return $http({method:'POST', url: 'http://54.152.74.194:8000' + '/content/searchTeachingAid/',
                 data: postData,
                 headers : header});
