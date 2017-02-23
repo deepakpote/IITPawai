@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import list_route
 from django.db.models import Max
 
-from commons.models import code , news, configuration, newsImage , codeGroup, userNews
+from commons.models import code , news, configuration, newsImage , codeGroup, userNews, newsDetail
 from commons.serializers import codeSerializer , newsSerializer 
 from mitraEndPoints import constants, settings
 from datetime import datetime
@@ -190,6 +190,204 @@ class NewsViewSet(viewsets.ModelViewSet):
                      
         serializer = newsSerializer(newsData, many = True)   
         return Response({"response_message": constants.messages.success, "data": serializer.data})
+    
+    """
+    API to save news.
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def saveNews(self,request):
+        # get inputs
+        newsID = request.data.get('newsID')
+        
+        engNewsTitle = request.data.get('engNewsTitle')
+        marNewsTitle = request.data.get('marNewsTitle')
+        
+        engContent = request.data.get('engContent')
+        marContent = request.data.get('marContent') 
+        
+        engAuthor = request.data.get('engAuthor')
+        marAuthor = request.data.get('marAuthor')
+        
+        engTags = request.data.get('engTags')
+        marTags = request.data.get('marTags')
+        
+        newsCategoryCodeID = request.data.get('newsCategoryCodeID') 
+        publishDate = request.data.get('publishDate') 
+        departmentCodeID = request.data.get('departmentCodeID')
+        newsImportanceCodeID = request.data.get('newsImportanceCodeID')
+        statusCodeID = request.data.get('statusCodeID')
+        pdfFileURL = request.data.get('pdfFileURL')
+        
+        #Get user token
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+       #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+        
+        
+        # Check if NewsTitle for english is passed in post param
+        if not engNewsTitle or engNewsTitle is None or engNewsTitle.isspace():
+            return Response({"response_message": constants.messages.saveNews_newsTitle_english_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # Check if NewsTitle for marathi is passed in post param
+        if not marNewsTitle or marNewsTitle is None or marNewsTitle.isspace():
+            return Response({"response_message": constants.messages.saveNews_newsTitle_marathi_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # Check if newsCategoryCodeID is passed in post param
+        if not newsCategoryCodeID and newsCategoryCodeID != 0:
+            return Response({"response_message": constants.messages.saveNews_newsCategory_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+        
+        # Check if departmentCodeID is passed in post param
+        if not departmentCodeID and departmentCodeID != 0:
+            return Response({"response_message": constants.messages.saveNews_departmentCodeID_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+                     
+        # Check if newsImportanceCodeID is passed in post param
+        if not newsImportanceCodeID and newsImportanceCodeID != 0:
+            return Response({"response_message": constants.messages.saveNews_newsImportanceCodeID_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED)    
+              
+        # Check if statusCodeID is passed in post param
+        if not statusCodeID:
+            return Response({"response_message": constants.messages.saveNews_statusCodeID_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+                  
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.saveNews_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+            
+        # If statusCodeID parameter is passed, then check status exists or not
+        try:
+            objStatus = code.objects.get(codeID = statusCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.saveNews_status_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+            
+        # If newsCategoryCodeID parameter is passed, then check newsCategoryCodeID exists or not
+        try:
+            objnewsCategory = code.objects.get(codeID = newsCategoryCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.saveNews_newsCategory_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+             
+        # If departmentCodeID parameter is passed, then check departmentCodeID exists or not    
+        try:
+            objDepartment = code.objects.get(codeID = departmentCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.saveNews_department_does_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # If newsImportanceCodeID parameter is passed, then check newsImportanceCodeID exists or not        
+        try:
+            objNewsImportance = code.objects.get(codeID = newsImportanceCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.saveNews_newsImportance_does_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)  
+                       
+        # Get app language instances for english and marathi.
+        objAppLanguageEng = code.objects.get(codeID = constants.appLanguage.english)
+        objAppLanguageMar = code.objects.get(codeID = constants.appLanguage.marathi)
+        
+        try:
+            # Check newsID is provided or not.
+            if not newsID or newsID == 0:
+                # Save the newsID.
+                objNews =news.objects.create(department = objDepartment, 
+                                            publishDate = publishDate,
+                                            pdfFileURL = pdfFileURL,
+                                            newsCategory = objnewsCategory,
+                                            newsImportance = objNewsImportance,
+                                            status = objStatus,
+                                            createdBy = objUser,
+                                            modifiedBy = objUser)
+                
+                objNews.save()
+                
+                
+                #Save the newsID details for multiple language.
+                newsDetail.objects.bulk_create(
+                                                    [
+                                                    newsDetail(news = objNews,
+                                                                  appLanguage = objAppLanguageEng,
+                                                                  newsTitle = engNewsTitle.strip(),
+                                                                  author = engAuthor , 
+                                                                  content = engContent,
+                                                                  tags = engTags),
+                                                    newsDetail(news = objNews,
+                                                                  appLanguage = objAppLanguageMar ,
+                                                                  newsTitle = marNewsTitle.strip(), 
+                                                                  author = marAuthor , 
+                                                                  content = marContent,
+                                                                  tags = marTags),
+                                                    ]
+                                                 )
+             
+                newsID =  objNews.newsID 
+            
+            else:
+                # If news parameter is passed, then check news exists or not and update the newsID details.       
+                try:
+                    objnews = news.objects.get(newsID = newsID)
+                except news.DoesNotExist:
+                    return Response({"response_message": constants.messages.uploadContent_contentID_does_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+                 
+                # If newsID valid, update the details.
+                news.objects.filter(newsID = newsID).update(department = objDepartment, 
+                                                            publishDate = publishDate,
+                                                            pdfFileURL = pdfFileURL,
+                                                            newsCategory = objnewsCategory,
+                                                            newsImportance = objNewsImportance,
+                                                            status = objStatus,
+                                                            createdBy = objUser,
+                                                            modifiedBy = objUser)
+                
+                # update news details for english language.
+                newsDetail.objects.filter(news = objnews,
+                                             appLanguage = objAppLanguageEng).update(newsTitle = engNewsTitle.strip(),
+                                                                                      author = engAuthor , 
+                                                                                      content = engContent,
+                                                                                      tags = engTags)
+                # update news details for marathi language.
+                newsDetail.objects.filter(news = objnews,
+                                             appLanguage = objAppLanguageMar).update(newsTitle = marNewsTitle.strip(), 
+                                                                                      author = marAuthor , 
+                                                                                      content = marContent,
+                                                                                      tags = marTags)
+                                               
+        except Exception as e:
+            # Error occured while uploading the content.
+            #print e
+            return Response({"response_message": constants.messages.saveNews_news_save_failed,
+                     "data": []},
+                     status = status.HTTP_400_BAD_REQUEST)
+
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": []})
      
     """
      saves users preferred news
