@@ -55,7 +55,16 @@ config(['$stateProvider', '$urlRouterProvider',
   			controller: 'uploadController'
   		}
   	}
-  });
+  })
+  .state('main.index.dashboard', {
+    url: '/dashboard',
+ 	views: {
+  		'content': {
+  			templateUrl: 'dashboard/dashboardView.html',
+//  			controller: 'uploadController'
+  		}
+  	}
+});
 }]);
 /*
 angular.module("mitraPortal").run(
