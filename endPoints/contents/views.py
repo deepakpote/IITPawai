@@ -177,7 +177,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                     'gradeCodeIDs':     str(item[12]),
                                     'subject':          item[10],
                                     'topic' :           item[11],
-                                    'requirement':      item[2],
+                                    'requirementCodeIDs':      item[2],
                                     'instruction':      item[3],
                                     'fileType' :        item[8],
                                     'fileName':         item[4],
@@ -345,7 +345,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             objResponse_data = {
                                 'contentID':        item[0], 
                                 'contentTitle':     item[2], 
-                                'requirement':      item[3], 
+                                'requirementCodeIDs':      item[3], 
                                 'instruction':      item[4], 
                                 'fileName':         item[5],
                                 'author':           item[6], 

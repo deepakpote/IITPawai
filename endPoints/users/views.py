@@ -824,7 +824,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 objResponse_data = {
                                         'contentID':    item[0], 
                                         'contentTitle': item[1], 
-                                        'requirement':  item[2],
+                                        'requirementCodeIDs':  item[2],
                                         'instruction':  item[3],
                                         'fileName':     item[4],
                                         'author':       item[5],
@@ -909,7 +909,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 objResponse_data = {
                                     'contentID':        item[0], 
                                     'contentTitle':     item[2], 
-                                    'requirement':      item[3], 
+                                    'requirementCodeIDs':      item[3], 
                                     'instruction':      item[4], 
                                     'fileName':         item[5],
                                     'author':           item[6], 
