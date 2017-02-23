@@ -34,14 +34,14 @@ angular.module("mitraPortal").service('appUtils', ['$http', '$log', '$rootScope'
 		// Make ajax call
 		$http({
 		  method: options.method,
-		  url: options.url,
+		  url: options.url, headers:options.headers,
 		  data: options.data
 		}).then(function successCallback(response) {
 			successCB(response.data)
 		  }, function errorCallback(response) {
 			  errorCB(response.data)
 		  });
-	}
+	};
 
 	/**
 	 * Get the value stored in the local storage, against the said key.
