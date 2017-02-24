@@ -1,8 +1,14 @@
-var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap']);
+var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap', 'i18n']);
 mitraPortal.
-config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locationProvider',
-    function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
-
+config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locationProvider','$i18nProvider',
+    function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider, $i18nProvider) {
+				
+    	 $i18nProvider.config({
+         language: 'mr', // default language 
+         path: '/js/resources', // for example: assets/locals 
+         type: 'json', // type of your translations files 
+       });
+    	 
         //$locationProvider.html5Mode(true);
         $urlRouterProvider.otherwise('/home');
 
@@ -65,7 +71,16 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         controllerAs : 'teachingAids'
                     }
                 }
-            });
+            })
+            .state('main.index.aboutUs', {
+              url: '/aboutUs',
+              views : {
+                  'content' : {
+                      templateUrl : '/js/common/aboutUsView.html',
+                      controller : 'aboutUsController',
+                  }
+              }
+          });
         // define login route
         loginModalStateProvider.state('main.index.home.login', {
             url: '/login',

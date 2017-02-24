@@ -1,7 +1,7 @@
 angular.module("mitraPortal").controller("mainController",
   ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'commonService',
   function($scope, $location, $log, appUtils, appConstants, commonService) {
-  	
+  	/* MOVED THIS TO "localization.js"
   	var getCodeListSuccessCB = function (response) {
   		appUtils.saveToLocalStorage(appConstants.localStorage.codeListVersionKey, response.data[0].version);
   		appUtils.saveToLocalStorage(appConstants.localStorage.codeListKey, response.data[0].codeList);
@@ -29,6 +29,6 @@ angular.module("mitraPortal").controller("mainController",
 
     $log.debug("init main controller");
   	init();
-
+*/
   }
 ]);
