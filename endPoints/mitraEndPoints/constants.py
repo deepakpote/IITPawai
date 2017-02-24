@@ -133,6 +133,19 @@ class messages():
     registration_fcmRegistrationRequired_value_must_be_boolean = 100207
     
     search_content_status_not_exists = 100208
+    
+    saveNews_newsTitle_english_cannot_be_empty = 100209
+    saveNews_newsTitle_marathi_cannot_be_empty = 100210
+    saveNews_newsCategory_cannot_be_empty = 100211
+    saveNews_departmentCodeID_cannot_be_empty = 100212
+    saveNews_newsImportanceCodeID_cannot_be_empty = 100213
+    saveNews_statusCodeID_cannot_be_empty = 100214
+    saveNews_user_not_exists = 100215
+    saveNews_status_not_exists = 100216
+    saveNews_newsCategory_not_exists = 100217
+    saveNews_department_does_not_exists = 100218
+    saveNews_newsImportance_does_not_exists = 100219
+    saveNews_news_save_failed = 100120
 
 
 class webportalmessages():    
@@ -160,6 +173,7 @@ class mitraCodeGroup():
     topic = 105
     fileType = 108
     language = 101
+    content_News_TrainingCreation_Status = 114
     
 class mitraCode():
     teachingAids = 107100
