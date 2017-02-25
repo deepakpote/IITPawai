@@ -229,9 +229,8 @@ li.selected  {
     color:whitesmoke;
 }
 
-.repeater{
-    float:left;
-    margin: 24px 64px 24px 0;
+.list-view{
+    margin : 16px 0;
 }
 
 .spinner{
@@ -267,7 +266,6 @@ li.selected  {
 }
 
 .card-content-wrapper {
-    width: 840px;
-    height: 100%;
-    margin: auto;
+    padding-left: 10%;
+    padding-right: 10%;
 }
