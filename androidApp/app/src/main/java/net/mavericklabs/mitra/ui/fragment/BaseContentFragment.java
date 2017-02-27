@@ -111,6 +111,16 @@ public class BaseContentFragment extends Fragment {
         filterRecyclerView.swapAdapter(filterAdapter, false);
     }
 
+    protected void clearFilterList() {
+        if(filterList != null) {
+            filterList.clear();
+            filterRecyclerView.setVisibility(View.GONE);
+            viewBelowFilterList.setVisibility(View.GONE);
+            filterAdapter.setObjects(filterList);
+            filterRecyclerView.swapAdapter(filterAdapter, false);
+        }
+    }
+
     protected void setItemInFilterList(CommonCode commonCode, int pos) {
         filterRecyclerView.setVisibility(View.VISIBLE);
         viewBelowFilterList.setVisibility(View.VISIBLE);

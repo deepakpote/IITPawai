@@ -73,7 +73,7 @@ import retrofit2.Response;
  * Created by amoghpalnitkar on 14/11/16.
  */
 
-public class TeachingAidsFragment extends Fragment{
+public class TeachingAidsFragment extends Fragment implements TeachingAidsContentFragment.FilterChangeListener{
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -87,6 +87,8 @@ public class TeachingAidsFragment extends Fragment{
      */
     private ViewPager mViewPager;
     private TabLayout tabLayout;
+    private List<CommonCode> filterGradeList, filterSubjectList;
+    private boolean isChanged;
 
 
     public TeachingAidsFragment() {
@@ -122,6 +124,26 @@ public class TeachingAidsFragment extends Fragment{
 
         tabLayout.setupWithViewPager(mViewPager);
 
+        filterGradeList = new ArrayList<>();
+        filterSubjectList = new ArrayList<>();
+
+        //From profile, set initial filters
+        RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
+                .where(DbUser.class).findAll();
+
+        if(dbUser.size() == 1) {
+            DbUser user = dbUser.get(0);
+            RealmList<DbSubject> dbSubjects = user.getSubjects();
+            for(DbSubject subject : dbSubjects) {
+                addSubjectToFilter(CommonCodeUtils.getObjectFromCode(subject.getSubjectCommonCode()));
+            }
+
+            RealmList<DbGrade> dbGrades = user.getGrades();
+            for(DbGrade grade : dbGrades) {
+                addGradeToFilter(CommonCodeUtils.getObjectFromCode(grade.getGradeCommonCode()));
+            }
+        }
+
     }
 
 
@@ -136,222 +158,51 @@ public class TeachingAidsFragment extends Fragment{
         super.onDestroy();
     }
 
-    public static class TeachingAidsContentFragment extends BaseContentFragment {
-
-        @BindView(R.id.subject_spinner)
-        Spinner subjectSpinner;
-
-        @BindView(R.id.grade_spinner)
-        Spinner gradeSpinner;
-
-        private List<CommonCode> filterGradeList, filterSubjectList;
-
-        public TeachingAidsContentFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static TeachingAidsContentFragment newInstance(int tabNumber) {
-            TeachingAidsContentFragment fragment = new TeachingAidsContentFragment();
-            Bundle args = new Bundle();
-            args.putInt("tabNumber", tabNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_teaching_aids_list, container, false);
-            ButterKnife.bind(this, rootView);
-
-            int tabNumber = getArguments().getInt("tabNumber");
-            final Integer fileType = CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
-
-            filterGradeList = new ArrayList<>();
-            filterSubjectList = new ArrayList<>();
-
-            setupFilterView(new OnChipRemovedListener() {
-                @Override
-                public void onChipRemoved(int position) {
-                    BaseObject object = filterList.get(position);
-                    CommonCode commonCode = object.getCommonCode();
-                    if(commonCode.getCodeGroupID().equals(CommonCodeGroup.SUBJECTS)) {
-                        filterSubjectList.remove(commonCode);
-                    } else {
-                        filterGradeList.remove(commonCode);
-                    }
-                    removeFromFilterList(position);
-                    searchTeachingAids(fileType, 0);
-                }
-            });
-
-            final List<CommonCode> subjects = new ArrayList<>(CommonCodeUtils.getSubjects());
-            final List<CommonCode> grades = new ArrayList<>(CommonCodeUtils.getGrades());
-
-            //Header - not a valid value
-            subjects.add(0, new CommonCode(0, 0,getString(R.string.subject), getString(R.string.subject), 0));
-            grades.add(0,new CommonCode(0,0,getString(R.string.grade),getString(R.string.grade),0));
 
 
-            //From profile, set initial filters
-            RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
-                    .where(DbUser.class).findAll();
-            if(dbUser.size() == 1) {
-                DbUser user = dbUser.get(0);
-                RealmList<DbSubject> dbSubjects = user.getSubjects();
-                for(DbSubject subject : dbSubjects) {
-                    addSubject(CommonCodeUtils.getObjectFromCode(subject.getSubjectCommonCode()));
-                }
 
-                RealmList<DbGrade> dbGrades = user.getGrades();
-                for(DbGrade grade : dbGrades) {
-                    addGrade(CommonCodeUtils.getObjectFromCode(grade.getGradeCommonCode()));
-                }
-            }
+    @Override
+    public void addGradeToFilter(CommonCode commonCode) {
+        filterGradeList.add(commonCode);
+        isChanged = true;
+    }
 
-            SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
-                    subjects);
-            adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
-            subjectSpinner.setAdapter(adapter);
-            subjectSpinner.setSelection(0 ,false);
+    @Override
+    public void addSubjectToFilter(CommonCode commonCode) {
+        filterSubjectList.add(commonCode);
+        isChanged = true;
+    }
 
+    @Override
+    public void removeGradeFromFilter(CommonCode commonCode) {
+        filterGradeList.remove(commonCode);
+        isChanged = true;
+    }
 
-            subjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    if(subjects.get(i).getCodeID() != 0) {
-                        addSubject(subjects.get(i));
-                        searchTeachingAids(fileType, 0);
-                    }
-                }
+    @Override
+    public void removeSubjectFromFilter(CommonCode commonCode) {
+        filterSubjectList.remove(commonCode);
+        isChanged = true;
+    }
 
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
+    @Override
+    public void setChanged(Boolean changed) {
+        isChanged = changed;
+    }
 
-                }
-            });
+    @Override
+    public Boolean isChanged() {
+        return isChanged;
+    }
 
-            SpinnerArrayAdapter gradeAdapter = new SpinnerArrayAdapter(getActivity(), R.layout.custom_spinner_item_header,
-                    grades);
-            adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
-            gradeSpinner.setAdapter(gradeAdapter);
-            gradeSpinner.setSelection(0 ,false);
+    @Override
+    public List<CommonCode> getSubjects() {
+        return filterSubjectList;
+    }
 
-            gradeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    if(grades.get(i).getCodeID() != 0) {
-                        addGrade(grades.get(i));
-                        searchTeachingAids(fileType , 0);
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-
-                }
-            });
-            searchTeachingAids(fileType, 0);
-
-//            loadMore.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    CommonCode subject = (CommonCode) subjectSpinner.getSelectedItem();
-//                    CommonCode grade = (CommonCode) gradeSpinner.getSelectedItem();
-//                    searchTeachingAids(fileType, "101100", subject.getCodeID(), grade.getCodeID(), 1);
-//                }
-//            });
-
-            return rootView;
-        }
-
-        @Override
-        public void onDestroyView() {
-            super.onDestroyView();
-            if(adapter != null) {
-                adapter.releaseLoaders();
-            }
-        }
-
-        private void addSubject(CommonCode subject) {
-            filterSubjectList.add(subject);
-            addItemToFilterList(subject);
-            subjectSpinner.setSelection(0 ,false);
-        }
-
-        private void addGrade(CommonCode grade) {
-            filterGradeList.add(grade);
-            addItemToFilterList(grade);
-            gradeSpinner.setSelection(0 ,false);
-        }
-
-        private void searchTeachingAids(final int fileType, final int pageNumber) {
-            Logger.d(" searching ");
-            if(pageNumber == 0) {
-                contentRecyclerView.setVisibility(View.GONE);
-                loadingPanel.setVisibility(View.VISIBLE);
-            }
-
-            String subjectList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterSubjectList);
-            String gradeList = CommonCodeUtils.getCommonCodeCommaSeparatedList(filterGradeList);
-
-            TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(fileType,
-                                                            subjectList, gradeList);
-            contentRequest.setPageNumber(pageNumber);
-            String token = UserDetailUtils.getToken(getContext());
-            RestClient.getApiService(token).searchTeachingAids(LanguageUtils.getCurrentLanguage(), contentRequest).enqueue(new Callback<BaseModel<Content>>() {
-                @Override
-                public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
-                    loadingPanel.setVisibility(View.GONE);
-                    if(response.isSuccessful()) {
-                        loadContent(response, pageNumber, new RecyclerView.OnScrollListener() {
-                            @Override
-                            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                                super.onScrollStateChanged(recyclerView, newState);
-                                if(isNextPageToBeLoaded(newState, recyclerView)) {
-                                    //On Scroll, show loading panel at bottom
-                                    adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
-                                    adapter.showLoading();
-
-                                    searchTeachingAids(fileType, 1);
-                                }
-                            }
-
-                            @Override
-                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                                super.onScrolled(recyclerView, dx, dy);
-                            }
-                        });
-
-                        return;
-                    }
-
-                    if(pageNumber == 0) {
-                        String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessage(response)).getCodeNameForCurrentLocale();
-                        Logger.d(" error " + error);
-                        contentRecyclerView.setVisibility(View.GONE);
-                        errorView.setVisibility(View.VISIBLE);
-                        errorView.setText(error);
-                    } else {
-                        adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
-                        adapter.stopLoading();
-                    }
-
-                }
-
-                @Override
-                public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
-                    Logger.d(" on fail");
-                    if(pageNumber > 0) {
-                        adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
-                        adapter.stopLoading();
-                    }
-                }
-            });
-        }
+    @Override
+    public List<CommonCode> getGrades() {
+        return filterGradeList;
     }
 
 
@@ -365,7 +216,7 @@ public class TeachingAidsFragment extends Fragment{
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a TeachingAidsContentFragment (defined as a static inner class below).
-            return TeachingAidsFragment.TeachingAidsContentFragment.newInstance(position);
+            return TeachingAidsContentFragment.newInstance(position);
         }
 
         @Override
