@@ -17,4 +17,5 @@ public interface Constants {
     int ContentTypeSelfLearning = 107101;
     int AppLanguageEnglish = 113100;
     int AppLanguageMarathi = 113101;
+    int ContentStatusPublished = 114102;
 }

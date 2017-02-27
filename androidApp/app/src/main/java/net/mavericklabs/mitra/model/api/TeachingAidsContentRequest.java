@@ -25,6 +25,8 @@ package net.mavericklabs.mitra.model.api;
 
 import com.google.gson.annotations.SerializedName;
 
+import net.mavericklabs.mitra.utils.Constants;
+
 import java.io.Serializable;
 
 /**
@@ -45,10 +47,15 @@ public class TeachingAidsContentRequest implements Serializable{
     @SerializedName("pageNumber")
     private int pageNumber;
 
+    @SerializedName("statusCodeID")
+    private Integer statusCodeID;
+
     public TeachingAidsContentRequest(int fileType, String subject, String grade) {
         this.fileType = fileType;
         this.subject = subject;
         this.grade = grade;
+        //From the app, we will always request only Published Content
+        this.statusCodeID = Constants.ContentStatusPublished;
     }
 
     public Integer getFileType() {

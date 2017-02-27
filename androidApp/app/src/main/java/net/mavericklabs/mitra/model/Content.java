@@ -51,7 +51,7 @@ public class Content implements Serializable{
     @SerializedName("topic")
     private Integer topic;
 
-    @SerializedName("requirement")
+    @SerializedName("requirementCodeIDs")
     private String requirement;
 
     @SerializedName("instruction")

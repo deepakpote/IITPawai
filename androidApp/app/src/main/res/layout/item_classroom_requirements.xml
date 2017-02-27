@@ -27,7 +27,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp">
 
-    <TextView
+    <ImageView
         android:id="@+id/requirement_index"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -36,6 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"/>
+        android:layout_marginRight="8dp"
+        android:drawablePadding="4dp"/>
 
 </LinearLayout>

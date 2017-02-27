@@ -24,10 +24,12 @@
 package net.mavericklabs.mitra.ui.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
@@ -63,7 +65,8 @@ public class RequirementsListAdapter extends RecyclerView.Adapter<RequirementsLi
     public void onBindViewHolder(final CardViewHolder holder, int position) {
 
         holder.title.setText(requirementsList.get(holder.getAdapterPosition()).getTitle());
-        holder.index.setText(holder.getAdapterPosition() + 1 + ".");
+        int imageID = requirementsList.get(holder.getAdapterPosition()).getImageID();
+        holder.index.setImageResource(imageID);
 
     }
 
@@ -78,7 +81,7 @@ public class RequirementsListAdapter extends RecyclerView.Adapter<RequirementsLi
         TextView title;
 
         @BindView(R.id.requirement_index)
-        TextView index;
+        ImageView index;
 
         CardViewHolder(View itemView) {
             super(itemView);

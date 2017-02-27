@@ -68,6 +68,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.api.ContentDataRequest;
 import net.mavericklabs.mitra.model.api.ContentDataResponse;
@@ -505,7 +506,10 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                 List<Requirements> requirementsList = new ArrayList<>();
                 for (String requirement : list) {
                     //TODO : this wil be used if we use actual icons for requirement
-                    requirementsList.add(new Requirements(R.drawable.ic_add_accent_18dp, requirement));
+                    Integer requirementCodeID = Integer.valueOf(requirement);
+                    CommonCode requirementObject = CommonCodeUtils.getObjectFromCode(requirementCodeID);
+                    requirementsList.add(new Requirements(R.drawable.ic_important_devices_black_18dp,
+                            requirementObject.getCodeNameForCurrentLocale()));
                 }
 
                 GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);

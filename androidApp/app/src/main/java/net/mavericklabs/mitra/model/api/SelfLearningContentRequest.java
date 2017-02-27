@@ -25,6 +25,8 @@ package net.mavericklabs.mitra.model.api;
 
 import com.google.gson.annotations.SerializedName;
 
+import net.mavericklabs.mitra.utils.Constants;
+
 import java.io.Serializable;
 
 /**
@@ -42,9 +44,14 @@ public class SelfLearningContentRequest implements Serializable{
     @SerializedName("pageNumber")
     private int pageNumber;
 
+    @SerializedName("statusCodeID")
+    private Integer statusCodeID;
+
     public SelfLearningContentRequest(String language, String topic) {
         this.language = language;
         this.topic = topic;
+        //From the app, we will always request only Published Content
+        this.statusCodeID = Constants.ContentStatusPublished;
     }
 
 

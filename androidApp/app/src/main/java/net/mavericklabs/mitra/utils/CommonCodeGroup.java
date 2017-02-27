@@ -17,6 +17,7 @@ public interface CommonCodeGroup {
     Integer USER_TYPE         =  109;
     Integer DEPARTMENT_TYPES  =  112;
     Integer APP_LANGUAGE      =  113;
+    Integer REQUIREMENTS      =  117;
     
     //For Local Use
     Integer FROM_DATE = 800;
