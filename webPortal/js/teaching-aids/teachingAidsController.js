@@ -1,14 +1,15 @@
 angular.module("mitraPortal").controller("teachingAidsController", TeachingAidsController);
 
-TeachingAidsController.$inject = ['TeachingAidsService','commonService','$scope'];
+TeachingAidsController.$inject = ['TeachingAidsService','commonService','$scope','$state'];
 
-function TeachingAidsController(TeachingAidsService,commonService,$scope) {
+function TeachingAidsController(TeachingAidsService,commonService,$scope, $state) {
     var vm = this;
     vm.setStatus = setStatus;
     vm.setFileType = setFileType;
     vm.status = "";
     vm.fileType = 108100;
     vm.data = {};
+    vm.goToReview = goToReview;
 
     activate();
 
@@ -33,6 +34,14 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope) {
     function setFileType(fileType) {
         vm.fileType = fileType;
         fetchTeachingAids();
+        console.log(fileType);
+        console.log("filetype");
+    }
+
+    function goToReview (teachingAid){
+        $state.go('main.index.reviewTeachingAids',
+            {'contentID' : teachingAid.contentID, 
+            'teachingAid' :teachingAid});
     }
 
     function fetchTeachingAids() {

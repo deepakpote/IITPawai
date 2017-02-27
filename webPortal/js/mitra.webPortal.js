@@ -75,6 +75,19 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         controllerAs : 'teachingAids'
                     }
                 }
+            })
+            .state('main.index.reviewTeachingAids', {        //check proper routing for this.
+                url: '/teachingAids/review/:contentID',
+                views : {
+                    'content' : {
+                        templateUrl: '/js/teaching-aids/review/reviewTeachingAidsView.html',
+                        controller: 'reviewTeachingAidsController'
+                    }
+                },
+                params :{
+                    'teachingAid' : null,
+                    'contentID' : null
+                }
             });
         // define login route
         loginModalStateProvider.state('main.index.home.login', {

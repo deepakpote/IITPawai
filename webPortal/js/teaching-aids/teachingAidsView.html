@@ -48,7 +48,7 @@ padding: 64px;">
 <div class="card-content-wrapper">
     <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
     <div class="repeater" ng-repeat="teachingAid in teachingAids.data">
-        <div class="card" style="height: 210px;width: 200px;display: flex;flex-direction: column;">
+        <div class="card" ng-click=teachingAids.goToReview(teachingAid) style="height: 210px;width: 200px;display: flex;flex-direction: column;">
             <div class="content-panel"
                  style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.74), rgba(0, 0, 0, 0.1)),
                                         url({{teachingAid.thumbnailUrl}});
