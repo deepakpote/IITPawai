@@ -155,12 +155,7 @@ public class HomeFragment extends Fragment{
 
                     realm.commitTransaction();
 
-                    RealmResults<News> dbNews = realm.where(News.class).equalTo("showOnMainPage",
-                            Boolean.TRUE).findAll();
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-                    newsRecyclerView.setLayoutManager(layoutManager);
-                    NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), realm.copyFromRealm(dbNews));
-                    newsRecyclerView.setAdapter(newsListAdapter);
+                    loadNewsFromDb();
                 }
             }
 
@@ -226,6 +221,22 @@ public class HomeFragment extends Fragment{
                 Logger.d(" on fail");
             }
         });
+    }
+
+    private void loadNewsFromDb() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<News> dbNews = realm.where(News.class).equalTo("showOnMainPage",
+                Boolean.TRUE).findAll();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        newsRecyclerView.setLayoutManager(layoutManager);
+        NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), realm.copyFromRealm(dbNews));
+        newsRecyclerView.setAdapter(newsListAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadNewsFromDb();
     }
 
     @Override

@@ -205,8 +205,6 @@ public class NewsFragment extends Fragment{
             filterAdapter.setWidth(getResources().getDisplayMetrics().widthPixels / 2
                     - DisplayUtils.dpToPx(24, getContext()));
 
-            searchNews();
-
             dateFromSpinner.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -223,6 +221,12 @@ public class NewsFragment extends Fragment{
             });
 
             return rootView;
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            searchNews();
         }
 
         @Override
