@@ -6,7 +6,7 @@ from rest_framework.decorators import list_route
 from django.db.models import Max
 
 from commons.models import code , news, configuration, newsImage , codeGroup, userNews, newsDetail
-from commons.serializers import codeSerializer , newsSerializer 
+from commons.serializers import codeSerializer , newsSerializer , customNewsSerializer
 from mitraEndPoints import constants, settings
 from datetime import datetime
 from users.models import token , user
@@ -179,16 +179,46 @@ class NewsViewSet(viewsets.ModelViewSet):
         """      
         departmentCodeID = request.data.get('departmentCodeID')        
         publishFromDate = request.data.get('publishFromDate') 
-        publishToDate = request.data.get('publishToDate')    
+        publishToDate = request.data.get('publishToDate')      
+        newsCategoryCodeID = request.data.get('newsCategoryCodeID')
+        statusCodeID = request.data.get('statusCodeID')
+        appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
+                    
+        # Check if statusCodeID is passed.
+        if not statusCodeID or statusCodeID is None:  
+            statusCodeID = constants.mitraCode.published
+        else:
+            # If statusCodeID parameter is passed, then check user is exists or not
+            try:
+                objStatusCode = code.objects.get(codeID = statusCodeID)
+            except code.DoesNotExist:
+                return Response({"response_message": constants.messages.news_list_status_does_not_exists,
+                                 "data": []},
+                                status = status.HTTP_404_NOT_FOUND)
         
-        responseData = validateNewListParameters(departmentCodeID, publishFromDate, publishToDate)
+        # validate News List Parameters
+        responseData = validateNewListParameters(departmentCodeID, publishFromDate, publishToDate, newsCategoryCodeID , appLanguageCodeID)
+        
+        # Validation failed
         if responseData:
             return Response({"response_message": responseData['message'], "data": []}, status= responseData['status'])
-            
-       
-        newsData = getNewsList(departmentCodeID, publishFromDate, publishToDate, None)     
-                     
-        serializer = newsSerializer(newsData, many = True)   
+        
+        # Get filtered news data.
+        newsData = getNewsList(departmentCodeID, publishFromDate, publishToDate, None , newsCategoryCodeID, statusCodeID , appLanguageCodeID)    
+        
+        #If result set id empty.
+        if not newsData:
+            return Response({"response_message": constants.messages.news_list_no_records_found,
+                     "data": []},
+                    status = status.HTTP_200_OK) 
+                      
+        serializer = customNewsSerializer(newsData, many = True)
+        
+        basicURL = getBaseURL(constants.staticFileDir.newsPDFDir)
+        for objNew in serializer.data :
+            if objNew['pdfFileURL'] :
+                objNew['pdfFileURL'] = basicURL +str(objNew['pdfFileURL'])
+                
         return Response({"response_message": constants.messages.success, "data": serializer.data})
     
     """
@@ -435,29 +465,53 @@ class NewsViewSet(viewsets.ModelViewSet):
         departmentCodeID = request.data.get('departmentCodeID')        
         publishFromDate = request.data.get('publishFromDate') 
         publishToDate = request.data.get('publishToDate')  
-        
+        newsCategoryCodeID = request.data.get('newsCategoryCodeID')
+        appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
+                     
         #get UserID from auth token
         userID  =  getUserIDFromAuthToken(authToken)
         
         # check user is not null 
         if not userID or userID == 0:
-            return Response({"response_message": constants.messages.userNews_list_user_id_cannot_be_empty, "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+            return Response({"response_message": constants.messages.userNews_list_user_id_cannot_be_empty, 
+                             "data": []}, status = status.HTTP_401_UNAUTHORIZED)
               
         # check userID exists or not
         try:
             objUser = user.objects.get(userID = userID)
         except user.DoesNotExist:
-            return Response({"response_message": constants.messages.userNews_list_user_does_not_exist, "data": []}, status = status.HTTP_404_NOT_FOUND)
+            return Response({"response_message": constants.messages.userNews_list_user_does_not_exist, 
+                             "data": []}, status = status.HTTP_404_NOT_FOUND)
         
        
-        responseData = validateNewListParameters(departmentCodeID, publishFromDate, publishToDate)
+        # Validate input param.
+        responseData = validateNewListParameters(departmentCodeID, publishFromDate, publishToDate , newsCategoryCodeID , appLanguageCodeID)
+        
         if responseData:
-            return Response({"response_message": responseData['message'], "data": []}, status= responseData['status'])
+            return Response({"response_message": responseData['message'], 
+                             "data": []}, status= responseData['status'])
             
        
-        newsData = getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser)     
+        #Get news list for respective user.
+        newsData = getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser , newsCategoryCodeID, None , appLanguageCodeID)   
+        
+        #If result set is empty.
+        if not newsData:
+            return Response({"response_message": constants.messages.news_list_no_records_found,
+                     "data": []},
+                    status = status.HTTP_200_OK)   
                      
-        serializer = newsSerializer(newsData, many = True)
+        # Serialize the news data.
+        serializer = customNewsSerializer(newsData, many = True)
+        
+        #Get basic URL.
+        basicURL = getBaseURL(constants.staticFileDir.newsPDFDir)
+        
+        #Build the pdfFileURL.
+        for objNew in serializer.data :
+            if objNew['pdfFileURL'] :
+                objNew['pdfFileURL'] = basicURL +str(objNew['pdfFileURL'])
+        
         return Response({"response_message": constants.messages.success, "data": serializer.data})
         
         
@@ -544,50 +598,78 @@ def getLatestCodeIDfromCodeGroup(codeGroupID):
 """
 Common function to get news List
 """
-def getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser):
+def getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser , newsCategoryCodeID, statusCodeID , appLanguageCodeID):
     
     if not objUser:
-        queryset = news.objects.all()
+        # get all news of respective appLanguageCodeID.
+        queryset = newsDetail.objects.filter(appLanguage = appLanguageCodeID)
     else:
         # Get list of newsID of login user
         objNewsList = list(userNews.objects.filter(user=objUser).values_list('news_id', flat=True))        
-        queryset = news.objects.filter(newsID__in=objNewsList)
-     
+        queryset = newsDetail.objects.filter(news__in=objNewsList , appLanguage = appLanguageCodeID)
+    
     # check input department code exists or not
     if departmentCodeID:            
         # if department codeID is passed then add filter for department
-        queryset = queryset.filter(department=departmentCodeID)    
+        queryset = queryset.filter(news__department=departmentCodeID) 
              
     # if published from date is passed then add filter
     if publishFromDate:
-        queryset = queryset.filter(publishDate__gte=publishFromDate)
+        queryset = queryset.filter(news__publishDate__gte=publishFromDate)
         
     # if published to date is passed then add filter     
     if publishToDate:
-        queryset = queryset.filter(publishDate__lte=publishToDate)
+        queryset = queryset.filter(news__publishDate__lte=publishToDate)
+        
+    # check input newsCategoryCodeID exists or not
+    if newsCategoryCodeID:
+        queryset = queryset.filter(news__newsCategory = newsCategoryCodeID)
+        
+    # check input newsCategoryCodeID exists or not
+    if statusCodeID:
+        queryset = queryset.filter(news__status = statusCodeID)
+        
     # descending order of publish date
-    queryset = queryset.order_by('-publishDate').values()
-               
-    for objNew in queryset:
-        basicURL = getBaseURL(constants.staticFileDir.newsPDFDir)
-        imageList = getNewsImageURL(objNew)            
-        objNew['imageURL'] = getNewsImageURL(objNew)
-        if objNew['pdfFileURL'] :
-              objNew['pdfFileURL'] = basicURL +str(objNew['pdfFileURL'])
-   
+    queryset = queryset.order_by('news__publishDate')
+
     return queryset
 """
 common function for news filter validation
 """
-def validateNewListParameters(departmentCodeID, publishFromDate, publishToDate):
+def validateNewListParameters(departmentCodeID, publishFromDate, publishToDate, newsCategoryCodeID , appLanguageCodeID):
       # check input department code exists or not
     errors ={}
+    
+    # Check if appLanguageCodeID is passed in header
+    if not appLanguageCodeID:
+            errors['message'] = constants.messages.news_list_appLanguageCodeID_cannot_be_empty
+            errors['status'] = status.HTTP_401_UNAUTHORIZED    
+            return errors
+        
+    # If appLanguageCodeID parameter is passed, then check appLanguageCodeID is exists or not
+    try:
+        objAppLanguageCode = code.objects.get(codeID = appLanguageCodeID)
+    except code.DoesNotExist:
+            errors['message'] = constants.messages.news_list_appLanguageCodeID_not_exists
+            errors['status'] = status.HTTP_404_NOT_FOUND    
+            return errors
+    # Check for departmentCodeID
     if departmentCodeID:            
         try:
             objDepartmentCodeID = code.objects.get(codeID=departmentCodeID)
         except code.DoesNotExist:
             errors['message'] = constants.messages.news_list_department_does_not_exists
             errors['status'] = status.HTTP_404_NOT_FOUND     
+            return errors
+    
+    # Check for newsCategoryCodeID
+    if newsCategoryCodeID:            
+        try:
+            objNewsCategory= code.objects.get(codeID=newsCategoryCodeID)
+        except code.DoesNotExist:
+            errors['message'] = constants.messages.news_list_newsCategory_does_not_exists
+            errors['status'] = status.HTTP_404_NOT_FOUND  
+            return errors
                  
     # check publish from date is less than publish to date, otherwise raise an error 
     if publishFromDate and publishToDate and publishFromDate > publishToDate :

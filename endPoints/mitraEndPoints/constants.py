@@ -145,7 +145,13 @@ class messages():
     saveNews_newsCategory_not_exists = 100217
     saveNews_department_does_not_exists = 100218
     saveNews_newsImportance_does_not_exists = 100219
-    saveNews_news_save_failed = 100120
+    saveNews_news_save_failed = 100220
+    
+    news_list_newsCategory_does_not_exists = 100221
+    news_list_status_does_not_exists = 100222
+    news_list_no_records_found = 100223
+    news_list_appLanguageCodeID_cannot_be_empty = 100224
+    news_list_appLanguageCodeID_not_exists = 100225
 
 
 class webportalmessages():    
