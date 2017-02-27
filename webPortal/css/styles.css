@@ -269,3 +269,10 @@ li.selected  {
     padding-left: 10%;
     padding-right: 10%;
 }
+
+.uploader {
+    flex: 1;
+    padding-left: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
