@@ -24,7 +24,7 @@
 
 <div ng-if="isContentTypeTeachingAid() || isContentTypeSelfLearning()">
 	
-  <form name="frmContentUpload" ng-submit="showContentObject()">
+  <form name="frmContentUpload" ng-submit="submit()">
 
     <div class="upload-container">
       <div class="no-padding-container">
@@ -143,11 +143,11 @@
               <div class="card-content">
                 Language
               </div>
-              <div class="card-select" ng-class="($parent.content.languageCodeID?'orange-background':'teal-background')">
-                <span ng-if="$parent.content.languageCodeID" ng-repeat="language in languageList | filter:{codeID : $parent.content.languageCodeID}">
+              <div class="card-select" ng-class="($parent.content.contentLanguageCodeID?'orange-background':'teal-background')">
+                <span ng-if="$parent.content.contentLanguageCodeID" ng-repeat="language in languageList | filter:{codeID : $parent.content.contentLanguageCodeID}">
                   {{language.codeNameEn}}
                 </span>
-                <span ng-if="!$parent.content.languageCodeID">
+                <span ng-if="!$parent.content.contentLanguageCodeID">
                   Select
                 </span>
               </div>
@@ -158,7 +158,7 @@
                       {{language.codeNameEn}}
                     </div>
                     <div class="col-md-3 align-right no-padding" >
-                      <input type="radio" ng-model="$parent.content.languageCodeID" ng-click = "showContentObject()" ng-value="language.codeID" />
+                      <input type="radio" ng-model="$parent.content.contentLanguageCodeID" ng-click = "showContentObject()" ng-value="language.codeID" />
                     </div>
                   </div>
 
@@ -297,17 +297,16 @@
 
 <div class="form-group" ng-class="{'has-error': frmContentUpload.txtFileUrl.$dirty && frmContentUpload.txtFileUrl.$invalid}">
   <input type="text" class="form-control" id="txtFileUrl" name="txtFileUrl" 
-  placeholder="Enter URL" ng-disabled="!content.fileTypeCodeID"
-  ng-model="content.fileUrl" required>
+  placeholder="Enter URL" ng-if="isFileTypeVideo() && content.fileTypeCodeID"
+  ng-model="fileName" required>
   <div ng-messages="frmContentUpload.txtFileUrl.$error" ng-if="frmContentUpload.txtFileUrl.$dirty">
     <span class="error-message" ng-show="frmContentUpload.txtFileUrl.$error.required">File URL is required.</span>
   </div>
 </div>
-<p> <b>OR</b></p>
 <div class="form-group" ng-class="{'has-error': frmContentUpload.fileUpload.$dirty && frmContentUpload.fileUpload.$invalid}">
-  <label for="fileUpload" class="btn teal-background upload-button" ng-disabled="isFileTypeVideo() || !content.fileTypeCodeID"> Upload</label> {{myFile.name}}
-  <input type="file" class="form-control" style="display:none" id="fileUpload" name="fileUpload" 
-  file-model="myFile" accept="{{acceptedFileTypes[content.fileTypeCodeID]}}" ng-click="showAccepted()" required />
+  <label for="fileUpload" class="btn teal-background upload-button" ng-if="!isFileTypeVideo() && content.fileTypeCodeID"> Upload</label> {{myFile.name}}
+  <input type="file" class="form-control" style="display:none" id="fileUpload" name="fileUpload"  
+  file-model="myFile" accept="{{acceptedFileTypes[content.fileTypeCodeID]}}" ng-click="showAccepted()" />
   <div ng-messages="frmContentUpload.fileUpload.$error" ng-if="frmContentUpload.fileUpload.$dirty">
     <span class="error-message" ng-show="frmContentUpload.fileUpload.$error.required">File upload is required.</span>
   </div>

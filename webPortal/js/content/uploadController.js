@@ -1,6 +1,6 @@
 angular.module("mitraPortal").controller("uploadController",
-  ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService', '$filter',
-  function($scope, $location, $log, appUtils, appConstants, contentService, commonService, filter) {
+  ['$scope', '$location', '$log', '$http', 'appUtils', 'appConstants', 'contentService', 'commonService', '$filter',
+  function($scope, $location, $log, $http, appUtils, appConstants, contentService, commonService, filter) {
   
 
     $scope.acceptedFileTypes = {
@@ -13,6 +13,7 @@ angular.module("mitraPortal").controller("uploadController",
     }
 
     $scope.selectedOption = "";
+    $scope.fileName = "https://www.youtube.com/watch?v=PT2_F-1esPk";
 
     $scope.setSelectedOption = function (selectedOption){
       $scope.selectedOption = selectedOption;
@@ -43,6 +44,45 @@ angular.module("mitraPortal").controller("uploadController",
   		$log.debug('in error cb of upload content');
   		$log.debug(response);
   	};
+
+
+    $scope.submit = function(){
+        $log.debug($scope.content);
+        var fd = new FormData();
+        //fd.append('contentID',);
+        for  (var key in $scope.content){
+          $log.debug(key);
+          $log.debug($scope.content[key]);
+          fd.append(key, $scope.content[key]);
+        }
+        fd.append('requirement', 'testing');
+        fd.append('statusCodeID',113100);
+        if ($scope.content.fileTypeCodeID == 108100){
+          $log.debug("video");
+          fd.append('fileName',$scope.fileName);
+        }
+        else{
+          $log.debug("not a video");
+          fd.append('uploadedFile', $scope.myFile);
+        }
+
+        for (var pair of fd.entries()) {
+          console.log(pair[0]+ ', ' + pair[1]); 
+        }
+
+        var headers = { "authToken":"OF3eOof1qa5bDkHQjwPjlT24sRWb42J1",
+                        "appLanguageCodeID":"113101",
+                        'Content-Type': undefined};
+
+        $http.post("http://54.152.74.194:8000/content/uploadContent/", fd, {
+            transformRequest: angular.identity,
+            headers: headers
+        })
+        .success(function(){
+        })
+        .error(function(){
+        });
+    }
   	
   	$scope.uploadContent = function () {
   		contentService.contentUpload($scope.content, 
@@ -73,12 +113,7 @@ angular.module("mitraPortal").controller("uploadController",
   		return ($scope.content.contentTypeCodeID === contentTypeCodeID);
   	}
 
-    $scope.showContentObject = function(){
-      $log.debug($scope.content);
-      $log.debug("a");
-      $log.debug($scope.myFile);
-      $log.debug("b");
-    }
+    
 
   	var getContentTypes = function () {
   		$scope.contentTypeList = commonService.getCodeListPerCodeGroup(
@@ -141,7 +176,7 @@ angular.module("mitraPortal").controller("uploadController",
   	
   	var init = function () {
   		$scope.submitted = false;
-  		$scope.content = { "contentID": 0, "contentTypeCodeID": 0};
+  		$scope.content = {};
   	  $scope.errorMessage = "";
   	  
   	  populateDropDowns();
@@ -160,6 +195,7 @@ angular.module("mitraPortal").controller("uploadController",
             element.bind('change', function(){
                 scope.$parent.myFile = element[0].files[0];
                 scope.$apply();
+                scope.$parent.$apply();
             });
         }
     };
