@@ -17,8 +17,13 @@
 
         ////////////////
 
-        function fetch(filter,onSuccess,onFailure) {
-            var postData = {"languageCodeIDs":"","pageNumber":0,"topicCodeIDs":""};
+        function fetch(filter,statusCodeID,onSuccess,onFailure) {
+            var languageCodeIDs = "" + filter.languageCodeIDs;
+            var topicCodeIDs = "" + filter.topicCodeIDs;
+            var postData = {"languageCodeIDs":languageCodeIDs,
+                            "pageNumber":0,
+                            "topicCodeIDs":topicCodeIDs,
+                            "statusCodeID":statusCodeID};
             var authToken = appUtils.getFromLocalStorage("token","");
             options.data = postData;
             options.url = 'content/searchSelfLearning/';

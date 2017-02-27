@@ -9,7 +9,6 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     vm.status = 114101;
     vm.fileType = 108100;
     vm.data = {};
-    //vm.subjectList = {};
     vm.selectedOption = "";
     vm.setSelectedOption = setSelectedOption;
     vm.dataFilter = {
@@ -29,48 +28,14 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
                 getSubjects();
                 getGrades();
                 fetchTeachingAids();
+                setGradeAndSubjectWatchers();
             });
         } else {
             getSubjects();
             getGrades();
             fetchTeachingAids();
+            setGradeAndSubjectWatchers();
         }
-
-        /**
-         * watch grade list to make the server call on change
-         * */
-        $scope.$watch('gradeList', function (gradeList){
-            if(gradeList != undefined) {
-                var checkedGrades = gradeList.filter(function(grade){ return (grade.checked == true)});
-                var gradesString = "";
-                if (checkedGrades.length > 0){
-                    gradesString = checkedGrades[0].codeID;
-                }
-                for (var i = 1;i < checkedGrades.length; i++){
-                    gradesString += ',' + checkedGrades[i].codeID;
-                }
-                vm.dataFilter.gradeCodeIDs = gradesString;
-                fetchTeachingAids();
-            }
-        }, true);
-
-        /**
-         * watch subject list to make the server call on change
-         * */
-        $scope.$watch('subjectList', function (subjectList){
-            if(subjectList != undefined) {
-                var checkedSubjects = subjectList.filter(function(subject){ return (subject.checked == true)});
-                var subjectString = "";
-                if (checkedSubjects.length > 0){
-                    subjectString = checkedSubjects[0].codeID;
-                }
-                for (var i = 1;i < checkedSubjects.length; i++){
-                    subjectString += ',' + checkedSubjects[i].codeID;
-                }
-                vm.dataFilter.subjectCodeIDs = subjectString;
-                fetchTeachingAids();
-            }
-        }, true);
     }
 
     function setStatus(status) {
@@ -140,9 +105,47 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
         console.log(vm.dataFilter);
     }
 
-    var getGrades = function () {
+    function setGradeAndSubjectWatchers() {
+        /**
+         * watch grade list to make the server call on change
+         * */
+        $scope.$watch('gradeList', function (gradeList){
+            if(gradeList != undefined) {
+                var checkedGrades = gradeList.filter(function(grade){ return (grade.checked == true)});
+                var gradesString = "";
+                if (checkedGrades.length > 0){
+                    gradesString = checkedGrades[0].codeID;
+                }
+                for (var i = 1;i < checkedGrades.length; i++){
+                    gradesString += ',' + checkedGrades[i].codeID;
+                }
+                vm.dataFilter.gradeCodeIDs = gradesString;
+                fetchTeachingAids();
+            }
+        }, true);
+
+        /**
+         * watch subject list to make the server call on change
+         * */
+        $scope.$watch('subjectList', function (subjectList){
+            if(subjectList != undefined) {
+                var checkedSubjects = subjectList.filter(function(subject){ return (subject.checked == true)});
+                var subjectString = "";
+                if (checkedSubjects.length > 0){
+                    subjectString = checkedSubjects[0].codeID;
+                }
+                for (var i = 1;i < checkedSubjects.length; i++){
+                    subjectString += ',' + checkedSubjects[i].codeID;
+                }
+                vm.dataFilter.subjectCodeIDs = subjectString;
+                fetchTeachingAids();
+            }
+        }, true);
+    }
+
+    function getGrades() {
         $scope.gradeList = commonService.getCodeListPerCodeGroup(
             appConstants.codeGroup.grade
         );
-    };
+    }
 }
