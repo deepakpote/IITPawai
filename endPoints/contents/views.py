@@ -15,6 +15,7 @@ from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent
 from mitraEndPoints import constants , utils
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
+from pip._vendor.requests.api import request
 
 
 class ContentViewSet(viewsets.ModelViewSet):
@@ -617,14 +618,22 @@ class ContentViewSet(viewsets.ModelViewSet):
         requirementCodeIDs = request.data.get('requirementCodeIDs')
 
         fileTypeCodeID = request.data.get('fileTypeCodeID')
-        
-        if request.data.get('fileName'):
-            fileName = request.data.get('fileName')
-        else:
-            try:
-                uploadedFile = request.FILES['uploadedFile']
-            except Exception as e:
+        uploadedFile = request.FILES['uploadedFile'] if 'uploadedFile' in request.FILES else None
+                         
+        if uploadedFile:
+            if request.data.get('fileName'):
                 return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
+            else:
+                try:
+                    uploadedFile = request.FILES['uploadedFile']
+                except Exception as e:
+                    return statusHttpUnauthorized(constants.messages.uploadContent_upload_a_valid_file)
+        
+        elif request.data.get('fileName'):
+            fileName = request.data.get('fileName')
+        
+        else:
+            return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
         
         languageCodeID = request.data.get('contentLanguageCodeID')       
         statusCodeID = request.data.get('statusCodeID')
@@ -681,7 +690,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             if not fileName:
                 return statusHttpUnauthorized(constants.messages.uploadContent_fileName_cannot_be_empty)
             
-            if fileTypeCodeID == constants.mitraCode.video:
+            if int(fileTypeCodeID) == int(constants.mitraCode.video):
                 #Validate youtube URL.
                 isValidYoutubeURL = validateYoutubeURL(fileName)
                 
@@ -810,7 +819,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             return statusHttpBadRequest(constants.messages.uploadContent_content_upload_failed)
 
         #Return the response
-        return Response({"response_message": constants.messages.success, "data": []})     
+        return Response({"response_message": constants.messages.success, "data": [{"contentID" : contentID}]})     
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array

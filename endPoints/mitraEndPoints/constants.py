@@ -122,7 +122,8 @@ class messages():
     uploadContent_statusCodeID_cannot_be_empty = 100201
     uploadContent_status_not_exists = 100200
 
-    uploadContent_upload_file_or_give_filename = 100208
+    uploadContent_upload_file_or_give_filename = 100220
+    uploadContent_upload_a_valid_file = 100221
     uploadContent_contentTitle_marathi_cannot_be_empty = 100202
     
     userRole_list_user_id_cannot_be_empty = 100203
