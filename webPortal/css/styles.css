@@ -132,9 +132,32 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 	opacity:0.6;
   cursor: pointer; cursor: hand;
 }
+.options-card {
+	border: 1px solid #ccc;
+
+}
 
 .options-card .card-content{
-	
+	padding: 20px 20px 20px 20px !important;
+	text-align: center;
+	color: black;
+	font-weight: bold;
+	font-size:18px;
+	padding-left: 15px;
+
+
+}
+.options-card .card-select{
+	padding: 12px 12px 12px 12px !important;
+	text-align: center;
+	color: white;
+
+}
+
+.options-card .card-action{
+	text-align: center;
+	color: black;
+	overflow: hidden;
 }
 
 .unselected-card:hover{
@@ -144,6 +167,63 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
   padding: 6% !important;
   text-align: justify;
 }
+.hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-bottom: 1px solid #ccc;
+    margin: 1em 0;
+    width:100%;
+    margin-top: 50px;
+	margin-bottom: 50px;
+}
+.no-padding-container {
+	margin-bottom: 20px;
+	padding:0px!important;
+	width:100%;
+	overflow: hidden;
+}
+.upload-container {
+  padding: 6%;
+  text-align: justify;
+  overflow: hidden;
+  padding-bottom: 0px !important;
+  padding-top: 0px !important;
+}
+.upload-container .upload-title {
+	font-weight: bold;
+	font-size:24px;
+	padding-left: 15px;
+	margin-bottom: 40px;
+
+}
+
+.align-right{
+	text-align: right;
+}
+.align-left{
+	text-align: left;
+}
+
+.no-padding{
+	padding: 0px !important;
+}
+.orange-background{
+	background-color:#ff6d00;
+}
+
+.teal-background{
+	background-color:#009688;
+}
+
+.upload-button{
+	font-size:12px;
+	text-align: center;
+	color: white;
+	margin: 0px !important;
+}
+
+
 
 .modal-dialog {
     width:35%;
