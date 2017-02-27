@@ -1,0 +1,20 @@
+{
+  "name": "english",
+  "translations": {
+    "foo": "bar",
+    "baz": "qux",
+    "welcome_heading": "Welcome to MITRA",
+    "aboutus_title": "About Us",
+    "aboutus_content": "A textual content for about us would go here.",
+    "leftmenu_appLanguage": "English",
+    "leftmenu_home": "Home",
+    "leftmenu_teachingAids": "Teaching Aids",
+    "leftmenu_selfLearning": "Self Learning Videos",
+    "leftmenu_training": "Training Calendar",
+    "leftmenu_news": "News and Circulars",
+    "leftmenu_discussions": "Discussions",
+    "leftmenu_partners": "Partners",
+    "leftmenu_help": "Help",
+    "leftmenu_aboutUs": "About Us" 
+  }
+}

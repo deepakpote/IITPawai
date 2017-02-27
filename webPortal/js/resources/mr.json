@@ -1,0 +1,20 @@
+{
+  "name": "marathi",
+  "translations": {
+    "foo": "bar",
+    "baz": "qux",
+    "welcome_heading": "मित्रा वर आपले स्वागत",
+    "aboutus_title": "आमच्या विषयी",
+    "aboutus_content": "आमच्या विषयीचा  मजकूर येथे येईल.",
+    "leftmenu_appLanguage": "मराठी",
+    "leftmenu_home": "मुख्य पान",
+    "leftmenu_teachingAids": "शैक्षणिक साहित्य",
+    "leftmenu_selfLearning": "स्वअध्ययन  व्हिडिओ",
+    "leftmenu_training": "प्रशिक्षणे",
+    "leftmenu_news": "बातम्या आणि परिपत्रके",
+    "leftmenu_discussions": "चर्चा मंच",
+    "leftmenu_partners": "Partners",
+    "leftmenu_help": "उपयुक्त माहिती",
+    "leftmenu_aboutUs": "आमच्या विषयी" 
+  }
+}

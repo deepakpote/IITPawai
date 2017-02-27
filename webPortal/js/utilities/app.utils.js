@@ -73,7 +73,21 @@ angular.module("mitraPortal").service('appUtils', ['$http', '$log', '$rootScope'
 		//$cookies.putObject(appConstants.localStorage.baseKey, storedMitraObject);
 		$rootScope.appGlobals = storedMitraObject;
 	};
+	
+	/**
+	 * Get's the website's selected language
+	 * */
+	service.getAppLanguage = function () {
+		return service.getFromLocalStorage(appConstants.localStorage.appLanguage, 113100);
+	}
 
+	/**
+	 * Get's the website's selected language
+	 * */
+	service.setAppLanguage = function (selectedAppLanguage) {
+		service.saveToLocalStorage (appConstants.localStorage.appLanguage, selectedAppLanguage);
+	}
+	
 	return service;
 
 }]);

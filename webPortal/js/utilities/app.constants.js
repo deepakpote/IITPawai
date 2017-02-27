@@ -16,8 +16,9 @@ angular.module("mitraPortal").service('appConstants', [
 	service.localStorage = {
 		baseKey: 'mitra',
 		codeListKey: 'codeList',
-		codeListVersionKey: 'codeListVersion'
-	}
+		codeListVersionKey: 'codeListVersion',
+		appLanguage: 'appLanguage'
+	};
 
 	service.codeGroup = {
 		contentLanguage: 101,
@@ -26,6 +27,19 @@ angular.module("mitraPortal").service('appConstants', [
 		topic: 105,
 		contentType: 107,
 		fileType: 108
+	};
+	
+	service.appAvailableLanguages = {
+			english: {
+				codeID : 113100,
+				codeName: 'English',
+				shortCode: 'en'
+			},
+			marathi: {
+				codeID : 113101,
+				codeName: 'Marathi',
+				shortCode: 'mr'
+			},
 	}
 
 	return service;
