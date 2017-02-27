@@ -42,15 +42,24 @@
         }
 
         function fetchSelfLearning() {
-            SelfLearningService.fetch().then(
-                function onSuccess(response){
-                    var contents = response.data.data;
-                    vm.data = response.data.data;
-                },
-                function onFailure(response) {
+            //TODO set appropriate filters here
+            var filter = {};
+            SelfLearningService.fetch(filter, onSuccess, onFailure);
 
+            function onSuccess(response){
+                var contents = response.data;
+                console.log(contents);
+                for(var i =0 ; i < contents.length ; i ++) {
+                    var content = contents[i];
+                    content.topicName = commonService.getValueByCode(content.topic)[0].codeNameEn;
+                    content.language = commonService.getValueByCode(content.language)[0].codeNameEn;
                 }
-            );
+                vm.data = contents;
+            }
+            function onFailure(response) {
+
+            }
+
         }
     }
 

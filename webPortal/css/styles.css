@@ -151,7 +151,7 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 	padding: 12px 12px 12px 12px !important;
 	text-align: center;
 	color: white;
-
+    cursor: pointer;
 }
 
 .options-card .card-action{
@@ -283,6 +283,7 @@ li.filter-type:hover {
 
 li.selected  {
     color: #ff6d00;
+    font-weight: 500;
 }
 
 .divider {
