@@ -15,6 +15,7 @@ from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent
 from mitraEndPoints import constants , utils
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
+from pip._vendor.requests.api import request
 
 
 class ContentViewSet(viewsets.ModelViewSet):
@@ -126,12 +127,23 @@ class ContentViewSet(viewsets.ModelViewSet):
         # Connection
         cursor = connection.cursor()  
         
+        # Create object of common class
+        objCommon = utils.common()
+        
         # SQL Query
         searchTeachingAidQuery = """ select CC.contentID,
                                             CCG.contentTitle,
                                             CC.requirement,
                                             CCG.instruction,
-                                            CC.fileName,
+                                            CASE CC.fileTypeCodeID
+                                                WHEN 108100 THEN  CC. fileName
+                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CC.fileName) 
+                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CC.fileName) 
+                                                WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CC.fileName) 
+                                                WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CC.fileName) 
+                                                WHEN 108105 THEN  CC. fileName
+                                                ELSE NULL
+                                                END as fileName,
                                             CCG.author,
                                             CC.objectives,
                                             CC.contentTypeCodeID,
@@ -162,6 +174,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.subjectCodeID,
                                             CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,fileTypeCodeID,statusCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
 
+       
         cursor.execute(searchTeachingAidQuery)
     
         #Queryset
@@ -310,13 +323,24 @@ class ContentViewSet(viewsets.ModelViewSet):
         # New code.
         # Connection
         cursor = connection.cursor()  
+        
+        # Create object of common class
+        objCommon = utils.common()
          
         # SQL Query
         searchSelfLearningQuery = """ select CC.contentID, CCG.contentDetailID,
                                             CCG.contentTitle ,
                                             CC.requirement,
                                             CCG.instruction  ,
-                                            CC.fileName,
+                                            CASE CC.fileTypeCodeID
+                                                WHEN 108100 THEN  CC. fileName
+                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CC.fileName) 
+                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CC.fileName) 
+                                                WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CC.fileName) 
+                                                WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CC.fileName) 
+                                                WHEN 108105 THEN  CC. fileName
+                                                ELSE NULL
+                                                END as fileName,
                                             CCG.author ,
                                             CC.objectives,
                                             CC.contentTypeCodeID,
@@ -332,9 +356,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             and CC.topicCodeID IN %s 
                                             and CCG.appLanguageCodeID = %s 
                                             order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,statusCodeID,str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
- 
          
         cursor.execute(searchSelfLearningQuery)
+        
          
         #Queryset
         contentQuerySet = cursor.fetchall()
@@ -699,14 +723,22 @@ class ContentViewSet(viewsets.ModelViewSet):
         requirementCodeIDs = request.data.get('requirementCodeIDs')
 
         fileTypeCodeID = request.data.get('fileTypeCodeID')
-        
-        if request.data.get('fileName'):
-            fileName = request.data.get('fileName')
-        else:
-            try:
-                uploadedFile = request.FILES['uploadedFile']
-            except Exception as e:
+        uploadedFile = request.FILES['uploadedFile'] if 'uploadedFile' in request.FILES else None
+                         
+        if uploadedFile:
+            if request.data.get('fileName'):
                 return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
+            else:
+                try:
+                    uploadedFile = request.FILES['uploadedFile']
+                except Exception as e:
+                    return statusHttpUnauthorized(constants.messages.uploadContent_upload_a_valid_file)
+        
+        elif request.data.get('fileName'):
+            fileName = request.data.get('fileName')
+        
+        else:
+            return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
         
         languageCodeID = request.data.get('contentLanguageCodeID')       
         statusCodeID = request.data.get('statusCodeID')
@@ -763,7 +795,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             if not fileName:
                 return statusHttpUnauthorized(constants.messages.uploadContent_fileName_cannot_be_empty)
             
-            if fileTypeCodeID == constants.mitraCode.video:
+            if int(fileTypeCodeID) == int(constants.mitraCode.video):
                 #Validate youtube URL.
                 isValidYoutubeURL = validateYoutubeURL(fileName)
                 
@@ -892,7 +924,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             return statusHttpBadRequest(constants.messages.uploadContent_content_upload_failed)
 
         #Return the response
-        return Response({"response_message": constants.messages.success, "data": []})     
+        return Response({"response_message": constants.messages.success, "data": [{"contentID" : contentID}]})     
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array

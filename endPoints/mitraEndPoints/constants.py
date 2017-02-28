@@ -122,7 +122,8 @@ class messages():
     uploadContent_statusCodeID_cannot_be_empty = 100201
     uploadContent_status_not_exists = 100200
 
-    uploadContent_upload_file_or_give_filename = 100208
+    uploadContent_upload_file_or_give_filename = 100220
+    uploadContent_upload_a_valid_file = 100221
     uploadContent_contentTitle_marathi_cannot_be_empty = 100202
     
     userRole_list_user_id_cannot_be_empty = 100203
@@ -234,6 +235,10 @@ class uploadedContentDir():
     pptDir = baseDir + "ppt/"
     worksheetDir = baseDir + "worksheet/"
     audioDir = baseDir + "audio/"
+    contentAudioDir = "content/audio/"
+    contentPPTDir = "content/ppt/"
+    contentWorksheet = "content/Worksheet/"
+    contentPDF = "content/pdf/"
     
 class fcm():
     FCM_SERVERKEY = "AAAAQH5DkUE:APA91bHzQT7zucQ6A807PrrQwzM63mUrUooqyUt_jJ4HTeR-QM-u2FW9dkAr4r_fOm7G0B2z7iFJdMDz2Nc3s4lZTrNYJ6mIovDvLSui0SpqZAiOZKCPhHsxYGCvDxDa3yo5niGsWd4haNyTKnHol1kCZEa3S2zZbw"

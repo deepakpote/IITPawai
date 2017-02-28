@@ -34,14 +34,14 @@ angular.module("mitraPortal").service('appUtils', ['$http', '$log', '$rootScope'
 		// Make ajax call
 		$http({
 		  method: options.method,
-		  url: options.url,
+		  url: options.url, headers:options.headers,
 		  data: options.data
 		}).then(function successCallback(response) {
 			successCB(response.data)
 		  }, function errorCallback(response) {
 			  errorCB(response.data)
 		  });
-	}
+	};
 
 	/**
 	 * Get the value stored in the local storage, against the said key.
@@ -73,6 +73,14 @@ angular.module("mitraPortal").service('appUtils', ['$http', '$log', '$rootScope'
 		//$cookies.putObject(appConstants.localStorage.baseKey, storedMitraObject);
 		$rootScope.appGlobals = storedMitraObject;
 	};
+
+	service.isLoggedInUser = function() {
+        //$cookies.getObject(appConstants.localStorage.baseKey);
+        var storedMitraObject = $rootScope.appGlobals;
+        storedValue = storedMitraObject ? storedMitraObject["token"] : "";
+        console.log(storedValue);
+        return !storedValue == "";
+    };
 
 	return service;
 

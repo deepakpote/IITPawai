@@ -26,7 +26,7 @@ from time import gmtime, strftime
 from contents.serializers import contentSerializer , teachingAidSerializer , selfLearningSerializer
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from contents.serializers import contentSerializer , teachingAidSerializer
-from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken, getBaseURL
+from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from commons.models import code 
 from pyfcm import FCMNotification
 
@@ -581,8 +581,11 @@ class UserViewSet(viewsets.ModelViewSet):
         #Set serializer data to the response 
         response = objUserSerializer.data
         
+        # Create object of common class 
+        objCommon = utils.common()
+        
         if  response["photoUrl"]:
-            response["photoUrl"] = getBaseURL(constants.staticFileDir.userDir) + str(response["photoUrl"])
+            response["photoUrl"] = objCommon.getBaseURL(constants.staticFileDir.userDir) + str(response["photoUrl"])
 
         userSubjectCodeID = getUserSubjectCode(userInfo)
         userGradeCodeID = getUserGradeCode(userInfo)
@@ -746,6 +749,9 @@ class UserViewSet(viewsets.ModelViewSet):
         # Declare empty user content type code.
         objUserContentTypeCode = None
         
+        # Create object of common class
+        objCommon = utils.common()
+        
         #If content type is Teaching Aids.
         if contentTypeCodeID == constants.mitraCode.teachingAids:
                    
@@ -786,12 +792,21 @@ class UserViewSet(viewsets.ModelViewSet):
             # Connection
             cursor = connection.cursor()  
             
+            
             # SQL Query
             searchTeachingAidQuery = """ select CC.contentID,
                                                 CCG.contentTitle,
                                                 CC.requirement,
                                                 CCG.instruction,
-                                                CC.fileName,
+                                                CASE CC.fileTypeCodeID
+                                                    WHEN 108100 THEN  CC. fileName
+                                                    WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CC.fileName) 
+                                                    WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CC.fileName) 
+                                                    WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CC.fileName) 
+                                                    WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CC.fileName) 
+                                                    WHEN 108105 THEN  CC. fileName
+                                                    ELSE NULL
+                                                END as fileName,
                                                 CCG.author,
                                                 CC.objectives,
                                                 CC.contentTypeCodeID,
@@ -879,7 +894,15 @@ class UserViewSet(viewsets.ModelViewSet):
                                                 CCG.contentTitle ,
                                                 CC.requirement,
                                                 CCG.instruction  ,
-                                                CC.fileName,
+                                                CASE CC.fileTypeCodeID
+                                                    WHEN 108100 THEN  CC. fileName
+                                                    WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CC.fileName) 
+                                                    WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CC.fileName) 
+                                                    WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CC.fileName) 
+                                                    WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CC.fileName) 
+                                                    WHEN 108105 THEN  CC. fileName
+                                                    ELSE NULL
+                                                END as fileName,
                                                 CCG.author ,
                                                 CC.objectives,
                                                 CC.contentTypeCodeID,
