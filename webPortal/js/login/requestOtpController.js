@@ -19,26 +19,26 @@ function RequestOtpController($modalInstance, HttpUtils, loginService, $state, a
 
     function getOtp() {
         var phoneNumber = vm.phoneno;
-        loginService.requestOtp(phoneNumber)
-            .then(
-                function onSuccess(response){
-                    console.log(response);
-                    if(HttpUtils.isSuccessful(response.data)){
-                        vm.isOtpSent = true;
-                    }else{
-                        //TODO ask pradnya regarding $rootscope.
-                        //TODO throw error here decide what is to be done
-                        vm.hasError = true;
-                        console.log(response.data.response_message);
-                        vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
-                    }
-                },
-                function onError(response) {
-                    //TODO throw error here decide what is to be done
-                    vm.hasError = true;
-                    vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
-                }
-            );
+        loginService.requestOtp(phoneNumber,onSuccess,onFailure);
+
+        function onSuccess(response){
+            console.log(response);
+            if(HttpUtils.isSuccessful(response)){
+                vm.isOtpSent = true;
+            }else{
+                //TODO ask pradnya regarding $rootscope.
+                //TODO throw error here decide what is to be done
+                vm.hasError = true;
+                console.log(response.response_message);
+                vm.errorMessage = commonService.getValueByCode(response.response_message)[0].codeNameEn
+            }
+        }
+        function onFailure(response) {
+            //TODO throw error here decide what is to be done
+            vm.hasError = true;
+            vm.errorMessage = commonService.getValueByCode(response.response_message)[0].codeNameEn
+        }
+
     }
 
     function closeModal() {
@@ -48,27 +48,28 @@ function RequestOtpController($modalInstance, HttpUtils, loginService, $state, a
     function verifyOtp() {
         var phoneNumber = vm.phoneno;
         var otp = vm.otp;
-        loginService.verifyOtp(phoneNumber,otp)
-            .then(
-                function onSuccess(response){
-                    console.log(response);
-                    if(HttpUtils.isSuccessful(response.data)){
-                        var data = response.data.data[0];
-                        appUtils.saveToLocalStorage("token",data.token);
-                        $state.go('main.index.home.setpassword');
-                    }else{
-                        vm.hasError = true;
-                        vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
-                    }
-                },
-                function onError(response) {
-                    //TODO throw error here decide what is to be done
-                    // $rootScope.globals.currentUser = undefined;
-                    // alert(response.data.response_message);
-                    vm.hasError = true;
-                    vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
-                }
-            );
+        loginService.verifyOtp(phoneNumber,otp,onSuccess,onFailure);
+
+        function onSuccess(response){
+            console.log(response);
+            if(HttpUtils.isSuccessful(response)){
+                var data = response.data[0];
+                appUtils.saveToLocalStorage("token",data.token);
+                console.log("auth token set " + data.token);
+                $state.go('main.notLoggedIn.home.setpassword');
+            }else{
+                vm.hasError = true;
+                vm.errorMessage = commonService.getValueByCode(response.response_message)[0].codeNameEn
+            }
+        }
+        function onFailure(response) {
+            //TODO throw error here decide what is to be done
+            // $rootScope.globals.currentUser = undefined;
+            // alert(response.data.response_message);
+            vm.hasError = true;
+            vm.errorMessage = commonService.getValueByCode(response.response_message)[0].codeNameEn
+        }
+
     }
 
 }

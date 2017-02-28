@@ -17,21 +17,23 @@ function SetPasswordController($modalInstance,HttpUtils, loginService, $state, c
     function setPassword() {
 
         var password = vm.password;
-        loginService.setPassword(password).then(
-            function onSuccess(response) {
-                if(HttpUtils.isSuccessful(response.data)) {
-                    //TODO go to logged in state
-                    $state.go('main.index.home');
-                } else {
-                    vm.hasError = true;
-                    vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
-                }
-            },
-            function onFailure(response) {
+        loginService.setPassword(password,onSuccess,onFailure);
+
+        function onSuccess(response) {
+            console.log("login response");
+            if(HttpUtils.isSuccessful(response)) {
+                $state.go('main.loggedIn.home');
+            } else {
                 vm.hasError = true;
-                vm.errorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn
+                vm.errorMessage = commonService.getValueByCode(response.response_message)[0].codeNameEn
             }
-        );
+        }
+
+        function onFailure(response) {
+            vm.hasError = true;
+            vm.errorMessage = commonService.getValueByCode(response.response_message)[0].codeNameEn
+        }
+
     }
 
     function closeModal () {

@@ -1,0 +1,143 @@
+<!-- unnecessary header -->
+<div style="
+padding: 64px;">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+    labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+    nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
+    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+    culpa qui officia deserunt mollit anim id est laborum
+</div>
+
+<div class="divider"></div>
+
+<!-- content status filter start-->
+<div>
+    <ul class="filter-type">
+        <li class="filter-type" ng-class="{selected : selfLearning.status === 114101}"
+            ng-click=selfLearning.setStatus(114101)>Review</li>
+        <li class="filter-type" ng-class="{selected : selfLearning.status === 114100}"
+            ng-click=selfLearning.setStatus(114100)>Drafts</li>
+        <li class="filter-type" ng-class="{selected : selfLearning.status === 114102}"
+            ng-click=selfLearning.setStatus(114102)>Published</li>
+        <li class="filter-type" ng-click=selfLearning.setStatus()>All</li>
+    </ul>
+</div>
+
+<div class="divider"></div>
+
+<!-- granular filters start -->
+
+<div class="row" style="padding: 5%;">
+
+    <div class="col-md-4 col-md-offset-2">
+        <div class="card">
+            <div class="options-card">
+                <div class="card-content">
+                    Topic
+                </div>
+                <div class="card-select" ng-class="(((topicList |
+                                    filter:{checked:true}).length > 0)?'orange-background':'teal-background')"
+                     ng-click=selfLearning.setSelectedOption("Grade") >
+                  <span ng-if="((topicList | filter:{checked:true}).length > 0)"
+                        ng-repeat="topic in topicList | filter:{checked:true}">
+                    {{topic.codeNameEn}}
+                  </span>
+                    <span ng-if="!((topicList | filter:{checked:true}).length > 0)">
+                    Select
+                        <i ng-if="!selfLearning.selectedOption" class="material-icons pull-right">expand_more</i>
+                        <i ng-if="selfLearning.selectedOption" class="material-icons pull-right">expand_less</i>
+                  </span>
+                </div>
+                <div class="card-action" ng-show="(selfLearning.selectedOption == 'Grade')">
+                    <div ng-repeat="topic in topicList">
+                        <div>
+                            <div class="col-md-9 no-padding align-left">
+                                {{topic.codeNameEn}}
+                            </div>
+                            <div class="col-md-3 align-right no-padding" >
+                                <input type="checkbox" ng-model="topic.checked" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="options-card">
+                <div class="card-content">
+                    Language
+                </div>
+                <div class="card-select" ng-class="(((contentLanguageList |
+                                    filter:{checked:true}).length > 0)?'orange-background':'teal-background')"
+                     ng-click=selfLearning.setSelectedOption("Subject")>
+                  <span ng-if="((contentLanguageList | filter:{checked:true}).length > 0)"
+                        ng-repeat="language in contentLanguageList | filter:{checked:true}">
+                    {{language.codeNameEn}}
+                  </span>
+                    <span ng-if="!((contentLanguageList | filter:{checked:true}).length > 0)">
+                    Select
+                        <i ng-if="!selfLearning.selectedOption" class="material-icons pull-right">expand_more</i>
+                        <i ng-if="selfLearning.selectedOption" class="material-icons pull-right">expand_less</i>
+                  </span>
+                </div>
+                <div class="card-action" ng-show="(selfLearning.selectedOption == 'Subject')">
+                    <div ng-repeat="language in contentLanguageList">
+                        <div>
+                            <div class="col-md-9 no-padding align-left">
+                                {{language.codeNameEn}}
+                            </div>
+                            <div class="col-md-3 align-right no-padding" >
+                                <input type="checkbox" ng-model="language.checked"
+                                       ng-click = "selfLearning.showContentObject()" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- granular filters end -->
+
+<!-- content below -->
+
+<div class="row card-content-wrapper">
+    <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
+    <div class="col-md-4 list-view" ng-repeat="data in selfLearning.data">
+        <div class="card" style="display: flex;flex-direction: column;">
+            <div class="content-panel"
+                 style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.74), rgba(0, 0, 0, 0.1)),
+                                        url({{data.thumbnailUrl}});
+                                        background-size: contain;">
+                <div class="right-panel">
+
+                    <i class="material-icons icon-white">mode_edit</i>
+                    <div class="text">EDIT</div>
+
+                    <i style="margin-top: 16px;" class="material-icons icon-white">close</i>
+                    <div class="text">REMOVE</div>
+
+                </div>
+            </div>
+            <div class="mid-content">
+                <div class="single-line">
+                    {{data.contentTitle}}
+                </div>
+                <div style="font-size: smaller;">
+                    {{data.topicName}} | {{data.language}}
+                </div>
+            </div>
+            <div class="bottom-content">
+                <div class="uploader">
+                    Uploaded by : {{data.author}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-hide="selfLearning.data.length" style="line-height: 12em;text-align: center">No resources found!</div>
+</div>
