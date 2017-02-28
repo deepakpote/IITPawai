@@ -462,7 +462,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                     }
                 });
                 Logger.d("file path " + content.getFileName());
-                contentWebView.loadUrl(content.getFileName());
+                contentWebView.loadUrl("http://docs.google.com/gview?embedded=true&url=" + content.getFileName());
 
                 contentWebView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -496,24 +496,27 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
             if(content.getContentTypeCodeID().equals(Constants.ContentTypeTeachingAids)) {
 
-                requirementsLayout.setVisibility(View.VISIBLE);
-
                 String requirements = content.getRequirement();
 
-                String[] list = requirements.split(",");
+                if(!StringUtils.isEmpty(requirements)) {
+                    requirementsLayout.setVisibility(View.VISIBLE);
 
-                List<Requirements> requirementsList = new ArrayList<>();
-                for (String requirement : list) {
-                    //TODO : this wil be used if we use actual icons for requirement
-                    Integer requirementCodeID = Integer.valueOf(requirement);
-                    CommonCode requirementObject = CommonCodeUtils.getObjectFromCode(requirementCodeID);
-                    requirementsList.add(new Requirements(R.drawable.ic_important_devices_black_18dp,
-                            requirementObject.getCodeNameForCurrentLocale()));
+                    String[] list = requirements.split(",");
+
+                    List<Requirements> requirementsList = new ArrayList<>();
+                    for (String requirement : list) {
+                        //TODO : this wil be used if we use actual icons for requirement
+                        Integer requirementCodeID = Integer.valueOf(requirement);
+                        CommonCode requirementObject = CommonCodeUtils.getObjectFromCode(requirementCodeID);
+                        requirementsList.add(new Requirements(R.drawable.ic_important_devices_black_18dp,
+                                requirementObject.getCodeNameForCurrentLocale()));
+                    }
+
+                    GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+                    requirementsGridView.setLayoutManager(gridLayoutManager);
+                    requirementsGridView.setAdapter(new RequirementsListAdapter(getApplicationContext(), requirementsList));
+
                 }
-
-                GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
-                requirementsGridView.setLayoutManager(gridLayoutManager);
-                requirementsGridView.setAdapter(new RequirementsListAdapter(getApplicationContext(), requirementsList));
 
                 Integer subjectCode = content.getSubject();
                 String subject = CommonCodeUtils.getObjectFromCode(subjectCode).getCodeNameForCurrentLocale();
