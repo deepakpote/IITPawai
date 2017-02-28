@@ -90,7 +90,11 @@ public class DateUtils {
 
     public static String convertToString(Date date, String newFormat) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(newFormat, Locale.US);
-        return dateFormat.format(date);
+        if(date != null) {
+            return dateFormat.format(date);
+        } else {
+            return "";
+        }
     }
 
     public static String convertToServerFormatFromDate(Date date) {
