@@ -127,12 +127,23 @@ class ContentViewSet(viewsets.ModelViewSet):
         # Connection
         cursor = connection.cursor()  
         
+        # Create object of common class
+        objCommon = utils.common()
+        
         # SQL Query
         searchTeachingAidQuery = """ select CC.contentID,
                                             CCG.contentTitle,
                                             CC.requirement,
                                             CCG.instruction,
-                                            CC.fileName,
+                                            CASE CC.fileTypeCodeID
+                                                WHEN 108100 THEN  CC. fileName
+                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CC.fileName) 
+                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CC.fileName) 
+                                                WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CC.fileName) 
+                                                WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CC.fileName) 
+                                                WHEN 108105 THEN  CC. fileName
+                                                ELSE NULL
+                                                END as fileName,
                                             CCG.author,
                                             CC.objectives,
                                             CC.contentTypeCodeID,
@@ -163,6 +174,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.subjectCodeID,
                                             CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,fileTypeCodeID,statusCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
 
+       
         cursor.execute(searchTeachingAidQuery)
     
         #Queryset
@@ -311,13 +323,24 @@ class ContentViewSet(viewsets.ModelViewSet):
         # New code.
         # Connection
         cursor = connection.cursor()  
+        
+        # Create object of common class
+        objCommon = utils.common()
          
         # SQL Query
         searchSelfLearningQuery = """ select CC.contentID, CCG.contentDetailID,
                                             CCG.contentTitle ,
                                             CC.requirement,
                                             CCG.instruction  ,
-                                            CC.fileName,
+                                            CASE CC.fileTypeCodeID
+                                                WHEN 108100 THEN  CC. fileName
+                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CC.fileName) 
+                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CC.fileName) 
+                                                WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CC.fileName) 
+                                                WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CC.fileName) 
+                                                WHEN 108105 THEN  CC. fileName
+                                                ELSE NULL
+                                                END as fileName,
                                             CCG.author ,
                                             CC.objectives,
                                             CC.contentTypeCodeID,
@@ -333,9 +356,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             and CC.topicCodeID IN %s 
                                             and CCG.appLanguageCodeID = %s 
                                             order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,statusCodeID,str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
- 
          
         cursor.execute(searchSelfLearningQuery)
+        
          
         #Queryset
         contentQuerySet = cursor.fetchall()
