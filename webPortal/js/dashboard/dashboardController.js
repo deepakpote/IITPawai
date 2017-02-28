@@ -1,7 +1,7 @@
 angular.module("mitraPortal").controller("dashboardController",
-  ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService', '$state',
-  function($scope, $location, $log, appUtils, appConstants, contentService, commonService, $state) {	  
-	  var response = {
+  ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService', '$state', '$window',
+  function($scope, $location, $log, appUtils, appConstants, contentService, commonService, $state, $window) {	  
+	  var responseTeachingAids = {
 		  "data": [
 			   {
 				  "contentID": 257,
@@ -28,7 +28,7 @@ angular.module("mitraPortal").controller("dashboardController",
 				  "requirementCodeIDs": "117100,117101,117102,117103",
 				  "instruction": "",
 				  "fileType": "108100",
-				  "fileName": "https://youtu.be/TKKpihENPrA",
+				  "fileName": "http://www.youtube.com/watch?v=iwGFalTRHDA",
 				  "author": "thefreemath.org",
 				  "objectives": "कोन",
 				  "language": "101101"
@@ -77,25 +77,11 @@ angular.module("mitraPortal").controller("dashboardController",
 				  "author": "thefreemath.org",
 				  "objectives": "कोन",
 				  "language": "101101"
-			 },
-			 {
-				  "contentID": 262,
-				  "contentTitle": "कोन",
-				  "contentType": "107100",
-				  "gradeCodeIDs": "104103,104104",
-				  "subject": "103102",
-				  "topic": null,
-				  "requirementCodeIDs": "117100,117101,117102,117103",
-				  "instruction": "",
-				  "fileType": "108100",
-				  "fileName": "https://youtu.be/TKKpihENPrA",
-				  "author": "thefreemath.org",
-				  "objectives": "कोन",
-				  "language": "101101"
 			 }]		  
 	  };
 	  
 	  $scope.myInterval = 0;
+	  $scope.myTransition = false;
 	  $scope.noWrapSlides = false;
 	  $scope.active = 0;
 	  var slides = $scope.slides = [];
@@ -121,13 +107,18 @@ angular.module("mitraPortal").controller("dashboardController",
 	  };
 	  
 	 $scope.addSlides = function() {
-			for(var i=0; i< response.data.length; i++){
+			for(var i=0; i< responseTeachingAids.data.length; i++){
 				slides.push({
-					image: 'http://img.youtube.com/vi/' + $scope.getFileName(response.data[i].fileName) + '/0.jpg',
-					contentID: response.data[i].contentID
+					videoURL: responseTeachingAids.data[i].fileName,
+					image: 'http://img.youtube.com/vi/' + $scope.getFileName(responseTeachingAids.data[i].fileName) + '/0.jpg',
+					contentID: responseTeachingAids.data[i].contentID
 				})
 			}
 	};
+	
+	$scope.playVideo = function ( url ) {
+		 $window.location.href = url
+	}
 	
 	$scope.goTo = function ( state ) {
 		$state.go(state)

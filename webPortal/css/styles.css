@@ -139,3 +139,8 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
   padding: 6% !important;
   text-align: justify;
 }
+
+.carousel-slide {	
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
