@@ -77,7 +77,7 @@ angular.module("mitraPortal").service('appUtils', ['$http', '$log', '$rootScope'
 	service.isLoggedInUser = function() {
         //$cookies.getObject(appConstants.localStorage.baseKey);
         var storedMitraObject = $rootScope.appGlobals;
-        storedValue = storedMitraObject ? storedMitraObject[key] : "";
+        storedValue = storedMitraObject ? storedMitraObject["token"] : "";
         console.log(storedValue);
         return !storedValue == "";
     };

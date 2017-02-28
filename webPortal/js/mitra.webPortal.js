@@ -21,10 +21,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         templateUrl: '/js/common/headerView.html'
                     },
                     'leftMenu': {
-                        templateUrl: '/js/common/leftMenuView.html',
-                        controller: function($scope) {
-                            console.log('hit left menu controller');
-                        }
+                        templateUrl: '/js/common/leftMenuView.html'
                     },
                     'contentBox': {
                         templateUrl: '/js/common/contentBoxView.html'
@@ -58,10 +55,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         templateUrl: '/js/common/logged-in/headerView.html'
                     },
                     'leftMenu': {
-                        templateUrl: '/js/common/logged-in/leftMenuView.html',
-                        controller: function($scope) {
-                            console.log('hit left menu controller - logged in');
-                        }
+                        templateUrl: '/js/common/logged-in/leftMenuView.html'
                     },
                     'contentBox': {
                         templateUrl: '/js/common/contentBoxView.html'
@@ -72,18 +66,18 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 url: '/admin',
                 views: {
                     'content': {
-                        templateUrl: '/js/home/layoutView.html'
+                        templateUrl: '/js/home/layoutView.html',
                         //template: "Setting up home layout"
+                        controller: function($scope,appUtils,$state) {
+                            !appUtils.isLoggedInUser() ? $state.go('main.notLoggedIn.home') : console.log("");
+                        }
                     },
                     'welcome@main.loggedIn.home': {
                         templateUrl: '/js/home/welcomeView.html',
                         controller: 'welcomeController'
                     },
                     'map@main.loggedIn.home': {
-                        templateUrl: '/js/home/mapView.html',
-                        controller: function($scope) {
-                            console.log('hit map controller - logged in');
-                        }
+                        templateUrl: '/js/home/mapView.html'
                     }
                 }
             })
