@@ -9,21 +9,27 @@
         .module('mitraPortal')
         .service('SelfLearningService', SelfLearningService);
 
-    SelfLearningService.$inject = ['$http'];
+    SelfLearningService.$inject = ['$http','appUtils'];
 
     /* @ngInject */
-    function SelfLearningService($http) {
+    function SelfLearningService($http,appUtils) {
         this.fetch = fetch;
 
         ////////////////
 
-        function fetch() {
-            var postData = {"languageCodeIDs":"","pageNumber":0,"topicCodeIDs":""};
-            var header = {"authToken":"OF3eOof1qa5bDkHQjwPjlT24sRWb42J1",
-                "appLanguageCodeID":"113101"};
-            return $http({method:'POST', url: 'http://54.152.74.194:8000' + '/content/searchSelfLearning/',
-                data: postData,
-                headers : header});
+        function fetch(filter,statusCodeID,onSuccess,onFailure) {
+            var languageCodeIDs = "" + filter.languageCodeIDs;
+            var topicCodeIDs = "" + filter.topicCodeIDs;
+            var postData = {"languageCodeIDs":languageCodeIDs,
+                            "pageNumber":0,
+                            "topicCodeIDs":topicCodeIDs,
+                            "statusCodeID":statusCodeID};
+            var authToken = appUtils.getFromLocalStorage("token","");
+            options.data = postData;
+            options.url = 'content/searchSelfLearning/';
+            options.headers = {"authToken" : authToken , "appLanguageCodeID" : "113101"};
+            options.method = 'POST';
+            appUtils.ajax(options,onSuccess,onFailure);
         }
     }
 

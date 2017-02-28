@@ -46,6 +46,7 @@ a:hover, a:focus {
 .left-menu-item {
 	padding-top: 5%;
 	padding-bottom: 5%;
+    font-size:12px;
 }
 .left-menu-item .fa{
 	padding-right: 10px;
@@ -151,7 +152,7 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 	padding: 12px 12px 12px 12px !important;
 	text-align: center;
 	color: white;
-
+    cursor: pointer;
 }
 
 .options-card .card-action{
@@ -283,6 +284,7 @@ li.filter-type:hover {
 
 li.selected  {
     color: #ff6d00;
+    font-weight: 500;
 }
 
 .divider {
@@ -309,9 +311,8 @@ li.selected  {
     color:whitesmoke;
 }
 
-.repeater{
-    float:left;
-    margin: 24px 64px 24px 0;
+.list-view{
+    margin : 16px 0;
 }
 
 .spinner{
@@ -347,7 +348,27 @@ li.selected  {
 }
 
 .card-content-wrapper {
-    width: 840px;
-    height: 100%;
-    margin: auto;
+    padding-left: 10%;
+    padding-right: 10%;
 }
+
+.uploader {
+    flex: 1;
+    padding-left: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+/* Rules for sizing the icon. */
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+/* Rules for using icons as black on a light background. */
+.material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+/* Rules for using icons as white on a dark background. */
+.material-icons.md-light { color: rgba(255, 255, 255, 1); }
+.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }

@@ -9,22 +9,27 @@
         .module('mitraPortal')
         .service('TeachingAidsService', TeachingAidsService);
 
-    TeachingAidsService.$inject = ['$http'];
+    TeachingAidsService.$inject = ['$http','appUtils'];
 
     /* @ngInject */
-    function TeachingAidsService($http) {
+    function TeachingAidsService($http,appUtils) {
         this.fetch = fetch;
 
         ////////////////
 
-        function fetch(fileTypeCodeId) {
-
-            var postData = {"fileTypeCodeID":fileTypeCodeId,"languageCodeIDs":101100};
-            var header = {"authToken":"OF3eOof1qa5bDkHQjwPjlT24sRWb42J1",
-                            "appLanguageCodeID":"113101"};
-            return $http({method:'POST', url: 'http://54.152.74.194:8000' + '/content/searchTeachingAid/',
-                data: postData,
-                headers : header});
+        function fetch(fileTypeCodeId,statusCodeId,dataFilters,onSuccess, onFailure) {
+            var gradeIds = "" + dataFilters.gradeCodeIDs;
+            var subjectIds = "" + dataFilters.subjectCodeIDs;
+            var postData = {"fileTypeCodeID":fileTypeCodeId,
+                            "statusCodeID":statusCodeId,
+                            "gradeCodeIDs" : gradeIds,
+                            "subjectCodeIDs" : subjectIds};
+            var authToken = appUtils.getFromLocalStorage("token","");
+            options.data = postData;
+            options.url = 'content/searchTeachingAid/';
+            options.headers = {"authToken" : authToken , "appLanguageCodeID" : "113101"};
+            options.method = 'POST';
+            appUtils.ajax(options,onSuccess,onFailure);
         }
     }
 

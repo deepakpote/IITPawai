@@ -13,7 +13,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 templateUrl: '/js/common/mitraLayoutView.html',
                 controller : 'mainController'
             })
-            .state('main.index', {
+            .state('main.notLoggedIn', {
                 abstract: true,
                 url: '',
                 views: {
@@ -28,18 +28,18 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
-            .state('main.index.home', {
+            .state('main.notLoggedIn.home', {
                 url: '/home',
                 views: {
                     'content': {
                         templateUrl: '/js/home/layoutView.html'
                         //template: "Setting up home layout"
                     },
-                    'welcome@main.index.home': {
+                    'welcome@main.notLoggedIn.home': {
                         templateUrl: '/js/home/welcomeView.html',
                         controller: 'welcomeController'
                     },
-                    'map@main.index.home': {
+                    'map@main.notLoggedIn.home': {
                         templateUrl: '/js/home/mapView.html',
                         controller: function($scope) {
                             console.log('hit map controller');
@@ -47,7 +47,41 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
-            .state('main.index.contentUpload', {
+            .state('main.loggedIn', {
+                url: '',
+                abstract : true,
+                views: {
+                    'header': {
+                        templateUrl: '/js/common/logged-in/headerView.html'
+                    },
+                    'leftMenu': {
+                        templateUrl: '/js/common/logged-in/leftMenuView.html'
+                    },
+                    'contentBox': {
+                        templateUrl: '/js/common/contentBoxView.html'
+                    }
+                }
+            })
+            .state('main.loggedIn.home', {
+                url: '/admin',
+                views: {
+                    'content': {
+                        templateUrl: '/js/home/layoutView.html',
+                        //template: "Setting up home layout"
+                        controller: function($scope,appUtils,$state) {
+                            !appUtils.isLoggedInUser() ? $state.go('main.notLoggedIn.home') : console.log("");
+                        }
+                    },
+                    'welcome@main.loggedIn.home': {
+                        templateUrl: '/js/home/welcomeView.html',
+                        controller: 'welcomeController'
+                    },
+                    'map@main.loggedIn.home': {
+                        templateUrl: '/js/home/mapView.html'
+                    }
+                }
+            })
+            .state('main.loggedIn.contentUpload', {
                 url: '/content/upload',
                 views: {
                     'content': {
@@ -56,7 +90,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
-            .state('main.index.contentUpload.modal', {
+            .state('main.loggedIn.contentUpload.modal', {
                 url: '/content/upload/result',
                 templateUrl : '/js/login/loginView.html',
                 onEnter: function($modal, $state) {
@@ -74,8 +108,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
-
-            .state('main.index.selfLearning', {
+            .state('main.loggedIn.selfLearning', {
                 url: '/selfLearning',
                 views: {
                     'content': {
@@ -85,7 +118,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
-            .state('main.index.teachingAids', {
+            .state('main.loggedIn.teachingAids', {
                 url: '/teachingAids',
                 views : {
                     'content' : {
@@ -108,25 +141,25 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     'contentID' : null
                 }
             });
-        // define login route
-        loginModalStateProvider.state('main.index.home.login', {
-            url: '/login',
-            templateUrl : '/js/login/loginView.html',
-            controller:'loginController',
-            controllerAs : 'login'
-        });
-        loginModalStateProvider.state('main.index.home.requestotp', {
-            url: '/requestOtp',
-            templateUrl : '/js/login/requestOtpView.html',
-            controller:'requestOtpController',
-            controllerAs : 'requestOTP'
-        });
-        loginModalStateProvider.state('main.index.home.setpassword', {
-            url: '/setPassword',
-            templateUrl : '/js/login/setPasswordView.html',
-            controller:'setPasswordController',
-            controllerAs : 'setPassword'
-        });
+            // define login route
+            loginModalStateProvider.state('main.notLoggedIn.home.login', {
+                url: '/login',
+                templateUrl : '/js/login/loginView.html',
+                controller:'loginController',
+                controllerAs : 'login'
+            });
+            loginModalStateProvider.state('main.notLoggedIn.home.requestotp', {
+                url: '/requestOtp',
+                templateUrl : '/js/login/requestOtpView.html',
+                controller:'requestOtpController',
+                controllerAs : 'requestOTP'
+            });
+            loginModalStateProvider.state('main.notLoggedIn.home.setpassword', {
+                url: '/setPassword',
+                templateUrl : '/js/login/setPasswordView.html',
+                controller:'setPasswordController',
+                controllerAs : 'setPassword'
+            });
     }]);
 /*
  angular.module("mitraPortal").run(
