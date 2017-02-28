@@ -209,7 +209,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     def searchSelfLearning(self,request):
         # get inputs
 
-        userID = request.data.get('userID') 
+        #userID = request.data.get('userID') 
         languageCodeIDs = request.data.get('languageCodeIDs')
         topicCodeIDs = request.data.get('topicCodeIDs') 
         pageNumber = request.data.get('pageNumber')
@@ -583,6 +583,88 @@ class ContentViewSet(viewsets.ModelViewSet):
         response = { 'hasLiked' : objContentResponse.hasLiked ,
                      'hasSaved' : objContentResponse.hasSaved  }
         
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": [response]})
+    
+    
+    """
+    API to get the content details in all app languages
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def contentDetail(self,request):
+        # get inputs
+        contentID = request.data.get('contentID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+        
+        objContent = None
+        gradeCodeIDs = None
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if contentID is passed in post param
+        if not contentID:
+            return Response({"response_message": constants.messages.get_contentdetail_contentid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+               
+        # If contentID parameter is passed, then check content exists or not
+        try:
+            objContent = content.objects.get(contentID = contentID)
+        except content.DoesNotExist:
+            return Response({"response_message": constants.messages.get_contentdetail_content_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.get_contentdetail_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+                               
+        # Get content details in english as wellas marathi language.
+        objContentDetails = getContentDetails(contentID)
+        
+        #If content type is teachingAids
+        if objContentDetails.contentType.codeID == constants.mitraCode.teachingAids:
+            subjectCodeID = objContentDetails.subject.codeID 
+            topicCodeID = None
+        # If content type is self learning.
+        elif objContentDetails.contentType.codeID == constants.mitraCode.selfLearning:
+            subjectCodeID = None
+            topicCodeID = objContentDetails.topic.codeID 
+        
+        #Get comma sep list of gradeCodeID from contentID
+        gradeCodeIDs = ",".join(str(con.grade.codeID) for con in contentGrade.objects.filter(content = objContent))
+        
+        #Build collection manually for both languages
+        response = {  'engContentTitle':        objContentDetails.engContentTitle,
+                      'marContentTitle':        objContentDetails.marContentTitle,
+                      'engInstruction':         objContentDetails.engInstruction ,
+                      'marInstruction ':        objContentDetails.marInstruction,
+                      'engAuthor':              objContentDetails.engAuthor,
+                      'marAuthor':              objContentDetails.marAuthor,
+                      'contentTypeCodeID':      objContentDetails.contentType.codeID,
+                      'subjectCodeID':          subjectCodeID,
+                      'gradeCodeIDs':           gradeCodeIDs,
+                      'topicCodeID':            topicCodeID,
+                      'requirementCodeIDs':     objContentDetails.requirement,
+                      'objectives':             objContentDetails.objectives ,
+                      'fileTypeCodeID':         objContentDetails.fileType.codeID,
+                      'fileName':               objContentDetails.fileName,
+                      'contentLanguageCodeID':  objContentDetails.language.codeID,
+                      'statusCodeID':           objContentDetails.status.codeID
+                    }
+        
+       
         #Return the response
         return Response({"response_message": constants.messages.success, "data": [response]})
     
@@ -976,6 +1058,45 @@ def getContentResponseDetails(objContent, objUser):
         objContentResponse.hasSaved = userContent.objects.filter(content = objContent , user = objUser).exists()
 
         return objContentResponse
+    
+"""
+function to get the content details.
+"""
+def getContentDetails(contentID):
+    
+        objContentDetails = None
+        #Get details from content models.
+        objContentDetails = content.objects.get(contentID = contentID)
+                
+        # Get app language instances for english and marathi.
+        objAppLanguageEng = code.objects.get(codeID = constants.appLanguage.english)
+        objAppLanguageMar = code.objects.get(codeID = constants.appLanguage.marathi)
+        
+        #Check content details for english language..
+        try:
+            objContentEngDetails = contentDetail.objects.get(content = objContentDetails , appLanguage = objAppLanguageEng)
+            objContentDetails.engContentTitle = objContentEngDetails.contentTitle 
+            objContentDetails.engInstruction = objContentEngDetails.instruction   
+            objContentDetails.engAuthor = objContentEngDetails.author 
+        except contentDetail.DoesNotExist:
+            #If not exists.It means no content is not uploaded for english language..
+            objContentDetails.engContentTitle = ''
+            objContentDetails.engInstruction = ''
+            objContentDetails.engAuthor = ''
+            
+        #Check content details for marathi language..
+        try:
+            objContentMarDetails = contentDetail.objects.get(content = objContentDetails , appLanguage = objAppLanguageMar)
+            objContentDetails.marContentTitle = objContentMarDetails.contentTitle    
+            objContentDetails.marInstruction = objContentMarDetails.instruction    
+            objContentDetails.marAuthor = objContentMarDetails.author 
+        except contentDetail.DoesNotExist:
+            #If not exists.It means no content is not uploaded for Marathi language..
+            objContentDetails.marContentTitle = ''  
+            objContentDetails.marInstruction = ''   
+            objContentDetails.marAuthor = ''
+        
+        return objContentDetails
 """
 function to validate the youtube URL.
 """    
