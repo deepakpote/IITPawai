@@ -180,7 +180,7 @@ angular.module("mitraPortal").controller("dashboardController",
 	};
 	
 	$scope.playVideo = function ( url ) {
-		 $window.location.href = url
+		 $window.open(url, '_blank')
 	};
 	
 	$scope.goTo = function ( state ) {

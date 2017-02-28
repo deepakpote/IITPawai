@@ -144,3 +144,11 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
     margin-bottom: 30px;
     margin-top: 30px;
 }
+
+.carousel-control.left {
+	background: none!important
+}
+
+.carousel-control.right {
+	background: none!important
+}
