@@ -1,9 +1,10 @@
 angular.module("mitraPortal").controller("loginController", LoginController);
 
 LoginController.$inject = ['$location', '$modalInstance', '$rootScope' ,'$cookies', 'loginService','commonService',
-                                'appUtils'];
+                                'appUtils','HttpUtils','$state'];
 
-function LoginController($location, $modalInstance, $rootScope,$cookies, loginService, commonService, appUtils) {
+function LoginController($location, $modalInstance, $rootScope,$cookies, loginService,
+                         commonService, appUtils,HttpUtils,$state) {
 
     console.log("login controller called..");
     var vm = this;
@@ -20,12 +21,10 @@ function LoginController($location, $modalInstance, $rootScope,$cookies, loginSe
 
         function onSuccess(response){
             console.log(response);
-            if(response.data.error == "false"){
+            if(HttpUtils.isSuccessful(response)){
                 var data = response.data[0];
                 appUtils.saveToLocalStorage("token",data.token);
-
-                //TODO go to logged in state
-                $state.go('main.index.home');
+                $state.go('main.loggedIn.home');
             }else{
                 vm.hasError = true;
                 vm.errorMessage = commonService.getValueByCode(response.response_message)[0].codeNameEn

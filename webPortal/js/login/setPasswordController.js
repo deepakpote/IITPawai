@@ -20,9 +20,9 @@ function SetPasswordController($modalInstance,HttpUtils, loginService, $state, c
         loginService.setPassword(password,onSuccess,onFailure);
 
         function onSuccess(response) {
-            if(HttpUtils.isSuccessful(response.data)) {
-                //TODO go to logged in state
-                $state.go('main.index.home');
+            console.log("login response");
+            if(HttpUtils.isSuccessful(response)) {
+                $state.go('main.loggedIn.home');
             } else {
                 vm.hasError = true;
                 vm.errorMessage = commonService.getValueByCode(response.response_message)[0].codeNameEn

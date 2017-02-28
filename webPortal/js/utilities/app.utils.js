@@ -74,6 +74,14 @@ angular.module("mitraPortal").service('appUtils', ['$http', '$log', '$rootScope'
 		$rootScope.appGlobals = storedMitraObject;
 	};
 
+	service.isLoggedInUser = function() {
+        //$cookies.getObject(appConstants.localStorage.baseKey);
+        var storedMitraObject = $rootScope.appGlobals;
+        storedValue = storedMitraObject ? storedMitraObject[key] : "";
+        console.log(storedValue);
+        return !storedValue == "";
+    };
+
 	return service;
 
 }]);

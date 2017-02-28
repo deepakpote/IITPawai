@@ -56,7 +56,7 @@ function RequestOtpController($modalInstance, HttpUtils, loginService, $state, a
                 var data = response.data[0];
                 appUtils.saveToLocalStorage("token",data.token);
                 console.log("auth token set " + data.token);
-                $state.go('main.index.home.setpassword');
+                $state.go('main.notLoggedIn.home.setpassword');
             }else{
                 vm.hasError = true;
                 vm.errorMessage = commonService.getValueByCode(response.response_message)[0].codeNameEn
