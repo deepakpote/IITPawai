@@ -91,7 +91,25 @@
 		<div class="font-big-title text-primary" style="margin:40px">Recent Teaching Aids</div>
 			<div style="height:305px;margin:40px">
 			    <uib-carousel active="active" interval="myInterval" no-wrap="noWrapSlides" template-url="angular-ui-custom-template/carousel/carousel.html">
-			      <uib-slide ng-repeat="collection in slideCollection track by collection.id" index="collection.id">
+			      <uib-slide ng-repeat="collection in teachingAidsCollection track by collection.id" index="collection.id">
+			        <img class="col-md-3 carousel-slide" style="margin-left:140px" ng-src="{{collection.first.image}}" alt="" 
+			        			ng-click="playVideo(collection.first.videoURL)"> 
+			        <img class="col-md-3 carousel-slide" ng-src="{{collection.second.image}}" alt=""
+			        			ng-click="playVideo(collection.second.videoURL)">
+			        <img class="col-md-3 carousel-slide" ng-src="{{collection.third.image}}" alt=""
+			        			ng-click="playVideo(collection.third.videoURL)">   
+			      </uib-slide>
+			    </uib-carousel>
+			 </div>
+	</div>	
+</div>
+<div class="gradient ">
+	<div class="container">
+		<div class="col-md-12"></div>	
+		<div class="font-big-title text-primary" style="margin:40px">Recent Self Learning Videos</div>
+			<div style="height:305px;margin:40px">
+			    <uib-carousel active="active" interval="myInterval" no-wrap="noWrapSlides" template-url="angular-ui-custom-template/carousel/carousel.html">
+			      <uib-slide ng-repeat="collection in selfLearningCollection track by collection.id" index="collection.id">
 			        <img class="col-md-3 carousel-slide" style="margin-left:140px" ng-src="{{collection.first.image}}" alt="" 
 			        			ng-click="playVideo(collection.first.videoURL)"> 
 			        <img class="col-md-3 carousel-slide" ng-src="{{collection.second.image}}" alt=""
