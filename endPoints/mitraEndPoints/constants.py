@@ -153,6 +153,10 @@ class messages():
     news_list_no_records_found = 100223
     news_list_appLanguageCodeID_cannot_be_empty = 100224
     news_list_appLanguageCodeID_not_exists = 100225
+    
+    get_contentdetail_contentid_cannot_be_empty = 100226
+    get_contentdetail_content_not_exists = 100227
+    get_contentdetail_user_not_exists = 100228
 
 
 class webportalmessages():    
