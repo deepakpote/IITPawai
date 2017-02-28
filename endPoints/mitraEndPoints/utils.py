@@ -1,3 +1,5 @@
+from mitraEndPoints import settings
+
 class common():
     
     def isBool(self, value):
@@ -33,3 +35,7 @@ class common():
             return valid[lower_value]
         else:
             return None
+        
+    def getBaseURL(self, dirName):
+        basicURL  = settings.DOMAIN_NAME + settings.STATIC_URL + dirName 
+        return basicURL

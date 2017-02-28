@@ -7,7 +7,7 @@ from django.db.models import Max
 
 from commons.models import code , news, configuration, newsImage , codeGroup, userNews, newsDetail
 from commons.serializers import codeSerializer , newsSerializer , customNewsSerializer
-from mitraEndPoints import constants, settings
+from mitraEndPoints import constants, settings , utils
 from datetime import datetime
 from users.models import token , user
 from users.authentication import TokenAuthentication
@@ -214,7 +214,12 @@ class NewsViewSet(viewsets.ModelViewSet):
                       
         serializer = customNewsSerializer(newsData, many = True)
         
-        basicURL = getBaseURL(constants.staticFileDir.newsPDFDir)
+        # Create object of common class 
+        objCommon = utils.common()
+        
+        basicURL = objCommon.getBaseURL(constants.staticFileDir.newsPDFDir)
+        
+        #basicURL = getBaseURL(constants.staticFileDir.newsPDFDir)
         for objNew in serializer.data :
             if objNew['pdfFileURL'] :
                 objNew['pdfFileURL'] = basicURL +str(objNew['pdfFileURL'])
@@ -504,8 +509,13 @@ class NewsViewSet(viewsets.ModelViewSet):
         # Serialize the news data.
         serializer = customNewsSerializer(newsData, many = True)
         
+        # Create object of common class 
+        objCommon = utils.common()
         #Get basic URL.
-        basicURL = getBaseURL(constants.staticFileDir.newsPDFDir)
+        basicURL = objCommon.getBaseURL(constants.staticFileDir.newsPDFDir)
+        
+        #Get basic URL.
+        #basicURL = getBaseURL(constants.staticFileDir.newsPDFDir)
         
         #Build the pdfFileURL.
         for objNew in serializer.data :
@@ -563,7 +573,13 @@ fuction to get comma separated string of Image URLs for a news
 """
 def getNewsImageURL(NewsObject):
     #declare array
-    basicURL = getBaseURL(constants.staticFileDir.newsImageDir)
+    #basicURL = getBaseURL(constants.staticFileDir.newsImageDir)
+    
+    # Create object of common class 
+    objCommon = utils.common()
+    #Get basic URL.
+    basicURL = objCommon.getBaseURL(constants.staticFileDir.newsImageDir)
+    
     arrOut = []
     userImageURL = None
     objImageList = newsImage.objects.filter(news= NewsObject['newsID'])
@@ -677,10 +693,4 @@ def validateNewListParameters(departmentCodeID, publishFromDate, publishToDate, 
         errors['status'] = status.HTTP_404_NOT_FOUND
         
     return errors
-"""
-common function - to get basic url for all files
-"""
-def getBaseURL(dirName):
-    basicURL  = settings.DOMAIN_NAME + settings.STATIC_URL + dirName 
-    return basicURL
     
