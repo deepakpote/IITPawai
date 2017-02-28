@@ -21,6 +21,7 @@ import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.NewsListAdapter;
+import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
@@ -127,7 +128,7 @@ public class HomeFragment extends Fragment{
     }
 
     private void loadNews() {
-        RestClient.getApiService("").listNews().enqueue(new Callback<BaseModel<News>>() {
+        RestClient.getApiService("").listNews(LanguageUtils.getCurrentLanguage()).enqueue(new Callback<BaseModel<News>>() {
             @Override
             public void onResponse(Call<BaseModel<News>> call, Response<BaseModel<News>> response) {
                 if(response.isSuccessful()) {
@@ -149,7 +150,7 @@ public class HomeFragment extends Fragment{
                             newsItem.setSaved(false);
                             newsItem.setShowOnMainPage(true);
                         }
-                        newsItem.setDateToCompare(DateUtils.convertToDate(newsItem.getPublishDate(), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                        newsItem.setDateToCompare(DateUtils.convertToDate(newsItem.getPublishDate(), "yyyy-MM-dd HH:mm:ss"));
                         realm.copyToRealmOrUpdate(newsItem);
                     }
 
@@ -169,7 +170,7 @@ public class HomeFragment extends Fragment{
     private void loadPopularTeachingAids() {
         //TODO popular resources
 
-        TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(108100, "", "");
+        TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(Constants.FileTypeVideo, "", "");
         String token = UserDetailUtils.getToken(getContext());
         RestClient.getApiService(token).searchTeachingAids(LanguageUtils.getCurrentLanguage(), contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override

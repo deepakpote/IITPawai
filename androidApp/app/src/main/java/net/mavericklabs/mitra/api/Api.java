@@ -117,6 +117,6 @@ public interface Api {
     Call<BaseModel<Event>> listEvents(@Body EventRequest contentRequest);
 
     @POST("news/newsList/")
-    Call<BaseModel<News>> listNews();
+    Call<BaseModel<News>> listNews(@Header("appLanguageCodeID") int appLanguageCodeID);
 
 }

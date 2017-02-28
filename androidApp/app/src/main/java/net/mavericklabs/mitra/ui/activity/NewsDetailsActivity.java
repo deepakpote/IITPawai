@@ -76,7 +76,7 @@ public class NewsDetailsActivity extends BaseActivity {
             final News news = realm.where(News.class).equalTo("newsID", newsID).findFirst();
 
             if(news != null) {
-                Date date = DateUtils.convertToDate(news.getCreatedOn(), "yyyy-MM-dd'T'HH:mm:ss'Z'");
+                Date date = DateUtils.convertToDate(news.getPublishDate(), "yyyy-MM-dd HH:mm:ss");
                 String dateString = DateUtils.convertToString(date, "dd MMM, yyyy");
                 newsDetails.setText(dateString);
                 content.setText(news.getContent());
@@ -197,7 +197,7 @@ public class NewsDetailsActivity extends BaseActivity {
             loadingPanel.setVisibility(View.VISIBLE);
 
             ImageView imageView = (ImageView) itemView.findViewById(R.id.image_view);
-            Glide.with(mContext).load(imageList.get(position)).diskCacheStrategy(DiskCacheStrategy.NONE).listener(new RequestListener<String, GlideDrawable>() {
+            Glide.with(mContext).load(imageList.get(position)).listener(new RequestListener<String, GlideDrawable>() {
                 @Override
                 public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                     loadingPanel.setVisibility(View.GONE);

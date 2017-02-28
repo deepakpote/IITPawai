@@ -76,7 +76,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.CardVi
         holder.title.setText(newsList.get(holder.getAdapterPosition()).getNewsTitle());
 
         Date date = DateUtils.convertToDate(newsList.get(holder.getAdapterPosition()).getPublishDate(),
-                "yyyy-MM-dd'T'HH:mm:ss'Z'");
+                "yyyy-MM-dd HH:mm:ss");
         String dateString = DateUtils.convertToString(date, "dd MMM, yyyy");
 
         if(newsList.get(holder.getAdapterPosition()).isSeen()) {
