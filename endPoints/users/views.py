@@ -749,6 +749,9 @@ class UserViewSet(viewsets.ModelViewSet):
         # Declare empty user content type code.
         objUserContentTypeCode = None
         
+        # Create object of common class
+        objCommon = utils.common()
+        
         #If content type is Teaching Aids.
         if contentTypeCodeID == constants.mitraCode.teachingAids:
                    
@@ -789,12 +792,21 @@ class UserViewSet(viewsets.ModelViewSet):
             # Connection
             cursor = connection.cursor()  
             
+            
             # SQL Query
             searchTeachingAidQuery = """ select CC.contentID,
                                                 CCG.contentTitle,
                                                 CC.requirement,
                                                 CCG.instruction,
-                                                CC.fileName,
+                                                CASE CC.fileTypeCodeID
+                                                    WHEN 108100 THEN  CC. fileName
+                                                    WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CC.fileName) 
+                                                    WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CC.fileName) 
+                                                    WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CC.fileName) 
+                                                    WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CC.fileName) 
+                                                    WHEN 108105 THEN  CC. fileName
+                                                    ELSE NULL
+                                                END as fileName,
                                                 CCG.author,
                                                 CC.objectives,
                                                 CC.contentTypeCodeID,
@@ -882,7 +894,15 @@ class UserViewSet(viewsets.ModelViewSet):
                                                 CCG.contentTitle ,
                                                 CC.requirement,
                                                 CCG.instruction  ,
-                                                CC.fileName,
+                                                CASE CC.fileTypeCodeID
+                                                    WHEN 108100 THEN  CC. fileName
+                                                    WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CC.fileName) 
+                                                    WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CC.fileName) 
+                                                    WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CC.fileName) 
+                                                    WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CC.fileName) 
+                                                    WHEN 108105 THEN  CC. fileName
+                                                    ELSE NULL
+                                                END as fileName,
                                                 CCG.author ,
                                                 CC.objectives,
                                                 CC.contentTypeCodeID,
