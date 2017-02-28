@@ -1,6 +1,6 @@
 angular.module("mitraPortal").controller("uploadController",
-  ['$scope', '$location', '$log', '$http', 'appUtils', 'appConstants', 'contentService', 'commonService', '$filter',
-  function($scope, $location, $log, $http, appUtils, appConstants, contentService, commonService, filter) {
+  ['$scope', '$location', '$log', '$state', '$http', 'appUtils', 'appConstants', 'contentService', 'commonService', '$filter',
+  function($scope, $location, $log, $state, $http, appUtils, appConstants, contentService, commonService, filter) {
   
 
     $scope.acceptedFileTypes = {
@@ -16,7 +16,16 @@ angular.module("mitraPortal").controller("uploadController",
     $scope.fileName = "https://www.youtube.com/watch?v=PT2_F-1esPk";
 
     $scope.setSelectedOption = function (selectedOption){
-      $scope.selectedOption = selectedOption;
+      if ($scope.selectedOption == selectedOption){
+        $scope.selectedOption = null;
+      }
+      else{
+        $scope.selectedOption = selectedOption;
+      }
+    }
+
+    $scope.openModal = function(){
+      $state.go('main.index.contentUpload.modal');
     }
 
     $scope.$watch('gradeList', function (gradeList){
@@ -33,17 +42,22 @@ angular.module("mitraPortal").controller("uploadController",
       $log.debug(gradesString);
       
     }, true);
-  
-    var uploadContentSuccessCB = function (response) {
-  		$scope.submitted = false;
-  		$log.debug('in success cb of upload content');
-  		$log.debug(response);
-  	};
-  	
-  	var uploadContentErrorCB = function (response) {
-  		$log.debug('in error cb of upload content');
-  		$log.debug(response);
-  	};
+
+
+    $scope.$watch('requirementList', function (requirementList){
+      var checkedRequirements = requirementList.filter(function(requirement){ return (requirement.checked == true)});
+      var requirementsString = "";
+      if (checkedRequirements.length > 0){
+          requirementsString = checkedRequirements[0].codeID;
+      }
+      for (i=1;i<checkedRequirements.length;i++){
+
+          requirementsString += ',' + checkedRequirements[i].codeID;
+      }
+      $scope.content.requirementCodeIDs = requirementsString;
+      $log.debug(requirementsString);
+      
+    }, true);
 
 
     $scope.submit = function(){
@@ -78,9 +92,13 @@ angular.module("mitraPortal").controller("uploadController",
             transformRequest: angular.identity,
             headers: headers
         })
-        .success(function(){
-        })
-        .error(function(){
+        .then (function success(response){
+          $log.debug("2xx");
+          $log.debug(response);
+        },
+        function error(response){
+          $log.debug("not 2xx");
+          $log.debug(response);
         });
     }
   	
@@ -152,12 +170,9 @@ angular.module("mitraPortal").controller("uploadController",
   	};
   	
     var getRequirements = function () {
-      $scope.requirementList = [
-        {'name':'computer', 'checked':false},
-        {'name':'laptop', 'checked':false},
-        {'name':'tab', 'checked':false},
-        {'name':'mobile', 'checked':false},
-      ]
+      $scope.requirementList = commonService.getCodeListPerCodeGroup(
+          appConstants.codeGroup.requirement
+        );
     };
 
   	var populateDropDowns = function() {
@@ -195,7 +210,6 @@ angular.module("mitraPortal").controller("uploadController",
             element.bind('change', function(){
                 scope.$parent.myFile = element[0].files[0];
                 scope.$apply();
-                scope.$parent.$apply();
             });
         }
     };

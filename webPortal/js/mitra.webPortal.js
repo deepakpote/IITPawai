@@ -56,6 +56,25 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
+            .state('main.index.contentUpload.modal', {
+                url: '/content/upload/result',
+                templateUrl : '/js/login/loginView.html',
+                onEnter: function($modal, $state) {
+                    modalInstance = $modal.open(options);
+                    modalInstance.result['finally'](function() {
+                        modalInstance = null;
+                        if (true) {
+                            $state.go('^');
+                        }
+                    });
+                },
+                onExit: function() {
+                    if (modalInstance) {
+                        modalInstance.close();
+                    }
+                }
+            })
+
             .state('main.index.selfLearning', {
                 url: '/selfLearning',
                 views: {

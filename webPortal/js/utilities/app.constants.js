@@ -25,7 +25,8 @@ angular.module("mitraPortal").service('appConstants', [
 		grade: 104,
 		topic: 105,
 		contentType: 107,
-		fileType: 108
+		fileType: 108,
+		requirement: 117
 	}
 
 	return service;
