@@ -16,7 +16,20 @@ angular.module("mitraPortal").service('commonService', ['appUtils', 'appConstant
 			return _.filter(storedCodeList, function(code){ 
 				return code.codeGroup === codeGroupID
 			});
-		}
+		};
+
+		service.getValueByCode = function(codeId) {
+            storedCodeList = appUtils.getFromLocalStorage(appConstants.localStorage.codeListKey, []);
+            return _.filter(storedCodeList, function(code){
+                return (code.codeID == codeId)
+            });
+        };
+
+        service.isCodeListEmpty = function() {
+            storedCodeList = appUtils.getFromLocalStorage(appConstants.localStorage.codeListKey, []);
+            console.log(storedCodeList);
+            return storedCodeList.length == 0;
+        };
 		
 		return service;
 	}

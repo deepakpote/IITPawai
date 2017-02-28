@@ -41,13 +41,13 @@ news model
 """                 
 class news(models.Model):
     newsID = models.AutoField(primary_key = True)
-    newsTitle = models.CharField(null = False , max_length = 255)
-    author = models.CharField(null = False, max_length = 255)
-    content = models.TextField(null = True)
     department = models.ForeignKey('commons.code', db_column = 'departmentCodeID', null = True, blank = False, related_name = 'news_departmentCodeID')
+    newsCategory = models.ForeignKey('commons.code', db_column = 'newsCategoryCodeID', related_name = 'news_newsCategoryCodeID')
+    newsImportance = models.ForeignKey('commons.code', db_column = 'newsImportanceCodeID', related_name = 'news_newsImportanceCodeID')
     publishDate = models.DateTimeField(auto_now_add = True, null = False)
     pdfFileURL = models.CharField(null = True, max_length = 255)
-    
+    status = models.ForeignKey('commons.code', db_column = 'statusCodeID', related_name = 'news_statusCodeID')
+     
     createdBy = models.ForeignKey('users.user', related_name='news_createdBy', db_column = 'createdBy')
     createdOn = models.DateTimeField(auto_now_add=True)
     modifiedBy = models.ForeignKey('users.user', related_name='news_modifiedBy', db_column = 'modifiedBy')
@@ -56,6 +56,22 @@ class news(models.Model):
     class Meta:
         db_table = 'com_news'
         get_latest_by = 'createdOn'
+        
+"""
+news detail model
+"""                 
+class newsDetail(models.Model):
+    newsDetailID = models.AutoField(primary_key = True)
+    news = models.ForeignKey('news', db_column = 'newsID', related_name = 'newsDetail_newsID')
+    appLanguage = models.ForeignKey('commons.code', db_column = 'appLanguageCodeID', related_name = 'newsDetail_appLanguageCodeID')
+    newsTitle = models.CharField(null = False , max_length = 255)
+    author = models.CharField(null = True, max_length = 255)
+    content = models.TextField(null = True)
+    tags = models.TextField(null = True)
+         
+    class Meta:
+        unique_together = ("news", "appLanguage")
+        db_table = 'com_newsDetail'
  
 """
 news image model
@@ -69,6 +85,7 @@ class newsImage(models.Model):
     createdOn = models.DateTimeField(auto_now_add=True)
     
     class Meta:
+        unique_together = ("news", "imageURL")
         db_table = 'com_newsImage'        
 
 """

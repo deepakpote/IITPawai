@@ -15,6 +15,7 @@ from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent
 from mitraEndPoints import constants , utils
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
+from pip._vendor.requests.api import request
 
 
 class ContentViewSet(viewsets.ModelViewSet):
@@ -39,6 +40,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         pageNumber = request.data.get('pageNumber')
         
         appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
+        statusCodeID = request.data.get('statusCodeID')
         
         # On web portal, user no need to login to watch the video's so authentication is removed (commented) for now.
         #authToken = request.META.get('HTTP_AUTHTOKEN')
@@ -91,6 +93,18 @@ class ContentViewSet(viewsets.ModelViewSet):
         else:
             fromRecord = constants.contentSearchRecords.default
             pageNumber = content.objects.all().count()
+            
+        # Check if statusCodeID is passed in header
+        if not statusCodeID or statusCodeID is None:
+            statusCodeID = constants.mitraCode.published
+        else:
+            # If statusCodeID parameter is passed, then check user is exists or not
+            try:
+                objStatusCode = code.objects.get(codeID = statusCodeID)
+            except code.DoesNotExist:
+                return Response({"response_message": constants.messages.search_content_status_not_exists,
+                                 "data": []},
+                                status = status.HTTP_404_NOT_FOUND)
         
         #Get the applicable subject list for the respective user.    
         arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs)         
@@ -113,12 +127,23 @@ class ContentViewSet(viewsets.ModelViewSet):
         # Connection
         cursor = connection.cursor()  
         
+        # Create object of common class
+        objCommon = utils.common()
+        
         # SQL Query
         searchTeachingAidQuery = """ select CC.contentID,
                                             CCG.contentTitle,
                                             CC.requirement,
                                             CCG.instruction,
-                                            CC.fileName,
+                                            CASE CC.fileTypeCodeID
+                                                WHEN 108100 THEN  CC. fileName
+                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CC.fileName) 
+                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CC.fileName) 
+                                                WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CC.fileName) 
+                                                WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CC.fileName) 
+                                                WHEN 108105 THEN  CC. fileName
+                                                ELSE NULL
+                                                END as fileName,
                                             CCG.author,
                                             CC.objectives,
                                             CC.contentTypeCodeID,
@@ -132,6 +157,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
                                             where CCG.appLanguageCodeID = %s
                                             and CC.fileTypeCodeID = %s 
+                                            and CC.statusCodeID = %s
                                             and CC.contentTypeCodeID = %s 
                                             and CC.subjectCodeID IN %s 
                                             and CG.gradeCodeID IN %s 
@@ -146,10 +172,11 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.fileTypeCodeID,
                                             CC.languageCodeID,
                                             CC.subjectCodeID,
-                                            CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,fileTypeCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
+                                            CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,fileTypeCodeID,statusCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
 
+       
         cursor.execute(searchTeachingAidQuery)
-        
+    
         #Queryset
         contentQuerySet = cursor.fetchall()
         
@@ -163,7 +190,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                     'gradeCodeIDs':     str(item[12]),
                                     'subject':          item[10],
                                     'topic' :           item[11],
-                                    'requirement':      item[2],
+                                    'requirementCodeIDs':      item[2],
                                     'instruction':      item[3],
                                     'fileType' :        item[8],
                                     'fileName':         item[4],
@@ -195,12 +222,14 @@ class ContentViewSet(viewsets.ModelViewSet):
     def searchSelfLearning(self,request):
         # get inputs
 
-        userID = request.data.get('userID') 
+        #userID = request.data.get('userID') 
         languageCodeIDs = request.data.get('languageCodeIDs')
         topicCodeIDs = request.data.get('topicCodeIDs') 
         pageNumber = request.data.get('pageNumber')
         
-        appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
+        appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID') 
+        
+        statusCodeID = request.data.get('statusCodeID') 
         # On web portal, user no need to login to watch the video's so authentication  is removed (commented) for now.
 #         authToken = request.META.get('HTTP_AUTHTOKEN')
 #         
@@ -261,6 +290,18 @@ class ContentViewSet(viewsets.ModelViewSet):
         else:
             fromRecord = constants.contentSearchRecords.default
             pageNumber = content.objects.all().count()
+            
+        # Check if statusCodeID is passed in header
+        if not statusCodeID or statusCodeID is None:
+            statusCodeID = constants.mitraCode.published
+        else:
+            # If statusCodeID parameter is passed, then check user is exists or not
+            try:
+                objStatusCode = code.objects.get(codeID = statusCodeID)
+            except code.DoesNotExist:
+                return Response({"response_message": constants.messages.search_content_status_not_exists,
+                                 "data": []},
+                                status = status.HTTP_404_NOT_FOUND)
         
         #Get the applicable topic list for the respective user.    
         arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs)  
@@ -282,13 +323,24 @@ class ContentViewSet(viewsets.ModelViewSet):
         # New code.
         # Connection
         cursor = connection.cursor()  
+        
+        # Create object of common class
+        objCommon = utils.common()
          
         # SQL Query
         searchSelfLearningQuery = """ select CC.contentID, CCG.contentDetailID,
                                             CCG.contentTitle ,
                                             CC.requirement,
                                             CCG.instruction  ,
-                                            CC.fileName,
+                                            CASE CC.fileTypeCodeID
+                                                WHEN 108100 THEN  CC. fileName
+                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CC.fileName) 
+                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CC.fileName) 
+                                                WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CC.fileName) 
+                                                WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CC.fileName) 
+                                                WHEN 108105 THEN  CC. fileName
+                                                ELSE NULL
+                                                END as fileName,
                                             CCG.author ,
                                             CC.objectives,
                                             CC.contentTypeCodeID,
@@ -300,12 +352,13 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
                                             where CC.languageCodeID IN %s 
                                             and CC.contentTypeCodeID = %s 
+                                            and CC.statusCodeID = %s
                                             and CC.topicCodeID IN %s 
                                             and CCG.appLanguageCodeID = %s 
-                                            order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
- 
+                                            order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,statusCodeID,str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
          
         cursor.execute(searchSelfLearningQuery)
+        
          
         #Queryset
         contentQuerySet = cursor.fetchall()
@@ -316,7 +369,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             objResponse_data = {
                                 'contentID':        item[0], 
                                 'contentTitle':     item[2], 
-                                'requirement':      item[3], 
+                                'requirementCodeIDs':      item[3], 
                                 'instruction':      item[4], 
                                 'fileName':         item[5],
                                 'author':           item[6], 
@@ -557,6 +610,88 @@ class ContentViewSet(viewsets.ModelViewSet):
         #Return the response
         return Response({"response_message": constants.messages.success, "data": [response]})
     
+    
+    """
+    API to get the content details in all app languages
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def contentDetail(self,request):
+        # get inputs
+        contentID = request.data.get('contentID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+        
+        objContent = None
+        gradeCodeIDs = None
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if contentID is passed in post param
+        if not contentID:
+            return Response({"response_message": constants.messages.get_contentdetail_contentid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+               
+        # If contentID parameter is passed, then check content exists or not
+        try:
+            objContent = content.objects.get(contentID = contentID)
+        except content.DoesNotExist:
+            return Response({"response_message": constants.messages.get_contentdetail_content_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.get_contentdetail_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+                               
+        # Get content details in english as wellas marathi language.
+        objContentDetails = getContentDetails(contentID)
+        
+        #If content type is teachingAids
+        if objContentDetails.contentType.codeID == constants.mitraCode.teachingAids:
+            subjectCodeID = objContentDetails.subject.codeID 
+            topicCodeID = None
+        # If content type is self learning.
+        elif objContentDetails.contentType.codeID == constants.mitraCode.selfLearning:
+            subjectCodeID = None
+            topicCodeID = objContentDetails.topic.codeID 
+        
+        #Get comma sep list of gradeCodeID from contentID
+        gradeCodeIDs = ",".join(str(con.grade.codeID) for con in contentGrade.objects.filter(content = objContent))
+        
+        #Build collection manually for both languages
+        response = {  'engContentTitle':        objContentDetails.engContentTitle,
+                      'marContentTitle':        objContentDetails.marContentTitle,
+                      'engInstruction':         objContentDetails.engInstruction ,
+                      'marInstruction ':        objContentDetails.marInstruction,
+                      'engAuthor':              objContentDetails.engAuthor,
+                      'marAuthor':              objContentDetails.marAuthor,
+                      'contentTypeCodeID':      objContentDetails.contentType.codeID,
+                      'subjectCodeID':          subjectCodeID,
+                      'gradeCodeIDs':           gradeCodeIDs,
+                      'topicCodeID':            topicCodeID,
+                      'requirementCodeIDs':     objContentDetails.requirement,
+                      'objectives':             objContentDetails.objectives ,
+                      'fileTypeCodeID':         objContentDetails.fileType.codeID,
+                      'fileName':               objContentDetails.fileName,
+                      'contentLanguageCodeID':  objContentDetails.language.codeID,
+                      'statusCodeID':           objContentDetails.status.codeID
+                    }
+        
+       
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": [response]})
+    
     """
     API to upload the content.
     """
@@ -585,17 +720,25 @@ class ContentViewSet(viewsets.ModelViewSet):
         subjectCodeID = request.data.get('subjectCodeID')
         gradeCodeIDs = request.data.get('gradeCodeIDs')
         topicCodeID = request.data.get('topicCodeID')
-        requirement = request.data.get('requirement')
+        requirementCodeIDs = request.data.get('requirementCodeIDs')
 
         fileTypeCodeID = request.data.get('fileTypeCodeID')
-        
-        if request.data.get('fileName'):
-            fileName = request.data.get('fileName')
-        else:
-            try:
-                uploadedFile = request.FILES['uploadedFile']
-            except Exception as e:
+        uploadedFile = request.FILES['uploadedFile'] if 'uploadedFile' in request.FILES else None
+                         
+        if uploadedFile:
+            if request.data.get('fileName'):
                 return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
+            else:
+                try:
+                    uploadedFile = request.FILES['uploadedFile']
+                except Exception as e:
+                    return statusHttpUnauthorized(constants.messages.uploadContent_upload_a_valid_file)
+        
+        elif request.data.get('fileName'):
+            fileName = request.data.get('fileName')
+        
+        else:
+            return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
         
         languageCodeID = request.data.get('contentLanguageCodeID')       
         statusCodeID = request.data.get('statusCodeID')
@@ -652,7 +795,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             if not fileName:
                 return statusHttpUnauthorized(constants.messages.uploadContent_fileName_cannot_be_empty)
             
-            if fileTypeCodeID == constants.mitraCode.video:
+            if int(fileTypeCodeID) == int(constants.mitraCode.video):
                 #Validate youtube URL.
                 isValidYoutubeURL = validateYoutubeURL(fileName)
                 
@@ -706,7 +849,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                 objRec = content.objects.create(contentType = objContentType, 
                                                 subject = objSubject,
                                                 topic = objTopic,
-                                                requirement = requirement,
+                                                requirement = requirementCodeIDs,
                                                 fileType = objFileType,
                                                 fileName= fileName,
                                                 #objectives = null,
@@ -746,7 +889,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                 content.objects.filter(contentID = contentID).update(contentType = objContentType, 
                                                                      subject = objSubject,
                                                                      topic = objTopic,
-                                                                     requirement = requirement,
+                                                                     requirement = requirementCodeIDs,
                                                                      fileType = objFileType,
                                                                      fileName = fileName,
                                                                      #objectives = objectives,
@@ -777,11 +920,11 @@ class ContentViewSet(viewsets.ModelViewSet):
                
         except Exception as e:
             # Error occurred while uploading the content.
-            # print e
+            print e
             return statusHttpBadRequest(constants.messages.uploadContent_content_upload_failed)
 
         #Return the response
-        return Response({"response_message": constants.messages.success, "data": []})     
+        return Response({"response_message": constants.messages.success, "data": [{"contentID" : contentID}]})     
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array
@@ -947,6 +1090,45 @@ def getContentResponseDetails(objContent, objUser):
         objContentResponse.hasSaved = userContent.objects.filter(content = objContent , user = objUser).exists()
 
         return objContentResponse
+    
+"""
+function to get the content details.
+"""
+def getContentDetails(contentID):
+    
+        objContentDetails = None
+        #Get details from content models.
+        objContentDetails = content.objects.get(contentID = contentID)
+                
+        # Get app language instances for english and marathi.
+        objAppLanguageEng = code.objects.get(codeID = constants.appLanguage.english)
+        objAppLanguageMar = code.objects.get(codeID = constants.appLanguage.marathi)
+        
+        #Check content details for english language..
+        try:
+            objContentEngDetails = contentDetail.objects.get(content = objContentDetails , appLanguage = objAppLanguageEng)
+            objContentDetails.engContentTitle = objContentEngDetails.contentTitle 
+            objContentDetails.engInstruction = objContentEngDetails.instruction   
+            objContentDetails.engAuthor = objContentEngDetails.author 
+        except contentDetail.DoesNotExist:
+            #If not exists.It means no content is not uploaded for english language..
+            objContentDetails.engContentTitle = ''
+            objContentDetails.engInstruction = ''
+            objContentDetails.engAuthor = ''
+            
+        #Check content details for marathi language..
+        try:
+            objContentMarDetails = contentDetail.objects.get(content = objContentDetails , appLanguage = objAppLanguageMar)
+            objContentDetails.marContentTitle = objContentMarDetails.contentTitle    
+            objContentDetails.marInstruction = objContentMarDetails.instruction    
+            objContentDetails.marAuthor = objContentMarDetails.author 
+        except contentDetail.DoesNotExist:
+            #If not exists.It means no content is not uploaded for Marathi language..
+            objContentDetails.marContentTitle = ''  
+            objContentDetails.marInstruction = ''   
+            objContentDetails.marAuthor = ''
+        
+        return objContentDetails
 """
 function to validate the youtube URL.
 """    

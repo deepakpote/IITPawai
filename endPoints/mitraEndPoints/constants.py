@@ -122,7 +122,8 @@ class messages():
     uploadContent_statusCodeID_cannot_be_empty = 100201
     uploadContent_status_not_exists = 100200
 
-    uploadContent_upload_file_or_give_filename = 100208
+    uploadContent_upload_file_or_give_filename = 100220
+    uploadContent_upload_a_valid_file = 100221
     uploadContent_contentTitle_marathi_cannot_be_empty = 100202
     
     userRole_list_user_id_cannot_be_empty = 100203
@@ -131,6 +132,32 @@ class messages():
     
     registration_fcmRegistrationRequired_cannot_be_empty = 100206
     registration_fcmRegistrationRequired_value_must_be_boolean = 100207
+    
+    search_content_status_not_exists = 100208
+    
+    saveNews_newsTitle_english_cannot_be_empty = 100209
+    saveNews_newsTitle_marathi_cannot_be_empty = 100210
+    saveNews_newsCategory_cannot_be_empty = 100211
+    saveNews_departmentCodeID_cannot_be_empty = 100212
+    saveNews_newsImportanceCodeID_cannot_be_empty = 100213
+    saveNews_statusCodeID_cannot_be_empty = 100214
+    saveNews_user_not_exists = 100215
+    saveNews_status_not_exists = 100216
+    saveNews_newsCategory_not_exists = 100217
+    saveNews_department_does_not_exists = 100218
+    saveNews_newsImportance_does_not_exists = 100219
+    saveNews_news_save_failed = 100220
+    
+    news_list_newsCategory_does_not_exists = 100221
+    news_list_status_does_not_exists = 100222
+    news_list_no_records_found = 100223
+    news_list_appLanguageCodeID_cannot_be_empty = 100224
+    news_list_appLanguageCodeID_not_exists = 100225
+    
+    get_contentdetail_contentid_cannot_be_empty = 100226
+    get_contentdetail_content_not_exists = 100227
+    get_contentdetail_user_not_exists = 100228
+
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
@@ -157,6 +184,7 @@ class mitraCodeGroup():
     topic = 105
     fileType = 108
     language = 101
+    content_News_TrainingCreation_Status = 114
     
 class mitraCode():
     teachingAids = 107100
@@ -171,6 +199,9 @@ class mitraCode():
     worksheet = 108103
     pdf = 108104
     ekStep = 108105
+    created = 114100
+    sentForReview = 114101
+    published = 114102
 
     
 class contentSearchRecords():
@@ -204,6 +235,10 @@ class uploadedContentDir():
     pptDir = baseDir + "ppt/"
     worksheetDir = baseDir + "worksheet/"
     audioDir = baseDir + "audio/"
+    contentAudioDir = "content/audio/"
+    contentPPTDir = "content/ppt/"
+    contentWorksheet = "content/Worksheet/"
+    contentPDF = "content/pdf/"
     
 class fcm():
     FCM_SERVERKEY = "AAAAQH5DkUE:APA91bHzQT7zucQ6A807PrrQwzM63mUrUooqyUt_jJ4HTeR-QM-u2FW9dkAr4r_fOm7G0B2z7iFJdMDz2Nc3s4lZTrNYJ6mIovDvLSui0SpqZAiOZKCPhHsxYGCvDxDa3yo5niGsWd4haNyTKnHol1kCZEa3S2zZbw"

@@ -6,7 +6,7 @@ a:hover, a:focus {
 	-webkit-box-shadow: 1px 3px 14px -1px rgba(154,154,154,1);
 	-moz-box-shadow: 1px 3px 14px -1px rgba(154,154,154,1);
 	box-shadow: 1px 3px 14px -1px rgba(154,154,154,1);
-	
+
 	margin-bottom: 0px!important;
 }
 .navbar-inverse {
@@ -46,6 +46,7 @@ a:hover, a:focus {
 .left-menu-item {
 	padding-top: 5%;
 	padding-bottom: 5%;
+    font-size:12px;
 }
 .left-menu-item .fa{
 	padding-right: 10px;
@@ -127,11 +128,39 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
   background-color:#009698;
 }
 .selected-card {
-} 
+}
 .unselected-card {
 	opacity:0.6;
   cursor: pointer; cursor: hand;
-} 
+}
+.options-card {
+	border: 1px solid #ccc;
+
+}
+
+.options-card .card-content{
+	padding: 20px 20px 20px 20px !important;
+	text-align: center;
+	color: black;
+	font-weight: bold;
+	font-size:18px;
+	padding-left: 15px;
+
+
+}
+.options-card .card-select{
+	padding: 12px 12px 12px 12px !important;
+	text-align: center;
+	color: white;
+    cursor: pointer;
+}
+
+.options-card .card-action{
+	text-align: center;
+	color: black;
+	overflow: hidden;
+}
+
 .unselected-card:hover{
   opacity:1;
 }
@@ -152,3 +181,209 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 .carousel-control.right {
 	background: none!important
 }
+
+.hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-bottom: 1px solid #ccc;
+    margin: 1em 0;
+    width:100%;
+    margin-top: 50px;
+	margin-bottom: 50px;
+}
+.no-padding-container {
+	margin-bottom: 20px;
+	padding:0px!important;
+	width:100%;
+	overflow: hidden;
+}
+.upload-container {
+  padding: 6%;
+  text-align: justify;
+  overflow: hidden;
+  padding-bottom: 0px !important;
+  padding-top: 0px !important;
+}
+.upload-container .upload-title {
+	font-weight: bold;
+	font-size:24px;
+	padding-left: 15px;
+	margin-bottom: 40px;
+
+}
+
+.align-right{
+	text-align: right;
+}
+.align-left{
+	text-align: left;
+}
+
+.no-padding{
+	padding: 0px !important;
+}
+.orange-background{
+	background-color:#ff6d00;
+}
+
+.teal-background{
+	background-color:#009688;
+}
+
+.upload-button{
+	font-size:12px;
+	text-align: center;
+	color: white;
+	margin: 0px !important;
+}
+
+
+
+.modal-dialog {
+    width:35%;
+}
+
+.primary-color {
+    color: #ff6d00;
+}
+
+.primary-text-color {
+    color: #ff9100;
+}
+
+.text-color-black {
+    color:#000000;
+}
+
+.close-modal {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.sign-in-text {
+    font-size: large;
+    margin-top: 24px;
+}
+
+ul.filter-type {
+    list-style-type: none;
+    margin: 0;
+    overflow: hidden;
+    background-color: #ffffff;
+    width: 840px;
+    margin: auto;
+}
+
+li.filter-type {
+    float: left;
+    cursor: pointer;
+}
+
+li.filter-type {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 24px 16px 24px 0;
+    text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li.filter-type:hover {
+    color:#ff6d00;
+}
+
+li.selected  {
+    color: #ff6d00;
+    font-weight: 500;
+}
+
+.divider {
+    height:1px;
+    background:#0f0f0f;
+}
+
+.content-panel {
+    background-color:rgba(128, 128, 128, 0.62);
+}
+
+.content-panel .right-panel {
+    float: right;
+    margin-left: auto;
+    margin-top: 16px;
+    text-align: center;
+    margin-right: 12px;
+    margin-bottom: 8px;
+}
+
+.content-panel .right-panel .text{
+    font-size: x-small;
+    margin-top: 4px;
+    color:whitesmoke;
+}
+
+.list-view{
+    margin : 16px 0;
+}
+
+.spinner{
+    position: absolute;
+    right: 50%;
+    top: 80%;
+}
+
+.mid-content {
+    clear: right;background-color: #009698;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 8px;
+    color:white;
+}
+
+.bottom-content{
+    flex-grow: 1;
+    background-color: #b2dfdb;
+    font-size: smaller;
+}
+
+.single-line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    margin-right: 8px;
+}
+
+.icon-white {
+    color:whitesmoke;
+}
+
+.card-content-wrapper {
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.uploader {
+    flex: 1;
+    padding-left: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+/* Rules for sizing the icon. */
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+/* Rules for using icons as black on a light background. */
+.material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+/* Rules for using icons as white on a dark background. */
+.material-icons.md-light { color: rgba(255, 255, 255, 1); }
+.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+

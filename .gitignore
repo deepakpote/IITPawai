@@ -94,6 +94,11 @@ migrations/
 # png file
 .png
 
+#Mac specific gitignore
+.DS_Store
+.idea/
+
+#others
 webPortal/node_modules/
 endPoints/test.py
 webPortal/.tern-project
