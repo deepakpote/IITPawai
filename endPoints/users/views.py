@@ -26,7 +26,7 @@ from time import gmtime, strftime
 from contents.serializers import contentSerializer , teachingAidSerializer , selfLearningSerializer
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from contents.serializers import contentSerializer , teachingAidSerializer
-from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken, getBaseURL
+from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from commons.models import code 
 from pyfcm import FCMNotification
 
@@ -581,8 +581,11 @@ class UserViewSet(viewsets.ModelViewSet):
         #Set serializer data to the response 
         response = objUserSerializer.data
         
+        # Create object of common class 
+        objCommon = utils.common()
+        
         if  response["photoUrl"]:
-            response["photoUrl"] = getBaseURL(constants.staticFileDir.userDir) + str(response["photoUrl"])
+            response["photoUrl"] = objCommon.getBaseURL(constants.staticFileDir.userDir) + str(response["photoUrl"])
 
         userSubjectCodeID = getUserSubjectCode(userInfo)
         userGradeCodeID = getUserGradeCode(userInfo)
