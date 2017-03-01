@@ -4,8 +4,9 @@
         <i class="fa fa-times close-modal" aria-hidden="true" ng-click="login.closeModal()"></i>
 		<form name="loginForm" class="form-horizontal" style="width: 70%;margin:auto;padding: 16px;">
             <div class="phone-number">
-                <input class="ng-pristine ng-untouched" minlength="10" maxlength="10"
-                       required ng-model="login.phoneno" type="tel" placeholder="10 digit mobile number" />
+                <span class="country-code">+91</span>
+                <input class="ng-pristine ng-untouched col-md-9" minlength="10" maxlength="10"
+                       required ng-model="login.phoneno" type="tel" placeholder="10 digit mobile number" style="width: 85%;"/>
                 <div role="alert">
                   <span class="error" ng-show="loginForm.phoneno.$error.required">
                    Required!</span>
