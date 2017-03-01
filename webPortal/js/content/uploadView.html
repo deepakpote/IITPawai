@@ -8,7 +8,7 @@
          <div class="card card-radio-selection">
            <div ng-class="isContentTypeSelected(contentType.codeID) ? 'selected-card':'unselected-card'" ng-click="contentTypeOnClick(contentType.codeID)">
              <div class="card-content card-icon">
-               <i class="material-icons" style="font-size:48px;">school</i>
+               <i class="material-icons" style="font-size:48px;">{{contentType.icon}}</i>
              </div>
              <div class="card-action">
                {{contentType.codeNameEn}}

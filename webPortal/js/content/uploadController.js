@@ -164,6 +164,10 @@ angular.module("mitraPortal").controller("uploadController",
   		$scope.contentTypeList = commonService.getCodeListPerCodeGroup(
   				appConstants.codeGroup.contentType
   			);
+      var icons = ["school","subscriptions","date_range"];
+      for (var i=0; i<$scope.contentTypeList.length;i++){
+        $scope.contentTypeList[i].icon = icons[i];
+      }
   	};
   	
   	var getSubjects = function () {
