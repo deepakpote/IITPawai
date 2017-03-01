@@ -15,3 +15,24 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+#OkHttp
+-dontwarn okio.**
+
+-dontwarn com.squareup.okhttp3.**
+-keep class com.squareup.okhttp3.** { *; }
+-keep interface com.squareup.okhttp3.** { *; }
+
+#Retrofit 2.x
+-dontwarn retrofit2.**
+-dontwarn retrofit2.appengine.UrlFetchClient
+
+-keep class retrofit2.** { *; }
+-keepclasseswithmembers class * {
+    @retrofit.http.* <methods>;
+}
+
+
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepattributes EnclosingMethod
