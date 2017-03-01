@@ -34,7 +34,6 @@ import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
-import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -73,14 +72,6 @@ public class SelectLanguageActivity extends BaseActivity {
             getSupportActionBar().setTitle("");
         }
 
-        RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
-                .where(CommonCode.class).findAll();
-        String codeVersion;
-        if(commonCodes.isEmpty()) {
-            codeVersion = "0";
-        } else {
-            codeVersion = MitraSharedPreferences.readFromPreferences(getApplicationContext(),"code_version","0");
-        }
     }
 
     private void setLocale(int lang) {

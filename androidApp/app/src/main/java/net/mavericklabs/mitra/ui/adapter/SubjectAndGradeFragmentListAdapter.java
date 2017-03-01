@@ -10,15 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 
 import net.mavericklabs.mitra.model.BaseObject;
-import net.mavericklabs.mitra.model.CommonCode;
 
-import java.io.Serializable;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-import static android.R.attr.resource;
 
 /**
  * Created by amoghpalnitkar on 27/11/16.

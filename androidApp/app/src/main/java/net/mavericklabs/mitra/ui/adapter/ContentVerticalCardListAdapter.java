@@ -24,13 +24,11 @@
 package net.mavericklabs.mitra.ui.adapter;
 
 import android.Manifest;
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -384,10 +382,7 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     downloadContent(toDownloadHolder);
 
-                } else {
-
                 }
-                return;
             }
         }
     }

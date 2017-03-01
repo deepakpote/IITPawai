@@ -1,7 +1,6 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
@@ -41,7 +40,9 @@ public class AlmostDoneActivity extends BaseActivity {
         ButterKnife.bind(this);
         if(toolbar != null) {
             setSupportActionBar(toolbar);
-            getSupportActionBar().setTitle("");
+            if(getSupportActionBar() != null) {
+                getSupportActionBar().setTitle("");
+            }
         }
         timerThread = new Thread()  {
             public void run() {

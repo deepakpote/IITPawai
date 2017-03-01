@@ -23,8 +23,6 @@
 
 package net.mavericklabs.mitra.utils;
 
-import android.content.Context;
-
 import net.mavericklabs.mitra.model.CommonCode;
 
 import java.util.ArrayList;

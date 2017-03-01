@@ -575,7 +575,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
         TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(content.getFileType(),
                 content.getSubject().toString(),
-                content.getGrade().toString());
+                content.getGrade());
         String token = UserDetailUtils.getToken(getApplicationContext());
         RestClient.getApiService(token).searchTeachingAids(LanguageUtils.getCurrentLanguage(), contentRequest).enqueue(new Callback<BaseModel<Content>>() {
             @Override

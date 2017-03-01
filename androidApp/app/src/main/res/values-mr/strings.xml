@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">मित्रा</string>
     <string name="next">पुढे</string>
-    <string name="submit">दाखल</string>
-    <string name="enter_number">फोन नंबर</string>
     <string name="country_code">+91</string>
     <string name="welcome_to_mitra">मित्र मध्ये आपले स्वागत</string>
     <string name="sign_in">प्रवेश करा</string>
@@ -37,7 +35,6 @@
     <string name="more">अधिक</string>
     <string name="i_teach">मी शिकवतोय</string>
     <string name="less">कमी</string>
-    <string name="topics">घटक</string>
     <string name="skills">कौशल्य</string>
     <string name="grade_s">इयत्ता</string>
     <string name="subject_s">विषय</string>
@@ -47,10 +44,8 @@
     <string name="otp_sent">OTP यशस्वीरीत्या पाठवला आहे</string>
     <string name="edit_your_phone_number">तुमचा मोबाईल नंबर बदलू इच्छित आहात काय?</string>
     <string name="loading">लोड होत आहे</string>
-    <string name="error_email_address">कृपया योग्य ई मेल आय डी टाका</string>
     <string name="error_enter_required_fields">कृपया सर्व आवश्यक बाबी भरा</string>
     <string name="notification">सूचना</string>
-    <string name="settings">सेटिंग</string>
     <string name="select_language">भाषा निवडा</string>
     <string name="yes">होय</string>
     <string name="cancel">रद्द</string>
@@ -76,7 +71,6 @@
     <string name="training_calendar">प्रशिक्षण दिनदर्शिका</string>
     <string name="my_saved_resources">मी जतन केलेले साहित्य</string>
     <string name="news_and_circulars">बातम्या आणि परिपत्रके</string>
-    <string name="toast_6_digits">कृपया ६ अंक भरा.</string>
     <string name="error_user_exists">वापरकर्ता आधीपासून उपलब्ध आहे कृपया पुन्हा नोंदणी करा.</string>
     <string name="error_please_register">तुम्ही अद्याप नोंदणी केलेली नाही कृपया प्रथम नोंदणी करा.</string>
     <string name="error_invalid_otp">चुकीचा OTP</string>
@@ -99,7 +93,6 @@
     <string name="phone_hint">कृपया मोबाईल क्रमांक भरा.</string>
     <string name="delete_saved_resource_confirmation">तुम्हाला हे साहित्य जतन केलेल्या साहित्यातून काढून टाकायचे आहे काय?</string>
     <string name="error_message">काहीतरी चूक झाली. कृपया पुन्हा प्रयत्न करा.</string>
-    <string name="topic">घटक</string>
     <string name="school_udise">शाळेचा युडायस</string>
     <string name="toast_attend">आपण %1$s ला उपस्थित राहण्यासाठी साइन अप केले आहे</string>
     <string name="attend">उपस्थित राहणार</string>

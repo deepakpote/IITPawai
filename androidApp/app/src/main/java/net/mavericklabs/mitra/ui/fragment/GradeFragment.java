@@ -79,7 +79,9 @@ public class GradeFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.grade_s);
+        if(((AppCompatActivity)getActivity()).getSupportActionBar() != null) {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.grade_s);
+        }
 
         selectedGradeCodeIds = getArguments().getIntegerArrayList("selected_grade_code_ids");
         objects = getGradesList();
@@ -118,7 +120,9 @@ public class GradeFragment extends DialogFragment {
                     checkedItems.add(object);
                 }
             }
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
+            if(((AppCompatActivity)getActivity()).getSupportActionBar() != null) {
+                ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
+            }
             onDialogFragmentDismissedListener.onDialogFragmentDismissed(checkedItems, EditProfileDialogFragment.ADD_GRADE);
             dismiss();
             return true;
@@ -153,6 +157,8 @@ public class GradeFragment extends DialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
+        if(((AppCompatActivity)getActivity()).getSupportActionBar() != null) {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
+        }
     }
 }

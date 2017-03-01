@@ -1,11 +1,8 @@
 <resources>
     <string name="app_name">MITRA</string>
     <string name="next">Next</string>
-    <string name="submit">Submit</string>
-    <string name="enter_number">Enter your phone number</string>
     <string name="country_code">+91</string>
     <string name="phone_hint">Enter phone number</string>
-    <string name="toast_6_digits">Please enter all 6 digits.</string>
 
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
@@ -28,14 +25,12 @@
     <string name="more">More</string>
     <string name="i_teach">I Teach</string>
     <string name="less">LESS</string>
-    <string name="topics">Topics</string>
     <string name="skills">Skills</string>
     <string name="grade_s">Grade/s</string>
     <string name="subject_s">Subject/s</string>
 
     <string name="almost_done">Almost done!</string>
     <string name="just_tell_a_little_about_yourself">Just tell a little about yourself</string>
-    <string name="topic">Subject</string>
     <string name="grade">Grade</string>
     <string name="required_field">* Required</string>
     <string name="menu_edit">Edit</string>
@@ -69,10 +64,8 @@
     <string name="otp_sent">OTP sent successfully</string>
     <string name="edit_your_phone_number">Are you sure you want to edit your phone number?</string>
     <string name="loading">Loading..</string>
-    <string name="error_email_address">Please enter valid email address</string>
     <string name="error_enter_required_fields">Please enter required fields.</string>
     <string name="notification">Notifications</string>
-    <string name="settings">Settings</string>
     <string name="select_language">Select Language</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>

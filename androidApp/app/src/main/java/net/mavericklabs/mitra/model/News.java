@@ -23,7 +23,6 @@
 
 package net.mavericklabs.mitra.model;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import io.realm.RealmObject;

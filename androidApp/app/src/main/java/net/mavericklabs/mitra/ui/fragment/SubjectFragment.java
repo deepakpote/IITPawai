@@ -78,7 +78,10 @@ public class SubjectFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.subject_s);
+        if(((AppCompatActivity)getActivity()).getSupportActionBar() != null) {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.subject_s);
+        }
+
 
         selectedSubjectCodeIds = getArguments().getIntegerArrayList("selected_subject_code_ids");
         objects = getSubjectsList();
@@ -115,7 +118,9 @@ public class SubjectFragment extends DialogFragment {
                     checkedItems.add(object);
                 }
             }
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
+            if(((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
+            }
             onDialogFragmentDismissedListener.onDialogFragmentDismissed(checkedItems, EditProfileDialogFragment.ADD_SUBJECT);
             dismiss();
             return true;
@@ -132,7 +137,10 @@ public class SubjectFragment extends DialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
+        if(((AppCompatActivity)getActivity()).getSupportActionBar() != null) {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.my_profile_title));
+        }
+
     }
 
 

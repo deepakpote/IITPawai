@@ -29,8 +29,6 @@ import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.StringUtils;
 
-import java.util.Locale;
-
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 

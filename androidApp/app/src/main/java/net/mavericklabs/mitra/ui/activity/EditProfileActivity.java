@@ -16,7 +16,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -60,7 +59,6 @@ import net.mavericklabs.mitra.ui.fragment.SubjectFragment;
 import net.mavericklabs.mitra.ui.fragment.TopicFragment;
 import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
-import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.EditProfileDialogFragment;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
@@ -224,7 +222,6 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     showPhotoPicker();
                 }
-                return;
             }
         }
     }

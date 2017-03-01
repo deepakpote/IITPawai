@@ -227,7 +227,7 @@ public class VerifyOtpActivity extends BaseActivity {
 
                             if(!StringUtils.isEmpty(user.getSubjectCodeIDs())) {
                                 List<Integer> subjectCodes = StringUtils.splitCommas(user.getSubjectCodeIDs());
-                                RealmList<DbSubject> dbSubjects = new RealmList<DbSubject>();
+                                RealmList<DbSubject> dbSubjects = new RealmList<>();
                                 for(Integer code : subjectCodes) {
                                     dbSubjects.add(new DbSubject(code));
                                 }
@@ -236,7 +236,7 @@ public class VerifyOtpActivity extends BaseActivity {
 
                             if(!StringUtils.isEmpty(user.getGradeCodeIDs())) {
                                 List<Integer> gradeCodes = StringUtils.splitCommas(user.getGradeCodeIDs());
-                                RealmList<DbGrade> dbGrade = new RealmList<DbGrade>();
+                                RealmList<DbGrade> dbGrade = new RealmList<>();
                                 for(Integer code : gradeCodes) {
                                     dbGrade.add(new DbGrade(code));
                                 }

@@ -40,8 +40,6 @@ import net.mavericklabs.mitra.listener.OnChipRemovedListener;
 import net.mavericklabs.mitra.model.BaseObject;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
-import net.mavericklabs.mitra.model.database.DbGrade;
-import net.mavericklabs.mitra.model.database.DbSubject;
 import net.mavericklabs.mitra.model.database.DbTopic;
 import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.ui.adapter.ContentVerticalCardListAdapter;

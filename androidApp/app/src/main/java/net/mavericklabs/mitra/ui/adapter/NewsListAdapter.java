@@ -37,10 +37,8 @@ import android.widget.TextView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.News;
-import net.mavericklabs.mitra.model.database.DbGrade;
 import net.mavericklabs.mitra.ui.activity.NewsDetailsActivity;
 import net.mavericklabs.mitra.utils.DateUtils;
-import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.Date;
 import java.util.List;
@@ -48,7 +46,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-import io.realm.RealmList;
 
 /**
  * Created by amoghpalnitkar on 9/11/16.
