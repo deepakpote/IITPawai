@@ -656,6 +656,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                                
         # Get content details in english as wellas marathi language.
         objContentDetails = getContentDetails(contentID)
+        #Get actual fileName.
+        objContentFileName = getContentFileName(objContent)
         
         #If content type is teachingAids
         if objContentDetails.contentType.codeID == constants.mitraCode.teachingAids:
@@ -683,7 +685,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                       'requirementCodeIDs':     objContentDetails.requirement,
                       'objectives':             objContentDetails.objectives ,
                       'fileTypeCodeID':         objContentDetails.fileType.codeID,
-                      'fileName':               objContentDetails.fileName,
+                      'fileName':               objContentFileName,
                       'contentLanguageCodeID':  objContentDetails.language.codeID,
                       'statusCodeID':           objContentDetails.status.codeID
                     }
@@ -1043,14 +1045,14 @@ def saveContentResponse(objContent , objUser, contentResponseType , hasLiked):
             #If not exists then make entry for content response
             contentResponse(user = objUser , content = objContent , downloadCount = 1 ).save()
             # Get the content file name.
-            objConfileName = content.objects.filter(contentID = objContent.contentID)
-            return objConfileName[0].fileName
+            #objConfileName = content.objects.filter(contentID = objContent.contentID)
+            return getContentFileName(objContent)
         # If response exists then update the response.
         objContentResponse.downloadCount += 1
         objContentResponse.save()
         # Get the content file name.
-        objConfileName = content.objects.filter(contentID = objContent.contentID)
-        return objConfileName[0].fileName
+        #objConfileName = content.objects.filter(contentID = objContent.contentID)
+        return getContentFileName(objContent)
     
     # Content response for share.
     elif contentResponseType == constants.mitraCode.share :
@@ -1062,14 +1064,51 @@ def saveContentResponse(objContent , objUser, contentResponseType , hasLiked):
         #If not exists then make entry for content response
             contentResponse(user = objUser , content = objContent , sharedCount = 1 ).save()
             # Get the content file name.
-            objConfileName = content.objects.filter(contentID = objContent.contentID)
-            return objConfileName[0].fileName
+            #objConfileName = content.objects.filter(contentID = objContent.contentID)
+            return getContentFileName(objContent)
         # If response exists then update the response.
         objContentResponse.sharedCount += 1
         objContentResponse.save()
         # Get the content file name.
-        objConfileName = content.objects.filter(contentID = objContent.contentID)
-        return objConfileName[0].fileName
+        #objConfileName = content.objects.filter(contentID = objContent.contentID)
+        return getContentFileName(objContent)
+
+
+"""
+Common function to get the actual file name of content.
+"""
+def getContentFileName(objContent):
+    
+    # Check content exists or not.
+    try:
+        #Check content exists.
+        objContent = content.objects.get(contentID = objContent.contentID)
+    except content.DoesNotExist:
+        #If not exists then return
+        return 
+    
+    # Create object of common class
+    objCommon = utils.common()
+    
+    print "objContent.fileType:",objContent.fileType
+    #If content is video.
+    if objContent.fileType.codeID == constants.mitraCode.video:
+        return objContent.fileName
+    # If audio.
+    elif objContent.fileType.codeID == constants.mitraCode.audio :
+        return str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir) + objContent.fileName )
+    # if ppt.
+    elif objContent.fileType.codeID == constants.mitraCode.ppt :
+        return str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir) + objContent.fileName )
+    # if worksheet
+    elif objContent.fileType.codeID == constants.mitraCode.worksheet :
+        return str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet) + objContent.fileName )
+    # if contentWorksheet
+    elif objContent.fileType.codeID == constants.mitraCode.pdf :
+        return str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF) + objContent.fileName )
+    # if contentPDF
+    elif objContent.fileType.codeID == constants.mitraCode.ekStep :
+        return objContent.fileName
 
 """
 function to get the content response for Like/download/share/Saved.
