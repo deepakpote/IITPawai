@@ -68,7 +68,7 @@ class messages():
     code_list_version_number_must_be_integer = 100157
     code_list_version_number_invalid = 100158
     
-    uploadContent_contentTitle_cannot_be_empty = 100159
+    uploadContent_contentTitle_english_cannot_be_empty = 100159
     uploadContent_contentType_cannot_be_empty = 100160
     uploadContent_fileType_cannot_be_empty = 100161
     uploadContent_fileName_cannot_be_empty = 100162
@@ -98,7 +98,7 @@ class messages():
     
     setPassword_user_not_exists = 100184
     setPassword_password_should_not_contain_space = 100185
-    setPassword_password_cannot_be_empty_it_must_be_gretter_then_six_character = 100186
+    setPassword_password_cannot_be_empty_it_must_be_greater_then_six_characters_and_lessThen_16_characters = 100186
     
     webSignIn_phone_number_cannot_be_empty = 100187
     webSignIn_password_cannot_be_empty = 100188
@@ -115,6 +115,49 @@ class messages():
     userNews_list_user_id_cannot_be_empty = 100196
     
     save_userNews_newsID_already_saved = 100197
+    
+    contentSearch_appLanguageCodeID_cannot_be_empty = 100198
+    contentSearch_appLanguageCodeID_not_exists = 100199
+    
+    uploadContent_statusCodeID_cannot_be_empty = 100201
+    uploadContent_status_not_exists = 100200
+
+    uploadContent_upload_file_or_give_filename = 100220
+    uploadContent_upload_a_valid_file = 100221
+    uploadContent_contentTitle_marathi_cannot_be_empty = 100202
+    
+    userRole_list_user_id_cannot_be_empty = 100203
+    userRole_list_user_does_not_exist = 100204
+    userRole_list_no_records_found = 100205
+    
+    registration_fcmRegistrationRequired_cannot_be_empty = 100206
+    registration_fcmRegistrationRequired_value_must_be_boolean = 100207
+    
+    search_content_status_not_exists = 100208
+    
+    saveNews_newsTitle_english_cannot_be_empty = 100209
+    saveNews_newsTitle_marathi_cannot_be_empty = 100210
+    saveNews_newsCategory_cannot_be_empty = 100211
+    saveNews_departmentCodeID_cannot_be_empty = 100212
+    saveNews_newsImportanceCodeID_cannot_be_empty = 100213
+    saveNews_statusCodeID_cannot_be_empty = 100214
+    saveNews_user_not_exists = 100215
+    saveNews_status_not_exists = 100216
+    saveNews_newsCategory_not_exists = 100217
+    saveNews_department_does_not_exists = 100218
+    saveNews_newsImportance_does_not_exists = 100219
+    saveNews_news_save_failed = 100220
+    
+    news_list_newsCategory_does_not_exists = 100221
+    news_list_status_does_not_exists = 100222
+    news_list_no_records_found = 100223
+    news_list_appLanguageCodeID_cannot_be_empty = 100224
+    news_list_appLanguageCodeID_not_exists = 100225
+    
+    get_contentdetail_contentid_cannot_be_empty = 100226
+    get_contentdetail_content_not_exists = 100227
+    get_contentdetail_user_not_exists = 100228
+
 
 class webportalmessages():    
     web_admin_invalid_token = 200100
@@ -141,6 +184,7 @@ class mitraCodeGroup():
     topic = 105
     fileType = 108
     language = 101
+    content_News_TrainingCreation_Status = 114
     
 class mitraCode():
     teachingAids = 107100
@@ -150,6 +194,14 @@ class mitraCode():
     download = 111101
     share = 111102
     video = 108100
+    audio = 108101
+    ppt = 108102
+    worksheet = 108103
+    pdf = 108104
+    ekStep = 108105
+    created = 114100
+    sentForReview = 114101
+    published = 114102
 
     
 class contentSearchRecords():
@@ -158,6 +210,10 @@ class contentSearchRecords():
 class language():
     english = 101100
     marathi = 101101
+    
+class appLanguage():
+    english = 113100
+    marathi = 113101
 
 class imageDir():
     path = "/static/user/"
@@ -165,6 +221,24 @@ class imageDir():
     currentDir = os.getcwd()
     currentDir = settings.PROJECT_DIR
     baseDir = currentDir + path
+    
+class staticFileDir():
+    userDir = "user/"
+    newsImageDir = "news/image/"
+    newsPDFDir = "news/pdf/"
+    
+class uploadedContentDir():
+    path = "/static/content/"
+    currentDir = settings.PROJECT_DIR
+    baseDir = currentDir + path
+    pdfDir = baseDir + "pdf/"
+    pptDir = baseDir + "ppt/"
+    worksheetDir = baseDir + "worksheet/"
+    audioDir = baseDir + "audio/"
+    contentAudioDir = "content/audio/"
+    contentPPTDir = "content/ppt/"
+    contentWorksheet = "content/Worksheet/"
+    contentPDF = "content/pdf/"
     
 class fcm():
     FCM_SERVERKEY = "AAAAQH5DkUE:APA91bHzQT7zucQ6A807PrrQwzM63mUrUooqyUt_jJ4HTeR-QM-u2FW9dkAr4r_fOm7G0B2z7iFJdMDz2Nc3s4lZTrNYJ6mIovDvLSui0SpqZAiOZKCPhHsxYGCvDxDa3yo5niGsWd4haNyTKnHol1kCZEa3S2zZbw"

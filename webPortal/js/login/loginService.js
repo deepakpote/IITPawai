@@ -34,7 +34,7 @@ angular.module("mitraPortal").service('loginService', function(appUtils){
     this.setPassword = function(password, onSuccess, onFailure) {
         var options = {};
         options.data = {"password":password};
-        var authToken = appUtils.getFromLocalStorage("token","");
+        var authToken = appUtils.getFromCookies("token","");
         console.log("auth token get " + authToken);
         options.headers = {"authToken" : authToken};
         options.url = 'user/setPassword/';

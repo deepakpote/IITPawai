@@ -359,8 +359,14 @@ li.selected  {
     padding-bottom: 4px;
 }
 
+
 .orange-text{
     color:#ff6d00;
+}
+.country-code {
+    float: left;
+    padding-top: 5%;
+    padding-right: 5%;
 }
 
 /* Rules for sizing the icon. */

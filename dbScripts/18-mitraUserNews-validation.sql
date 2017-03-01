@@ -17,7 +17,7 @@ select 100197 as codeID,  100 as codeGroupID, 'You have already saved this news'
 union 
 select 100198 as codeID,  100 as codeGroupID, 'User does not exists' as codeNameEn, 'Get user''s news list' as comment, 1 as createdBy, now() as createdOn, 1 modifiedBy, now() modifiedOn
 union
-select 100199 as codeID,  100 as codeGroupID, 'UserID cannot be empty' as codeNameEn, 'Get user''s news list' as comment, 1 as createdBy, now() as createdOn, 1 modifiedBy, now() modifiedOn
+select 100199 as codeID,  100 as codeGroupID, 'UserID cannot be empty' as codeNameEn, 'Get user''s news list' as comment, 1 as createdBy, now() as createdOn, 1 modifiedBy, now() modifiedOn;
 
 
 delete from com_code where codeID in (100195, 100196);

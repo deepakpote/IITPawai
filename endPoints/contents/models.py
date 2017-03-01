@@ -7,22 +7,23 @@ content model
 """                 
 class content(models.Model):
     contentID = models.AutoField(primary_key = True)
-    contentTitle = models.CharField(null = False, unique = False, max_length = 255)
+    # column contentTitle,instruction and author has been moved to the new table con_contentDetail table.
+    #contentTitle = models.CharField(null = False, unique = False, max_length = 255)
     contentType = models.ForeignKey('commons.code', db_column='contentTypeCodeID', related_name='content_contentTypeCodeID')
     subject = models.ForeignKey('commons.code', db_column='subjectCodeID', related_name='content_subjectCodeID', null = True)
     #grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='content_gradeCodeID', null = True)
     topic = models.ForeignKey('commons.code', db_column='topicCodeID', related_name='content_topicCodeID', null = True)
     
     requirement = models.TextField(null = True)
-    instruction = models.TextField(null = True)
+    #instruction = models.TextField(null = True)
     
     fileType = models.ForeignKey('commons.code', db_column='fileTypeCodeID', related_name='content_fileTypeCodeID')
     fileName = models.CharField(null = False, max_length = 255)
     
-    author = models.CharField(null = False, max_length = 255)
+    #author = models.CharField(null = False, max_length = 255)
     objectives = models.TextField(null = True)
-    
     language = models.ForeignKey('commons.code', db_column='languageCodeID', related_name='content_languageCodeID')
+    status = models.ForeignKey('commons.code', db_column='statusCodeID', related_name='content_statusCodeID')
      
     createdBy = models.ForeignKey('users.user', related_name='content_createdBy', db_column = 'createdBy')
     createdOn = models.DateTimeField(auto_now_add=True)
@@ -31,7 +32,22 @@ class content(models.Model):
      
     class Meta:
         db_table = 'con_content'
-        get_latest_by = 'contentTitle' 
+        
+     
+"""
+content detail model
+"""                 
+class contentDetail(models.Model):
+    contentDetailID = models.AutoField(primary_key = True)
+    content = models.ForeignKey('content', db_column = 'contentID', null = False, related_name="contentDetail_contentID")
+    appLanguage = models.ForeignKey('commons.code', db_column='appLanguageCodeID', related_name='contentDetail_appLanguageCodeID')
+    contentTitle = models.CharField(null = False, unique = False, max_length = 255)
+    instruction = models.TextField(null = True)
+    author = models.CharField(null = True, max_length = 255)
+       
+    class Meta:
+        db_table = 'con_contentDetail'
+        unique_together = ('content', 'appLanguage')
         
 """
 content grade model

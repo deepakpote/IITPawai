@@ -54,7 +54,7 @@ function RequestOtpController($modalInstance, HttpUtils, loginService, $state, a
             console.log(response);
             if(HttpUtils.isSuccessful(response)){
                 var data = response.data[0];
-                appUtils.saveToLocalStorage("token",data.token);
+                appUtils.saveToCookies("token",data.token);
                 console.log("auth token set " + data.token);
                 $state.go('main.notLoggedIn.home.setpassword');
             }else{
