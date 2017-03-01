@@ -23,6 +23,8 @@
 
 package net.mavericklabs.mitra.utils;
 
+import android.content.Context;
+
 import net.mavericklabs.mitra.model.CommonCode;
 
 import java.util.ArrayList;
@@ -148,7 +150,7 @@ public class CommonCodeUtils {
             return CommonCodeUtils.getDepartmentAtPosition(position);
         }
         if(position == 1) {
-            return new CommonCode(0,0, "Saved", "Saved", 0);
+            return new CommonCode(0,0, "Saved", "जतन केलेले", 0);
         }
 
         return CommonCodeUtils.getDepartmentAtPosition(position - 1);

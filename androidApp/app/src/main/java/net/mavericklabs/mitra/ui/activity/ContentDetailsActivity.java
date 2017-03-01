@@ -286,43 +286,49 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                     Logger.d("Directory Path " + mitraDirectoryPath);
                     mitraDirectory.mkdirs();
                     final OkHttpClient client = new OkHttpClient();
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .build();
-                    final String extension;
-                    if(content.getFileType() == Constants.FileTypeAudio) {
-                        extension = ".mp3";
-                    } else {
-                        extension = ".pdf";
-                    }
-                    client.newCall(request).enqueue(new okhttp3.Callback() {
-                        @Override
-                        public void onFailure(okhttp3.Call call, IOException e) {
-
+                    try {
+                        Request request = new Request.Builder()
+                                .url(url)
+                                .build();
+                        final String extension;
+                        if(content.getFileType() == Constants.FileTypeAudio) {
+                            extension = ".mp3";
+                        } else {
+                            extension = ".pdf";
                         }
+                        client.newCall(request).enqueue(new okhttp3.Callback() {
+                            @Override
+                            public void onFailure(okhttp3.Call call, IOException e) {
 
-                        @Override
-                        public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                            if(response.isSuccessful()) {
-                                String downloadFileName = mitraDirectoryPath +
-                                        File.separator + content.getTitle() + extension;
-                                File downloadedFile = new File(downloadFileName);
-                                BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-                                sink.writeAll(response.body().source());
-                                sink.close();
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(getApplicationContext(), getString(R.string.download_complete),
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                });
                             }
-                        }
-                    });
-                    Toast.makeText(getApplicationContext(), getString(R.string.download_file_location,
-                            mitraDirectoryPath + File.separator +content.getTitle()),
-                            Toast.LENGTH_LONG).show();
+
+                            @Override
+                            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                                if(response.isSuccessful()) {
+                                    String downloadFileName = mitraDirectoryPath +
+                                            File.separator + content.getTitle() + extension;
+                                    File downloadedFile = new File(downloadFileName);
+                                    BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
+                                    sink.writeAll(response.body().source());
+                                    sink.close();
+                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(), getString(R.string.download_complete),
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                        Toast.makeText(getApplicationContext(), getString(R.string.download_file_location,
+                                mitraDirectoryPath + File.separator +content.getTitle()),
+                                Toast.LENGTH_LONG).show();
+                    }catch (IllegalArgumentException ex) {
+                        Logger.d(" error " + ex.getMessage());
+                        Toast.makeText(ContentDetailsActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             }
 
@@ -505,11 +511,15 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
                     List<Requirements> requirementsList = new ArrayList<>();
                     for (String requirement : list) {
-                        //TODO : this wil be used if we use actual icons for requirement
-                        Integer requirementCodeID = Integer.valueOf(requirement);
-                        CommonCode requirementObject = CommonCodeUtils.getObjectFromCode(requirementCodeID);
-                        requirementsList.add(new Requirements(R.drawable.ic_important_devices_black_18dp,
-                                requirementObject.getCodeNameForCurrentLocale()));
+                        try {
+                            Integer requirementCodeID = Integer.valueOf(requirement);
+                            CommonCode requirementObject = CommonCodeUtils.getObjectFromCode(requirementCodeID);
+                            requirementsList.add(new Requirements(R.drawable.ic_important_devices_black_18dp,
+                                    requirementObject.getCodeNameForCurrentLocale()));
+                        } catch (NumberFormatException ex) {
+                            Logger.d(" " + ex.getMessage());
+                        }
+
                     }
 
                     GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
