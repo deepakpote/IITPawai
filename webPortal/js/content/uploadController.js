@@ -68,6 +68,7 @@ angular.module("mitraPortal").controller("uploadController",
 
       if(validateOptions()){
         $scope.statusCodeID = 114100;
+        $log.debug("in save");
         submit();
       }
     }
@@ -76,6 +77,7 @@ angular.module("mitraPortal").controller("uploadController",
 
       if(validateOptions()){
         $scope.statusCodeID = 114101;
+        $log.debug("in sfr");
         submit();
       }
     }
@@ -95,7 +97,6 @@ angular.module("mitraPortal").controller("uploadController",
           return false;
         }
       }
-
       return true;
     }
     
@@ -114,7 +115,7 @@ angular.module("mitraPortal").controller("uploadController",
         fd.append('statusCodeID', $scope.statusCodeID);
         if ($scope.content.fileTypeCodeID == 108100){
           $log.debug("video");
-          fd.append('fileName',$scope.fileName);
+          fd.append('fileName',$scope.inputs.fileName);
         }
         else{
           $log.debug("not a video");
@@ -125,7 +126,7 @@ angular.module("mitraPortal").controller("uploadController",
           console.log(pair[0]+ ', ' + pair[1]); 
         }
 
-        var headers = { "authToken":"OF3eOof1qa5bDkHQjwPjlT24sRWb42J1",
+        var headers = { "authToken": appUtils.getFromCookies("token",""),
         "appLanguageCodeID":"113101",
         'Content-Type': undefined};
 
