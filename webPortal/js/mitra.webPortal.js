@@ -4,7 +4,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
 
         var templateChange = function() {
-            return "";
+            return "mitra.test";
         };
         //$locationProvider.html5Mode(true);
         $urlRouterProvider.otherwise('/home');

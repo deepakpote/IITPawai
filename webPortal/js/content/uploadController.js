@@ -140,7 +140,7 @@ angular.module("mitraPortal").controller("uploadController",
           var modalInstance = $modal.open({
             url: 'result',
             scope: $scope,
-            templateUrl : '/js/content/submittedSuccessView.html',
+            templateUrl : '/mitra.test/js/content/submittedSuccessView.html',
           });
         },
         function error(response){
@@ -151,7 +151,7 @@ angular.module("mitraPortal").controller("uploadController",
           var modalInstance = $modal.open({
             url: 'result',
             scope: $scope,
-            templateUrl : '/js/content/submittedErrorView.html',
+            templateUrl : '/mitra.test/js/content/submittedErrorView.html',
           });
         });
       }
