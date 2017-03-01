@@ -4,7 +4,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
 
         var templateChange = function() {
-            return "mitra.test";
+            return "";
         };
         //$locationProvider.html5Mode(true);
         $urlRouterProvider.otherwise('/home');
@@ -111,6 +111,19 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         controller : 'teachingAidsController',
                         controllerAs : 'teachingAids'
                     }
+                }
+            })
+            .state('main.index.reviewTeachingAids', {        //check proper routing for this.
+                url: '/teachingAids/review/:contentID',
+                views : {
+                    'content' : {
+                        templateUrl: '/js/teaching-aids/review/reviewTeachingAidsView.html',
+                        controller: 'reviewTeachingAidsController'
+                    }
+                },
+                params :{
+                    'teachingAid' : null,
+                    'contentID' : null
                 }
             });
             // define login route
