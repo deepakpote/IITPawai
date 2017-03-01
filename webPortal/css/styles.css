@@ -359,6 +359,12 @@ li.selected  {
     padding-bottom: 4px;
 }
 
+.country-code {
+    float: left;
+    padding-top: 5%;
+    padding-right: 5%;
+}
+
 /* Rules for sizing the icon. */
 .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }

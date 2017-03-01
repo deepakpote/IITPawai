@@ -24,7 +24,7 @@
                             "statusCodeID":statusCodeId,
                             "gradeCodeIDs" : gradeIds,
                             "subjectCodeIDs" : subjectIds};
-            var authToken = appUtils.getFromLocalStorage("token","");
+            var authToken = appUtils.getFromCookies("token","");
             options.data = postData;
             options.url = 'content/searchTeachingAid/';
             options.headers = {"authToken" : authToken , "appLanguageCodeID" : "113101"};

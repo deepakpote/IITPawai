@@ -23,7 +23,7 @@ function LoginController($location, $modalInstance, $rootScope,$cookies, loginSe
             console.log(response);
             if(HttpUtils.isSuccessful(response)){
                 var data = response.data[0];
-                appUtils.saveToLocalStorage("token",data.token);
+                appUtils.saveToCookies("token",data.token);
                 $state.go('main.loggedIn.home');
             }else{
                 vm.hasError = true;
