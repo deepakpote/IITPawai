@@ -1,6 +1,6 @@
 angular.module("mitraPortal").controller("uploadController",
-  ['$scope', '$location', '$log', '$state', '$http', 'appUtils', 'appConstants', 'contentService', 'commonService', '$filter',
-  function($scope, $location, $log, $state, $http, appUtils, appConstants, contentService, commonService, filter) {
+  ['$scope', '$location', '$log', '$state', '$http', '$modal', 'appUtils', 'appConstants', 'contentService', 'commonService', '$filter',
+  function($scope, $location, $log, $state, $http, $modal, appUtils, appConstants, contentService, commonService, filter) {
   
 
     $scope.acceptedFileTypes = {
@@ -24,9 +24,6 @@ angular.module("mitraPortal").controller("uploadController",
       }
     }
 
-    $scope.openModal = function(){
-      $state.go('main.index.contentUpload.modal');
-    }
 
     $scope.$watch('gradeList', function (gradeList){
       var checkedGrades = gradeList.filter(function(grade){ return (grade.checked == true)});
@@ -59,8 +56,27 @@ angular.module("mitraPortal").controller("uploadController",
       
     }, true);
 
+    $scope.setDirty = function(form){
+        angular.forEach(form.$error.required, function(field) {
+          field.$dirty = true;
+        });
+    }
 
-    $scope.submit = function(){
+    $scope.save = function() {
+      $scope.statusCodeID = 114100;
+      submit();
+    }
+
+    $scope.sendForReview = function() {
+      $scope.statusCodeID = 114101;
+      submit();
+    }
+
+    
+
+
+    var submit = function(){
+
         $log.debug($scope.content);
         var fd = new FormData();
         //fd.append('contentID',);
@@ -69,8 +85,7 @@ angular.module("mitraPortal").controller("uploadController",
           $log.debug($scope.content[key]);
           fd.append(key, $scope.content[key]);
         }
-        fd.append('requirement', 'testing');
-        fd.append('statusCodeID',113100);
+        fd.append('statusCodeID', $scope.statusCodeID);
         if ($scope.content.fileTypeCodeID == 108100){
           $log.debug("video");
           fd.append('fileName',$scope.fileName);
@@ -93,12 +108,24 @@ angular.module("mitraPortal").controller("uploadController",
             headers: headers
         })
         .then (function success(response){
-          $log.debug("2xx");
-          $log.debug(response);
+          $scope.result= "uploaded successfully";
+          setSuccessDetails();
+          var modalInstance = $modal.open({
+                        url: 'result',
+                        scope: $scope,
+                        templateUrl : '/js/content/submittedSuccessView.html',
+                    });
         },
         function error(response){
           $log.debug("not 2xx");
-          $log.debug(response);
+          $scope.uploadErrorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn;
+          $log.debug($scope.uploadErrorMessage);
+          $scope.result ="Failed to upload content.";
+          var modalInstance = $modal.open({
+                        url: 'result',
+                        scope: $scope,
+                        templateUrl : '/js/content/submittedErrorView.html',
+                    });
         });
     }
   	
@@ -184,6 +211,24 @@ angular.module("mitraPortal").controller("uploadController",
   	  getContentLanguages();
       getRequirements();
   	};
+
+    var setSuccessDetails = function() {
+      $scope.success = {};
+      $scope.success.language = commonService.getValueByCode($scope.content.subjectCodeID)[0].codeNameEn;
+      $scope.success.uploaderName = "self";
+
+      var checkedGrades = $scope.gradeList.filter(function(grade){ return (grade.checked == true)});
+      var gradesString = "";
+      if (checkedGrades.length > 0){
+          gradesString = checkedGrades[0].codeNameEn;
+      }
+      for (i=1;i<checkedGrades.length;i++){
+
+          gradesString += ', ' + checkedGrades[i].codeNameEn;
+      }
+      $scope.success.grades = gradesString;
+
+    }
 
     $scope.$on('codesAvailable', function(event,data){
       populateDropDowns();

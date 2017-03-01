@@ -23,7 +23,7 @@
 
 
 <div ng-if="isContentTypeTeachingAid() || isContentTypeSelfLearning()">
-  <form name="frmContentUpload" ng-submit="submit()" novalidate>
+  <form name="frmContentUpload" novalidate>
     <div class="upload-container">
       <div class="no-padding-container">
         <div class="upload-title" style="margin-top:50px;">Content Details</div>
@@ -61,11 +61,11 @@
 
           <div class="col-md-3" ng-if="isContentTypeTeachingAid()">
             <div class="card">
-              <div class="options-card" ng-click=setSelectedOption("Grade")>
+              <div class="options-card" >
                 <div class="card-content">
                   Grade
                 </div>
-                <div class="card-select" ng-class="(((gradeList | filter:{checked:true}).length > 0)?'orange-background':'teal-background')">
+                <div class="card-select" ng-class="(((gradeList | filter:{checked:true}).length > 0)?'orange-background':'teal-background')" ng-click=setSelectedOption("Grade")>
                   <span ng-if="((gradeList | filter:{checked:true}).length > 0)" ng-repeat="grade in gradeList | filter:{checked:true}">
                     {{grade.codeNameEn}}
                   </span>
@@ -180,8 +180,14 @@
                 </div>
                 <div class="card-action" ng-show="(selectedOption == 'Topic')">
                   <div ng-repeat="topic in topicList">
-                    <input type="radio" ng-model="$parent.content.topicCodeID" ng-click = "showContentObject()" ng-value="topic.codeID" />
-                    {{topic.codeNameEn}}
+                    <div>
+                      <div class="col-md-9 no-padding align-left">
+                        {{topic.codeNameEn}}
+                      </div>
+                      <div class="col-md-3 align-right no-padding" >
+                        <input type="radio" ng-model="$parent.content.topicCodeID" ng-click = "showContentObject()" ng-value="topic.codeID" />
+                      </div>
+                    </div>
 
                   </div>
                 </div>
@@ -310,7 +316,8 @@
 <div class = "hr"> </div>
 
 <div class="upload-container">
- <input type="susbmit" value="Send For Review" class="btn btn-warning" ng-click="openModal()" ng-disableda="frmContentUpload.$invalid"  /> 
+ <input type="submit" value="Save" class="btn btn-warning" ng-click="frmContentUpload.$invalid? setDirty(frmContentUpload) : save()" /> 
+ <input type="submit" value="Send For Review" class="btn btn-warning" ng-click="frmContentUpload.$invalid? setDirty(frmContentUpload) : sendForReview()" /> 
 
 </div>
 </div>
