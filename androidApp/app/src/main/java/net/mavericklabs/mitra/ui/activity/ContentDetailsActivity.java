@@ -59,8 +59,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
@@ -369,15 +367,10 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
         if(content != null) {
 
-            Answers.getInstance().logContentView(new ContentViewEvent()
-                    .putContentName(content.getTitle())
-                    .putContentType(CommonCodeUtils.getObjectFromCode(content.getContentTypeCodeID()).getCodeNameEnglish())
-                    .putContentId(content.getContentID()));
-
             Bundle firebaseBundle = new Bundle();
-            firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_ID, content.getContentID());
+            firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_ID, content.getTitle());
             firebaseBundle.putString(FirebaseAnalytics.Param.ITEM_NAME, content.getTitle());
-            firebaseBundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, content.getTitle());
+            firebaseBundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, CommonCodeUtils.getObjectFromCode(content.getContentTypeCodeID()).getCodeNameEnglish());
             firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, firebaseBundle);
 
 
