@@ -4,7 +4,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
 
         var templateChange = function() {
-            return "mitra.test";
+            return "";
         };
         //$locationProvider.html5Mode(true);
         $urlRouterProvider.otherwise('/home');
@@ -24,7 +24,8 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         templateUrl: templateChange() + '/js/common/headerView.html'
                     },
                     'leftMenu': {
-                        templateUrl: templateChange() + '/js/common/leftMenuView.html'
+                        templateUrl: templateChange() + '/js/common/leftMenuView.html',
+                        controller : 'leftMenuController'
                     },
                     'contentBox': {
                         templateUrl: templateChange() + '/js/common/contentBoxView.html'
@@ -58,7 +59,8 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
                     },
                     'leftMenu': {
-                        templateUrl: templateChange() + '/js/common/logged-in/leftMenuView.html'
+                        templateUrl: templateChange() + '/js/common/logged-in/leftMenuView.html',
+                        controller : 'leftMenuController'
                     },
                     'contentBox': {
                         templateUrl: templateChange() + '/js/common/contentBoxView.html'

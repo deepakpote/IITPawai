@@ -4,7 +4,9 @@
 </div>
 <div class="left-menu-container">
     <div class="left-menu-item">
-        <a ui-sref="main.notLoggedIn.home">
+        <a ui-sref="main.notLoggedIn.home"
+           ng-click="setSelected('home')"
+           ng-class="{selectedItem : selectedItem === 'home'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">home</i>
             </div>
@@ -12,7 +14,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item">
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('partners')"
+           ng-class="{selectedItem : selectedItem === 'partners'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">group</i>
             </div>
@@ -20,7 +24,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item">
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('help')"
+           ng-class="{selectedItem : selectedItem === 'help'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">help</i>
             </div>
@@ -28,7 +34,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item">
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('about-us')"
+           ng-class="{selectedItem : selectedItem === 'about-us'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">info</i>
             </div>

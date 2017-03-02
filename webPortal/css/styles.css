@@ -369,6 +369,12 @@ li.selected  {
     padding-right: 5%;
 }
 
+a.selectedItem {
+    color: #ff6d00;
+    font-weight: 500;
+}
+
+
 /* Rules for sizing the icon. */
 .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }

@@ -4,7 +4,9 @@
 </div>
 <div class="left-menu-container">
     <div class="left-menu-item">
-        <a ui-sref="main.loggedIn.home">
+        <a ui-sref="main.loggedIn.home"
+           ng-click="setSelected('home')"
+           ng-class="{selectedItem : selectedItem === 'home'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">home</i>
             </div>
@@ -12,7 +14,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item">
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('dashboard')"
+           ng-class="{selectedItem : selectedItem === 'dashboard'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">view_quilt</i>
             </div>
@@ -20,7 +24,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item" >
-        <a ui-sref="main.loggedIn.contentUpload">
+        <a ui-sref="main.loggedIn.contentUpload"
+           ng-click="setSelected('upload')"
+           ng-class="{selectedItem : selectedItem === 'upload'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">add_to_photos</i>
             </div>
@@ -28,7 +34,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item" >
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('add-training')"
+           ng-class="{selectedItem : selectedItem === 'add-training'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">date_range</i>
             </div>
@@ -36,7 +44,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item" >
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('add-news')"
+           ng-class="{selectedItem : selectedItem === 'add-news'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">flag</i>
             </div>
@@ -44,7 +54,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item" >
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('add-discussion')"
+           ng-class="{selectedItem : selectedItem === 'add-discussion'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">question_answer</i>
             </div>
@@ -52,7 +64,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item" >
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('send-notification')"
+           ng-class="{selectedItem : selectedItem === 'send-notification'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">add_alert</i>
             </div>
@@ -60,7 +74,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item" >
-        <a ui-sref="main.loggedIn.teachingAids">
+        <a ui-sref="main.loggedIn.teachingAids"
+           ng-click="setSelected('add-teaching-aids')"
+           ng-class="{selectedItem : selectedItem === 'add-teaching-aids'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">school</i>
             </div>
@@ -68,7 +84,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item" >
-        <a ui-sref="main.loggedIn.selfLearning">
+        <a ui-sref="main.loggedIn.selfLearning"
+           ng-click="setSelected('add-self-learning')"
+           ng-class="{selectedItem : selectedItem === 'add-self-learning'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">subscriptions</i>
             </div>
@@ -76,7 +94,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item" >
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('training-calendar')"
+           ng-class="{selectedItem : selectedItem === 'training-calendar'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">date_range</i>
             </div>
@@ -84,7 +104,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item" >
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('news-circular')"
+           ng-class="{selectedItem : selectedItem === 'news-circular'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">subscriptions</i>
             </div>
@@ -92,7 +114,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item" >
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('discussion')"
+           ng-class="{selectedItem : selectedItem === 'discussion'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">question_answer</i>
             </div>
@@ -100,7 +124,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item">
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('partners')"
+           ng-class="{selectedItem : selectedItem === 'partners'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">group</i>
             </div>
@@ -108,7 +134,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item">
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('help')"
+           ng-class="{selectedItem : selectedItem === 'help'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">help</i>
             </div>
@@ -116,7 +144,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item">
-        <a ui-sref="#">
+        <a ui-sref="#"
+           ng-click="setSelected('about-us')"
+           ng-class="{selectedItem : selectedItem === 'about-us'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">info</i>
             </div>
