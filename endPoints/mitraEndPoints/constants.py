@@ -157,6 +157,12 @@ class messages():
     get_contentdetail_contentid_cannot_be_empty = 100226
     get_contentdetail_content_not_exists = 100227
     get_contentdetail_user_not_exists = 100228
+    
+    saveContentStatus_contentid_cannot_be_empty = 100229
+    saveContentStatus_statuscodeid_cannot_be_empty = 100230
+    saveContentStatus_content_not_exists = 100231
+    saveContentStatus_status_not_exists = 100232
+    saveContentStatus_user_not_exists = 100233
 
 
 class webportalmessages():    

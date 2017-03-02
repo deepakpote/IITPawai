@@ -926,7 +926,68 @@ class ContentViewSet(viewsets.ModelViewSet):
             return statusHttpBadRequest(constants.messages.uploadContent_content_upload_failed)
 
         #Return the response
-        return Response({"response_message": constants.messages.success, "data": [{"contentID" : contentID}]})     
+        return Response({"response_message": constants.messages.success, "data": [{"contentID" : contentID}]})   
+    
+    """
+    API to save the content status
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def saveContentStatus(self,request):
+        # get inputs
+        contentID = request.data.get('contentID')
+        statusCodeID = request.data.get('statusCodeID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if contentID is passed in post param
+        if not contentID:
+            return Response({"response_message": constants.messages.saveContentStatus_contentid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # Check if statusCodeID is passed in post param
+        if not statusCodeID:
+            return Response({"response_message": constants.messages.saveContentStatus_statuscodeid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+               
+        # If contentID parameter is passed, then check content exists or not
+        try:
+            objContent = content.objects.get(contentID = contentID)
+        except content.DoesNotExist:
+            return Response({"response_message": constants.messages.saveContentStatus_content_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # If statusCodeID parameter is passed, then check status exists or not
+        try:
+            objStatus = code.objects.get(codeID = statusCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.saveContentStatus_status_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.saveContentStatus_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+                               
+        #update content status.                  
+        content.objects.filter(contentID = contentID).update(status = objStatus)  
+
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": []})  
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array
