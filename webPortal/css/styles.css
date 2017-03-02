@@ -374,6 +374,17 @@ a.selectedItem {
     font-weight: 500;
 }
 
+.back-arrow {
+    color: white;
+    float: left;
+    margin-top: 16px;
+    margin-right: 16px;
+}
+
+.move-right-16 {
+    margin-left: 16px !important;
+}
+
 
 /* Rules for sizing the icon. */
 .material-icons.md-18 { font-size: 18px; }
