@@ -30,14 +30,18 @@ angular.module("mitraPortal").controller("uploadController",
     $scope.$watch('gradeList', function (gradeList){
       var checkedGrades = gradeList.filter(function(grade){ return (grade.checked == true)});
       var gradesString = "";
+      var displayGradesString = "";
       if (checkedGrades.length > 0){
         gradesString = checkedGrades[0].codeID;
+        displayGradesString = checkedGrades[0].codeNameEn;
       }
       for (i=1;i<checkedGrades.length;i++){
 
         gradesString += ',' + checkedGrades[i].codeID;
+        displayGradesString += ', ' + checkedGrades[i].codeNameEn;
       }
       $scope.content.gradeCodeIDs = gradesString;
+      $scope.displayGradesString = displayGradesString;
       $log.debug(gradesString);
       
     }, true);
@@ -46,14 +50,18 @@ angular.module("mitraPortal").controller("uploadController",
     $scope.$watch('requirementList', function (requirementList){
       var checkedRequirements = requirementList.filter(function(requirement){ return (requirement.checked == true)});
       var requirementsString = "";
+      var displayRequirementsString = "";
       if (checkedRequirements.length > 0){
         requirementsString = checkedRequirements[0].codeID;
+        displayRequirementsString = checkedRequirements[0].codeNameEn;
       }
       for (i=1;i<checkedRequirements.length;i++){
 
         requirementsString += ',' + checkedRequirements[i].codeID;
+        displayRequirementsString += ', ' + checkedRequirements[i].codeNameEn;
       }
       $scope.content.requirementCodeIDs = requirementsString;
+      $scope.displayRequirementsString = displayRequirementsString;
       $log.debug(requirementsString);
       
     }, true);
@@ -259,7 +267,28 @@ angular.module("mitraPortal").controller("uploadController",
         }
         $scope.success.grades = gradesString;
 
+        $log.debug($scope.inputs.fileName);
+
+        if ($scope.content.fileTypeCodeID == 108100 && $scope.inputs.fileName){
+          $scope.success.image = "http://img.youtube.com/vi/" + parseYoutubeUrl($scope.inputs.fileName) + "/0.jpg";
+          $log.debug("image");
+        }
+        else{
+          $scope.success.image = "";
+          $log.debug("no image");
+        }
       }
+
+      function parseYoutubeUrl(url) {
+        var regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        var match = url.match(regExp);
+        if (match && match[2].length == 11) {
+            return match[2];
+        } else {
+            //error
+            return "";
+        }
+    }
 
       $scope.$on('codesAvailable', function(event,data){
         populateDropDowns();
