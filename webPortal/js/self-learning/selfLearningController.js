@@ -23,6 +23,8 @@
         vm.setSelectedOption = setSelectedOption;
         vm.setStatus = setStatus;
         vm.status = 114101;
+        vm.batchLength = 9;
+        vm.loadMore = loadMore;
 
         activate();
 
@@ -68,6 +70,10 @@
             function onFailure(response) {
 
             }
+
+        }
+
+        function loadMore() {
 
         }
 

@@ -125,10 +125,6 @@ angular.module("mitraPortal").controller("uploadController",
                     fd.append('uploadedFile', $scope.myFile);
                 }
 
-                for (var pair of fd.entries()) {
-                    console.log(pair[0] + ', ' + pair[1]);
-                }
-
                 var headers = {
                     "authToken": appUtils.getFromCookies("token", ""),
                     "appLanguageCodeID": "113101",
