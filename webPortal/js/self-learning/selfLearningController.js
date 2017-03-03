@@ -25,6 +25,7 @@
         vm.status = 114101;
         vm.batchLength = 9;
         vm.loadMore = loadMore;
+        vm.hasMoreData = true;
 
         activate();
 
@@ -74,7 +75,25 @@
         }
 
         function loadMore() {
+            SelfLearningService.fetchMore(vm.dataFilter,vm.status,onSuccess, onFailure);
 
+            function onSuccess(response){
+                var contents = response.data;
+                console.log(contents);
+                for(var i =0 ; i < contents.length ; i ++) {
+                    var content = contents[i];
+                    content.topicName = commonService.getValueByCode(content.topic)[0].codeNameEn;
+                    content.language = commonService.getValueByCode(content.language)[0].codeNameEn;
+                }
+                for(i =0 ; i < contents.length ; i ++) {
+                    content = contents[i];
+                    vm.data.push(content);
+                }
+                vm.hasMoreData = false;
+            }
+            function onFailure(response) {
+
+            }
         }
 
         function getTopics() {

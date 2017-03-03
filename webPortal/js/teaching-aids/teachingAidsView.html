@@ -165,6 +165,11 @@ padding: 64px;">
         </div>
     </div>
     <div ng-hide="teachingAids.data.length" style="line-height: 12em;text-align: center">No resources found!</div>
+    <div class="text-center" style="clear:left;">
+        <input ng-show="teachingAids.hasMoreData" type="button"
+               value="Load More" class="btn btn-warning"
+               ng-click="teachingAids.loadMore()"/>
+    </div>
 </div>
 
 <!-- content end -->
