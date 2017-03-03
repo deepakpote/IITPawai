@@ -127,7 +127,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             
             arrStatusCodeID = tuple(map(int, statusCodeID))
     
-            #If the length of filetypecodeID is 1 then remove last comma.
+            #If the length of statusCodeID is 1 then remove last comma.
             if len(arrStatusCodeID) == 1:
                 arrStatusCodeID =  '(%s)' % ', '.join(map(repr, arrStatusCodeID))
                             
@@ -338,7 +338,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             
             arrStatusCodeID = tuple(map(int, statusCodeID))
     
-            #If the length of filetypecodeID is 1 then remove last comma.
+            #If the length of statusCodeID is 1 then remove last comma.
             if len(arrStatusCodeID) == 1:
                 arrStatusCodeID =  '(%s)' % ', '.join(map(repr, arrStatusCodeID))
         else:
