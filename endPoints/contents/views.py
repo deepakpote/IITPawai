@@ -78,10 +78,33 @@ class ContentViewSet(viewsets.ModelViewSet):
                             status = status.HTTP_404_NOT_FOUND)
             
         # Check if fileTypeCodeID is passed in post param
-        if not fileTypeCodeID:
-            return Response({"response_message": constants.messages.teaching_aid_search_filetype_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED)  
+#         if not fileTypeCodeID:
+#             return Response({"response_message": constants.messages.teaching_aid_search_filetype_cannot_be_empty,
+#                      "data": []},
+#                      status = status.HTTP_401_UNAUTHORIZED)  
+        arrFileTypeCodeID = []    
+        
+        # Check if fileTypeCodeID is passed in header
+        if not fileTypeCodeID or fileTypeCodeID is None:
+            
+             # Get all fileTypeCodeIDs.
+            fileTypeCodeID = getCodeIDs(constants.mitraCodeGroup.fileType)
+            
+            arrFileTypeCodeID = tuple(map(int, fileTypeCodeID))
+    
+            #If the length of filetypecodeID is 1 then remove last comma.
+            if len(arrFileTypeCodeID) == 1:
+                arrFileTypeCodeID =  '(%s)' % ', '.join(map(repr, arrFileTypeCodeID))
+                            
+        else:
+            # If fileTypeCodeID parameter is passed, then check fileType is exists or not
+            try:
+                objFileType = code.objects.get(codeID = fileTypeCodeID)
+                arrFileTypeCodeID = '('+ str(fileTypeCodeID) + ')'
+            except code.DoesNotExist:
+                return Response({"response_message": constants.messages.teaching_aid_search_filetype_not_exists,
+                                 "data": []},
+                                status = status.HTTP_404_NOT_FOUND)
          
          
         #declare count for fro to fetch the records.
@@ -93,19 +116,33 @@ class ContentViewSet(viewsets.ModelViewSet):
         else:
             fromRecord = constants.contentSearchRecords.default
             pageNumber = content.objects.all().count()
-            
+        
+        arrStatusCodeID = []    
+        
         # Check if statusCodeID is passed in header
         if not statusCodeID or statusCodeID is None:
-            statusCodeID = constants.mitraCode.published
+            
+             # Get all statuscodeIDs.
+            statusCodeID = getCodeIDs(constants.mitraCodeGroup.content_News_TrainingCreation_Status)
+            
+            arrStatusCodeID = tuple(map(int, statusCodeID))
+    
+            #If the length of statusCodeID is 1 then remove last comma.
+            if len(arrStatusCodeID) == 1:
+                arrStatusCodeID =  '(%s)' % ', '.join(map(repr, arrStatusCodeID))
+                            
+            #statusCodeID = constants.mitraCode.published
         else:
             # If statusCodeID parameter is passed, then check user is exists or not
             try:
                 objStatusCode = code.objects.get(codeID = statusCodeID)
+                arrStatusCodeID = '('+ str(statusCodeID) + ')'
             except code.DoesNotExist:
                 return Response({"response_message": constants.messages.search_content_status_not_exists,
                                  "data": []},
                                 status = status.HTTP_404_NOT_FOUND)
-        
+                
+
         #Get the applicable subject list for the respective user.    
         arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs)         
 
@@ -156,8 +193,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
                                             where CCG.appLanguageCodeID = %s
-                                            and CC.fileTypeCodeID = %s 
-                                            and CC.statusCodeID = %s
+                                            and CC.fileTypeCodeID IN %s 
+                                            and CC.statusCodeID IN %s
                                             and CC.contentTypeCodeID = %s 
                                             and CC.subjectCodeID IN %s 
                                             and CG.gradeCodeID IN %s 
@@ -172,9 +209,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.fileTypeCodeID,
                                             CC.languageCodeID,
                                             CC.subjectCodeID,
-                                            CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,fileTypeCodeID,statusCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
-
-       
+                                            CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,str(arrFileTypeCodeID),str(arrStatusCodeID),constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
+                                            
         cursor.execute(searchTeachingAidQuery)
     
         #Queryset
@@ -291,13 +327,25 @@ class ContentViewSet(viewsets.ModelViewSet):
             fromRecord = constants.contentSearchRecords.default
             pageNumber = content.objects.all().count()
             
+        arrStatusCodeID = [] 
+        
         # Check if statusCodeID is passed in header
         if not statusCodeID or statusCodeID is None:
-            statusCodeID = constants.mitraCode.published
+            #statusCodeID = constants.mitraCode.published
+            
+            # Get all statuscodeIDs.
+            statusCodeID = getCodeIDs(constants.mitraCodeGroup.content_News_TrainingCreation_Status)
+            
+            arrStatusCodeID = tuple(map(int, statusCodeID))
+    
+            #If the length of statusCodeID is 1 then remove last comma.
+            if len(arrStatusCodeID) == 1:
+                arrStatusCodeID =  '(%s)' % ', '.join(map(repr, arrStatusCodeID))
         else:
             # If statusCodeID parameter is passed, then check user is exists or not
             try:
                 objStatusCode = code.objects.get(codeID = statusCodeID)
+                arrStatusCodeID = '('+ str(statusCodeID) + ')'
             except code.DoesNotExist:
                 return Response({"response_message": constants.messages.search_content_status_not_exists,
                                  "data": []},
@@ -352,10 +400,10 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
                                             where CC.languageCodeID IN %s 
                                             and CC.contentTypeCodeID = %s 
-                                            and CC.statusCodeID = %s
+                                            and CC.statusCodeID IN %s
                                             and CC.topicCodeID IN %s 
                                             and CCG.appLanguageCodeID = %s 
-                                            order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,statusCodeID,str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
+                                            order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,str(arrStatusCodeID),str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
          
         cursor.execute(searchSelfLearningQuery)
         
