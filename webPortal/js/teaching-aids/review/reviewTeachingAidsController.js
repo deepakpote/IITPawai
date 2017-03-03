@@ -1,74 +1,71 @@
 angular.module("mitraPortal").controller("reviewTeachingAidsController",
-  ['$scope','$stateParams', 'appUtils', 'appConstants', 'commonService',
-  function($scope, $stateParams, appUtils, appConstants, commonService) {
-  	$scope.hello = $stateParams.contentID;
-  	$scope.teachingAid = $stateParams.teachingAid;
-    console.log($scope.teachingAid);
+  ['$scope','$stateParams', '$log', 'appUtils', 'appConstants', 'commonService',
+  function($scope, $stateParams, $log, appUtils, appConstants, commonService) {
+
+    $scope.mode = "PREVIEW"; // can be "EDIT" or "PREVIEW" or "GIVE FEEDBACK"
+
+    $scope.checked = {
+      subject: false,
+      language: false,
+      requirements: false,
+      grades: false,
+      marAuthor: false,
+      marContentTitle: false,
+      marInstruction: false,
+      engAuthor: false,
+      engContentTitle: false,
+      engInstruction: false,
+      topic: false,
+      contentType: false,
+      file: false
+    }
+
+    $scope.content = {
+    };
     
-  	// if ($stateParams === undefined){
-  	// 	var postData = {"fileTypeCodeID":fileTypeCodeId,"languageCodeIDs":101100};
-   //          var header = {"authToken":"OF3eOof1qa5bDkHQjwPjlT24sRWb42J1",
-   //                          "appLanguageCodeID":"113101"};
-   //          return $http({method:'POST', url: 'http://54.152.74.194:8000' + '/content/searchTeachingAid/',
-   //              data: postData,
-   //              headers : header});
-  	// }
+  	var fetchContentDetails = function(){
+            var options = {};
+            var data={"contentID" : $stateParams.contentID };//parseInt($stateParams.contentID) };
+            options.data = data;
+            options.url='content/contentDetail/';
+            options.headers = { "authToken": appUtils.getFromCookies("token","") };
 
-  	console.log($stateParams);
+            appUtils.ajax(options,
+              function(responseBody){
+                $log.debug("success");
+                $scope.content = responseBody.data[0];
+                $log.debug($scope.content);
+                $log.debug($scope.contentLanguageList);
+              },
+              function(responseBody){
+                $log.debug("error");
+                $log.debug(responseBody);
+              }
+            );
+  	}
 
-    var getContentTypes = function () {
+    var populateDropDowns = function() {
       $scope.contentTypeList = commonService.getCodeListPerCodeGroup(
           appConstants.codeGroup.contentType
         );
-    };
-    
-    var getSubjects = function () {
       $scope.subjectList = commonService.getCodeListPerCodeGroup(
           appConstants.codeGroup.subject
         );
-    };
-    
-    var getGrades = function () {
       $scope.gradeList = commonService.getCodeListPerCodeGroup(
           appConstants.codeGroup.grade
         );
-    };
-    
-    var getFileTypes = function () {
       $scope.fileTypeList = commonService.getCodeListPerCodeGroup(
           appConstants.codeGroup.fileType
         );
-    };
-    
-    var getTopics = function () {
       $scope.topicList = commonService.getCodeListPerCodeGroup(
           appConstants.codeGroup.topic
         );
-    };
-    
-    var getContentLanguages = function () {
-      $scope.languageList = commonService.getCodeListPerCodeGroup(
+      $scope.contentLanguageList = commonService.getCodeListPerCodeGroup(
           appConstants.codeGroup.contentLanguage
         );
-    };
-    
-    var getRequirements = function () {
-      $scope.requirementList = [
-        {'name':'computer', 'checked':false},
-        {'name':'laptop', 'checked':false},
-        {'name':'tab', 'checked':false},
-        {'name':'mobile', 'checked':false},
-      ]
-    };
-
-    var populateDropDowns = function() {
-      getContentTypes();
-      getSubjects();
-      getGrades();
-      getFileTypes();
-      getTopics();
-      getContentLanguages();
-      getRequirements();
+      $scope.requirementList = commonService.getCodeListPerCodeGroup(
+          appConstants.codeGroup.requirement
+          );
     };
 
     $scope.$on('codesAvailable', function(event,data){
@@ -79,12 +76,11 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
       $scope.submitted = false;
       $scope.content = { "contentID": 0, "contentTypeCodeID": 0};
       $scope.errorMessage = "";
-      
+      fetchContentDetails();
       populateDropDowns();
     };
     
     init();
-    getContentTypes();
 
 
   }
