@@ -385,6 +385,10 @@ a.selectedItem {
     margin-left: 16px !important;
 }
 
+.weight-400 {
+    font-weight: 400;
+}
+
 
 /* Rules for sizing the icon. */
 .material-icons.md-18 { font-size: 18px; }

@@ -68,11 +68,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 url: '/admin',
                 views: {
                     'header': {
-                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
-                        controller : function($scope) {
-                            $scope.title = 'Home';
-                            $scope.showBackArrow = false;
-                        }
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
                     },
                     'content': {
                         templateUrl: templateChange() + '/js/home/layoutView.html',
@@ -96,7 +92,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     'header': {
                         templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
                         controller : function($scope) {
-                            $scope.title = 'Content Upload';
+                            $scope.title = 'Upload Content';
                             $scope.showBackArrow = true;
                         }
                     },
