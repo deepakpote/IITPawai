@@ -163,6 +163,8 @@ class messages():
     saveContentStatus_content_not_exists = 100231
     saveContentStatus_status_not_exists = 100232
     saveContentStatus_user_not_exists = 100233
+    
+    teaching_aid_search_filetype_not_exists = 100234
 
 
 class webportalmessages():    
