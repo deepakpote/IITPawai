@@ -286,11 +286,11 @@ li.filter-type {
 
 /* Change the link color to #111 (black) on hover */
 li.filter-type:hover {
-    color:#ff6d00;
+    color:#ff9100;
 }
 
 li.selected  {
-    color: #ff6d00;
+    color: #ff9100;;
     font-weight: 500;
 }
 
@@ -377,7 +377,7 @@ li.selected  {
 }
 
 a.selectedItem {
-    color: #ff6d00;
+    color: #ff9100;
     font-weight: 500;
 }
 
