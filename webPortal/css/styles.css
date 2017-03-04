@@ -296,7 +296,7 @@ li.selected  {
 
 .divider {
     height:1px;
-    background:#0f0f0f;
+    background:rgba(15, 15, 15, 0.60);
 }
 
 .content-panel {
