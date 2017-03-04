@@ -7,7 +7,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             return "";
         };
         //$locationProvider.html5Mode(true);
-        $urlRouterProvider.otherwise('/home');
+        $urlRouterProvider.otherwise('/home/login');
 
         $stateProvider
             .state('main', {
