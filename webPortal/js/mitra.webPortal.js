@@ -91,9 +91,12 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 views: {
                     'header': {
                         templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
-                        controller : function($scope) {
+                        controller : function($scope,$window) {
                             $scope.title = 'Upload Content';
                             $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
                         }
                     },
                     'content': {
@@ -107,9 +110,12 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 views: {
                     'header': {
                         templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
-                        controller : function($scope) {
+                        controller : function($scope,$window) {
                             $scope.title = 'Self Learning';
                             $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
                         }
                     },
                     'content': {
@@ -124,9 +130,12 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 views : {
                     'header': {
                         templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
-                        controller : function($scope) {
+                        controller : function($scope,$window) {
                             $scope.title = 'Teaching Aids';
                             $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
                         }
                     },
                     'content' : {
