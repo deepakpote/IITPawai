@@ -773,22 +773,24 @@ class ContentViewSet(viewsets.ModelViewSet):
         requirementCodeIDs = request.data.get('requirementCodeIDs')
 
         fileTypeCodeID = request.data.get('fileTypeCodeID')
-        uploadedFile = request.FILES['uploadedFile'] if 'uploadedFile' in request.FILES else None
+        
+        if(contentID == 0):
+            uploadedFile = request.FILES['uploadedFile'] if 'uploadedFile' in request.FILES else None
                          
-        if uploadedFile:
-            if request.data.get('fileName'):
-                return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
+            if uploadedFile:
+                if request.data.get('fileName'):
+                    return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
+                else:
+                    try:
+                        uploadedFile = request.FILES['uploadedFile']
+                    except Exception as e:
+                        return statusHttpUnauthorized(constants.messages.uploadContent_upload_a_valid_file)
+        
+            elif request.data.get('fileName'):
+                fileName = request.data.get('fileName')
+        
             else:
-                try:
-                    uploadedFile = request.FILES['uploadedFile']
-                except Exception as e:
-                    return statusHttpUnauthorized(constants.messages.uploadContent_upload_a_valid_file)
-        
-        elif request.data.get('fileName'):
-            fileName = request.data.get('fileName')
-        
-        else:
-            return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
+                return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
         
         languageCodeID = request.data.get('contentLanguageCodeID')       
         statusCodeID = request.data.get('statusCodeID')
@@ -927,6 +929,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                  )
              
                 contentID =  objRec.contentID 
+                
+                if (isVideoOrEkStep(fileTypeCodeID) == False):
+                    saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
             
             else:
                 # If contentID parameter is passed, then check contentID exists or not and update the content details.       
@@ -941,8 +946,6 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                                      topic = objTopic,
                                                                      requirement = requirementCodeIDs,
                                                                      fileType = objFileType,
-                                                                     fileName = fileName,
-                                                                     #objectives = objectives,
                                                                      status = objStatus,
                                                                      language = objLanguage,
                                                                      modifiedBy = objUser)
@@ -958,15 +961,15 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                                                      instruction = marInstruction.strip(),
                                                                                      author = marAuthor)
                 
-                if (isVideoOrEkStep(fileTypeCodeID) == False):
-                    removeUploadedFile(contentID)
+#                 if (isVideoOrEkStep(fileTypeCodeID) == False):
+#                     removeUploadedFile(contentID)
             
             # Check content type of uploaded file.If teachingAids then save GradeCodeIDs     
             if contentTypeCodeID == constants.mitraCode.teachingAids:
                 saveContentGrade(arrGradeCodeIDs , contentID)
             
-            if (isVideoOrEkStep(fileTypeCodeID) == False):
-                saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
+#             if (isVideoOrEkStep(fileTypeCodeID) == False):
+#                 saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
                
         except Exception as e:
             # Error occurred while uploading the content.
