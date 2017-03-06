@@ -842,18 +842,19 @@ class ContentViewSet(viewsets.ModelViewSet):
             return statusHttpNotFound(constants.messages.uploadContent_language_does_not_exists)  
                 
         # If the filetype is video or ekStep then validate the URL.
-        if isVideoOrEkStep(fileTypeCodeID) == True:   
+        if isVideoOrEkStep(fileTypeCodeID) == True:  
+            if contentID == 0: 
             # Check if fileName is passed in post param
-            if not fileName:
-                return statusHttpUnauthorized(constants.messages.uploadContent_fileName_cannot_be_empty)
-            
-            if int(fileTypeCodeID) == int(constants.mitraCode.video):
-                #Validate youtube URL.
-                isValidYoutubeURL = validateYoutubeURL(fileName)
+                if not fileName:
+                    return statusHttpUnauthorized(constants.messages.uploadContent_fileName_cannot_be_empty)
                 
-                #If Youtube URL is Invaild 
-                if not isValidYoutubeURL:
-                    return statusHttpBadRequest(constants.messages.uploadContent_fileName_invaild)
+                if int(fileTypeCodeID) == int(constants.mitraCode.video):
+                    #Validate youtube URL.
+                    isValidYoutubeURL = validateYoutubeURL(fileName)
+                    
+                    #If Youtube URL is Invaild 
+                    if not isValidYoutubeURL:
+                        return statusHttpBadRequest(constants.messages.uploadContent_fileName_invaild)
 
         else:
             fileName = "upload_pending"
