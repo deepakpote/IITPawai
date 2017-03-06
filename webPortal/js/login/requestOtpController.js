@@ -16,6 +16,8 @@ function RequestOtpController($modalInstance, HttpUtils, loginService, $state, a
     vm.getOtp = getOtp;
     vm.closeModal = closeModal;
     vm.verifyOtp = verifyOtp;
+    console.log("phone number is " + commonService.getPhoneNumber());
+    vm.phoneno = commonService.getPhoneNumber();
 
     function getOtp() {
         var phoneNumber = vm.phoneno;

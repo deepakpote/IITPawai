@@ -183,14 +183,21 @@ class NewsViewSet(viewsets.ModelViewSet):
         newsCategoryCodeID = request.data.get('newsCategoryCodeID')
         statusCodeID = request.data.get('statusCodeID')
         appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
+        
+        arrStatusCodeID = []   
                     
         # Check if statusCodeID is passed.
         if not statusCodeID or statusCodeID is None:  
-            statusCodeID = constants.mitraCode.published
+            #statusCodeID = constants.mitraCode.published
+            
+            # Get all statuscodeIDs.
+            statusCodeID = getCodeIDs(constants.mitraCodeGroup.content_News_TrainingCreation_Status)
+            
         else:
             # If statusCodeID parameter is passed, then check user is exists or not
             try:
                 objStatusCode = code.objects.get(codeID = statusCodeID)
+                arrStatusCodeID = str(objStatusCode.codeID).split(',')
             except code.DoesNotExist:
                 return Response({"response_message": constants.messages.news_list_status_does_not_exists,
                                  "data": []},
@@ -204,7 +211,7 @@ class NewsViewSet(viewsets.ModelViewSet):
             return Response({"response_message": responseData['message'], "data": []}, status= responseData['status'])
         
         # Get filtered news data.
-        newsData = getNewsList(departmentCodeID, publishFromDate, publishToDate, None , newsCategoryCodeID, statusCodeID , appLanguageCodeID)    
+        newsData = getNewsList(departmentCodeID, publishFromDate, publishToDate, None , newsCategoryCodeID, arrStatusCodeID , appLanguageCodeID)    
         
         #If result set id empty.
         if not newsData:
@@ -643,7 +650,7 @@ def getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser , news
         
     # check input newsCategoryCodeID exists or not
     if statusCodeID:
-        queryset = queryset.filter(news__status = statusCodeID)
+        queryset = queryset.filter(news__status__in = statusCodeID)
         
     # descending order of publish date
     queryset = queryset.order_by('news__publishDate')

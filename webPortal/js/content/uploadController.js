@@ -336,18 +336,18 @@ angular.module("mitraPortal").controller("uploadController",
 
       init();
       getContentTypes();
-    }
-    ])
-.directive('fileModel', ['$parse', '$log', function ($parse, $log) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
+    }])
+    .directive('fileModel', ['$parse', '$log', function ($parse, $log) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
 
 
-      element.bind('change', function(){
-        scope.$parent.myFile = element[0].files[0];
-        scope.$apply();
-      });
-    }
-  };
-}]);;
+                element.bind('change', function () {
+                    scope.$parent.myFile = element[0].files[0];
+                    scope.$apply();
+                });
+            }
+        };
+    }]);
+;

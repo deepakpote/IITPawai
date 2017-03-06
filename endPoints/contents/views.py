@@ -78,10 +78,33 @@ class ContentViewSet(viewsets.ModelViewSet):
                             status = status.HTTP_404_NOT_FOUND)
             
         # Check if fileTypeCodeID is passed in post param
-        if not fileTypeCodeID:
-            return Response({"response_message": constants.messages.teaching_aid_search_filetype_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED)  
+#         if not fileTypeCodeID:
+#             return Response({"response_message": constants.messages.teaching_aid_search_filetype_cannot_be_empty,
+#                      "data": []},
+#                      status = status.HTTP_401_UNAUTHORIZED)  
+        arrFileTypeCodeID = []    
+        
+        # Check if fileTypeCodeID is passed in header
+        if not fileTypeCodeID or fileTypeCodeID is None:
+            
+             # Get all fileTypeCodeIDs.
+            fileTypeCodeID = getCodeIDs(constants.mitraCodeGroup.fileType)
+            
+            arrFileTypeCodeID = tuple(map(int, fileTypeCodeID))
+    
+            #If the length of filetypecodeID is 1 then remove last comma.
+            if len(arrFileTypeCodeID) == 1:
+                arrFileTypeCodeID =  '(%s)' % ', '.join(map(repr, arrFileTypeCodeID))
+                            
+        else:
+            # If fileTypeCodeID parameter is passed, then check fileType is exists or not
+            try:
+                objFileType = code.objects.get(codeID = fileTypeCodeID)
+                arrFileTypeCodeID = '('+ str(fileTypeCodeID) + ')'
+            except code.DoesNotExist:
+                return Response({"response_message": constants.messages.teaching_aid_search_filetype_not_exists,
+                                 "data": []},
+                                status = status.HTTP_404_NOT_FOUND)
          
          
         #declare count for fro to fetch the records.
@@ -93,19 +116,33 @@ class ContentViewSet(viewsets.ModelViewSet):
         else:
             fromRecord = constants.contentSearchRecords.default
             pageNumber = content.objects.all().count()
-            
+        
+        arrStatusCodeID = []    
+        
         # Check if statusCodeID is passed in header
         if not statusCodeID or statusCodeID is None:
-            statusCodeID = constants.mitraCode.published
+            
+             # Get all statuscodeIDs.
+            statusCodeID = getCodeIDs(constants.mitraCodeGroup.content_News_TrainingCreation_Status)
+            
+            arrStatusCodeID = tuple(map(int, statusCodeID))
+    
+            #If the length of statusCodeID is 1 then remove last comma.
+            if len(arrStatusCodeID) == 1:
+                arrStatusCodeID =  '(%s)' % ', '.join(map(repr, arrStatusCodeID))
+                            
+            #statusCodeID = constants.mitraCode.published
         else:
             # If statusCodeID parameter is passed, then check user is exists or not
             try:
                 objStatusCode = code.objects.get(codeID = statusCodeID)
+                arrStatusCodeID = '('+ str(statusCodeID) + ')'
             except code.DoesNotExist:
                 return Response({"response_message": constants.messages.search_content_status_not_exists,
                                  "data": []},
                                 status = status.HTTP_404_NOT_FOUND)
-        
+                
+
         #Get the applicable subject list for the respective user.    
         arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs)         
 
@@ -156,8 +193,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
                                             where CCG.appLanguageCodeID = %s
-                                            and CC.fileTypeCodeID = %s 
-                                            and CC.statusCodeID = %s
+                                            and CC.fileTypeCodeID IN %s 
+                                            and CC.statusCodeID IN %s
                                             and CC.contentTypeCodeID = %s 
                                             and CC.subjectCodeID IN %s 
                                             and CG.gradeCodeID IN %s 
@@ -172,9 +209,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.fileTypeCodeID,
                                             CC.languageCodeID,
                                             CC.subjectCodeID,
-                                            CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,fileTypeCodeID,statusCodeID,constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
-
-       
+                                            CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,str(arrFileTypeCodeID),str(arrStatusCodeID),constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
+                                            
         cursor.execute(searchTeachingAidQuery)
     
         #Queryset
@@ -291,13 +327,25 @@ class ContentViewSet(viewsets.ModelViewSet):
             fromRecord = constants.contentSearchRecords.default
             pageNumber = content.objects.all().count()
             
+        arrStatusCodeID = [] 
+        
         # Check if statusCodeID is passed in header
         if not statusCodeID or statusCodeID is None:
-            statusCodeID = constants.mitraCode.published
+            #statusCodeID = constants.mitraCode.published
+            
+            # Get all statuscodeIDs.
+            statusCodeID = getCodeIDs(constants.mitraCodeGroup.content_News_TrainingCreation_Status)
+            
+            arrStatusCodeID = tuple(map(int, statusCodeID))
+    
+            #If the length of statusCodeID is 1 then remove last comma.
+            if len(arrStatusCodeID) == 1:
+                arrStatusCodeID =  '(%s)' % ', '.join(map(repr, arrStatusCodeID))
         else:
             # If statusCodeID parameter is passed, then check user is exists or not
             try:
                 objStatusCode = code.objects.get(codeID = statusCodeID)
+                arrStatusCodeID = '('+ str(statusCodeID) + ')'
             except code.DoesNotExist:
                 return Response({"response_message": constants.messages.search_content_status_not_exists,
                                  "data": []},
@@ -352,10 +400,10 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
                                             where CC.languageCodeID IN %s 
                                             and CC.contentTypeCodeID = %s 
-                                            and CC.statusCodeID = %s
+                                            and CC.statusCodeID IN %s
                                             and CC.topicCodeID IN %s 
                                             and CCG.appLanguageCodeID = %s 
-                                            order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,statusCodeID,str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
+                                            order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,str(arrStatusCodeID),str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
          
         cursor.execute(searchSelfLearningQuery)
         
@@ -675,7 +723,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         response = {  'engContentTitle':        objContentDetails.engContentTitle,
                       'marContentTitle':        objContentDetails.marContentTitle,
                       'engInstruction':         objContentDetails.engInstruction ,
-                      'marInstruction ':        objContentDetails.marInstruction,
+                      'marInstruction':         objContentDetails.marInstruction,
                       'engAuthor':              objContentDetails.engAuthor,
                       'marAuthor':              objContentDetails.marAuthor,
                       'contentTypeCodeID':      objContentDetails.contentType.codeID,
@@ -725,22 +773,24 @@ class ContentViewSet(viewsets.ModelViewSet):
         requirementCodeIDs = request.data.get('requirementCodeIDs')
 
         fileTypeCodeID = request.data.get('fileTypeCodeID')
-        uploadedFile = request.FILES['uploadedFile'] if 'uploadedFile' in request.FILES else None
+        
+        if(contentID == 0):
+            uploadedFile = request.FILES['uploadedFile'] if 'uploadedFile' in request.FILES else None
                          
-        if uploadedFile:
-            if request.data.get('fileName'):
-                return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
+            if uploadedFile:
+                if request.data.get('fileName'):
+                    return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
+                else:
+                    try:
+                        uploadedFile = request.FILES['uploadedFile']
+                    except Exception as e:
+                        return statusHttpUnauthorized(constants.messages.uploadContent_upload_a_valid_file)
+        
+            elif request.data.get('fileName'):
+                fileName = request.data.get('fileName')
+        
             else:
-                try:
-                    uploadedFile = request.FILES['uploadedFile']
-                except Exception as e:
-                    return statusHttpUnauthorized(constants.messages.uploadContent_upload_a_valid_file)
-        
-        elif request.data.get('fileName'):
-            fileName = request.data.get('fileName')
-        
-        else:
-            return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
+                return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
         
         languageCodeID = request.data.get('contentLanguageCodeID')       
         statusCodeID = request.data.get('statusCodeID')
@@ -792,18 +842,19 @@ class ContentViewSet(viewsets.ModelViewSet):
             return statusHttpNotFound(constants.messages.uploadContent_language_does_not_exists)  
                 
         # If the filetype is video or ekStep then validate the URL.
-        if isVideoOrEkStep(fileTypeCodeID) == True:   
+        if isVideoOrEkStep(fileTypeCodeID) == True:  
+            if contentID == 0: 
             # Check if fileName is passed in post param
-            if not fileName:
-                return statusHttpUnauthorized(constants.messages.uploadContent_fileName_cannot_be_empty)
-            
-            if int(fileTypeCodeID) == int(constants.mitraCode.video):
-                #Validate youtube URL.
-                isValidYoutubeURL = validateYoutubeURL(fileName)
+                if not fileName:
+                    return statusHttpUnauthorized(constants.messages.uploadContent_fileName_cannot_be_empty)
                 
-                #If Youtube URL is Invaild 
-                if not isValidYoutubeURL:
-                    return statusHttpBadRequest(constants.messages.uploadContent_fileName_invaild)
+                if int(fileTypeCodeID) == int(constants.mitraCode.video):
+                    #Validate youtube URL.
+                    isValidYoutubeURL = validateYoutubeURL(fileName)
+                    
+                    #If Youtube URL is Invaild 
+                    if not isValidYoutubeURL:
+                        return statusHttpBadRequest(constants.messages.uploadContent_fileName_invaild)
 
         else:
             fileName = "upload_pending"
@@ -879,6 +930,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                  )
              
                 contentID =  objRec.contentID 
+                
+                if (isVideoOrEkStep(fileTypeCodeID) == False):
+                    saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
             
             else:
                 # If contentID parameter is passed, then check contentID exists or not and update the content details.       
@@ -893,8 +947,6 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                                      topic = objTopic,
                                                                      requirement = requirementCodeIDs,
                                                                      fileType = objFileType,
-                                                                     fileName = fileName,
-                                                                     #objectives = objectives,
                                                                      status = objStatus,
                                                                      language = objLanguage,
                                                                      modifiedBy = objUser)
@@ -910,15 +962,15 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                                                      instruction = marInstruction.strip(),
                                                                                      author = marAuthor)
                 
-                if (isVideoOrEkStep(fileTypeCodeID) == False):
-                    removeUploadedFile(contentID)
+#                 if (isVideoOrEkStep(fileTypeCodeID) == False):
+#                     removeUploadedFile(contentID)
             
             # Check content type of uploaded file.If teachingAids then save GradeCodeIDs     
             if contentTypeCodeID == constants.mitraCode.teachingAids:
                 saveContentGrade(arrGradeCodeIDs , contentID)
             
-            if (isVideoOrEkStep(fileTypeCodeID) == False):
-                saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
+#             if (isVideoOrEkStep(fileTypeCodeID) == False):
+#                 saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
                
         except Exception as e:
             # Error occurred while uploading the content.
@@ -926,7 +978,68 @@ class ContentViewSet(viewsets.ModelViewSet):
             return statusHttpBadRequest(constants.messages.uploadContent_content_upload_failed)
 
         #Return the response
-        return Response({"response_message": constants.messages.success, "data": [{"contentID" : contentID}]})     
+        return Response({"response_message": constants.messages.success, "data": [{"contentID" : contentID}]})   
+    
+    """
+    API to save the content status
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def saveContentStatus(self,request):
+        # get inputs
+        contentID = request.data.get('contentID')
+        statusCodeID = request.data.get('statusCodeID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if contentID is passed in post param
+        if not contentID:
+            return Response({"response_message": constants.messages.saveContentStatus_contentid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # Check if statusCodeID is passed in post param
+        if not statusCodeID:
+            return Response({"response_message": constants.messages.saveContentStatus_statuscodeid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+               
+        # If contentID parameter is passed, then check content exists or not
+        try:
+            objContent = content.objects.get(contentID = contentID)
+        except content.DoesNotExist:
+            return Response({"response_message": constants.messages.saveContentStatus_content_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # If statusCodeID parameter is passed, then check status exists or not
+        try:
+            objStatus = code.objects.get(codeID = statusCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.saveContentStatus_status_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.saveContentStatus_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+                               
+        #update content status.                  
+        content.objects.filter(contentID = contentID).update(status = objStatus)  
+
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": []})  
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array

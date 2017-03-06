@@ -3,37 +3,47 @@
     <div class="mitra-language">English</div>
 </div>
 <div class="left-menu-container">
-    <div class="left-menu-item">
-        <a ui-sref="main.notLoggedIn.home">
-            <div class="col-md-2">
-                <i class="material-icons md-18">home</i>
-            </div>
-            <div class="col-md-10">Home</div>
-        </a><br/>
-    </div>
-    <div class="left-menu-item">
-        <a ui-sref="#">
-            <div class="col-md-2">
-                <i class="material-icons md-18">group</i>
-            </div>
-            <div class="col-md-10">Partners</div>
-        </a><br/>
-    </div>
-    <div class="left-menu-item">
-        <a ui-sref="#">
-            <div class="col-md-2">
-                <i class="material-icons md-18">help</i>
-            </div>
-            <div class="col-md-10">Help</div>
-        </a><br/>
-    </div>
-    <div class="left-menu-item">
-        <a ui-sref="#">
-            <div class="col-md-2">
-                <i class="material-icons md-18">info</i>
-            </div>
-            <div class="col-md-10">About Us</div>
-        </a><br/>
+    <div class="left-menu-wrapper">
+        <div class="left-menu-item">
+            <a ui-sref="main.notLoggedIn.home"
+               ng-click="setSelected('home')"
+               ng-class="{selectedItem : selectedItem === 'home'}">
+                <div class="col-md-2">
+                    <i class="material-icons md-18">home</i>
+                </div>
+                <div class="col-md-10">Home</div>
+            </a><br/>
+        </div>
+        <div class="left-menu-item">
+            <a ui-sref="#"
+               ng-click="setSelected('partners')"
+               ng-class="{selectedItem : selectedItem === 'partners'}">
+                <div class="col-md-2">
+                    <i class="material-icons md-18">group</i>
+                </div>
+                <div class="col-md-10">Partners</div>
+            </a><br/>
+        </div>
+        <div class="left-menu-item">
+            <a ui-sref="#"
+               ng-click="setSelected('help')"
+               ng-class="{selectedItem : selectedItem === 'help'}">
+                <div class="col-md-2">
+                    <i class="material-icons md-18">help</i>
+                </div>
+                <div class="col-md-10">Help</div>
+            </a><br/>
+        </div>
+        <div class="left-menu-item">
+            <a ui-sref="#"
+               ng-click="setSelected('about-us')"
+               ng-class="{selectedItem : selectedItem === 'about-us'}">
+                <div class="col-md-2">
+                    <i class="material-icons md-18">info</i>
+                </div>
+                <div class="col-md-10">About Us</div>
+            </a><br/>
+        </div>
     </div>
 </div>
 
