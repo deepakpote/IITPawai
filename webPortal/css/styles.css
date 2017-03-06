@@ -379,6 +379,16 @@ li.selected  {
 	padding-left:50px
 }
 
+.carousel .carousel-indicators .active {
+	width:0px !important;
+	height:0px !important;
+}
+
+.carousel .carousel-indicators {
+	width:0px !important;
+	height:0px !important;
+}
+
 /* Rules for sizing the icon. */
 .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }
