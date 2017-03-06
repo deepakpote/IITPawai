@@ -1,4 +1,4 @@
-var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap','ngLoadingSpinner']);
+var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap','ngLoadingSpinner', 'ngAnimate']);
 mitraPortal.
 config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locationProvider',
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
@@ -10,7 +10,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             .state('main', {
                 abstract: true,
                 url: '',
-                templateUrl: '/js/common/mitraLayoutView.html',
+                templateUrl: 'webPortal/js/common/mitraLayoutView.html',
                 controller : 'mainController'
             })
             .state('main.notLoggedIn', {
@@ -18,13 +18,13 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 url: '',
                 views: {
                     'header': {
-                        templateUrl: '/js/common/headerView.html'
+                        templateUrl: 'webPortal/js/common/headerView.html'
                     },
                     'leftMenu': {
-                        templateUrl: '/js/common/leftMenuView.html'
+                        templateUrl: 'webPortal/js/common/leftMenuView.html'
                     },
                     'contentBox': {
-                        templateUrl: '/js/common/contentBoxView.html'
+                        templateUrl: 'webPortal/js/common/contentBoxView.html'
                     }
                 }
             })
@@ -32,15 +32,15 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 url: '/home',
                 views: {
                     'content': {
-                        templateUrl: '/js/home/layoutView.html'
+                        templateUrl: 'webPortal/js/home/layoutView.html'
                         //template: "Setting up home layout"
                     },
                     'welcome@main.notLoggedIn.home': {
-                        templateUrl: '/js/home/welcomeView.html',
+                        templateUrl: 'webPortal/js/home/welcomeView.html',
                         controller: 'welcomeController'
                     },
                     'map@main.notLoggedIn.home': {
-                        templateUrl: '/js/home/mapView.html',
+                        templateUrl: 'webPortal/js/home/mapView.html',
                         controller: function($scope) {
                             console.log('hit map controller');
                         }
@@ -52,13 +52,13 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 abstract : true,
                 views: {
                     'header': {
-                        templateUrl: '/js/common/logged-in/headerView.html'
+                        templateUrl: 'webPortal/js/common/logged-in/headerView.html'
                     },
                     'leftMenu': {
-                        templateUrl: '/js/common/logged-in/leftMenuView.html'
+                        templateUrl: 'webPortal/js/common/logged-in/leftMenuView.html'
                     },
                     'contentBox': {
-                        templateUrl: '/js/common/contentBoxView.html'
+                        templateUrl: 'webPortal/js/common/contentBoxView.html'
                     }
                 }
             })
@@ -66,18 +66,18 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 url: '/admin',
                 views: {
                     'content': {
-                        templateUrl: '/js/home/layoutView.html',
+                        templateUrl: 'webPortal/js/home/layoutView.html',
                         //template: "Setting up home layout"
                         controller: function($scope,appUtils,$state) {
                             !appUtils.isLoggedInUser() ? $state.go('main.notLoggedIn.home') : console.log("");
                         }
                     },
                     'welcome@main.loggedIn.home': {
-                        templateUrl: '/js/home/welcomeView.html',
+                        templateUrl: 'webPortal/js/home/welcomeView.html',
                         controller: 'welcomeController'
                     },
                     'map@main.loggedIn.home': {
-                        templateUrl: '/js/home/mapView.html'
+                        templateUrl: 'webPortal/js/home/mapView.html'
                     }
                 }
             })
@@ -85,7 +85,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 url: '/content/upload',
                 views: {
                     'content': {
-                        templateUrl: '/js/content/uploadView.html',
+                        templateUrl: 'webPortal/js/content/uploadView.html',
                         controller: 'uploadController'
                     }
                 }
@@ -94,7 +94,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
 			    url: '/dashboard',
 			 	views: {
 			  		'content': {
-			  			templateUrl: 'js/dashboard/dashboardView.html',
+			  			templateUrl: 'webPortal/js/dashboard/dashboardView.html',
 			 			controller: 'dashboardController'
 			  		}
 			  	}
@@ -103,7 +103,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 url: '/selfLearning',
                 views: {
                     'content': {
-                        templateUrl : '/js/self-learning/selfLearningView.html',
+                        templateUrl : 'webPortal/js/self-learning/selfLearningView.html',
                         controller : 'selfLearningController',
                         controllerAs : 'selfLearning'
                     }
@@ -113,7 +113,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 url: '/teachingAids',
                 views : {
                     'content' : {
-                        templateUrl : '/js/teaching-aids/teachingAidsView.html',
+                        templateUrl : 'webPortal/js/teaching-aids/teachingAidsView.html',
                         controller : 'teachingAidsController',
                         controllerAs : 'teachingAids'
                     }
@@ -122,19 +122,19 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             // define login route
             loginModalStateProvider.state('main.notLoggedIn.home.login', {
                 url: '/login',
-                templateUrl : '/js/login/loginView.html',
+                templateUrl : 'webPortal/js/login/loginView.html',
                 controller:'loginController',
                 controllerAs : 'login'
             });
             loginModalStateProvider.state('main.notLoggedIn.home.requestotp', {
                 url: '/requestOtp',
-                templateUrl : '/js/login/requestOtpView.html',
+                templateUrl : 'webPortal/js/login/requestOtpView.html',
                 controller:'requestOtpController',
                 controllerAs : 'requestOTP'
             });
             loginModalStateProvider.state('main.notLoggedIn.home.setpassword', {
                 url: '/setPassword',
-                templateUrl : '/js/login/setPasswordView.html',
+                templateUrl : 'webPortal/js/login/setPasswordView.html',
                 controller:'setPasswordController',
                 controllerAs : 'setPassword'
             });

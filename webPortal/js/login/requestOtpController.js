@@ -4,9 +4,9 @@
 
 angular.module("mitraPortal").controller("requestOtpController", RequestOtpController);
 
-RequestOtpController.$inject = ['$modalInstance', 'HttpUtils','loginService', '$state','appUtils','commonService'];
+RequestOtpController.$inject = ['$uibModalInstance', 'HttpUtils','loginService', '$state','appUtils','commonService'];
 
-function RequestOtpController($modalInstance, HttpUtils, loginService, $state, appUtils, commonService){
+function RequestOtpController($uibModalInstance, HttpUtils, loginService, $state, appUtils, commonService){
 
     console.log("request otp controller called..");
     var vm = this;
@@ -42,7 +42,7 @@ function RequestOtpController($modalInstance, HttpUtils, loginService, $state, a
     }
 
     function closeModal() {
-        $modalInstance.close();
+        $uibModalInstance.close();
     }
 
     function verifyOtp() {
