@@ -238,8 +238,8 @@ ng-click="mode='GIVE FEEDBACK'">
     </div>
     <br />
     <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'"> 
-      <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('grades')"
-      ng-class="checked['grades']?'orange-text':''">
+      <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('topic')"
+      ng-class="checked['topic']?'orange-text':''">
       check
     </i> 
   </div>
@@ -377,9 +377,11 @@ ng-click="mode='GIVE FEEDBACK'">
 <div class = "hr"> </div>
 
 <div class="upload-container">
- <input type="submit" ng-value="mode=='PREVIEW'?'Publish':'Save Changes'" ng-click="mode=='PREVIEW'?publish():saveChanges()" class="btn btn-warning" ng-disableda="frmContentUpload.$invalid"  /> 
+ <input type="submit" ng-value="'Publish'" ng-click="publish()" class="btn btn-warning" ng-if="mode=='PREVIEW'" /> 
 
- <input type="submit" ng-value="'Discard Changes'" ng-click="setMode('PREVIEW')" class="btn btn-warning" ng-if="mode=='EDIT'" /> 
+  <input type="submit" ng-value="'Save Changes'" ng-click="saveChanges()" class="btn btn-warning" ng-if="mode=='EDIT'" /> 
+
+   <input type="submit" ng-value="'Discard Changes'" ng-click="setMode('PREVIEW')" class="btn btn-warning" ng-if="mode=='EDIT'" /> 
 
 
 

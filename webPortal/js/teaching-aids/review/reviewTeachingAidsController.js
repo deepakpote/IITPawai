@@ -53,22 +53,29 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
     }
 
     $scope.publish = function(){
+      var nextState = null;
       if ($scope.content.contentTypeCodeID == '107100'){
         if ($scope.checked.subject && $scope.checked.language && $scope.checked.requirements && $scope.checked.grades && 
             $scope.checked.marAuthor && $scope.checked.marContentTitle && $scope.checked.marInstruction && 
-            $scope.checked.engAuthor && $scope.checked.engContentTitle && $scope.checked.engInstruction && $scope.checked.fileName) {
+            $scope.checked.engAuthor && $scope.checked.engContentTitle && $scope.checked.engInstruction && 
+            $scope.checked.fileName) {
+          nextState = 'main.loggedIn.teachingAids';
         }
         else{
           alert("Please check all fields and mark as correct");
+          return
         }
       }
       else if ($scope.content.contentTypeCodeID == '107101'){
-        if ($scope.checked.subject && $scope.checked.topic && 
+        if ($scope.checked.language && $scope.checked.topic && 
             $scope.checked.marAuthor && $scope.checked.marContentTitle && $scope.checked.marInstruction && 
-            $scope.checked.engAuthor && $scope.checked.engContentTitle && $scope.checked.engInstruction && $scope.checked.fileName) {
+            $scope.checked.engAuthor && $scope.checked.engContentTitle && $scope.checked.engInstruction && 
+            $scope.checked.fileName) {
+          nextState = 'main.loggedIn.selfLearning';
         }
         else{
           alert("Please check all fields and mark as correct");
+          return
         } 
       }
 
@@ -83,6 +90,7 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
         function(responseBody){
                 $log.debug("success");
                 $log.debug(responseBody);
+                $state.go(nextState);
               },
               function(responseBody){$log.debug($scope.content.gradeCodeIDs);
                 $log.debug("error");
@@ -106,6 +114,8 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
 
         fd.append("marInstruction", "marathi description.");
         fd.append("contentID", $stateParams.contentID);
+        fd.delete("fileName");
+
 
         var headers = { "authToken": appUtils.getFromCookies("token",""),
         "appLanguageCodeID":"113101",
@@ -156,26 +166,30 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
     }
 
     var setGradesFromContent = function(){
-      var gradesArray = $scope.content.gradeCodeIDs.split(',');
-      for (var i=0;i<$scope.gradeList.length;i++){
-        if (gradesArray.indexOf($scope.gradeList[i].codeID.toString()) > -1) {
-         $scope.gradeList[i].checked = true;
-         }
-         else{
-          $scope.gradeList[i].checked = false;
-         }
+      if ($scope.content.gradeCodeIDs){
+        var gradesArray = $scope.content.gradeCodeIDs.split(',');
+          for (var i=0;i<$scope.gradeList.length;i++){
+          if (gradesArray.indexOf($scope.gradeList[i].codeID.toString()) > -1) {
+              $scope.gradeList[i].checked = true;
+            }
+          else{
+             $scope.gradeList[i].checked = false;
+        }
        }
+      }
      }
 
    var setRequirementsFromContent = function(){
-    var requirementsArray = $scope.content.requirementCodeIDs.split(',');
-    $log.debug($scope.content.requirementCodeIDs);
-    for (var i=0;i<$scope.requirementList.length;i++){
-      if (requirementsArray.indexOf($scope.requirementList[i].codeID.toString()) > -1) {
-       $scope.requirementList[i].checked = true;
-        }
-        else{
-          $scope.requirementList[i].checked = false;
+    if ($scope.content.requirementCodeIDs){
+      var requirementsArray = $scope.content.requirementCodeIDs.split(',');
+      $log.debug($scope.content.requirementCodeIDs);
+      for (var i=0;i<$scope.requirementList.length;i++){
+        if (requirementsArray.indexOf($scope.requirementList[i].codeID.toString()) > -1) {
+         $scope.requirementList[i].checked = true;
+          }
+          else{
+            $scope.requirementList[i].checked = false;
+          }
         }
       }
     }
