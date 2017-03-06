@@ -199,6 +199,24 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 
 }
 
+.review-input {
+    width:80%;
+}
+
+.review-input[disabled] {
+    background-color: white;
+}
+
+.review-input-group {
+    width:100%;
+}
+
+.review-check {
+    font-size:36px;
+    cursor:pointer;
+}
+
+
 .align-right{
 	text-align: right;
 }
@@ -357,6 +375,10 @@ li.selected  {
     padding-left: 8px;
     padding-top: 4px;
     padding-bottom: 4px;
+}
+
+.form-control input{
+    background-color:red;
 }
 
 

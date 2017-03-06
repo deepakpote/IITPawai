@@ -1,75 +1,248 @@
 angular.module("mitraPortal").controller("reviewTeachingAidsController",
-  ['$scope','$stateParams', '$log', 'appUtils', 'appConstants', 'commonService',
-  function($scope, $stateParams, $log, appUtils, appConstants, commonService) {
+  ['$scope','$stateParams', '$state', '$log', '$http', 'appUtils', 'appConstants', 'commonService',
+  function($scope, $stateParams, $state, $log, $http, appUtils, appConstants, commonService) {
 
     $scope.mode = "PREVIEW"; // can be "EDIT" or "PREVIEW" or "GIVE FEEDBACK"
+    $scope.content = {};
 
     $scope.checked = {
       subject: false,
       language: false,
       requirements: false,
       grades: false,
+      topic: false,
       marAuthor: false,
       marContentTitle: false,
       marInstruction: false,
       engAuthor: false,
       engContentTitle: false,
       engInstruction: false,
-      topic: false,
-      contentType: false,
-      file: false
+      fileName: false
     }
 
-    $scope.content = {
-    };
-    
-  	var fetchContentDetails = function(){
-            var options = {};
-            var data={"contentID" : $stateParams.contentID };//parseInt($stateParams.contentID) };
-            options.data = data;
-            options.url='content/contentDetail/';
-            options.headers = { "authToken": appUtils.getFromCookies("token","") };
 
-            appUtils.ajax(options,
-              function(responseBody){
+
+    $scope.setSelectedOption = function (selectedOption){
+      if($scope.mode == 'EDIT'){
+        if ($scope.selectedOption == selectedOption){
+          $scope.selectedOption = null;
+        }
+        else{
+          $scope.selectedOption = selectedOption;
+        }
+      }
+    }
+
+    $scope.toggle = function(option){
+      $log.debug($scope.checked[option]);
+      $scope.checked[option] = !$scope.checked[option];
+      $log.debug($scope.checked[option]);
+
+      $log.debug($scope.checked);
+    }
+
+    $scope.setMode = function(mode) {
+      if ($scope.mode == 'EDIT' && mode == 'PREVIEW' && $scope.originalContent){
+        $log.debug("dsfs");
+        $scope.content = JSON.parse(JSON.stringify($scope.originalContent)); //deepcopy
+        setGradesFromContent();
+        setRequirementsFromContent();
+        $log.debug($scope.content);
+      }
+      $scope.mode = mode;
+    }
+
+    $scope.publish = function(){
+      if ($scope.content.contentTypeCodeID == '107100'){
+        if ($scope.checked.subject && $scope.checked.language && $scope.checked.requirements && $scope.checked.grades && 
+            $scope.checked.marAuthor && $scope.checked.marContentTitle && $scope.checked.marInstruction && 
+            $scope.checked.engAuthor && $scope.checked.engContentTitle && $scope.checked.engInstruction && $scope.checked.fileName) {
+        }
+        else{
+          alert("Please check all fields and mark as correct");
+        }
+      }
+      else if ($scope.content.contentTypeCodeID == '107101'){
+        if ($scope.checked.subject && $scope.checked.topic && 
+            $scope.checked.marAuthor && $scope.checked.marContentTitle && $scope.checked.marInstruction && 
+            $scope.checked.engAuthor && $scope.checked.engContentTitle && $scope.checked.engInstruction && $scope.checked.fileName) {
+        }
+        else{
+          alert("Please check all fields and mark as correct");
+        } 
+      }
+
+      var options = {};
+      var data={"contentID" : $stateParams.contentID, 
+                "statusCodeID": 114102};
+      options.data = data;
+      options.url='content/saveContentStatus/';
+      options.headers = { "authToken": appUtils.getFromCookies("token","") };
+
+      appUtils.ajax(options,
+        function(responseBody){
                 $log.debug("success");
-                $scope.content = responseBody.data[0];
-                $log.debug($scope.content);
-                $log.debug($scope.contentLanguageList);
+                $log.debug(responseBody);
               },
-              function(responseBody){
+              function(responseBody){$log.debug($scope.content.gradeCodeIDs);
                 $log.debug("error");
                 $log.debug(responseBody);
               }
-            );
-  	}
+          );
+    }
+
+    $scope.saveChanges = function(){
+      $log.debug("dsfsdfg");
+      var fd = new FormData();
+        //fd.append('contentID',);
+        for  (var key in $scope.content){
+          $log.debug(key);
+          $log.debug($scope.content[key]);
+          if ($scope.content[key]){
+            fd.append(key, $scope.content[key]);
+          }
+          
+        }
+
+        fd.append("marInstruction", "marathi description.");
+        fd.append("contentID", $stateParams.contentID);
+
+        var headers = { "authToken": appUtils.getFromCookies("token",""),
+        "appLanguageCodeID":"113101",
+        'Content-Type': undefined};
+
+        $http.post("http://54.152.74.194:8000/content/uploadContent/", fd, {
+          transformRequest: angular.identity,
+          headers: headers
+        })
+        .then (function success(response){
+          $log.debug("success");
+          $state.transitionTo($state.current, $stateParams, {
+              reload: true,
+              inherit: false,
+              notify: true
+          });
+          
+        },
+        function error(response){
+          $log.debug("error");
+        });
+    }
+
+    
+    var fetchContentDetails = function(){
+      var options = {};
+      var data={"contentID" : $stateParams.contentID };
+      options.data = data;
+      options.url='content/contentDetail/';
+      options.headers = { "authToken": appUtils.getFromCookies("token","") };
+
+      appUtils.ajax(options,
+        function(responseBody){
+                //get content set
+                $scope.content = responseBody.data[0];
+                
+                setGradesFromContent();
+                setRequirementsFromContent();
+                
+                //make a copy in case user goes to edit and discards
+                $scope.originalContent = JSON.parse(JSON.stringify($scope.content)); //deepcopy
+              },
+              function(responseBody){$log.debug($scope.content.gradeCodeIDs);
+                $log.debug("error");
+                $log.debug(responseBody);
+              }
+          );
+    }
+
+    var setGradesFromContent = function(){
+      var gradesArray = $scope.content.gradeCodeIDs.split(',');
+      for (var i=0;i<$scope.gradeList.length;i++){
+        if (gradesArray.indexOf($scope.gradeList[i].codeID.toString()) > -1) {
+         $scope.gradeList[i].checked = true;
+         }
+         else{
+          $scope.gradeList[i].checked = false;
+         }
+       }
+     }
+
+   var setRequirementsFromContent = function(){
+    var requirementsArray = $scope.content.requirementCodeIDs.split(',');
+    $log.debug($scope.content.requirementCodeIDs);
+    for (var i=0;i<$scope.requirementList.length;i++){
+      if (requirementsArray.indexOf($scope.requirementList[i].codeID.toString()) > -1) {
+       $scope.requirementList[i].checked = true;
+        }
+        else{
+          $scope.requirementList[i].checked = false;
+        }
+      }
+    }
+
+    $scope.$watch('gradeList', function (gradeList){
+      var checkedGrades = gradeList.filter(function(grade){ return (grade.checked == true)});
+      var gradesString = "";
+      var displayGradesString = "";
+      if (checkedGrades.length > 0){
+        gradesString = checkedGrades[0].codeID;
+        displayGradesString = checkedGrades[0].codeNameEn;
+      }
+      for (i=1;i<checkedGrades.length;i++){
+
+        gradesString += ',' + checkedGrades[i].codeID;
+        displayGradesString += ', ' + checkedGrades[i].codeNameEn;
+      }
+      $scope.content.gradeCodeIDs = gradesString;
+      $scope.displayGradesString = displayGradesString;
+      
+    }, true);
+
+     $scope.$watch('requirementList', function (requirementList){
+      var checkedRequirements = requirementList.filter(function(requirement){ return (requirement.checked == true)});
+      var requirementsString = "";
+      var displayRequirementsString = "";
+      if (checkedRequirements.length > 0){
+        requirementsString = checkedRequirements[0].codeID;
+        displayRequirementsString = checkedRequirements[0].codeNameEn;
+      }
+      for (i=1;i<checkedRequirements.length;i++){
+
+        requirementsString += ',' + checkedRequirements[i].codeID;
+        displayRequirementsString += ', ' + checkedRequirements[i].codeNameEn;
+      }
+      $scope.content.requirementCodeIDs = requirementsString;
+      $scope.displayRequirementsString = displayRequirementsString;
+      
+    }, true);
 
     var populateDropDowns = function() {
       $scope.contentTypeList = commonService.getCodeListPerCodeGroup(
-          appConstants.codeGroup.contentType
+        appConstants.codeGroup.contentType
         );
       $scope.subjectList = commonService.getCodeListPerCodeGroup(
-          appConstants.codeGroup.subject
+        appConstants.codeGroup.subject
         );
       $scope.gradeList = commonService.getCodeListPerCodeGroup(
-          appConstants.codeGroup.grade
+        appConstants.codeGroup.grade
         );
       $scope.fileTypeList = commonService.getCodeListPerCodeGroup(
-          appConstants.codeGroup.fileType
+        appConstants.codeGroup.fileType
         );
       $scope.topicList = commonService.getCodeListPerCodeGroup(
-          appConstants.codeGroup.topic
+        appConstants.codeGroup.topic
         );
       $scope.contentLanguageList = commonService.getCodeListPerCodeGroup(
-          appConstants.codeGroup.contentLanguage
+        appConstants.codeGroup.contentLanguage
         );
       $scope.requirementList = commonService.getCodeListPerCodeGroup(
-          appConstants.codeGroup.requirement
-          );
+        appConstants.codeGroup.requirement
+        );
     };
 
     $scope.$on('codesAvailable', function(event,data){
       populateDropDowns();
+      fetchContentDetails();
     });
     
     var init = function () {
@@ -84,4 +257,4 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
 
 
   }
-]);
+  ]);
