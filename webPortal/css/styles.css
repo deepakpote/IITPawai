@@ -373,6 +373,12 @@ li.selected  {
     padding-bottom: 4px;
 }
 
+.dashboard-elements {
+	padding-top:20px;
+	padding-right:50px;
+	padding-left:50px
+}
+
 /* Rules for sizing the icon. */
 .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }
