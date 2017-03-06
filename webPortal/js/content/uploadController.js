@@ -1,6 +1,6 @@
 angular.module("mitraPortal").controller("uploadController",
-  ['$scope', '$location', '$log', '$state', '$http', '$modal', 'appUtils', 'appConstants', 'contentService', 'commonService', '$filter',
-  function($scope, $location, $log, $state, $http, $modal, appUtils, appConstants, contentService, commonService, filter) {
+  ['$scope', '$location', '$log', '$window', '$state', '$http', '$modal', 'appUtils', 'appConstants', 'contentService', 'commonService', '$filter',
+  function($scope, $location, $log, $window, $state, $http, $modal, appUtils, appConstants, contentService, commonService, filter) {
 
 
     $scope.acceptedFileTypes = {
@@ -149,7 +149,19 @@ angular.module("mitraPortal").controller("uploadController",
             url: 'result',
             scope: $scope,
             templateUrl : '/mitra.test/js/content/submittedSuccessView.html',
+          })
+          modalInstance.result.finally(function(){ 
+            if ($scope.content.contentTypeCodeID == '107100'){
+              $window.scrollTo(0, 0);
+              $state.go('main.loggedIn.teachingAids');
+            }
+            else if ($scope.content.contentTypeCodeID == '107101') {
+              $window.scrollTo(0, 0);
+              $state.go('main.loggedIn.selfLearning');
+
+            }
           });
+          ;
         },
         function error(response){
           $log.debug("not 2xx");
@@ -253,19 +265,39 @@ angular.module("mitraPortal").controller("uploadController",
 
       var setSuccessDetails = function() {
         $scope.success = {};
-        $scope.success.language = commonService.getValueByCode($scope.content.subjectCodeID)[0].codeNameEn;
+        
         $scope.success.uploaderName = "self";
 
-        var checkedGrades = $scope.gradeList.filter(function(grade){ return (grade.checked == true)});
-        var gradesString = "";
-        if (checkedGrades.length > 0){
-          gradesString = checkedGrades[0].codeNameEn;
-        }
-        for (i=1;i<checkedGrades.length;i++){
 
-          gradesString += ', ' + checkedGrades[i].codeNameEn;
+        if ($scope.statusCodeID == 114100){
+
+          $scope.success.message = "Saved To Drafts";
         }
-        $scope.success.grades = gradesString;
+        else if ($scope.statusCodeID == 114101){
+            $scope.success.message = "Sent For Review";
+        }
+        
+
+        if ($scope.content.contentTypeCodeID == 107100){
+          var checkedGrades = $scope.gradeList.filter(function(grade){ return (grade.checked == true)});
+          var gradesString = "";
+          if (checkedGrades.length > 0){
+            gradesString = checkedGrades[0].codeNameEn;
+          }
+          for (i=1;i<checkedGrades.length;i++){
+
+            gradesString += ', ' + checkedGrades[i].codeNameEn;
+          }
+          $scope.success.first = gradesString;
+          $scope.success.second = commonService.getValueByCode($scope.content.subjectCodeID)[0].codeNameEn;
+        }
+        
+        if ($scope.content.contentTypeCodeID == 107101){
+          $scope.success.first = commonService.getValueByCode($scope.content.topicCodeID)[0].codeNameEn;
+          $scope.success.second = commonService.getValueByCode($scope.content.contentLanguageCodeID)[0].codeNameEn;
+        }
+
+        
 
         $log.debug($scope.inputs.fileName);
 
