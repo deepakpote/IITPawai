@@ -145,7 +145,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
-            .state('main.index.reviewTeachingAids', {        //check proper routing for this.
+            .state('main.loggedIn.reviewTeachingAids', {        //check proper routing for this.
                 url: '/teachingAids/review/:contentID',
                 views : {
                     'header': {

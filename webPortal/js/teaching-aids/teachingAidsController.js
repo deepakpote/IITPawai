@@ -57,7 +57,7 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     }
 
     function goToReview (teachingAid){
-        $state.go('main.index.reviewTeachingAids',
+        $state.go('main.loggedIn.reviewTeachingAids',
             {'contentID' : teachingAid.contentID, 
             'teachingAid' :teachingAid});
     }
