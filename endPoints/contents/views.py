@@ -662,7 +662,7 @@ class ContentViewSet(viewsets.ModelViewSet):
     """
     API to get the content details in all app languages
     """
-    @list_route(methods=['get'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def contentDetail(self,request):
         # get inputs
         contentID = request.data.get('contentID')
