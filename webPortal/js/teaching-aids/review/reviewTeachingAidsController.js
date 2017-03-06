@@ -1,6 +1,6 @@
 angular.module("mitraPortal").controller("reviewTeachingAidsController",
-  ['$scope','$stateParams', '$state', '$log', '$http', 'appUtils', 'appConstants', 'commonService',
-  function($scope, $stateParams, $state, $log, $http, appUtils, appConstants, commonService) {
+  ['$scope','$stateParams', '$state', '$window', '$log', '$http', 'appUtils', 'appConstants', 'commonService',
+  function($scope, $stateParams, $state, $window, $log, $http, appUtils, appConstants, commonService) {
 
     $scope.mode = "PREVIEW"; // can be "EDIT" or "PREVIEW" or "GIVE FEEDBACK"
     $scope.content = {};
@@ -43,12 +43,12 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
 
     $scope.setMode = function(mode) {
       if ($scope.mode == 'EDIT' && mode == 'PREVIEW' && $scope.originalContent){
-        $log.debug("dsfs");
         $scope.content = JSON.parse(JSON.stringify($scope.originalContent)); //deepcopy
         setGradesFromContent();
         setRequirementsFromContent();
         $log.debug($scope.content);
       }
+      $window.scrollTo(0, 0);
       $scope.mode = mode;
     }
 
@@ -90,7 +90,9 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
         function(responseBody){
                 $log.debug("success");
                 $log.debug(responseBody);
+                $window.scrollTo(0, 0);
                 $state.go(nextState);
+
               },
               function(responseBody){$log.debug($scope.content.gradeCodeIDs);
                 $log.debug("error");
@@ -127,11 +129,14 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
         })
         .then (function success(response){
           $log.debug("success");
+          $window.scrollTo(0, 0);
           $state.transitionTo($state.current, $stateParams, {
               reload: true,
               inherit: false,
               notify: true
           });
+
+
           
         },
         function error(response){
