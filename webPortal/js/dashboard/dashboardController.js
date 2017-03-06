@@ -139,7 +139,8 @@ angular.module("mitraPortal").controller("dashboardController",
 	  $scope.myInterval = 0;
 	  $scope.myTransition = false;
 	  $scope.noWrapSlides = false;
-	  $scope.active = 0;
+	  $scope.activeCarousel1 = 0;
+	  $scope.activeCarousel2 = 0;
 	  var teachingAidsCollection =  $scope.teachingAidsCollection = [];
 	  var selfLearningCollection =  $scope.selfLearningCollection = [];
 
