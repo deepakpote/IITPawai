@@ -1,13 +1,15 @@
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">
-                <img alt="" src="">
+            <a ng-click="goBack()">
+                <i ng-if="showBackArrow" class="material-icons md-24 back-arrow">arrow_back</i>
             </a>
+            <div class="navbar-brand weight-400">
+                {{title}}
+            </div>
         </div>
         <ul class="nav navbar-nav navbar-right">
             <li><a href="#"><span class="glyphicon glyphicon-search" style="color:#fff;font-size:20px" aria-hidden="true"></span></a></li>
-            <!--TODO implement sign out here -->
             <li><a ui-sref="main.notLoggedIn.home">Sign out</a></li>
         </ul>
     </div>

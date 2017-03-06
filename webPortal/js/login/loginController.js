@@ -11,6 +11,7 @@ function LoginController($location, $modalInstance, $rootScope,$cookies, loginSe
     vm.errormessage = "";
     vm.validate = validate;
     vm.closeModal = closeModal;
+    vm.requestOtp = requestOtp;
 
     function validate(){
 	    console.log("validate called..");
@@ -37,6 +38,11 @@ function LoginController($location, $modalInstance, $rootScope,$cookies, loginSe
         }
 
 	}
+
+	function requestOtp(){
+        commonService.setPhoneNumber(vm.phoneno);
+        $state.go("main.notLoggedIn.home.requestotp");
+    }
 
 	function closeModal () {
 	    $modalInstance.close();

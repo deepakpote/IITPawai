@@ -2,6 +2,15 @@ angular.module("mitraPortal").service('commonService', ['appUtils', 'appConstant
 	function(appUtils, appConstants, _) {
     
 		var service = {};
+		var phoneNumber;
+
+		service.setPhoneNumber = function(number) {
+		    phoneNumber = number;
+        };
+
+        service.getPhoneNumber = function() {
+            return phoneNumber;
+        };
 		
 		service.getCodeList = function (successCB, errorCB) {
   		options = {};

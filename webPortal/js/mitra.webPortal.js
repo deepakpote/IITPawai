@@ -4,10 +4,10 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
 
         var templateChange = function() {
-            return "mitra.test";
+            return "";
         };
         //$locationProvider.html5Mode(true);
-        $urlRouterProvider.otherwise('/home');
+        $urlRouterProvider.otherwise('/home/login');
 
         $stateProvider
             .state('main', {
@@ -20,11 +20,9 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 abstract: true,
                 url: '',
                 views: {
-                    'header': {
-                        templateUrl: templateChange() + '/js/common/headerView.html'
-                    },
                     'leftMenu': {
-                        templateUrl: templateChange() + '/js/common/leftMenuView.html'
+                        templateUrl: templateChange() + '/js/common/leftMenuView.html',
+                        controller : 'leftMenuController'
                     },
                     'contentBox': {
                         templateUrl: templateChange() + '/js/common/contentBoxView.html'
@@ -34,6 +32,9 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             .state('main.notLoggedIn.home', {
                 url: '/home',
                 views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/headerView.html'
+                    },
                     'content': {
                         templateUrl: templateChange() + '/js/home/layoutView.html'
                         //template: "Setting up home layout"
@@ -54,11 +55,9 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 url: '',
                 abstract : true,
                 views: {
-                    'header': {
-                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
-                    },
                     'leftMenu': {
-                        templateUrl: templateChange() + '/js/common/logged-in/leftMenuView.html'
+                        templateUrl: templateChange() + '/js/common/logged-in/leftMenuView.html',
+                        controller : 'leftMenuController'
                     },
                     'contentBox': {
                         templateUrl: templateChange() + '/js/common/contentBoxView.html'
@@ -68,6 +67,9 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             .state('main.loggedIn.home', {
                 url: '/admin',
                 views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
+                    },
                     'content': {
                         templateUrl: templateChange() + '/js/home/layoutView.html',
                         //template: "Setting up home layout"
@@ -87,6 +89,16 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             .state('main.loggedIn.contentUpload', {
                 url: '/content/upload',
                 views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Upload Content';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
                     'content': {
                         templateUrl: templateChange() + '/js/content/uploadView.html',
                         controller: 'uploadController'
@@ -96,6 +108,16 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             .state('main.loggedIn.selfLearning', {
                 url: '/selfLearning',
                 views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Self Learning';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
                     'content': {
                         templateUrl : templateChange() + '/js/self-learning/selfLearningView.html',
                         controller : 'selfLearningController',
@@ -106,6 +128,16 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             .state('main.loggedIn.teachingAids', {
                 url: '/teachingAids',
                 views : {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Teaching Aids';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
                     'content' : {
                         templateUrl : templateChange() + '/js/teaching-aids/teachingAidsView.html',
                         controller : 'teachingAidsController',
@@ -116,6 +148,9 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             .state('main.index.reviewTeachingAids', {        //check proper routing for this.
                 url: '/teachingAids/review/:contentID',
                 views : {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
+                    },
                     'content' : {
                         templateUrl: '/js/teaching-aids/review/reviewTeachingAidsView.html',
                         controller: 'reviewTeachingAidsController'
