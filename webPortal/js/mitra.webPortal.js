@@ -4,7 +4,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
 
         var templateChange = function() {
-            return "";
+            return "webPortal";
         };
         //$locationProvider.html5Mode(true);
         $urlRouterProvider.otherwise('/home/login');
@@ -67,6 +67,9 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             .state('main.loggedIn.home', {
             	url: '/dashboard',
                 views: {
+                	'header': {
+                		templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
+                    },
                     'content': {
                         templateUrl: templateChange() + '/js/dashboard/dashboardView.html',
                         controller: 'dashboardController'
