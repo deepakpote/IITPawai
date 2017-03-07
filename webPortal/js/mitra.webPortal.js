@@ -63,23 +63,13 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 }
             })
             .state('main.loggedIn.home', {
-                url: '/admin',
+                url: '/dashboard',
                 views: {
-                    'content': {
-                        templateUrl: 'webPortal/js/home/layoutView.html',
-                        //template: "Setting up home layout"
-                        controller: function($scope,appUtils,$state) {
-                            !appUtils.isLoggedInUser() ? $state.go('main.notLoggedIn.home') : console.log("");
-                        }
-                    },
-                    'welcome@main.loggedIn.home': {
-                        templateUrl: 'webPortal/js/home/welcomeView.html',
-                        controller: 'welcomeController'
-                    },
-                    'map@main.loggedIn.home': {
-                        templateUrl: 'webPortal/js/home/mapView.html'
-                    }
-                }
+			  		'content': {
+			  			templateUrl: 'webPortal/js/dashboard/dashboardView.html',
+			 			controller: 'dashboardController'
+			  		}
+			  	}
             })
             .state('main.loggedIn.contentUpload', {
                 url: '/content/upload',
@@ -90,15 +80,6 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
-            .state('main.loggedIn.dashboard', {
-			    url: '/dashboard',
-			 	views: {
-			  		'content': {
-			  			templateUrl: 'webPortal/js/dashboard/dashboardView.html',
-			 			controller: 'dashboardController'
-			  		}
-			  	}
-			})
             .state('main.loggedIn.selfLearning', {
                 url: '/selfLearning',
                 views: {
