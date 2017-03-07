@@ -152,7 +152,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
                     },
                     'content' : {
-                        templateUrl: '/js/teaching-aids/review/reviewTeachingAidsView.html',
+                        templateUrl: templateChange() + '/js/teaching-aids/review/reviewTeachingAidsView.html',
                         controller: 'reviewTeachingAidsController'
                     }
                 },
