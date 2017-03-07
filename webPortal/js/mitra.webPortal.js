@@ -65,24 +65,11 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 }
             })
             .state('main.loggedIn.home', {
-                url: '/admin',
+            	url: '/dashboard',
                 views: {
-                    'header': {
-                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
-                    },
                     'content': {
-                        templateUrl: templateChange() + '/js/home/layoutView.html',
-                        //template: "Setting up home layout"
-                        controller: function($scope,appUtils,$state) {
-                            !appUtils.isLoggedInUser() ? $state.go('main.notLoggedIn.home') : console.log("");
-                        }
-                    },
-                    'welcome@main.loggedIn.home': {
-                        templateUrl: templateChange() + '/js/home/welcomeView.html',
-                        controller: 'welcomeController'
-                    },
-                    'map@main.loggedIn.home': {
-                        templateUrl: templateChange() + '/js/home/mapView.html'
+                        templateUrl: templateChange() + '/js/dashboard/dashboardView.html',
+                        controller: 'dashboardController'
                     }
                 }
             })
