@@ -123,7 +123,7 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
         "appLanguageCodeID":"113101",
         'Content-Type': undefined};
 
-        $http.post("http://54.152.74.194:8000/content/uploadContent/", fd, {
+        $http.post(appConstants.endpoint.baseUrl + "content/uploadContent/", fd, {
           transformRequest: angular.identity,
           headers: headers
         })
