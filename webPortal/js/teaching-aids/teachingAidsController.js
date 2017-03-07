@@ -1,14 +1,18 @@
 angular.module("mitraPortal").controller("teachingAidsController", TeachingAidsController);
 
-TeachingAidsController.$inject = ['TeachingAidsService','commonService','$scope','appConstants','$filter'];
 
-function TeachingAidsController(TeachingAidsService,commonService,$scope,appConstants,filter) {
+TeachingAidsController.$inject = ['TeachingAidsService','commonService','$scope','appConstants','$filter', '$state'];
+
+function TeachingAidsController(TeachingAidsService,commonService,$scope,appConstants,filter,$state) {
+
     var vm = this;
     vm.setStatus = setStatus;
     vm.setFileType = setFileType;
     vm.status = 114101;
     vm.fileType = 108100;
     vm.data = {};
+    vm.goToReview = goToReview;
+
     vm.selectedOption = "";
     vm.setSelectedOption = setSelectedOption;
     vm.dataFilter = {
@@ -16,6 +20,8 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
         "gradeCodeIDs" : ""
     };
     vm.showDataFilters = showDataFilters;
+    vm.loadMore = loadMore;
+    vm.hasMoreData = true;
 
     activate();
 
@@ -46,6 +52,14 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     function setFileType(fileType) {
         vm.fileType = fileType;
         fetchTeachingAids();
+        console.log(fileType);
+        console.log("filetype");
+    }
+
+    function goToReview (teachingAid){
+        $state.go('main.loggedIn.reviewTeachingAids',
+            {'contentID' : teachingAid.contentID, 
+            'teachingAid' :teachingAid});
     }
 
     function fetchTeachingAids() {
@@ -69,6 +83,38 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
                 }
             }
             vm.data = contents;
+        }
+        function onFailure(response) {
+
+        }
+    }
+
+    function loadMore() {
+        TeachingAidsService.fetchMore(vm.fileType, vm.status, vm.dataFilter ,onSuccess, onFailure);
+        function onSuccess(response) {
+            var contents = response.data;
+            for(var i = 0 ; i < contents.length ; i ++) {
+                var content = contents[i];
+                content.subjectName = commonService.getValueByCode(content.subject)[0].codeNameEn;
+                var ids = content.gradeCodeIDs.split(",");
+                var grades = "";
+                for (var j = 0 ; j < ids.length ; j++) {
+                    grades = grades + " Grade " + commonService.getValueByCode(ids[j])[0].codeNameEn;
+                }
+                content.grades = grades;
+            }
+            if(vm.fileType == 108100) {
+                for(i = 0 ; i < contents.length ; i ++) {
+                    var videoId = parseYoutubeUrl(contents[i].fileName);
+                    contents[i].thumbnailUrl = "http://img.youtube.com/vi/" + videoId + "/0.jpg";
+                }
+            }
+            var temporaryCopy = vm.data;
+            for(i=0 ;i < contents.length; i++) {
+                temporaryCopy.push(contents[i]);
+            }
+            vm.data = temporaryCopy;
+            vm.hasMoreData = false;
         }
         function onFailure(response) {
 

@@ -11,6 +11,7 @@ function LoginController($location, $uibModalInstance, $rootScope,$cookies, logi
     vm.errormessage = "";
     vm.validate = validate;
     vm.closeModal = closeModal;
+    vm.requestOtp = requestOtp;
 
     function validate(){
 	    console.log("validate called..");
@@ -23,7 +24,7 @@ function LoginController($location, $uibModalInstance, $rootScope,$cookies, logi
             console.log(response);
             if(HttpUtils.isSuccessful(response)){
                 var data = response.data[0];
-                appUtils.saveToLocalStorage("token",data.token);
+                appUtils.saveToCookies("token",data.token);
                 $state.go('main.loggedIn.home');
             }else{
                 vm.hasError = true;
@@ -37,6 +38,11 @@ function LoginController($location, $uibModalInstance, $rootScope,$cookies, logi
         }
 
 	}
+
+	function requestOtp(){
+        commonService.setPhoneNumber(vm.phoneno);
+        $state.go("main.notLoggedIn.home.requestotp");
+    }
 
 	function closeModal () {
 	    $uibModalInstance.close();

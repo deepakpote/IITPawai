@@ -16,6 +16,8 @@ function RequestOtpController($uibModalInstance, HttpUtils, loginService, $state
     vm.getOtp = getOtp;
     vm.closeModal = closeModal;
     vm.verifyOtp = verifyOtp;
+    console.log("phone number is " + commonService.getPhoneNumber());
+    vm.phoneno = commonService.getPhoneNumber();
 
     function getOtp() {
         var phoneNumber = vm.phoneno;
@@ -54,7 +56,7 @@ function RequestOtpController($uibModalInstance, HttpUtils, loginService, $state
             console.log(response);
             if(HttpUtils.isSuccessful(response)){
                 var data = response.data[0];
-                appUtils.saveToLocalStorage("token",data.token);
+                appUtils.saveToCookies("token",data.token);
                 console.log("auth token set " + data.token);
                 $state.go('main.notLoggedIn.home.setpassword');
             }else{

@@ -14,6 +14,7 @@
     /* @ngInject */
     function SelfLearningService($http,appUtils) {
         this.fetch = fetch;
+        this.fetchMore = fetchMore;
 
         ////////////////
 
@@ -24,7 +25,22 @@
                             "pageNumber":0,
                             "topicCodeIDs":topicCodeIDs,
                             "statusCodeID":statusCodeID};
-            var authToken = appUtils.getFromLocalStorage("token","");
+            var authToken = appUtils.getFromCookies("token","");
+            options.data = postData;
+            options.url = 'content/searchSelfLearning/';
+            options.headers = {"authToken" : authToken , "appLanguageCodeID" : "113101"};
+            options.method = 'POST';
+            appUtils.ajax(options,onSuccess,onFailure);
+        }
+
+        function fetchMore(filter,statusCodeID,onSuccess,onFailure) {
+            var languageCodeIDs = "" + filter.languageCodeIDs;
+            var topicCodeIDs = "" + filter.topicCodeIDs;
+            var postData = {"languageCodeIDs":languageCodeIDs,
+                "pageNumber":1,
+                "topicCodeIDs":topicCodeIDs,
+                "statusCodeID":statusCodeID};
+            var authToken = appUtils.getFromCookies("token","");
             options.data = postData;
             options.url = 'content/searchSelfLearning/';
             options.headers = {"authToken" : authToken , "appLanguageCodeID" : "113101"};

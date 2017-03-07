@@ -2,10 +2,11 @@
 	<div class="">
         <div class="text-center sign-in-text" >Sign In</div>
         <i class="fa fa-times close-modal" aria-hidden="true" ng-click="login.closeModal()"></i>
-		<form name="loginForm" class="form-horizontal" style="width: 70%;margin:auto;padding: 16px;">
+		<form name="loginForm" class="form-horizontal" style="width: 70%;margin:auto;padding: 16px;" ng-submit="login.validate()">
             <div class="phone-number">
-                <input class="ng-pristine ng-untouched" minlength="10" maxlength="10"
-                       required ng-model="login.phoneno" type="tel" placeholder="10 digit mobile number" />
+                <span class="country-code">+91</span>
+                <input class="ng-pristine ng-untouched col-md-9" minlength="10" maxlength="10" autofocus
+                       required ng-model="login.phoneno" type="tel" placeholder="10 digit mobile number" style="width: 85%;"/>
                 <div role="alert">
                   <span class="error" ng-show="loginForm.phoneno.$error.required">
                    Required!</span>
@@ -17,11 +18,11 @@
             <div class="error-message" ng-show="login.hasError">{{login.errorMessage}}</div>
             <div class="row clearfix" style="margin-bottom: 16px;margin-top: 8px;margin-left: 2px;margin-right:2px;">
                 <label class="pull-left text-color-black" style="font-weight: 400">Don't have a password?</label>
-                <label ui-sref="main.notLoggedIn.home.requestotp"
+                <label ng-click="login.requestOtp()"
                        class="pull-right primary-text-color" style="cursor: pointer">REQUEST OTP</label>
             </div>
             <div class="text-center">
-                <button ng-click="login.validate()" type="button" class="btn btn-warning">Submit</button>
+                <button type="submit" class="btn btn-warning">Submit</button>
             </div>
 		</form>
 	</div>

@@ -1,0 +1,392 @@
+<div class="upload-container" style="margin-top:40px;">
+  <div class="col-md-8">
+    <span ng-class="mode =='PREVIEW' ? 'orange-text':''" 
+    style="text-align:center;display: inline-block;cursor: pointer;"
+    ng-click="setMode('PREVIEW')"
+    >
+    <div>
+      <i class="material-icons" style="font-size:24px;margin:auto;">remove_red_eye</i>
+    </div>
+    <div class="">
+      PREVIEW
+    </div>
+  </span>
+  <span ng-class="mode =='EDIT' ? 'orange-text':''" 
+  style="text-align:center;display: inline-block;margin-left:40px;cursor: pointer;"
+  ng-click="mode='EDIT'">
+
+  <div>
+    <i class="material-icons" style="font-size:24px;margin:auto;">mode_edit</i>
+  </div>
+  <div class="">
+    EDIT
+  </div>
+</span>
+<span ng-class="mode =='GIVE FEEDBACK' ? 'orange-text':''" 
+style="text-align:center;display: inline-block;margin-left:40px;cursor: pointer;"
+ng-click="mode='GIVE FEEDBACK'">
+<div>
+  <i class="material-icons" style="font-size:24px;margin:auto;">feedback</i>
+</div>
+<div class="">
+  GIVE FEEDBACK
+</div>
+
+</span>
+</div>
+</div>
+
+<div class = "hr"> </div>
+
+<div>
+
+
+  <form name="frmContentUpload" ng-submit="submit()">
+      <div class="upload-container">
+        <div class="no-padding-container">
+          <div class="upload-title" style="margin-top:50px;">Content Details</div>
+          <div class="col-md-3" ng-if="content.contentTypeCodeID == 107100">
+            <div class="card">
+              <div class="options-card" ng-mouseenter=setSelectedOption("Subject") ng-mouseleave=setSelectedOption("Subject") >
+                <div class="card-content">
+                  Subject
+                </div>
+                <div class="card-select" ng-class="($parent.content.subjectCodeID?'orange-background':'teal-background')">
+                  <span ng-if="$parent.content.subjectCodeID" ng-repeat="subject in subjectList | filter:{codeID : $parent.content.subjectCodeID}">
+                    {{subject.codeNameEn}}
+                  </span>
+                  <span ng-if="!$parent.content.subjectCodeID">
+                    Select
+                  </span>
+                </div>
+                <div class="card-action" ng-show="(selectedOption == 'Subject')">
+                  <div ng-repeat="subject in subjectList">
+                    <div>
+                      <div class="col-md-9 no-padding align-left">
+                        {{subject.codeNameEn}}
+                      </div>
+                      <div class="col-md-3 align-right no-padding" >
+                        <input type="radio" ng-model="$parent.content.subjectCodeID" ng-click = "showContentObject()" ng-value="subject.codeID" />
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <br />
+            <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'"> 
+              <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('subject')"
+              ng-class="checked['subject']?'orange-text':''">
+              check
+            </i> 
+          </div>
+        </div>
+
+        <div class="col-md-1" ng-if="content.contentTypeCodeID == 107100"></div>
+
+        <div class="col-md-3" ng-if="content.contentTypeCodeID == 107100">
+          <div class="card">
+            <div class="options-card" ng-mouseenter=setSelectedOption("Grade") ng-mouseleave=setSelectedOption("Grade") >
+              <div class="card-content">
+                Grade
+              </div>
+              <div class="card-select" ng-class="(((gradeList | filter:{checked:true}).length > 0)?'orange-background':'teal-background')">
+                {{displayGradesString}}
+                <span ng-if="!((gradeList | filter:{checked:true}).length > 0)">
+                  Select
+                </span>
+              </div>
+              <div class="card-action" ng-show="(selectedOption == 'Grade')">
+                <div ng-repeat="grade in gradeList">
+                  <div>
+                    <div class="col-md-9 no-padding align-left">
+                      {{grade.codeNameEn}}
+                    </div>
+                    <div class="col-md-3 align-right no-padding" >
+                      <input type="checkbox" ng-model="grade.checked" ng-click = "showContentObject()" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br />
+          <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'"> 
+            <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('grades')"
+            ng-class="checked['grades']?'orange-text':''">
+            check
+          </i> 
+        </div>
+
+        <br />
+
+        <div class="card">
+          <div class="options-card" ng-mouseenter=setSelectedOption("Requirement") ng-mouseleave=setSelectedOption("Requirement") >
+            <div class="card-content">
+              Requirement
+            </div>
+            <div class="card-select" ng-class="(((requirementList | filter:{checked:true}).length > 0)?'orange-background':'teal-background')">
+              {{displayRequirementsString}}
+              <span ng-if="!((requirementList | filter:{checked:true}).length > 0)">
+                Select
+              </span>
+            </div>
+            <div class="card-action" ng-show="(selectedOption == 'Requirement')">
+              <div ng-repeat="requirement in requirementList">
+                <div>
+                  <div class="col-md-9 no-padding align-left">
+                    {{requirement.codeNameEn}}
+                  </div>
+                  <div class="col-md-3 align-right no-padding" >
+                    <input type="checkbox" ng-model="requirement.checked" ng-click = "showContentObject()" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <br />
+        <div style="text-align:center;width:100%; " ng-if="mode=='PREVIEW'"> 
+          <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('requirements')"
+          ng-class="checked['requirements']?'orange-text':''">
+          check
+        </i> 
+      </div>
+
+
+
+
+    </div>
+
+    <div class="col-md-1" ng-if="content.contentTypeCodeID == 107100"></div>
+
+
+
+
+    <div class="col-md-3" ng-if="content.contentTypeCodeID == 107100 || content.contentTypeCodeID == 107101">
+      <div class="card">
+        <div class="options-card" ng-mouseenter=setSelectedOption("Language") ng-mouseleave=setSelectedOption("Language")>
+          <div class="card-content">
+            Language
+          </div>
+          <div class="card-select" ng-class="($parent.content.contentLanguageCodeID?'orange-background':'teal-background')">
+            <span ng-if="$parent.content.contentLanguageCodeID" ng-repeat="contentLanguage in contentLanguageList | filter:{codeID : $parent.content.contentLanguageCodeID}">
+              {{contentLanguage.codeNameEn}}
+            </span>
+            <span ng-if="!$parent.content.contentLanguageCodeID">
+              Select
+            </span>
+          </div>
+          <div class="card-action" ng-show="(selectedOption == 'Language')">
+            <div ng-repeat="contentLanguage in contentLanguageList">
+              <div>
+                <div class="col-md-9 no-padding align-left">
+                  {{contentLanguage.codeNameEn}}
+                </div>
+                <div class="col-md-3 align-right no-padding" >
+                  <input type="radio" ng-model="$parent.content.contentLanguageCodeID" ng-click = "showContentObject()" ng-value="contentLanguage.codeID" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br />
+      <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'"> 
+        <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('language')"
+        ng-class="checked['language']?'orange-text':''">
+        check
+      </i> 
+    </div>
+  </div>
+
+  <div class="col-md-1"></div>
+
+  <div class="col-md-3" ng-if="content.contentTypeCodeID == 107101">
+    <div class="card">
+      <div class="options-card" ng-mouseenter=setSelectedOption("Topic") ng-mouseleave=setSelectedOption("Topic")>
+        <div class="card-content">
+          Topic
+        </div>
+        <div class="card-select" ng-class="($parent.content.topicCodeID?'orange-background':'teal-background')">
+          <span ng-if="$parent.content.topicCodeID" ng-repeat="topic in topicList | filter:{codeID : $parent.content.topicCodeID}">
+            {{topic.codeNameEn}}
+          </span>
+          <span ng-if="!$parent.content.topicCodeID">
+            Select
+          </span>
+        </div>
+        <div class="card-action" ng-show="(selectedOption == 'Topic')">
+          <div ng-repeat="topic in topicList">
+            <div>
+              <div class="col-md-9 no-padding align-left">
+                {{topic.codeNameEn}}
+              </div>
+              <div class="col-md-3 align-right no-padding" >
+                <input type="radio" ng-model="$parent.content.topicCodeID" ng-click = "showContentObject()" ng-value="topic.codeID" />
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'"> 
+      <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('topic')"
+      ng-class="checked['topic']?'orange-text':''">
+      check
+    </i> 
+  </div>
+</div>
+<div class="col-md-1" ng-if="content.contentTypeCodeID == 107101"></div>
+</div>
+</div>
+
+<div class = "hr"> </div>
+
+<!-- Form entries below options -->
+
+
+<div class="upload-container" >
+
+ <div class="col-md-10">
+  <div class="upload-title no-padding">Content Title</div>
+  <div class="input-group form-group " ng-class="{'has-error': frmContentUpload.engContentTitle.$dirty && frmContentUpload.engContentTitle.$invalid}" style="width:100%;">
+    <input type="text" class="form-control col-xs-4 review-input" style="width:80%" id="engContentTitle" name="engContentTitle" ng-disabled="mode!='EDIT'"
+    placeholder="English" ng-model="content.engContentTitle" required />
+    <i class="material-icons review-check" style="margin-left:40px;" ng-click="toggle('engContentTitle')"
+    ng-class="checked['engContentTitle']?'orange-text':''" ng-if="mode=='PREVIEW'">
+    check
+  </i> 
+
+  <div ng-messages="frmContentUpload.engContentTitle.$error" ng-if="frmContentUpload.engContentTitle.$dirty">
+    <span class="error-message" ng-show="frmContentUpload.engContentTitle.$error.required">Please enter English content title</span>
+  </div>
+</div>
+
+
+
+
+
+<div class="form-group input-group" ng-class="{'has-error': frmContentUpload.marContentTitle.$dirty && frmContentUpload.marContentTitle.$invalid}" style="width:100%;">
+   <input type="text" class="form-control col-xs-4 review-input" style="width:80%"  id="marContentTitle" name="marContentTitle" placeholder="मराठी"  ng-disabled="mode!='EDIT'"
+   ng-model="content.marContentTitle" required />
+   <i class="material-icons review-check" ng-click="toggle('marContentTitle')"
+   ng-class="checked['marContentTitle']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
+   check
+  </i> 
+  <div ng-messages="frmContentUpload.marContentTitle.$error" ng-if="frmContentUpload.marContentTitle.$dirty">
+    <span class="error-message" ng-show="frmContentUpload.marContentTitle.$error.required">Please enter Marathi content title</span>
+  </div>
+</div>
+</div>
+<div class="col-md-2" style="text-align:right"> 
+  Kindly enter all fields in English and Marathi. <br />
+  Use <a target="_blank" href = "https://translate.google.com/?hl=mr"> Google translate </a>
+</div>
+
+
+</div>
+
+<div class = "hr"> </div>
+<div class="upload-container">
+  <div class="upload-title">Author Name</div>
+  <div class="col-md-10">
+    <div class="form-group input-group" ng-class="{'has-error': frmContentUpload.engAuthor.$dirty && frmContentUpload.engAuthor.$invalid}"  style="width:100%;">
+     <input type="text" class="form-control col-xs-4 review-input" style="width:80%"  id="engAuthor" name="engAuthor" placeholder="मराठी" style="width:80%"  ng-disabled="mode!='EDIT'"
+   ng-model="content.engAuthor" required />
+   <i class="material-icons review-check" ng-click="toggle('engAuthor')"
+   ng-class="checked['engAuthor']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
+   check
+  </i> 
+     <div ng-messages="frmContentUpload.engAuthor.$error" ng-if="frmContentUpload.engAuthor.$dirty">
+      <span class="error-message" ng-show="frmContentUpload.engAuthor.$error.required">Please enter author's name in English</span>
+    </div>
+  </div>
+
+
+  <div class="form-group input-group" ng-class="{'has-error': frmContentUpload.marAuthor.$dirty && frmContentUpload.marAuthor.$invalid}"  style="width:100%;">
+   <input type="text" class="form-control col-xs-4 review-input" style="width:80%"  id="marAuthor" name="marAuthor" placeholder="मराठी"  ng-disabled="mode!='EDIT'"
+   ng-model="content.marAuthor" required />
+   <i class="material-icons review-check" ng-click="toggle('marAuthor')"
+   ng-class="checked['marAuthor']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
+   check
+  </i>
+   <div ng-messages="frmContentUpload.marAuthor.$error" ng-if="frmContentUpload.marAuthor.$dirty">
+    <span class="error-message" ng-show="frmContentUpload.marAuthor.$error.required">Please enter author's name in Marathi</span>
+  </div>
+</div>
+</div>
+</div>
+
+<div class = "hr"> </div>
+<div class="upload-container">
+  <div class="upload-title">Content Description / Instruction</div>
+  <div class="col-md-10">
+    <div class="form-group input-group" ng-class="{'has-error': frmContentUpload.engInstruction.$dirty && frmContentUpload.engInstruction.$invalid}" style="width:100%;">
+     <textarea form="frmContentUpload" class="form-control review-input" id="engInstruction" name="engInstruction" placeholder="English" style="width:80%"  ng-disabled="mode!='EDIT'"
+     ng-model="content.engInstruction" required ></textarea> 
+     <i class="material-icons review-check" ng-click="toggle('engInstruction')"
+   ng-class="checked['engInstruction']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
+   check
+  </i>
+     <div ng-messages="frmContentUpload.engInstruction.$error" ng-if="frmContentUpload.engInstruction.$dirty">
+      <span class="error-message" ng-show="frmContentUpload.engInstruction.$error.required">Please enter English instruction</span>
+    </div>
+  </div>
+
+
+  <div class="form-group input-group" ng-class="{'has-error': frmContentUpload.marInstruction.$dirty && frmContentUpload.marInstruction.$invalid}" style="width:100%;">
+     <textarea form="frmContentUpload" class="form-control review-input" id="marInstruction" name="marInstruction" placeholder="मराठी" style="width:80%"  ng-disabled="mode!='EDIT'"
+     ng-model="content.marInstruction" required ></textarea> 
+     <i class="material-icons review-check" ng-click="toggle('marInstruction')"
+   ng-class="checked['marInstruction']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
+   check
+  </i>
+    <div ng-messages="frmContentUpload.marInstruction.$error" ng-if="frmContentUpload.marInstruction.$dirty">
+      <span class="error-message" ng-show="frmContentUpload.marInstruction.$error.required">Please enter Marathi instruction</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class = "hr"> </div>
+
+<div class="upload-container">
+
+  <div class="upload-title">Content Link/Upload</div>
+  <div class="col-md-10">
+    <div class="form-group input-group" style="width:100%">
+    <div style="width:80%;display:inline-block;"><a  ng-href="{{content.fileName}}">{{content.fileName}}</a></div>
+    <i class="material-icons review-check" ng-click="toggle('fileName')"
+   ng-class="checked['fileName']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
+   check
+  </i>
+</div>
+  </div>
+</div>
+</div>
+</div>
+
+<div class = "hr"> </div>
+
+<div class="upload-container">
+ <input type="submit" ng-value="'Publish'" ng-click="publish()" class="btn btn-warning" ng-if="mode=='PREVIEW'" /> 
+
+  <input type="submit" ng-value="'Save Changes'" ng-click="saveChanges()" class="btn btn-warning" ng-if="mode=='EDIT'" /> 
+
+   <input type="submit" ng-value="'Discard Changes'" ng-click="setMode('PREVIEW')" class="btn btn-warning" ng-if="mode=='EDIT'" /> 
+
+
+
+</div>
+</div>
+</form>
+</div>
+</div>

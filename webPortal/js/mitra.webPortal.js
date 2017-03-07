@@ -3,44 +3,48 @@ mitraPortal.
 config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locationProvider',
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
 
+        var templateChange = function() {
+            return "";
+        };
         //$locationProvider.html5Mode(true);
-        $urlRouterProvider.otherwise('/home');
+        $urlRouterProvider.otherwise('/home/login');
 
         $stateProvider
             .state('main', {
                 abstract: true,
                 url: '',
-                templateUrl: 'webPortal/js/common/mitraLayoutView.html',
+                templateUrl: templateChange() + '/js/common/mitraLayoutView.html',
                 controller : 'mainController'
             })
             .state('main.notLoggedIn', {
                 abstract: true,
                 url: '',
                 views: {
-                    'header': {
-                        templateUrl: 'webPortal/js/common/headerView.html'
-                    },
                     'leftMenu': {
-                        templateUrl: 'webPortal/js/common/leftMenuView.html'
+                        templateUrl: templateChange() + '/js/common/leftMenuView.html',
+                        controller : 'leftMenuController'
                     },
                     'contentBox': {
-                        templateUrl: 'webPortal/js/common/contentBoxView.html'
+                        templateUrl: templateChange() + '/js/common/contentBoxView.html'
                     }
                 }
             })
             .state('main.notLoggedIn.home', {
                 url: '/home',
                 views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/headerView.html'
+                    },
                     'content': {
-                        templateUrl: 'webPortal/js/home/layoutView.html'
+                        templateUrl: templateChange() + '/js/home/layoutView.html'
                         //template: "Setting up home layout"
                     },
                     'welcome@main.notLoggedIn.home': {
-                        templateUrl: 'webPortal/js/home/welcomeView.html',
+                        templateUrl: templateChange() + '/js/home/welcomeView.html',
                         controller: 'welcomeController'
                     },
                     'map@main.notLoggedIn.home': {
-                        templateUrl: 'webPortal/js/home/mapView.html',
+                        templateUrl: templateChange() + '/js/home/mapView.html',
                         controller: function($scope) {
                             console.log('hit map controller');
                         }
@@ -51,31 +55,52 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 url: '',
                 abstract : true,
                 views: {
-                    'header': {
-                        templateUrl: 'webPortal/js/common/logged-in/headerView.html'
-                    },
                     'leftMenu': {
-                        templateUrl: 'webPortal/js/common/logged-in/leftMenuView.html'
+                        templateUrl: templateChange() + '/js/common/logged-in/leftMenuView.html',
+                        controller : 'leftMenuController'
                     },
                     'contentBox': {
-                        templateUrl: 'webPortal/js/common/contentBoxView.html'
+                        templateUrl: templateChange() + '/js/common/contentBoxView.html'
                     }
                 }
             })
             .state('main.loggedIn.home', {
-                url: '/dashboard',
+                url: '/admin',
                 views: {
-			  		'content': {
-			  			templateUrl: 'webPortal/js/dashboard/dashboardView.html',
-			 			controller: 'dashboardController'
-			  		}
-			  	}
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
+                    },
+                    'content': {
+                        templateUrl: templateChange() + '/js/home/layoutView.html',
+                        //template: "Setting up home layout"
+                        controller: function($scope,appUtils,$state) {
+                            !appUtils.isLoggedInUser() ? $state.go('main.notLoggedIn.home') : console.log("");
+                        }
+                    },
+                    'welcome@main.loggedIn.home': {
+                        templateUrl: templateChange() + '/js/home/welcomeView.html',
+                        controller: 'welcomeController'
+                    },
+                    'map@main.loggedIn.home': {
+                        templateUrl: templateChange() + '/js/home/mapView.html'
+                    }
+                }
             })
             .state('main.loggedIn.contentUpload', {
                 url: '/content/upload',
                 views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Upload Content';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
                     'content': {
-                        templateUrl: 'webPortal/js/content/uploadView.html',
+                        templateUrl: templateChange() + '/js/content/uploadView.html',
                         controller: 'uploadController'
                     }
                 }
@@ -83,8 +108,18 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             .state('main.loggedIn.selfLearning', {
                 url: '/selfLearning',
                 views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Self Learning';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
                     'content': {
-                        templateUrl : 'webPortal/js/self-learning/selfLearningView.html',
+                        templateUrl : templateChange() + '/js/self-learning/selfLearningView.html',
                         controller : 'selfLearningController',
                         controllerAs : 'selfLearning'
                     }
@@ -93,29 +128,55 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
             .state('main.loggedIn.teachingAids', {
                 url: '/teachingAids',
                 views : {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Teaching Aids';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
                     'content' : {
-                        templateUrl : 'webPortal/js/teaching-aids/teachingAidsView.html',
+                        templateUrl : templateChange() + '/js/teaching-aids/teachingAidsView.html',
                         controller : 'teachingAidsController',
                         controllerAs : 'teachingAids'
                     }
+                }
+            })
+            .state('main.loggedIn.reviewTeachingAids', {        //check proper routing for this.
+                url: '/teachingAids/review/:contentID',
+                views : {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
+                    },
+                    'content' : {
+                        templateUrl: '/js/teaching-aids/review/reviewTeachingAidsView.html',
+                        controller: 'reviewTeachingAidsController'
+                    }
+                },
+                params :{
+                    'teachingAid' : null,
+                    'contentID' : null
                 }
             });
             // define login route
             loginModalStateProvider.state('main.notLoggedIn.home.login', {
                 url: '/login',
-                templateUrl : 'webPortal/js/login/loginView.html',
+                templateUrl : templateChange() + '/js/login/loginView.html',
                 controller:'loginController',
                 controllerAs : 'login'
             });
             loginModalStateProvider.state('main.notLoggedIn.home.requestotp', {
                 url: '/requestOtp',
-                templateUrl : 'webPortal/js/login/requestOtpView.html',
+                templateUrl : templateChange() + '/js/login/requestOtpView.html',
                 controller:'requestOtpController',
                 controllerAs : 'requestOTP'
             });
             loginModalStateProvider.state('main.notLoggedIn.home.setpassword', {
                 url: '/setPassword',
-                templateUrl : 'webPortal/js/login/setPasswordView.html',
+                templateUrl : templateChange() + '/js/login/setPasswordView.html',
                 controller:'setPasswordController',
                 controllerAs : 'setPassword'
             });

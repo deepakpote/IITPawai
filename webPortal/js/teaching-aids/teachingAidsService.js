@@ -14,6 +14,7 @@
     /* @ngInject */
     function TeachingAidsService($http,appUtils) {
         this.fetch = fetch;
+        this.fetchMore = fetchMore;
 
         ////////////////
 
@@ -23,14 +24,33 @@
             var postData = {"fileTypeCodeID":fileTypeCodeId,
                             "statusCodeID":statusCodeId,
                             "gradeCodeIDs" : gradeIds,
-                            "subjectCodeIDs" : subjectIds};
-            var authToken = appUtils.getFromLocalStorage("token","");
+                            "subjectCodeIDs" : subjectIds,
+                            "pageNumber" : 0};
+            var authToken = appUtils.getFromCookies("token","");
             options.data = postData;
             options.url = 'content/searchTeachingAid/';
             options.headers = {"authToken" : authToken , "appLanguageCodeID" : "113101"};
             options.method = 'POST';
             appUtils.ajax(options,onSuccess,onFailure);
         }
+
+        function fetchMore(fileTypeCodeId,statusCodeId,dataFilters,onSuccess, onFailure) {
+            var gradeIds = "" + dataFilters.gradeCodeIDs;
+            var subjectIds = "" + dataFilters.subjectCodeIDs;
+            var postData = {"fileTypeCodeID":fileTypeCodeId,
+                            "statusCodeID":statusCodeId,
+                            "gradeCodeIDs" : gradeIds,
+                            "subjectCodeIDs" : subjectIds,
+                            "pageNumber" : 1};
+            var authToken = appUtils.getFromCookies("token","");
+            options.data = postData;
+            options.url = 'content/searchTeachingAid/';
+            options.headers = {"authToken" : authToken , "appLanguageCodeID" : "113101"};
+            options.method = 'POST';
+            appUtils.ajax(options,onSuccess,onFailure);
+        }
+
+
     }
 
 })();
