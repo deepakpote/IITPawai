@@ -950,17 +950,37 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                                      status = objStatus,
                                                                      language = objLanguage,
                                                                      modifiedBy = objUser)
-                
-                # update content details for english language.
-                contentDetail.objects.filter(content = objcontent,
-                                             appLanguage = objAppLanguageEng).update(contentTitle = engContentTitle.strip(),  
-                                                                                    instruction = engInstruction.strip(),
-                                                                                    author = engAuthor)
-                # update content details for marathi language.
-                contentDetail.objects.filter(content = objcontent,
-                                             appLanguage = objAppLanguageMar).update(contentTitle = marContentTitle.strip(),  
-                                                                                     instruction = marInstruction.strip(),
-                                                                                     author = marAuthor)
+                try:
+                    objContentDetail = contentDetail.objects.get(content = objcontent , appLanguage = objAppLanguageEng)
+                    # update content details for english language.
+                    contentDetail.objects.filter(content = objcontent,
+                                                 appLanguage = objAppLanguageEng).update(contentTitle = engContentTitle.strip(),  
+                                                                                        instruction = engInstruction.strip(),
+                                                                                        author = engAuthor)
+                except contentDetail.DoesNotExist:
+                    # Save the content detail for English language.
+                    objEngConDetail = contentDetail.objects.create(content = objcontent,
+                                                              appLanguage = objAppLanguageEng,
+                                                              contentTitle = engContentTitle.strip(),
+                                                              instruction = engInstruction , 
+                                                              author = engAuthor)
+                    objEngConDetail.save()
+                        
+                try: 
+                    objContentDetail = contentDetail.objects.get(content = objcontent , appLanguage = objAppLanguageMar)
+                    # update content details for marathi language.
+                    contentDetail.objects.filter(content = objcontent,
+                                                 appLanguage = objAppLanguageMar).update(contentTitle = marContentTitle.strip(),  
+                                                                                         instruction = marInstruction.strip(),
+                                                                                         author = marAuthor)
+                except contentDetail.DoesNotExist:
+                     # Save the content detail for Marathi language.
+                        objMarConDetail = contentDetail.objects.create(content = objcontent,
+                                                                  appLanguage = objAppLanguageMar ,
+                                                                  contentTitle = marContentTitle.strip(), 
+                                                                  instruction = marInstruction , 
+                                                                  author = marAuthor)
+                        objMarConDetail.save()
                 
 #                 if (isVideoOrEkStep(fileTypeCodeID) == False):
 #                     removeUploadedFile(contentID)
@@ -1040,6 +1060,41 @@ class ContentViewSet(viewsets.ModelViewSet):
 
         #Return the response
         return Response({"response_message": constants.messages.success, "data": []})  
+    
+    """
+    API to get authors list
+    """   
+    @list_route(methods=['POST'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def getAuthorList(self, request):
+        # get inputs
+        contentID = request.data.get('contentID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+
+        #get UserID from auth token
+        userID  =  getUserIDFromAuthToken(authToken)
+        
+        # check user is not null 
+        if not userID or userID == 0:
+            return Response({"response_message": constants.messages.userRole_list_user_id_cannot_be_empty, 
+                             "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+    
+        # check userID exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.userRole_list_user_does_not_exist, 
+                             "data": []}, status = status.HTTP_404_NOT_FOUND)
+        
+        userRoleQuerySet = userRole.objects.filter(user = objUser)
+        
+        if not userRoleQuerySet:
+            return Response({"response_message": constants.messages.userRole_list_no_records_found,
+                    "data": []},
+                    status = status.HTTP_200_OK)
+                     
+        serializer = userRoleSerializer(userRoleQuerySet, many = True)
+        
+        return Response({"response_message": constants.messages.success, "data": serializer.data})
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array
