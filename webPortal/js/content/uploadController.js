@@ -130,15 +130,11 @@ angular.module("mitraPortal").controller("uploadController",
           fd.append('uploadedFile', $scope.myFile);
         }
 
-        for (var pair of fd.entries()) {
-          console.log(pair[0]+ ', ' + pair[1]); 
-        }
-
         var headers = { "authToken": appUtils.getFromCookies("token",""),
         "appLanguageCodeID":"113101",
         'Content-Type': undefined};
 
-        $http.post("http://54.152.74.194:8000/content/uploadContent/", fd, {
+        $http.post(appConstants.endpoint.baseUrl + "content/uploadContent/", fd, {
           transformRequest: angular.identity,
           headers: headers
         })
