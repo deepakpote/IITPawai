@@ -109,7 +109,7 @@ padding: 64px;">
 <div class="card-content-wrapper">
     <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
     <div class="col-md-4 list-view" ng-repeat="data in selfLearning.data track by data.contentID">
-        <div class="card" style="display: flex;flex-direction: column;">
+        <div class="card" style="display: flex;flex-direction: column;"  ng-click=selfLearning.goToReview(data)>
             <div class="content-panel"
                  style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.74), rgba(0, 0, 0, 0.1)),
                                         url({{data.thumbnailUrl}});

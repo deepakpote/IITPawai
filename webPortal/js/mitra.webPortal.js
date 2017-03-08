@@ -145,15 +145,15 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
-            .state('main.loggedIn.reviewTeachingAids', {        //check proper routing for this.
-                url: '/teachingAids/review/:contentID',
+            .state('main.loggedIn.reviewContent', {        //check proper routing for this.
+                url: '/content/review/:contentID',
                 views : {
                     'header': {
                         templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
                     },
                     'content' : {
-                        templateUrl: '/js/teaching-aids/review/reviewTeachingAidsView.html',
-                        controller: 'reviewTeachingAidsController'
+                        templateUrl: '/js/content/review/reviewContentView.html',
+                        controller: 'reviewContentController'
                     }
                 },
                 params :{

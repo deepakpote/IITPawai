@@ -9,10 +9,10 @@
         .module('mitraPortal')
         .controller('selfLearningController', SelfLearningController);
 
-    SelfLearningController.$inject = ['SelfLearningService','$scope','commonService','appConstants'];
+    SelfLearningController.$inject = ['SelfLearningService','$scope','commonService','appConstants', '$state'];
 
     /* @ngInject */
-    function SelfLearningController(SelfLearningService,$scope,commonService,appConstants) {
+    function SelfLearningController(SelfLearningService,$scope,commonService,appConstants, $state) {
         var vm = this;
         vm.title = 'SelfLearningController';
         vm.fetch = fetchSelfLearning;
@@ -26,6 +26,7 @@
         vm.batchLength = 9;
         vm.loadMore = loadMore;
         vm.hasMoreData = true;
+        vm.goToReview =goToReview;
 
         activate();
 
@@ -118,6 +119,10 @@
 
         function showDataFilters() {
             console.log(vm.dataFilter);
+        }
+        function goToReview (selfLearning){
+            $state.go('main.loggedIn.reviewContent',
+                {'contentID' : selfLearning.contentID});
         }
 
         function setTopicAndLanguageWatchers() {

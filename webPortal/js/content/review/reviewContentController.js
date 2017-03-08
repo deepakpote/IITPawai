@@ -1,4 +1,4 @@
-angular.module("mitraPortal").controller("reviewTeachingAidsController",
+angular.module("mitraPortal").controller("reviewContentController",
   ['$scope','$stateParams', '$state', '$window', '$log', '$http', 'appUtils', 'appConstants', 'commonService',
   function($scope, $stateParams, $state, $window, $log, $http, appUtils, appConstants, commonService) {
 
