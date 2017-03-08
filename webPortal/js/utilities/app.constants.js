@@ -1,10 +1,14 @@
-angular.module("mitraPortal").service('appConstants', [
-  function() {
+angular.module("mitraPortal").service('appConstants', ['$window',
+  function($window) {
 
 	var service = {};
 
+	console.log($window.location);
+	console.log("server url is ");
+	console.log(getServerUrl());
+
 	service.endpoint = {
-		baseUrl: 'http://54.152.74.194:8000/',
+		baseUrl: getServerUrl(),
 		code : {
 			list: 'code'
 		},
@@ -17,7 +21,7 @@ angular.module("mitraPortal").service('appConstants', [
 		baseKey: 'mitra',
 		codeListKey: 'codeList',
 		codeListVersionKey: 'codeListVersion'
-	}
+	};
 
 	service.codeGroup = {
 		contentLanguage: 101,
@@ -27,7 +31,16 @@ angular.module("mitraPortal").service('appConstants', [
 		contentType: 107,
 		fileType: 108,
 		requirement: 117
-	}
+	};
+
+	function getServerUrl() {
+	    if($window.location.host.includes("8000") ||
+            $window.location.host.includes("localhost")) {
+	        return 'http://54.152.74.194:8000/';
+        } else {
+            return 'http://54.152.74.194/';
+        }
+    }
 
 	return service;
 
