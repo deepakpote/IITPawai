@@ -1,6 +1,6 @@
 angular.module("mitraPortal").controller("uploadController",
-  ['$scope', '$location', '$log', '$window', '$state', '$http', '$modal', 'appUtils', 'appConstants', 'contentService', 'commonService', '$filter',
-  function($scope, $location, $log, $window, $state, $http, $modal, appUtils, appConstants, contentService, commonService, filter) {
+  ['$scope', '$location', '$log', '$window', '$state', '$http', '$uibModal', 'appUtils', 'appConstants', 'contentService', 'commonService', '$filter',
+  function($scope, $location, $log, $window, $state, $http, $uibModal, appUtils, appConstants, contentService, commonService, filter) {
 
 
     $scope.acceptedFileTypes = {
@@ -141,7 +141,7 @@ angular.module("mitraPortal").controller("uploadController",
         .then (function success(response){
           $scope.result= "uploaded successfully";
           setSuccessDetails();
-          var modalInstance = $modal.open({
+          var modalInstance = $uibModal.open({
             url: 'result',
             scope: $scope,
             templateUrl : '/mitra.test/js/content/submittedSuccessView.html',
@@ -164,7 +164,7 @@ angular.module("mitraPortal").controller("uploadController",
           $scope.uploadErrorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn;
           $log.debug($scope.uploadErrorMessage);
           $scope.result ="Failed to upload content.";
-          var modalInstance = $modal.open({
+          var modalInstance = $uibModal.open({
             url: 'result',
             scope: $scope,
             templateUrl : '/mitra.test/js/content/submittedErrorView.html',

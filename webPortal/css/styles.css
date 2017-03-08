@@ -175,6 +175,20 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
   padding: 6% !important;
   text-align: justify;
 }
+
+.carousel-slide {	
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
+
+.carousel-control.left {
+	background: none!important
+}
+
+.carousel-control.right {
+	background: none!important
+}
+
 .hr {
     display: block;
     height: 1px;
@@ -384,10 +398,25 @@ li.selected  {
     padding-bottom: 4px;
 }
 
+.dashboard-elements {
+	padding-top:20px;
+	padding-right:50px;
+	padding-left:50px
+}
+
+.carousel .carousel-indicators .active {
+	width:0px !important;
+	height:0px !important;
+}
+
+.carousel .carousel-indicators {
+	width:0px !important;
+	height:0px !important;
+}
+
 .form-control input{
     background-color:red;
 }
-
 
 .orange-text{
     color:#ff6d00;
@@ -434,7 +463,6 @@ textarea.materialize-textarea:focus:not([readonly]) {
     box-shadow: 0 1px 0 0 #ff9100;
 }
 
-
 /* Rules for sizing the icon. */
 .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }
@@ -448,3 +476,4 @@ textarea.materialize-textarea:focus:not([readonly]) {
 /* Rules for using icons as white on a dark background. */
 .material-icons.md-light { color: rgba(255, 255, 255, 1); }
 .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+
