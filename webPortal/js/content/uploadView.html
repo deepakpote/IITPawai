@@ -48,14 +48,19 @@
                       {{subject.codeNameEn}}
                     </div>
                     <div class="col-md-3 align-right no-padding" >
-                      <input type="radio" ng-model="$parent.content.subjectCodeID" ng-click = "showContentObject()" ng-value="subject.codeID" />
+                      <input type="radio" ng-model="$parent.content.subjectCodeID" ng-click = "showContentObject()" ng-value="subject.codeID" name="subject" ng-required="!($parent.content.subjectCodeID)" />
                     </div>
                   </div>
                   </div>
+                  
                 </div>
               </div>
             </div>
             <br />
+            <div ng-messages="frmContentUpload.subject.$error" ng-if="frmContentUpload.subject.$dirty">
+                    <span class="error-message" ng-show="frmContentUpload.subject.$error.required">Please select a subject.</span>
+                  </div>
+                  <br />
           </div>
           <div class="col-md-1" ng-if="isContentTypeTeachingAid()"></div>
 
@@ -78,7 +83,8 @@
                         {{grade.codeNameEn}}
                       </div>
                       <div class="col-md-3 align-right no-padding" >
-                        <input type="checkbox" ng-model="grade.checked" ng-click = "showContentObject()" />
+                        <input type="checkbox" ng-model="grade.checked" ng-click = "showContentObject()" 
+                        name="grades" ng-required="!($parent.content.gradeCodeIDs)"/>
                       </div>
                     </div>
                   </div>
@@ -86,6 +92,10 @@
               </div>
             </div>
             <br />
+            <div ng-messages="frmContentUpload.grades.$error" ng-if="frmContentUpload.grades.$dirty">
+                    <span class="error-message" ng-show="frmContentUpload.grades.$error.required">Please select at least one grade.</span>
+                  </div>
+
 
             <div class="card" ng-if="isContentTypeTeachingAid()">
               <div class="options-card" ng-mouseenter=setSelectedOption("Requirement") ng-mouseleave=setSelectedOption("Requirement")>
@@ -105,7 +115,8 @@
                         {{requirement.codeNameEn}}
                       </div>
                       <div class="col-md-3 align-right no-padding" >
-                        <input type="checkbox" ng-model="requirement.checked" ng-click = "showContentObject()" />
+                        <input type="checkbox" ng-model="requirement.checked" ng-click = "showContentObject()" 
+                        name="requirements" ng-required="!($parent.content.requirementCodeIDs)"/>
                       </div>
                     </div>
                   </div>
@@ -116,6 +127,10 @@
 
 
             <br />
+
+            <div ng-messages="frmContentUpload.requirements.$error" ng-if="frmContentUpload.requirements.$dirty">
+                    <span class="error-message" ng-show="frmContentUpload.requirements.$error.required">Please select at least one requirement.</span>
+                  </div>
 
 
 
@@ -147,7 +162,7 @@
                         {{language.codeNameEn}}
                       </div>
                       <div class="col-md-3 align-right no-padding" >
-                        <input type="radio" ng-model="$parent.content.contentLanguageCodeID" ng-click = "showContentObject()" ng-value="language.codeID" />
+                        <input type="radio" ng-model="$parent.content.contentLanguageCodeID" ng-click = "showContentObject()" ng-value="language.codeID"  name="language" ng-required="!($parent.content.contentLanguageCodeID)"/>
                       </div>
                     </div>
 
@@ -156,6 +171,10 @@
               </div>
             </div>
             <br />
+            <div ng-messages="frmContentUpload.language.$error" ng-if="frmContentUpload.language.$dirty">
+                    <span class="error-message" ng-show="frmContentUpload.language.$error.required">Please select a language.</span>
+                  </div>
+                  <br />
           </div>
 
           <div class="col-md-1"></div>
@@ -181,7 +200,7 @@
                         {{topic.codeNameEn}}
                       </div>
                       <div class="col-md-3 align-right no-padding" >
-                        <input type="radio" ng-model="$parent.content.topicCodeID" ng-click = "showContentObject()" ng-value="topic.codeID" />
+                        <input type="radio" ng-model="$parent.content.topicCodeID" ng-click = "showContentObject()" ng-value="topic.codeID" name="topic" ng-required="!($parent.content.topicCodeID)"/>
                       </div>
                     </div>
 
@@ -189,6 +208,12 @@
                 </div>
               </div>
             </div>
+            <br />
+            <div ng-messages="frmContentUpload.topic.$error" ng-if="frmContentUpload.topic.$dirty">
+                    <span class="error-message" ng-show="frmContentUpload.topic.$error.required">Please select a topic.</span>
+                  </div>
+                  <br />
+
           </div>
           <div class="col-md-1" ng-if="isContentTypeSelfLearning()"></div>
         </div>
@@ -312,7 +337,7 @@
 <div class = "hr"> </div>
 
 <div class="upload-container">
- <input type="submit" value="Save" class="btn btn-warning" ng-click="frmContentUpload.$invalid? setDirty(frmContentUpload) : save()" /> 
+ <input type="submit" value="Save To Drafts" class="btn btn-warning" ng-click="frmContentUpload.$invalid? setDirty(frmContentUpload) : save()" /> 
  <input type="submit" value="Send For Review" class="btn btn-warning" ng-click="frmContentUpload.$invalid? setDirty(frmContentUpload) : sendForReview()" /> 
 
 </div>
