@@ -447,6 +447,10 @@ a.selectedItem {
     font-weight: 400;
 }
 
+.pointer {
+    cursor: pointer;
+}
+
 
 input[type=text]:focus:not([readonly]),
 input[type=password]:focus:not([readonly]),
