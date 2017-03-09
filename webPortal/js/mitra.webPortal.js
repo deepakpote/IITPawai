@@ -135,11 +135,18 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
-            .state('main.loggedIn.reviewTeachingAids', {        
+            .state('main.loggedIn.reviewTeachingAids', {
                 url: '/teachingAids/review/:contentID',
                 views : {
                     'header': {
-                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Review';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
                     },
                     'content' : {
                         templateUrl: templateChange() + '/js/teaching-aids/review/reviewTeachingAidsView.html',
