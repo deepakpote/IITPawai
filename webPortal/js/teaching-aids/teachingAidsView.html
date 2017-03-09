@@ -19,7 +19,8 @@ padding: 64px;">
             ng-click=teachingAids.setStatus(114100)>Drafts</li>
         <li class="filter-type" ng-class="{selected : teachingAids.status === 114102}"
             ng-click=teachingAids.setStatus(114102)>Published</li>
-        <li class="filter-type" ng-click=teachingAids.setStatus()>All</li>
+        <li class="filter-type" ng-class="{selected : teachingAids.status === ''}"
+            ng-click=teachingAids.setStatus('')>All</li>
     </ul>
 </div>
 
@@ -42,7 +43,8 @@ padding: 64px;">
             ng-click=teachingAids.setFileType(108104)>PDF</li>
         <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108105}"
             ng-click=teachingAids.setFileType(108105)>Genie</li>
-        <li class="filter-type" ng-click=teachingAids.setFileType()>All</li>
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === ''}"
+            ng-click=teachingAids.setFileType('')>All</li>
     </ul>
 </div>
 

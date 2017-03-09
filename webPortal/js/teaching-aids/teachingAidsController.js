@@ -52,8 +52,6 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     function setFileType(fileType) {
         vm.fileType = fileType;
         fetchTeachingAids();
-        console.log(fileType);
-        console.log("filetype");
     }
 
     function goToReview (teachingAid){
@@ -76,8 +74,8 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
                 }
                 content.grades = grades;
             }
-            if(vm.fileType == 108100) {
-                for(i = 0 ; i < contents.length ; i ++) {
+            for(i = 0 ; i < contents.length ; i ++) {
+                if(contents[i].fileType == 108100) {
                     var videoId = parseYoutubeUrl(contents[i].fileName);
                     contents[i].thumbnailUrl = "http://img.youtube.com/vi/" + videoId + "/0.jpg";
                 }

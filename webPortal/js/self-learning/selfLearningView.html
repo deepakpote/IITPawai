@@ -19,7 +19,8 @@ padding: 64px;">
             ng-click=selfLearning.setStatus(114100)>Drafts</li>
         <li class="filter-type" ng-class="{selected : selfLearning.status === 114102}"
             ng-click=selfLearning.setStatus(114102)>Published</li>
-        <li class="filter-type" ng-click=selfLearning.setStatus()>All</li>
+        <li class="filter-type" ng-class="{selected : selfLearning.status === ''}"
+            ng-click=selfLearning.setStatus('')>All</li>
     </ul>
 </div>
 
