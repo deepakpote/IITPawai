@@ -363,7 +363,7 @@ ng-click="mode='GIVE FEEDBACK'">
   <div class="upload-title">Content Link/Upload</div>
   <div class="col-md-10">
     <div class="form-group input-group" style="width:100%">
-    <div style="width:80%;display:inline-block;"><a  ng-href="{{content.fileName}}">{{content.fileName}}</a></div>
+    <div style="width:80%;display:inline-block;"><a  ng-href="{{content.fileName}}">{{content.fileTypeCodeID==108100?content.fileName:content.fileName.split('/').pop()}}</a></div>
     <i class="material-icons review-check" ng-click="toggle('fileName')"
    ng-class="checked['fileName']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
    check
