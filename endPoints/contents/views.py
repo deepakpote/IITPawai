@@ -1119,6 +1119,49 @@ class ContentViewSet(viewsets.ModelViewSet):
                     status = status.HTTP_200_OK)
         
         return Response({"response_message": constants.messages.success, "data": objContentAuthorList})
+    
+    """
+    API to get content uploaded user's list. 
+    """   
+    @list_route(methods=['POST'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def getContentUploadedByList(self, request):
+        # get inputs
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+
+        #get UserID from auth token
+        userID  =  getUserIDFromAuthToken(authToken)
+        
+        # check user is not null 
+        if not userID or userID == 0:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty, 
+                             "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+    
+        # check userID exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.content_uploadedBy_list_user_does_not_exist, 
+                             "data": []}, status = status.HTTP_404_NOT_FOUND)
+                    
+        # Get all distinct users list who has uploaded single content.
+        objContentUploadedByList = content.objects.all().values_list('createdBy' , flat=True).distinct()
+        
+        #Get actual user information LIST
+        objUploadedBy = list(user.objects.filter(userID__in = objContentUploadedByList).values('userID','userName'))
+        
+        #If the list contains logged in user's userID then replace its userName with "Me".
+        for objuser in objUploadedBy:
+            if objuser['userID'] == userID:
+                objCode = code.objects.get(codeID = constants.mitraCode.content_or_news_uploaded_by_user_me)
+                objuser['userName'] = objCode.codeNameEn
+                
+        #If no records found.
+        if not objUploadedBy:
+            return Response({"response_message": constants.messages.content_uploadedBy_list_no_records_found,
+                    "data": []},
+                    status = status.HTTP_200_OK)
+        
+        return Response({"response_message": constants.messages.success, "data": objUploadedBy})
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array

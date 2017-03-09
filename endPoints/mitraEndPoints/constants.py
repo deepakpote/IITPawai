@@ -170,6 +170,9 @@ class messages():
     author_list_no_records_found = 100236
     author_list_appLanguageCodeID_cannot_be_empty = 100237
     author_list_appLanguageCodeID_does_not_exist = 100238
+    
+    content_uploadedBy_list_user_does_not_exist = 100239
+    content_uploadedBy_list_no_records_found = 100240
 
 
 class webportalmessages():    
@@ -198,6 +201,7 @@ class mitraCodeGroup():
     fileType = 108
     language = 101
     content_News_TrainingCreation_Status = 114
+    content_or_news_uploaded_by_user = 118
     
 class mitraCode():
     teachingAids = 107100
@@ -215,6 +219,7 @@ class mitraCode():
     created = 114100
     sentForReview = 114101
     published = 114102
+    content_or_news_uploaded_by_user_me = 118100
 
     
 class contentSearchRecords():
