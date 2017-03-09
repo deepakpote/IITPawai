@@ -16,6 +16,7 @@ from users.models import userSubject, user, userGrade, userTopic , userContent
 from mitraEndPoints import constants , utils
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from pip._vendor.requests.api import request
+from fileinput import filename
 
 
 class ContentViewSet(viewsets.ModelViewSet):
@@ -771,7 +772,6 @@ class ContentViewSet(viewsets.ModelViewSet):
         gradeCodeIDs = request.data.get('gradeCodeIDs')
         topicCodeID = request.data.get('topicCodeID')
         requirementCodeIDs = request.data.get('requirementCodeIDs')
-
         fileTypeCodeID = request.data.get('fileTypeCodeID')
         
         if(contentID == 0):
@@ -791,6 +791,9 @@ class ContentViewSet(viewsets.ModelViewSet):
         
             else:
                 return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
+        
+        if(contentID > 0):
+            uploadedFile = request.FILES['uploadedFile'] if 'uploadedFile' in request.FILES else None
         
         languageCodeID = request.data.get('contentLanguageCodeID')       
         statusCodeID = request.data.get('statusCodeID')
@@ -855,6 +858,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                     #If Youtube URL is Invaild 
                     if not isValidYoutubeURL:
                         return statusHttpBadRequest(constants.messages.uploadContent_fileName_invaild)
+            
+            else:
+                fileName = request.data.get('fileName')
 
         else:
             fileName = "upload_pending"
@@ -981,9 +987,13 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                                   instruction = marInstruction , 
                                                                   author = marAuthor)
                         objMarConDetail.save()
+                 
+                if (isVideoOrEkStep(fileTypeCodeID) == False and uploadedFile):
+                    removePreviouslyUploadedFile(contentID)
+                    saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
                 
-#                 if (isVideoOrEkStep(fileTypeCodeID) == False):
-#                     removeUploadedFile(contentID)
+                elif(isVideoOrEkStep(fileTypeCodeID) == True and fileName):
+                    updateFileName(fileName, contentID)
             
             # Check content type of uploaded file.If teachingAids then save GradeCodeIDs     
             if contentTypeCodeID == constants.mitraCode.teachingAids:
@@ -1396,7 +1406,7 @@ def constructFileName(contentID, fileExtension):
 """
 Function to remove an already stored file in case of an edit
 """
-def removeUploadedFile(contentID):
+def removePreviouslyUploadedFile(contentID):
     
     #under the static/content directory, search for file that starts with the given contentID 
     for root, dirs, files in os.walk(constants.uploadedContentDir.baseDir, topdown=False):
@@ -1475,6 +1485,12 @@ def saveUploadedFile(uploadedFile, fileTypeCodeID, contentID):
     
     #updating the corresponding entry in the database                    
     content.objects.filter(contentID = contentID).update(fileName = uploadedFileName)  
+ 
+"""
+Function to update the video or ekStep URL in DB
+"""      
+def updateFileName(fileName, contentID):
+    content.objects.filter(contentID = contentID).update(fileName = fileName)
      
 """
 Function to check if the file type is video or ekStep
