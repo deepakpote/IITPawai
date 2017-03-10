@@ -1,6 +1,5 @@
 angular.module("mitraPortal").controller("teachingAidsController", TeachingAidsController);
 
-
 TeachingAidsController.$inject = ['TeachingAidsService','commonService','$scope','appConstants','$filter', '$state'];
 
 function TeachingAidsController(TeachingAidsService,commonService,$scope,appConstants,filter,$state) {
@@ -139,7 +138,7 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
 
     function setSelectedOption(option) {
         console.log("selected option : " + option);
-        console.log("current optoin : " + vm.selectedOption);
+        console.log("current option : " + vm.selectedOption);
         if(option === vm.selectedOption) {
             vm.selectedOption = "";
         } else {

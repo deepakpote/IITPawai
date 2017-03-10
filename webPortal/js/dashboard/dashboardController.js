@@ -1,191 +1,40 @@
 angular.module("mitraPortal").controller("dashboardController",
-  ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService', '$state', '$window',
-  function($scope, $location, $log, appUtils, appConstants, contentService, commonService, $state, $window) {	  
+  ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService', '$state', '$window', 'TeachingAidsService',
+  function($scope, $location, $log, appUtils, appConstants, contentService, commonService, $state, $window, TeachingAidsService) {	  
 	  var responseTeachingAids = {
-		  "data": [
-			   {
-				  "contentID": 257,
-				  "contentTitle": "कोन",
-				  "contentType": "107100",
-				  "gradeCodeIDs": "104103,104104",
-				  "subject": "103102",
-				  "topic": null,
-				  "requirementCodeIDs": "117100,117101,117102,117103",
-				  "instruction": "",
-				  "fileType": "108100",
-				  "fileName": "https://youtu.be/TKKpihENPrA",
-				  "author": "thefreemath.org",
-				  "objectives": "कोन",
-				  "language": "101101"
-			  },
-			  {
-				  "contentID": 258,
-				  "contentTitle": "कोन",
-				  "contentType": "107100",
-				  "gradeCodeIDs": "104103,104104",
-				  "subject": "103102",
-				  "topic": null,
-				  "requirementCodeIDs": "117100,117101,117102,117103",
-				  "instruction": "",
-				  "fileType": "108100",
-				  "fileName": "http://www.youtube.com/watch?v=iwGFalTRHDA",
-				  "author": "thefreemath.org",
-				  "objectives": "कोन",
-				  "language": "101101"
-			 },
-			 {
-				  "contentID": 259,
-				  "contentTitle": "कोन",
-				  "contentType": "107100",
-				  "gradeCodeIDs": "104103,104104",
-				  "subject": "103102",
-				  "topic": null,
-				  "requirementCodeIDs": "117100,117101,117102,117103",
-				  "instruction": "",
-				  "fileType": "108100",
-				  "fileName": "https://youtu.be/TKKpihENPrA",
-				  "author": "thefreemath.org",
-				  "objectives": "कोन",
-				  "language": "101101"
-			 },
-			 {
-				  "contentID": 260,
-				  "contentTitle": "कोन",
-				  "contentType": "107100",
-				  "gradeCodeIDs": "104103,104104",
-				  "subject": "103102",
-				  "topic": null,
-				  "requirementCodeIDs": "117100,117101,117102,117103",
-				  "instruction": "",
-				  "fileType": "108100",
-				  "fileName": "https://youtu.be/TKKpihENPrA",
-				  "author": "thefreemath.org",
-				  "objectives": "कोन",
-				  "language": "101101"
-			 },
-			 {
-				  "contentID": 261,
-				  "contentTitle": "कोन",
-				  "contentType": "107100",
-				  "gradeCodeIDs": "104103,104104",
-				  "subject": "103102",
-				  "topic": null,
-				  "requirementCodeIDs": "117100,117101,117102,117103",
-				  "instruction": "",
-				  "fileType": "108100",
-				  "fileName": "https://youtu.be/TKKpihENPrA",
-				  "author": "thefreemath.org",
-				  "objectives": "कोन",
-				  "language": "101101"
-			 }]		  
+		  "data": []
+//			   {
+//				  "contentID": 257,
+//				  "contentTitle": "कोन",
+//				  "contentType": "107100",
+//				  "gradeCodeIDs": "104103,104104",
+//				  "subject": "103102",
+//				  "topic": null,
+//				  "requirementCodeIDs": "117100,117101,117102,117103",
+//				  "instruction": "",
+//				  "fileType": "108100",
+//				  "fileName": "https://youtu.be/TKKpihENPrA",
+//				  "author": "thefreemath.org",
+//				  "objectives": "कोन",
+//				  "language": "101101"
+//			  }]		  
 	  };
 	  
 	  var responseSelfLearning = {
-			  "data": [
-				   {
-					  "contentID": 262,
-					  "contentTitle": "कोन",
-					  "contentType": "107100",
-					  "topic": null,
-					  "requirementCodeIDs": "117100,117101,117102,117103",
-					  "instruction": "",
-					  "fileType": "108100",
-					  "fileName": "https://youtu.be/TKKpihENPrA",
-					  "author": "thefreemath.org",
-					  "objectives": "कोन",
-					  "language": "101101"
-				  },
-				  {
-					  "contentID": 263,
-					  "contentTitle": "कोन",
-					  "contentType": "107100",
-					  "topic": null,
-					  "requirementCodeIDs": "117100,117101,117102,117103",
-					  "instruction": "",
-					  "fileType": "108100",
-					  "fileName": "http://www.youtube.com/watch?v=iwGFalTRHDA",
-					  "author": "thefreemath.org",
-					  "objectives": "कोन",
-					  "language": "101101"
-				 },
-				 {
-					  "contentID": 264,
-					  "contentTitle": "कोन",
-					  "contentType": "107100",
-					  "topic": null,
-					  "requirementCodeIDs": "117100,117101,117102,117103",
-					  "instruction": "",
-					  "fileType": "108100",
-					  "fileName": "https://youtu.be/TKKpihENPrA",
-					  "author": "thefreemath.org",
-					  "objectives": "कोन",
-					  "language": "101101"
-				 },
-				 {
-					  "contentID": 265,
-					  "contentTitle": "कोन",
-					  "contentType": "107100",
-					  "topic": null,
-					  "requirementCodeIDs": "117100,117101,117102,117103",
-					  "instruction": "",
-					  "fileType": "108100",
-					  "fileName": "https://youtu.be/TKKpihENPrA",
-					  "author": "thefreemath.org",
-					  "objectives": "कोन",
-					  "language": "101101"
-				 },
-				 {
-					  "contentID": 262,
-					  "contentTitle": "कोन",
-					  "contentType": "107100",
-					  "topic": null,
-					  "requirementCodeIDs": "117100,117101,117102,117103",
-					  "instruction": "",
-					  "fileType": "108100",
-					  "fileName": "https://youtu.be/TKKpihENPrA",
-					  "author": "thefreemath.org",
-					  "objectives": "कोन",
-					  "language": "101101"
-				  },
-				  {
-					  "contentID": 262,
-					  "contentTitle": "कोन",
-					  "contentType": "107100",
-					  "topic": null,
-					  "requirementCodeIDs": "117100,117101,117102,117103",
-					  "instruction": "",
-					  "fileType": "108100",
-					  "fileName": "https://youtu.be/TKKpihENPrA",
-					  "author": "thefreemath.org",
-					  "objectives": "कोन",
-					  "language": "101101"
-				  },
-				  {
-					  "contentID": 262,
-					  "contentTitle": "कोन",
-					  "contentType": "107100",
-					  "topic": null,
-					  "requirementCodeIDs": "117100,117101,117102,117103",
-					  "instruction": "",
-					  "fileType": "108100",
-					  "fileName": "https://youtu.be/TKKpihENPrA",
-					  "author": "thefreemath.org",
-					  "objectives": "कोन",
-					  "language": "101101"
-				  },
-				  {
-					  "contentID": 262,
-					  "contentTitle": "कोन",
-					  "contentType": "107100",
-					  "topic": null,
-					  "requirementCodeIDs": "117100,117101,117102,117103",
-					  "instruction": "",
-					  "fileType": "108100",
-					  "fileName": "https://youtu.be/TKKpihENPrA",
-					  "author": "thefreemath.org",
-					  "objectives": "कोन",
-					  "language": "101101"
-				  }]	  
+			  "data": []
+//				   {
+//					  "contentID": 262,
+//					  "contentTitle": "कोन",
+//					  "contentType": "107100",
+//					  "topic": null,
+//					  "requirementCodeIDs": "117100,117101,117102,117103",
+//					  "instruction": "",
+//					  "fileType": "108100",
+//					  "fileName": "https://youtu.be/TKKpihENPrA",
+//					  "author": "thefreemath.org",
+//					  "objectives": "कोन",
+//					  "language": "101101"
+//				  }]	  
 		  };
 	  
 	  $scope.myInterval = 0;
@@ -195,7 +44,26 @@ angular.module("mitraPortal").controller("dashboardController",
 	  $scope.activeCarousel2 = 0;
 	  var teachingAidsCollection =  $scope.teachingAidsCollection = [];
 	  var selfLearningCollection =  $scope.selfLearningCollection = [];
-
+	  
+	  $scope.fetchTeachingAids = function() {
+		  var dataFilter = {
+			        "subjectCodeIDs" : "",
+			        "gradeCodeIDs" : ""
+			    };
+		  
+		  var video = 108100
+		  var sentForReview = 114101
+		  TeachingAidsService.fetch(video, sentForReview, dataFilter, onSuccess, onFailure);
+		  	function onSuccess(response) {
+		  		var responseTeachingAidsDynamic = response;
+		  		console.log("*************************")
+		  		console.log(responseTeachingAidsDynamic)
+		  	}
+		  	function onFailure(error) {
+		  		console.log("error is", error);
+		  	}
+	  }
+	  
 	  $scope.makeCollectionOfThree = function(slides, type) {
 		  for (var i = 0; i < slides.length; i+=3) {
 			  var slideGroup = {
@@ -243,6 +111,8 @@ angular.module("mitraPortal").controller("dashboardController",
   	var init = function () {
   	  var teachingAids = []; 
   	  var selfLearningVideos = []; 
+  	  
+  	  $scope.fetchTeachingAids();
   	  
   	  teachingAids = $scope.add(teachingAids, 0);
 	  $scope.makeCollectionOfThree(teachingAids, 0);

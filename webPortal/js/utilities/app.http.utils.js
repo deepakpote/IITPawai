@@ -1,7 +1,3 @@
-/**
- * Created by amoghpalnitkar on 2/16/17.
- */
-
 angular.module("mitraPortal").service('HttpUtils', [
     function() {
 
