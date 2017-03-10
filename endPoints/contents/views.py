@@ -42,6 +42,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
         statusCodeID = request.data.get('statusCodeID')
+        uploadedBy = request.data.get('uploadedBy')
         
         # On web portal, user no need to login to watch the video's so authentication is removed (commented) for now.
         #authToken = request.META.get('HTTP_AUTHTOKEN')
@@ -161,7 +162,16 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         if len(arrGradeCodeIDs) == 1:
             arrGradeCodeIDs =  '(%s)' % ', '.join(map(repr, arrGradeCodeIDs))
-        
+            
+        uploadedByCheck = ''
+            
+        # If uploadedBy is empty then don't add the check of uploadedBy.
+        if not uploadedBy or uploadedBy is None:
+            uploadedByCheck = ''
+        else:
+            # Added the check for uploadedBy.
+            uploadedByCheck = 'CC.createdBy = ' + str(uploadedBy) + ' AND '
+                 
         # Connection
         cursor = connection.cursor()  
         
@@ -193,12 +203,12 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             from con_content CC 
                                             INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
-                                            where CCG.appLanguageCodeID = %s
+                                            where """ + uploadedByCheck + """CCG.appLanguageCodeID = %s
                                             and CC.fileTypeCodeID IN %s 
                                             and CC.statusCodeID IN %s
                                             and CC.contentTypeCodeID = %s 
                                             and CC.subjectCodeID IN %s 
-                                            and CG.gradeCodeID IN %s 
+                                            and CG.gradeCodeID IN %s
                                             group by CC.contentID,
                                             CCG.contentTitle,
                                             CC.requirement,
@@ -211,7 +221,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.languageCodeID,
                                             CC.subjectCodeID,
                                             CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,str(arrFileTypeCodeID),str(arrStatusCodeID),constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
-                                            
+                                         
         cursor.execute(searchTeachingAidQuery)
     
         #Queryset
@@ -267,6 +277,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID') 
         
         statusCodeID = request.data.get('statusCodeID') 
+        uploadedBy = request.data.get('uploadedBy')
         # On web portal, user no need to login to watch the video's so authentication  is removed (commented) for now.
 #         authToken = request.META.get('HTTP_AUTHTOKEN')
 #         
@@ -362,14 +373,13 @@ class ContentViewSet(viewsets.ModelViewSet):
             arrTopicCodeIDs =  '(%s)' % ', '.join(map(repr, arrTopicCodeIDs))
         
         
-        #Get the query set using filter on filetype, topic & language     
-#         contentQuerySet = content.objects.filter(language__in = arrLanguageCodeID,
-#                                                   contentType = constants.mitraCode.selfLearning, 
-#                                                   topic__in = arrTopicCodeIDs,
-#                                                   contentID = contentDetail_contentID__content).order_by('-contentID')[fromRecord:pageNumber]
-
-
-        # New code.
+        # If uploadedBy is empty then don't add the check of uploadedBy.
+        if not uploadedBy or uploadedBy is None:
+            uploadedByCheck = ''
+        else:
+            # Added the check for uploadedBy.
+            uploadedByCheck = 'CC.createdBy = ' + str(uploadedBy) + ' AND '
+            
         # Connection
         cursor = connection.cursor()  
         
@@ -399,7 +409,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.topicCodeID
                                             from con_content CC 
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
-                                            where CC.languageCodeID IN %s 
+                                            where """ + uploadedByCheck + """ CC.languageCodeID IN %s 
                                             and CC.contentTypeCodeID = %s 
                                             and CC.statusCodeID IN %s
                                             and CC.topicCodeID IN %s 
@@ -407,8 +417,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,str(arrStatusCodeID),str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
          
         cursor.execute(searchSelfLearningQuery)
-        
-         
+           
         #Queryset
         contentQuerySet = cursor.fetchall()
          
