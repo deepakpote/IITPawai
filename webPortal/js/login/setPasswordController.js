@@ -4,9 +4,9 @@
 
 angular.module("mitraPortal").controller("setPasswordController", SetPasswordController);
 
-SetPasswordController.$inject = ['$uibModalInstance','HttpUtils','loginService','$state','commonService'];
+SetPasswordController.$inject = ['$modalInstance','HttpUtils','loginService','$state','commonService'];
 
-function SetPasswordController($uibModalInstance,HttpUtils, loginService, $state, commonService){
+function SetPasswordController($modalInstance,HttpUtils, loginService, $state, commonService){
 
     console.log("set password controller called..");
     var vm = this;
@@ -37,6 +37,6 @@ function SetPasswordController($uibModalInstance,HttpUtils, loginService, $state
     }
 
     function closeModal () {
-        $uibModalInstance.close();
+        $modalInstance.close();
     }
 }

@@ -1,9 +1,9 @@
 angular.module("mitraPortal").controller("loginController", LoginController);
 
-LoginController.$inject = ['$location', '$uibModalInstance', '$rootScope' ,'$cookies', 'loginService','commonService',
+LoginController.$inject = ['$location', '$modalInstance', '$rootScope' ,'$cookies', 'loginService','commonService',
                                 'appUtils','HttpUtils','$state'];
 
-function LoginController($location, $uibModalInstance, $rootScope,$cookies, loginService,
+function LoginController($location, $modalInstance, $rootScope,$cookies, loginService,
                          commonService, appUtils,HttpUtils,$state) {
 
     console.log("login controller called..");
@@ -45,7 +45,7 @@ function LoginController($location, $uibModalInstance, $rootScope,$cookies, logi
     }
 
 	function closeModal () {
-	    $uibModalInstance.close();
+	    $modalInstance.close();
     }
 
 }

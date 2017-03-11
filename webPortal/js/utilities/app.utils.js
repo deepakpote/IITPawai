@@ -85,26 +85,29 @@ angular.module("mitraPortal").service('appUtils', ['$http', '$log', '$rootScope'
          */
         service.getFromCookies = function (key, defaultValue) {
 
-            var value = $cookies.get(key);
+            var value = $cookies.key;
             if (value == undefined) {
                 value = defaultValue;
             }
             console.log("get from cookie " + value);
             console.log("get from cookie expires ");
+            console.log($cookies.options);
             return value;
         };
 
         service.saveToCookies = function (key, value) {
             var expireDate = new Date();
             expireDate.setDate(expireDate.getDate() + 1);
-            var expires = {'expires': expireDate};
-            $cookies.put(key,value,expires);
-            console.log("put to cookie " + $cookies.get(key));
+            $cookies.options = {'expires': expireDate};
+            $cookies.key = value;
+            console.log("put to cookie " + $cookies.key);
+            console.log("put to cookie expires");
+            console.log($cookies.options);
         };
 
         service.isLoggedInUser = function () {
             var key = "token";
-            var cookie = $cookies.get(key);
+            var cookie = $cookies.key;
             return cookie != undefined;
 
         };

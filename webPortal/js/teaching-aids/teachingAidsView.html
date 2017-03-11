@@ -19,8 +19,7 @@ padding: 64px;">
             ng-click=teachingAids.setStatus(114100)>Drafts</li>
         <li class="filter-type" ng-class="{selected : teachingAids.status === 114102}"
             ng-click=teachingAids.setStatus(114102)>Published</li>
-        <li class="filter-type" ng-class="{selected : teachingAids.status === ''}"
-            ng-click=teachingAids.setStatus('')>All</li>
+        <li class="filter-type" ng-click=teachingAids.setStatus()>All</li>
     </ul>
 </div>
 
@@ -43,8 +42,7 @@ padding: 64px;">
             ng-click=teachingAids.setFileType(108104)>PDF</li>
         <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108105}"
             ng-click=teachingAids.setFileType(108105)>Genie</li>
-        <li class="filter-type" ng-class="{selected : teachingAids.fileType === ''}"
-            ng-click=teachingAids.setFileType('')>All</li>
+        <li class="filter-type" ng-click=teachingAids.setFileType()>All</li>
     </ul>
 </div>
 
@@ -56,7 +54,7 @@ padding: 64px;">
 
 <div class="row" style="padding: 5%;">
 
-    <div class="col-md-4">
+    <div class="col-md-4 col-md-offset-2">
         <div class="card">
             <div class="options-card" ng-mouseenter=teachingAids.setSelectedOption("Grade") ng-mouseleave=teachingAids.setSelectedOption("Grade")>
                 <div class="card-content">
@@ -117,76 +115,6 @@ padding: 64px;">
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card">
-            <div class="options-card" ng-click=teachingAids.setSelectedOption("Uploaded-By")>
-                <div class="card-content">
-                    Language
-                </div>
-                <div class="card-select" ng-class="(teachingAids.uploadedBy?'orange-background':'teal-background')">
-                  <span ng-if="teachingAids.uploadedBy"
-                        ng-repeat="uploader in uploaderList | filter:{userID : teachingAids.uploadedBy}">
-                    {{uploader.userName}}
-                  </span>
-                    <span ng-if="!teachingAids.uploadedBy">
-                    Select
-                  </span>
-                </div>
-                <div class="card-action" ng-show="(teachingAids.selectedOption == 'Uploaded-By')">
-                    <div ng-repeat="uploader in uploaderList">
-                        <div>
-                            <div class="col-md-9 no-padding align-left">
-                                {{uploader.userName}}
-                            </div>
-                            <div class="col-md-3 align-right no-padding" >
-                                <input type="radio" ng-model="teachingAids.uploadedBy"
-                                       ng-click = "teachingAids.filterByUploader(uploader.userID)"
-                                       ng-value="uploader.userID"
-                                        />
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <br />
-    </div>
-
-    <!--<div class="col-md-3">-->
-        <!--<div class="card">-->
-            <!--<div class="options-card">-->
-                <!--<div class="card-content">-->
-                    <!--Uploaded By-->
-                <!--</div>-->
-                <!--<div class="card-select" ng-class="(((uploaderList |-->
-                                    <!--filter:{checked:true}).length > 0)?'orange-background':'teal-background')"-->
-                     <!--ng-click=teachingAids.setSelectedOption("Uploaded-By")>-->
-                  <!--<span ng-if="((uploaderList | filter:{checked:true}).length > 0)"-->
-                        <!--ng-repeat="uploader in uploaderList | filter:{checked:true}">-->
-                    <!--{{uploader.userName}}-->
-                  <!--</span>-->
-                    <!--<span ng-if="!((uploaderList | filter:{checked:true}).length > 0)">-->
-                    <!--Select-->
-                  <!--</span>-->
-                <!--</div>-->
-                <!--<div class="card-action" ng-show="(teachingAids.selectedOption == 'Uploaded-By')">-->
-                    <!--<div ng-repeat="uploader in uploaderList">-->
-                        <!--<div>-->
-                            <!--<div class="col-md-9 no-padding align-left">-->
-                                <!--{{uploader.userName}}-->
-                            <!--</div>-->
-                            <!--<div class="col-md-3 align-right no-padding" >-->
-                                <!--<input type="checkbox" ng-model="subject.checked"-->
-                                       <!--ng-click = "teachingAids.showContentObject()" />-->
-                            <!--</div>-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
-
 </div>
 
 <!-- granular filters end -->
@@ -203,11 +131,11 @@ padding: 64px;">
                                         background-size: contain;">
                 <div class="right-panel">
 
-                    <i class="material-icons icon-white pointer">mode_edit</i>
-                    <div class="text pointer">EDIT</div>
+                    <i class="material-icons icon-white">mode_edit</i>
+                    <div class="text">EDIT</div>
 
-                    <i style="margin-top: 16px;" class="material-icons icon-white pointer">close</i>
-                    <div class="text pointer">REMOVE</div>
+                    <i style="margin-top: 16px;" class="material-icons icon-white">close</i>
+                    <div class="text">REMOVE</div>
 
                 </div>
             </div>
@@ -220,7 +148,7 @@ padding: 64px;">
                 </div>
             </div>
             <div class="bottom-content">
-                <div class="uploader single-line" style="">
+                <div class="uploader" style="">
                     Uploaded by : {{teachingAid.author}}
                 </div>
             </div>

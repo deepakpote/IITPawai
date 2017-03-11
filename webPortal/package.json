@@ -4,9 +4,9 @@
   "description": "Web site for mitra",
   "main": "index.js",
   "dependencies": {
-    "angular": "1.4.0",
+    "angular": "^1.6.1",
     "angular-ui-router": "^0.4.2",
-    "angular-ui-bootstrap": "1.3.3"
+    "angular-ui-bootstrap": "^1.0"
   },
   "devDependencies": {
     "underscore": "^1.8.3"

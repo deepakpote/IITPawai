@@ -22,21 +22,13 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     vm.showDataFilters = showDataFilters;
     vm.loadMore = loadMore;
     vm.hasMoreData = true;
-    vm.filterByUploader = filterByUploader;
 
     activate();
 
     ////////////////
 
     function activate() {
-        TeachingAidsService.getAuthorList(
-            function onSuccess(response) {
-                $scope.uploaderList = response.data;
-                console.log($scope.uploaderList);
-            },
-            function onFailure(response) {
-
-        });
+        console.log(commonService.isCodeListEmpty());
         if (commonService.isCodeListEmpty()) {
             $scope.$on('codesAvailable', function(event,data){
                 getSubjects();
@@ -60,6 +52,8 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     function setFileType(fileType) {
         vm.fileType = fileType;
         fetchTeachingAids();
+        console.log(fileType);
+        console.log("filetype");
     }
 
     function goToReview (teachingAid){
@@ -68,7 +62,7 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     }
 
     function fetchTeachingAids() {
-        TeachingAidsService.fetch(vm.fileType, vm.status, vm.dataFilter,vm.uploadedBy,onSuccess, onFailure);
+        TeachingAidsService.fetch(vm.fileType, vm.status, vm.dataFilter ,onSuccess, onFailure);
         function onSuccess(response) {
             var contents = response.data;
             for(var i = 0 ; i < contents.length ; i ++) {
@@ -81,8 +75,8 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
                 }
                 content.grades = grades;
             }
-            for(i = 0 ; i < contents.length ; i ++) {
-                if(contents[i].fileType == 108100) {
+            if(vm.fileType == 108100) {
+                for(i = 0 ; i < contents.length ; i ++) {
                     var videoId = parseYoutubeUrl(contents[i].fileName);
                     contents[i].thumbnailUrl = "http://img.youtube.com/vi/" + videoId + "/0.jpg";
                 }
@@ -95,7 +89,7 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     }
 
     function loadMore() {
-        TeachingAidsService.fetchMore(vm.fileType, vm.status, vm.dataFilter,vm.uploadedBy ,onSuccess, onFailure);
+        TeachingAidsService.fetchMore(vm.fileType, vm.status, vm.dataFilter ,onSuccess, onFailure);
         function onSuccess(response) {
             var contents = response.data;
             for(var i = 0 ; i < contents.length ; i ++) {
@@ -145,7 +139,11 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     function setSelectedOption(option) {
         console.log("selected option : " + option);
         console.log("current optoin : " + vm.selectedOption);
-        vm.selectedOption = option;
+        if(option === vm.selectedOption) {
+            vm.selectedOption = "";
+        } else {
+            vm.selectedOption = option;
+        }
     }
 
     function showDataFilters() {
@@ -201,34 +199,11 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
 
             }
         }, true);
-
-        /**
-         * watch uploader list to make the server call on change
-         * */
-        // $scope.$watch('uploaderList', function (uploaderList){
-        //     if(uploaderList != undefined) {
-        //         // var checkedUploader = uploaderList.filter(function(uploader){ return (uploader.checked == true)});
-        //         // var subjectString = "";
-        //         // if (checkedSubjects.length > 0){
-        //         //     subjectString = checkedSubjects[0].codeID;
-        //         // }
-        //         // for (var i = 1;i < checkedSubjects.length; i++){
-        //         //     subjectString += ',' + checkedSubjects[i].codeID;
-        //         // }
-        //         // vm.dataFilter.subjectCodeIDs = subjectString;
-        //         // fetchTeachingAids();
-        //     }
-        // }, true);
     }
 
     function getGrades() {
         $scope.gradeList = commonService.getCodeListPerCodeGroup(
             appConstants.codeGroup.grade
         );
-    }
-
-    function filterByUploader(id) {
-        vm.uploadedBy = id;
-        fetchTeachingAids();
     }
 }

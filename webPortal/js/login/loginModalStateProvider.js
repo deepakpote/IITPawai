@@ -12,8 +12,8 @@ mitraPortal
             var modalInstance;
             $stateProvider.state(stateName, {
                 url: options.url,
-                onEnter: function($uibModal, $state) {
-                    modalInstance = $uibModal.open(options);
+                onEnter: function($modal, $state) {
+                    modalInstance = $modal.open(options);
                     modalInstance.result['finally'](function() {
                         modalInstance = null;
                         if ($state.$current.name === stateName) {
