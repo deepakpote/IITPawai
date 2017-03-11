@@ -1,4 +1,4 @@
-var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap','ngLoadingSpinner']);
+var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap','ngLoadingSpinner', 'ngAnimate']);
 mitraPortal.
 config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locationProvider',
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
@@ -65,24 +65,14 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 }
             })
             .state('main.loggedIn.home', {
-                url: '/admin',
+            	url: '/dashboard',
                 views: {
-                    'header': {
-                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
+                	'header': {
+                		templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
                     },
                     'content': {
-                        templateUrl: templateChange() + '/js/home/layoutView.html',
-                        //template: "Setting up home layout"
-                        controller: function($scope,appUtils,$state) {
-                            !appUtils.isLoggedInUser() ? $state.go('main.notLoggedIn.home') : console.log("");
-                        }
-                    },
-                    'welcome@main.loggedIn.home': {
-                        templateUrl: templateChange() + '/js/home/welcomeView.html',
-                        controller: 'welcomeController'
-                    },
-                    'map@main.loggedIn.home': {
-                        templateUrl: templateChange() + '/js/home/mapView.html'
+                        templateUrl: templateChange() + '/js/dashboard/dashboardView.html',
+                        controller: 'dashboardController'
                     }
                 }
             })
@@ -149,7 +139,14 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                 url: '/content/review/:contentID',
                 views : {
                     'header': {
-                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Review';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
                     },
                     'content' : {
                         templateUrl: '/js/content/review/reviewContentView.html',
