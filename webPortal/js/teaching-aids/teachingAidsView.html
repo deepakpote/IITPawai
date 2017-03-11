@@ -63,10 +63,7 @@ padding: 64px;">
                 <div class="card-select" ng-class="(((gradeList |
                                     filter:{checked:true}).length > 0)?'orange-background':'teal-background')"
                      >
-                  <span ng-if="((gradeList | filter:{checked:true}).length > 0)"
-                        ng-repeat="grade in gradeList | filter:{checked:true}">
-                    {{grade.codeNameEn}}
-                  </span>
+                  {{displayGradesString}}
                     <span ng-if="!((gradeList | filter:{checked:true}).length > 0)">
                     Select
                   </span>
@@ -96,10 +93,7 @@ padding: 64px;">
                 <div class="card-select" ng-class="(((subjectList |
                                     filter:{checked:true}).length > 0)?'orange-background':'teal-background')"
                      >
-                  <span ng-if="((subjectList | filter:{checked:true}).length > 0)"
-                        ng-repeat="subject in subjectList | filter:{checked:true}">
-                    {{subject.codeNameEn}}
-                  </span>
+                  {{displaySubjectsString}}
                     <span ng-if="!((subjectList | filter:{checked:true}).length > 0)">
                     Select
                   </span>

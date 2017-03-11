@@ -38,10 +38,7 @@ padding: 64px;">
                 <div class="card-select" ng-class="(((topicList |
                                     filter:{checked:true}).length > 0)?'orange-background':'teal-background')"
                       >
-                  <span ng-if="((topicList | filter:{checked:true}).length > 0)"
-                        ng-repeat="topic in topicList | filter:{checked:true}">
-                    {{topic.codeNameEn}}
-                  </span>
+                  {{displayTopicsString}}
                     <span ng-if="!((topicList | filter:{checked:true}).length > 0)">
                     Select
                   </span>
@@ -70,11 +67,8 @@ padding: 64px;">
                 </div>
                 <div class="card-select" ng-class="(((contentLanguageList |
                                     filter:{checked:true}).length > 0)?'orange-background':'teal-background')"
-                     ng-click=selfLearning.setSelectedOption("Subject")>
-                  <span ng-if="((contentLanguageList | filter:{checked:true}).length > 0)"
-                        ng-repeat="language in contentLanguageList | filter:{checked:true}">
-                    {{language.codeNameEn}}
-                  </span>
+                     >
+                    {{displayLanguagesString}}
                     <span ng-if="!((contentLanguageList | filter:{checked:true}).length > 0)">
                     Select
                   </span>

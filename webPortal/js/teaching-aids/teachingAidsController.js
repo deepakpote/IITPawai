@@ -166,6 +166,12 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
                 }
                 vm.dataFilter.gradeCodeIDs = gradesString;
                 fetchTeachingAids();
+
+                var displayGrades = [];
+                for (var i = 0; i < checkedGrades.length; i++) {
+                    displayGrades.push(checkedGrades[i].codeNameEn);
+                }
+                $scope.displayGradesString = displayGrades.join(', ');
             }
         }, true);
 
@@ -184,6 +190,13 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
                 }
                 vm.dataFilter.subjectCodeIDs = subjectString;
                 fetchTeachingAids();
+
+                var displaySubjects = [];
+                for (var i = 0; i < checkedSubjects.length; i++) {
+                    displaySubjects.push(checkedSubjects[i].codeNameEn);
+                }
+                $scope.displaySubjectsString = displaySubjects.join(', ');
+
             }
         }, true);
     }

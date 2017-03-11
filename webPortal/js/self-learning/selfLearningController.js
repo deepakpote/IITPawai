@@ -141,24 +141,41 @@
                     }
                     vm.dataFilter.topicCodeIDs = topicString;
                     fetchSelfLearning();
+
+                    var displayTopics = [];
+                    for (var i = 0; i < checkedTopics.length; i++) {
+                        displayTopics.push(checkedTopics[i].codeNameEn);
+                    }
+                    $scope.displayTopicsString = displayTopics.join(', ');
                 }
             }, true);
 
             /**
              * watch language list to make the server call on change
              * */
-            $scope.$watch('languageList', function (languageList){
-                if(languageList != undefined) {
-                    var checkedLanguages = languageList.filter(function(language){ return (language.checked == true)});
+            $scope.$watch('contentLanguageList', function (contentLanguageList){
+                if(contentLanguageList != undefined) {
+                    var checkedLanguages = contentLanguageList.filter(function(language){ return (language.checked == true)});
+                    console.log("languages");
+                    console.log(checkedLanguages);
                     var languageString = "";
                     if (checkedLanguages.length > 0){
                         languageString = checkedLanguages[0].codeID;
                     }
-                    for (var i = 1;i < checkedSubjects.length; i++){
+                    for (var i = 1;i < checkedLanguages.length; i++){
                         languageString += ',' + checkedLanguages[i].codeID;
                     }
+
+                    var displayLanguages = [];
+                    for (var i = 0; i < checkedLanguages.length; i++) {
+                        displayLanguages.push(checkedLanguages[i].codeNameEn);
+                    }
+                    $scope.displayLanguagesString = displayLanguages.join(', ');
+
                     vm.dataFilter.languageCodeIDs = languageString;
                     fetchSelfLearning();
+
+
                 }
             }, true);
         }
