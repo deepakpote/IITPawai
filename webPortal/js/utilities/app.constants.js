@@ -17,7 +17,7 @@ angular.module("mitraPortal").service('appConstants', [
 		baseKey: 'mitra',
 		codeListKey: 'codeList',
 		codeListVersionKey: 'codeListVersion'
-	}
+	};
 
 	service.codeGroup = {
 		contentLanguage: 101,
@@ -27,7 +27,22 @@ angular.module("mitraPortal").service('appConstants', [
 		contentType: 107,
 		fileType: 108,
 		requirement: 117
-	}
+	};
+
+	service.fileTypeCode = {
+	    video : 108100
+    };
+
+    service.statusCode = {
+        created : 114100,
+        sentForReview : 114101
+
+    };
+
+    service.contentTypeCode = {
+        teachingAids : 107100,
+        selfLearning : 107101
+    };
 
 	return service;
 

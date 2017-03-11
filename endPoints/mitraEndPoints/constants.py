@@ -165,6 +165,11 @@ class messages():
     saveContentStatus_user_not_exists = 100233
     
     teaching_aid_search_filetype_not_exists = 100234
+    
+    author_list_user_does_not_exist = 100235
+    author_list_no_records_found = 100236
+    author_list_appLanguageCodeID_cannot_be_empty = 100237
+    author_list_appLanguageCodeID_does_not_exist = 100238
 
 
 class webportalmessages():    
