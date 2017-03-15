@@ -1,47 +1,14 @@
 angular.module("mitraPortal").controller("dashboardController",
   ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService', '$state', '$window', 'TeachingAidsService',
   function($scope, $location, $log, appUtils, appConstants, contentService, commonService, $state, $window, TeachingAidsService) {	  
-	  var responseTeachingAids = {
-		  "data": []
-//			   {
-//				  "contentID": 257,
-//				  "contentTitle": "कोन",
-//				  "contentType": "107100",
-//				  "gradeCodeIDs": "104103,104104",
-//				  "subject": "103102",
-//				  "topic": null,
-//				  "requirementCodeIDs": "117100,117101,117102,117103",
-//				  "instruction": "",
-//				  "fileType": "108100",
-//				  "fileName": "https://youtu.be/TKKpihENPrA",
-//				  "author": "thefreemath.org",
-//				  "objectives": "कोन",
-//				  "language": "101101"
-//			  }]		  
-	  };
-	  
-	  var responseSelfLearning = {
-			  "data": []
-//				   {
-//					  "contentID": 262,
-//					  "contentTitle": "कोन",
-//					  "contentType": "107100",
-//					  "topic": null,
-//					  "requirementCodeIDs": "117100,117101,117102,117103",
-//					  "instruction": "",
-//					  "fileType": "108100",
-//					  "fileName": "https://youtu.be/TKKpihENPrA",
-//					  "author": "thefreemath.org",
-//					  "objectives": "कोन",
-//					  "language": "101101"
-//				  }]	  
-		  };
 	  
 	  $scope.myInterval = 0;
 	  $scope.myTransition = false;
 	  $scope.noWrapSlides = false;
 	  $scope.activeCarousel1 = 0;
 	  $scope.activeCarousel2 = 0;
+
+	  var responseSelfLearning = [];
 	  var teachingAidsCollection =  $scope.teachingAidsCollection = [];
 	  var selfLearningCollection =  $scope.selfLearningCollection = [];
 	  
@@ -51,18 +18,77 @@ angular.module("mitraPortal").controller("dashboardController",
 			        "gradeCodeIDs" : ""
 			    };
 		  
-		  var video = 108100
-		  var sentForReview = 114101
-		  TeachingAidsService.fetch(video, sentForReview, dataFilter, onSuccess, onFailure);
+		  var fileType = ""
+		  var statusCode = 114100
+		  TeachingAidsService.fetch(fileType, statusCode, dataFilter, onSuccess, onFailure)
 		  	function onSuccess(response) {
-		  		var responseTeachingAidsDynamic = response;
-		  		console.log("*************************")
-		  		console.log(responseTeachingAidsDynamic)
+			  var slides = [];
+		  		for(var i = 0; i < response.data.length; i++){
+		  			var fileType = response.data[i].fileType;
+		  			var fileName = response.data[i].fileName;
+		  			var image = "";
+		  			if(fileType === "108100") {
+						image : 'http://img.youtube.com/vi/' + $scope.getFileName(response.data[i].fileName) + '/0.jpg'
+					}
+		  			
+					slides.push({
+						contentID : response.data[i].contentID,
+						contentTitle : response.data[i].contentTitle,
+						subjectName : commonService.getValueByCode(response.data[i].subject)[0].codeNameEn,
+						grades : $scope.getGrades(response.data[i].gradeCodeIDs),
+						author : response.data[i].author,
+						thumbnail : image || ""
+					})
+				}
+		  		$scope.makeCollectionOfThree(slides, 0);		  		
 		  	}
 		  	function onFailure(error) {
-		  		console.log("error is", error);
-		  	}
+		  		console.log("error is", error);  
+		  	}		  		
 	  }
+	  
+	  $scope.fetchSelfLearningVideos = function() {
+		  var dataFilter = {
+			        "subjectCodeIDs" : "",
+			        "gradeCodeIDs" : ""
+			    };
+		  
+		  var fileType = ""
+		  var statusCode = 114100
+		  TeachingAidsService.fetch(fileType, statusCode, dataFilter, onSuccess, onFailure)
+		  	function onSuccess(response) {
+			  var slides = [];
+		  		for(var i = 0; i < response.data.length; i++){
+		  			var fileType = response.data[i].fileType;
+		  			var fileName = response.data[i].fileName;
+		  			var image = "";
+		  			if(fileType === "108100") {
+						image : 'http://img.youtube.com/vi/' + $scope.getFileName(response.data[i].fileName) + '/0.jpg'
+					}
+		  			
+					slides.push({
+						contentID : response.data[i].contentID,
+						contentTitle : response.data[i].contentTitle,
+						subjectName : commonService.getValueByCode(response.data[i].subject)[0].codeNameEn,
+						grades : $scope.getGrades(response.data[i].gradeCodeIDs),
+						author : response.data[i].author,
+						thumbnail : image || ""
+					})
+				}
+		  		$scope.makeCollectionOfThree(slides, 0);		  		
+		  	}
+		  	function onFailure(error) {
+		  		console.log("error is", error);  
+		  	}		  		
+	  }
+      
+      $scope.getGrades = function(gradeCodeIDs) {
+    	  var grades = "";
+          for (var j = 0 ; j < ids.length ; j++) {
+              grades = " Grade " + commonService.getValueByCode(ids[j])[0].codeNameEn;
+          }
+          return grades;
+      }
 	  
 	  $scope.makeCollectionOfThree = function(slides, type) {
 		  for (var i = 0; i < slides.length; i+=3) {
@@ -87,18 +113,6 @@ angular.module("mitraPortal").controller("dashboardController",
 		    return (match&&match[7].length==11)? match[7] : false;
 	  };
 	  
-	 $scope.add = function(slides, type) {
-		 response = (type === 0) ? responseTeachingAids : responseSelfLearning;
-		 
-			for(var i=0; i< response.data.length; i++){
-				slides.push({
-					videoURL: response.data[i].fileName,
-					image: 'http://img.youtube.com/vi/' + $scope.getFileName(response.data[i].fileName) + '/0.jpg',
-					contentID: response.data[i].contentID
-				})
-			}
-			return slides;
-	};
 	
 	$scope.playVideo = function ( url ) {
 		 $window.open(url, '_blank')
@@ -109,16 +123,12 @@ angular.module("mitraPortal").controller("dashboardController",
 	};
 	
   	var init = function () {
-  	  var teachingAids = []; 
-  	  var selfLearningVideos = []; 
   	  
   	  $scope.fetchTeachingAids();
-  	  
-  	  teachingAids = $scope.add(teachingAids, 0);
-	  $scope.makeCollectionOfThree(teachingAids, 0);
-	  
-	  selfLearningVideos = $scope.add(selfLearningVideos, 1);
-	  $scope.makeCollectionOfThree(selfLearningVideos, 1)
+  	  $scope.fetchSelfLearningVideos();
+  	  var selfLearningVideos = []; 
+//	  selfLearningVideos = $scope.add(selfLearningVideos, 1);
+//	  $scope.makeCollectionOfThree(selfLearningVideos, 1)
   	}
   	
   	init();
