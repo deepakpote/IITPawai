@@ -1,6 +1,8 @@
 angular.module("mitraPortal").controller("dashboardController",
-  ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService', '$state', '$window', 'TeachingAidsService',
-  function($scope, $location, $log, appUtils, appConstants, contentService, commonService, $state, $window, TeachingAidsService) {	  
+  ['$scope', '$location', '$log', 'appUtils', 'appConstants', 'contentService', 'commonService', '$state', '$window', 
+	  'TeachingAidsService', 'SelfLearningService',
+  function($scope, $location, $log, appUtils, appConstants, contentService, commonService, $state, $window, 
+		  TeachingAidsService, SelfLearningService) {	  
 	  
 	  $scope.myInterval = 0;
 	  $scope.myTransition = false;
@@ -28,19 +30,21 @@ angular.module("mitraPortal").controller("dashboardController",
 		  			var fileName = response.data[i].fileName;
 		  			var image = "";
 		  			if(fileType === "108100") {
-						image : 'http://img.youtube.com/vi/' + $scope.getFileName(response.data[i].fileName) + '/0.jpg'
+						image = 'http://img.youtube.com/vi/' + $scope.getFileName(response.data[i].fileName) + '/0.jpg'
 					}
 		  			
 					slides.push({
 						contentID : response.data[i].contentID,
-						contentTitle : response.data[i].contentTitle,
-						subjectName : commonService.getValueByCode(response.data[i].subject)[0].codeNameEn,
-						grades : $scope.getGrades(response.data[i].gradeCodeIDs),
-						author : response.data[i].author,
-						thumbnail : image || ""
+//						contentTitle : response.data[i].contentTitle,
+//						subjectName : commonService.getValueByCode(response.data[i].subject)[0].codeNameEn,
+//						grades : $scope.getGrades(response.data[i].gradeCodeIDs),
+//						author : response.data[i].author,
+						image : image,
+						videoURL : fileName
 					})
 				}
-		  		$scope.makeCollectionOfThree(slides, 0);		  		
+		  		$scope.makeCollectionOfThree(slides, 0);	
+		  		
 		  	}
 		  	function onFailure(error) {
 		  		console.log("error is", error);  
@@ -49,40 +53,39 @@ angular.module("mitraPortal").controller("dashboardController",
 	  
 	  $scope.fetchSelfLearningVideos = function() {
 		  var dataFilter = {
-			        "subjectCodeIDs" : "",
-			        "gradeCodeIDs" : ""
-			    };
-		  
-		  var fileType = ""
+		            "languageCodeIDs" : "",
+		            "topicCodeIDs" : ""
+		        };
 		  var statusCode = 114100
-		  TeachingAidsService.fetch(fileType, statusCode, dataFilter, onSuccess, onFailure)
-		  	function onSuccess(response) {
-			  var slides = [];
-		  		for(var i = 0; i < response.data.length; i++){
-		  			var fileType = response.data[i].fileType;
+		  
+		  SelfLearningService.fetch(dataFilter, statusCode, onSuccess, onFailure);
+
+          	function onSuccess(response){
+              var slides = [];
+              for(var i =0 ; i < response.data.length ; i++) {
+            	  	var fileType = response.data[i].fileType;
 		  			var fileName = response.data[i].fileName;
 		  			var image = "";
 		  			if(fileType === "108100") {
-						image : 'http://img.youtube.com/vi/' + $scope.getFileName(response.data[i].fileName) + '/0.jpg'
+						image = 'http://img.youtube.com/vi/' + $scope.getFileName(response.data[i].fileName) + '/0.jpg'
 					}
-		  			
-					slides.push({
-						contentID : response.data[i].contentID,
-						contentTitle : response.data[i].contentTitle,
-						subjectName : commonService.getValueByCode(response.data[i].subject)[0].codeNameEn,
-						grades : $scope.getGrades(response.data[i].gradeCodeIDs),
-						author : response.data[i].author,
-						thumbnail : image || ""
-					})
-				}
-		  		$scope.makeCollectionOfThree(slides, 0);		  		
-		  	}
+                  slides.push({
+                	  contentID : response.data[i].contentID,
+//                	  topicName : commonService.getValueByCode(response.data[i].topic)[0].codeNameEn,
+//                	  language : commonService.getValueByCode(response.data[i].language)[0].codeNameEn
+                	  image : image,
+                	  videoURL : fileName
+                  })
+              }
+              $scope.makeCollectionOfThree(slides, 1)
+          	}
 		  	function onFailure(error) {
 		  		console.log("error is", error);  
 		  	}		  		
 	  }
       
       $scope.getGrades = function(gradeCodeIDs) {
+    	  var ids = content.gradeCodeIDs.split(",");
     	  var grades = "";
           for (var j = 0 ; j < ids.length ; j++) {
               grades = " Grade " + commonService.getValueByCode(ids[j])[0].codeNameEn;
@@ -122,13 +125,9 @@ angular.module("mitraPortal").controller("dashboardController",
 		$state.go(state)
 	};
 	
-  	var init = function () {
-  	  
+  	var init = function () { 	  
   	  $scope.fetchTeachingAids();
   	  $scope.fetchSelfLearningVideos();
-  	  var selfLearningVideos = []; 
-//	  selfLearningVideos = $scope.add(selfLearningVideos, 1);
-//	  $scope.makeCollectionOfThree(selfLearningVideos, 1)
   	}
   	
   	init();
