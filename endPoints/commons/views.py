@@ -4,6 +4,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import list_route
 from django.db.models import Max
+from time import strftime
+
+import os,time
 
 from commons.models import code , news, configuration, newsImage , codeGroup, userNews, newsDetail
 from commons.serializers import codeSerializer , newsSerializer , customNewsSerializer
@@ -118,7 +121,7 @@ class CodeViewSet(viewsets.ModelViewSet):
                 codeID = getLatestCodeIDfromCodeGroup(codeGroupID)
                 
                 # Save the content.
-                ObjCode =code.objects.create(
+                ObjCode = code.objects.create(
                                             codeID = codeID , 
                                             codeGroup = objCodeGroup , 
                                             codeNameEn = codeNameEn.strip() ,
@@ -260,6 +263,12 @@ class NewsViewSet(viewsets.ModelViewSet):
         statusCodeID = request.data.get('statusCodeID')
         pdfFileURL = request.data.get('pdfFileURL')
         
+        imageOne = request.FILES['imageOne'] if 'imageOne' in request.FILES else None
+        imageTwo = request.FILES['imageTwo'] if 'imageTwo' in request.FILES else None
+        imageThree = request.FILES['imageThree'] if 'imageThree' in request.FILES else None
+        imageFour = request.FILES['imageFour'] if 'imageFour' in request.FILES else None
+        imageFive = request.FILES['imageFive'] if 'imageFive' in request.FILES else None
+                
         #Get user token
         authToken = request.META.get('HTTP_AUTHTOKEN')
         
@@ -386,7 +395,7 @@ class NewsViewSet(viewsets.ModelViewSet):
                                                                   tags = marTags),
                                                     ]
                                                  )
-             
+
                 newsID =  objNews.newsID 
             
             else:
@@ -428,8 +437,9 @@ class NewsViewSet(viewsets.ModelViewSet):
                      "data": []},
                      status = status.HTTP_400_BAD_REQUEST)
 
+        saveImages(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID, objUser)
         #Return the response
-        return Response({"response_message": constants.messages.success, "data": []})
+        return Response({"response_message": constants.messages.success, "data": [{"newsID" : newsID}]})
      
     """
      saves users preferred news
@@ -700,4 +710,59 @@ def validateNewListParameters(departmentCodeID, publishFromDate, publishToDate, 
         errors['status'] = status.HTTP_404_NOT_FOUND
         
     return errors
+
+'''
+ function to save images
+
+'''
+def saveImages(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID, objUser) :
+    
+    imageArray = [imageOne, imageTwo, imageThree, imageFour, imageFive]
+    objnews = news.objects.get(newsID = newsID)
+    
+    for index, image in enumerate(imageArray):
+        if image != None:
+            fileLocation = constructImageName(newsID, image, index)
+    
+            #open the file in chunks and write it the to the destination
+            with open(fileLocation, 'wb+') as destination:
+                for chunk in image.chunks():
+                   destination.write(chunk)
+                                     
+#             create an entry in the database under newsImage table                    
+            objImage = newsImage.objects.create (
+                                          news = objnews,
+                                          imageURL = fileLocation,
+                                          createdBy = objUser    
+                                         )
+            objImage.save()
+
+'''
+ function to construct image name
+'''
+def constructImageName(newsID, image, index) :           
+    
+    currentDateTime = strftime("%y%m%d%H%M%S", time.localtime())
+    tempFileName, fileExtension = os.path.splitext(image.name)    
+
+    baseDir = constants.newsDir.imageDir
+    
+    imageName = (str(newsID) + "_" + str(index+1) + "_" + currentDateTime + fileExtension)
+    return str(baseDir) + str(imageName)
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     

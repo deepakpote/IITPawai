@@ -220,7 +220,9 @@ class mitraCode():
     sentForReview = 114101
     published = 114102
     content_or_news_uploaded_by_user_me = 118100
-
+    news_category_maa = 115100
+    human_resources_department = 112101
+    high_priority = 116100
     
 class contentSearchRecords():
     default = 20
@@ -240,10 +242,12 @@ class imageDir():
     currentDir = settings.PROJECT_DIR
     baseDir = currentDir + path
     
-class staticFileDir():
-    userDir = "user/"
-    newsImageDir = "news/image/"
-    newsPDFDir = "news/pdf/"
+class newsDir():
+    path = "/static/news/"
+    currentDir = settings.PROJECT_DIR
+    baseDir = currentDir + path
+    pdfDir = baseDir + "pdf/"
+    imageDir = baseDir + "image/"
     
 class uploadedContentDir():
     path = "/static/content/"
