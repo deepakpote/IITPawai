@@ -4,7 +4,7 @@ angular.module("mitraPortal").service('appConstants', [
 	var service = {};
 
 	service.endpoint = {
-		baseUrl: 'http://54.152.74.194:8000/',
+		baseUrl: 'http://localhost:8000/',
 		code : {
 			list: 'code'
 		},
@@ -27,6 +27,16 @@ angular.module("mitraPortal").service('appConstants', [
 		contentType: 107,
 		fileType: 108,
 		requirement: 117
+	}
+	
+	service.fileType = {
+		video : 108100
+	}
+	
+	service.statusCodeID = {
+		published : 114102,
+		sentForReview : 114101,
+		created : 114100
 	}
 
 	return service;

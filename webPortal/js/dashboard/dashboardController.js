@@ -21,15 +21,14 @@ angular.module("mitraPortal").controller("dashboardController",
 			    };
 		  
 		  var fileType = ""
-		  var statusCode = 114100
-		  TeachingAidsService.fetch(fileType, statusCode, dataFilter, onSuccess, onFailure)
+		  TeachingAidsService.fetch(fileType, appConstants.statusCodeID.created, dataFilter, onSuccess, onFailure)
 		  	function onSuccess(response) {
 			  var slides = [];
 		  		for(var i = 0; i < response.data.length; i++){
 		  			var fileType = response.data[i].fileType;
 		  			var fileName = response.data[i].fileName;
 		  			var image = "";
-		  			if(fileType === "108100") {
+		  			if(fileType === appConstants.fileType.video.toString()) {
 						image = 'http://img.youtube.com/vi/' + $scope.getFileName(response.data[i].fileName) + '/0.jpg'
 					}
 		  			
@@ -54,27 +53,23 @@ angular.module("mitraPortal").controller("dashboardController",
 	  $scope.fetchSelfLearningVideos = function() {
 		  var dataFilter = {
 		            "languageCodeIDs" : "",
-		            "topicCodeIDs" : ""
+		            "topicCodeIDs" : "",
+		            "fileTypeCodeID" : appConstants.fileType.video
 		        };
-		  var statusCode = 114100
-		  
-		  SelfLearningService.fetch(dataFilter, statusCode, onSuccess, onFailure);
+		 
+		  SelfLearningService.fetch(dataFilter, appConstants.statusCodeID.created, onSuccess, onFailure);
 
           	function onSuccess(response){
               var slides = [];
               for(var i =0 ; i < response.data.length ; i++) {
-            	  	var fileType = response.data[i].fileType;
-		  			var fileName = response.data[i].fileName;
-		  			var image = "";
-		  			if(fileType === "108100") {
-						image = 'http://img.youtube.com/vi/' + $scope.getFileName(response.data[i].fileName) + '/0.jpg'
-					}
+		  		  var image = 'http://img.youtube.com/vi/' + $scope.getFileName(response.data[i].fileName) + '/0.jpg';
+		  			
                   slides.push({
                 	  contentID : response.data[i].contentID,
 //                	  topicName : commonService.getValueByCode(response.data[i].topic)[0].codeNameEn,
 //                	  language : commonService.getValueByCode(response.data[i].language)[0].codeNameEn
                 	  image : image,
-                	  videoURL : fileName
+                	  videoURL : response.data[i].fileName
                   })
               }
               $scope.makeCollectionOfThree(slides, 1)
