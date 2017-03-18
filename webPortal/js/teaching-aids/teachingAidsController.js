@@ -23,6 +23,9 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     vm.loadMore = loadMore;
     vm.hasMoreData = true;
     vm.filterByUploader = filterByUploader;
+    vm.setAscending = setAscending;
+    vm.setDescending = setDescending;
+    vm.orderByKey = '';
 
     activate();
 
@@ -218,5 +221,13 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     function filterByUploader(id) {
         vm.uploadedBy = id;
         fetchTeachingAids();
+    }
+
+    function setAscending() {
+
+    }
+
+    function setDescending() {
+
     }
 }
