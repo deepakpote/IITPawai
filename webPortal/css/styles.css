@@ -38,6 +38,11 @@ a:hover, a:focus {
 }
 .leftmenu{
     z-index: 999;
+    overflow-y: auto;
+    height: 100%;
+    box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
+    -webkit-box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
+    -moz-box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
 }
 .left-menu-item {
 	padding-top: 5%;
@@ -48,9 +53,6 @@ a:hover, a:focus {
 .left-menu-container {
     margin-right: -15px;
     padding-top: 20px;
-    box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
-    -webkit-box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
-    -moz-box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
     height: 100%;
 }
 
