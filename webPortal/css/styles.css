@@ -451,6 +451,9 @@ a.selectedItem {
     cursor: pointer;
 }
 
+.btn-warning {
+    background-color: #ff9100 !important;
+}
 
 input[type=text]:focus:not([readonly]),
 input[type=password]:focus:not([readonly]),
