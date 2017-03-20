@@ -61,6 +61,39 @@
                     <span class="error-message" ng-show="frmContentUpload.subject.$error.required">Please select a subject.</span>
                   </div>
                   <br />
+            <div class="card">
+            <div class="options-card" ng-mouseenter=setSelectedOption("ContentType") ng-mouseleave=setSelectedOption("ContentType") >
+              <div class="card-content">
+                ContentType
+              </div>
+              <div class="card-select" ng-class="($parent.content.fileTypeCodeID?'orange-background':'teal-background')">
+                <span ng-if="$parent.content.fileTypeCodeID" ng-repeat="fileType in fileTypeList | filter:{codeID : $parent.content.fileTypeCodeID}">
+                  {{fileType.codeNameEn}}
+                </span>
+                <span ng-if="!$parent.content.fileTypeCodeID">
+                  Select
+                </span>
+              </div>
+              <div class="card-action" ng-show="(selectedOption == 'ContentType')">
+                <div ng-repeat="fileType in fileTypeList">
+                  <div>
+                    <div class="col-md-9 no-padding align-left">
+                      {{fileType.codeNameEn}}
+                    </div>
+                    <div class="col-md-3 align-right no-padding" >
+                      <input type="radio" ng-model="$parent.content.fileTypeCodeID" ng-click = "showContentObject()" ng-value="fileType.codeID" name="fileType" ng-required="!($parent.content.fileTypeCodeID)" />
+                    </div>
+                  </div>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+            <br />
+            <div ng-messages="frmContentUpload.fileType.$error" ng-if="frmContentUpload.fileType.$dirty">
+                    <span class="error-message" ng-show="frmContentUpload.fileType.$error.required">Please select a content Type.</span>
+                  </div>
+                  <br />
           </div>
           <div class="col-md-1" ng-if="isContentTypeTeachingAid()"></div>
 
@@ -305,15 +338,9 @@
 
   <div class="upload-title">Content Link/Upload</div>
   <div class="col-md-8">
-    <div class="form-group" ng-class="{'has-error': frmContentUpload.fileTypeDropdown.$dirty && frmContentUpload.fileTypeDropdown.$invalid}">
-     <select name="fileTypeDropdown" class="form-control" ng-model="content.fileTypeCodeID" required
-     ng-options="fileType.codeID as fileType.codeNameEn for fileType in fileTypeList">
-     <option value="">- Select File Type-</option>
-   </select>
-   <div ng-messages="frmContentUpload.fileTypeDropdown.$error" ng-if="frmContentUpload.fileTypeDropdown.$dirty">
-    <span class="error-message" ng-show="frmContentUpload.fileTypeDropdown.$error.required">File Type is required.</span>
-  </div>
-</div>
+    <div ng-if="!content.fileTypeCodeID">
+      Please select a content type to upload a file or enter a video link.
+    </div>
 
 <div class="form-group" ng-class="{'has-error': frmContentUpload.txtFileUrl.$dirty && frmContentUpload.txtFileUrl.$invalid}">
   <input type="text" class="form-control" id="txtFileUrl" name="txtFileUrl" 
