@@ -37,8 +37,12 @@ a:hover, a:focus {
 	padding:0px!important;
 }
 .leftmenu{
-	height: 700px;
     z-index: 999;
+    overflow-y: auto;
+    height: 100%;
+    box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
+    -webkit-box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
+    -moz-box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
 }
 .left-menu-item {
 	padding-top: 5%;
@@ -49,9 +53,6 @@ a:hover, a:focus {
 .left-menu-container {
     margin-right: -15px;
     padding-top: 20px;
-    box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
-    -webkit-box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
-    -moz-box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
     height: 100%;
 }
 
@@ -249,7 +250,7 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 	padding: 0px !important;
 }
 .orange-background{
-	background-color:#ff6d00;
+	background-color:#ff9100;
 }
 
 .teal-background{
@@ -361,7 +362,7 @@ li.selected  {
 }
 
 .mid-content {
-    clear: right;background-color: #009698;
+    clear: right;background-color: #009688;
     padding-top: 12px;
     padding-bottom: 12px;
     padding-left: 8px;
@@ -451,6 +452,9 @@ a.selectedItem {
     cursor: pointer;
 }
 
+.btn-warning {
+    background-color: #ff9100 !important;
+}
 
 input[type=text]:focus:not([readonly]),
 input[type=password]:focus:not([readonly]),
