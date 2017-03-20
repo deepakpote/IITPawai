@@ -1,6 +1,5 @@
 <!-- unnecessary header -->
-<div style="
-padding: 64px;">
+<div style="padding-top:64px;padding-bottom:64px;" class="section-padding-container">
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
     labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
     nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
@@ -11,7 +10,7 @@ padding: 64px;">
 <div class="divider"></div>
 
 <!-- content status filter start-->
-<div>
+<div class="section-padding-container">
     <ul class="filter-type">
         <li class="filter-type" ng-class="{selected : teachingAids.status === 114101}"
             ng-click=teachingAids.setStatus(114101)>Review</li>
@@ -29,7 +28,7 @@ padding: 64px;">
 <div class="divider"></div>
 
 <!-- content type filter start -->
-<div>
+<div class="section-padding-container">
     <ul class="filter-type">
         <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108100}"
             ng-click=teachingAids.setFileType(108100)>Video</li>
@@ -56,11 +55,11 @@ padding: 64px;">
 
 <!-- granular filters start -->
 
-<div class="row" style="padding: 5%;">
+<div class="row" style="padding: 6%;">
 
     <div class="col-md-4">
         <div class="card">
-            <div class="options-card" ng-mouseenter=teachingAids.setSelectedOption("Grade") ng-mouseleave=teachingAids.setSelectedOption("Grade")>
+            <div class="options-card" ng-mouseenter=teachingAids.setSelectedOption("Grade") ng-mouseleave=teachingAids.setSelectedOption("")>
                 <div class="card-content">
                     Grade
                 </div>
@@ -90,7 +89,7 @@ padding: 64px;">
 
     <div class="col-md-4">
         <div class="card">
-            <div class="options-card" ng-mouseenter=teachingAids.setSelectedOption("Subject") ng-mouseleave=teachingAids.setSelectedOption("Subject")>
+            <div class="options-card" ng-mouseenter=teachingAids.setSelectedOption("Subject") ng-mouseleave=teachingAids.setSelectedOption("")>
                 <div class="card-content">
                     Subject
                 </div>
@@ -121,7 +120,7 @@ padding: 64px;">
 
     <div class="col-md-4">
         <div class="card">
-            <div class="options-card" ng-click=teachingAids.setSelectedOption("Uploaded-By")>
+            <div class="options-card" ng-mouseenter=teachingAids.setSelectedOption("Uploaded-By") ng-mouseleave=teachingAids.setSelectedOption("")>
                 <div class="card-content">
                     Uploader
                 </div>
@@ -160,7 +159,7 @@ padding: 64px;">
 
 <!-- content start -->
 
-<div class="card-content-wrapper">
+<div class="section-padding-container">
     <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
     <div class="col-md-4 list-view" ng-repeat="teachingAid in teachingAids.data | orderBy:teachingAids.orderByKey">
         <div class="card" style="display: flex;flex-direction: column;" ng-click=teachingAids.goToReview(teachingAid)>

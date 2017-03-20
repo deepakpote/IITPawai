@@ -1,6 +1,5 @@
 <!-- unnecessary header -->
-<div style="
-padding: 64px;">
+<div style="padding-top:64px;padding-bottom:64px;" class="section-padding-container">
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
     labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
     nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
@@ -11,7 +10,7 @@ padding: 64px;">
 <div class="divider"></div>
 
 <!-- content status filter start-->
-<div>
+<div class="section-padding-container">
     <ul class="filter-type">
         <li class="filter-type" ng-class="{selected : selfLearning.status === 114101}"
             ng-click=selfLearning.setStatus(114101)>Review</li>
@@ -28,9 +27,9 @@ padding: 64px;">
 
 <!-- granular filters start -->
 
-<div class="row" style="padding: 5%;">
+<div class="row" style="padding: 6%;">
 
-    <div class="col-md-4 col-md-offset-2">
+    <div class="col-md-4">
         <div class="card">
             <div class="options-card" ng-mouseenter=selfLearning.setSelectedOption("Topic") ng-mouseleave=selfLearning.setSelectedOption("Topic")>
                 <div class="card-content">
@@ -97,7 +96,7 @@ padding: 64px;">
 
 <!-- content below -->
 
-<div class="card-content-wrapper">
+<div class="section-padding-container">
     <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
     <div class="col-md-4 list-view" ng-repeat="data in selfLearning.data track by data.contentID">
         <div class="card" style="display: flex;flex-direction: column;"  ng-click=selfLearning.goToReview(data)>

@@ -138,7 +138,7 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 .selected-card {
 }
 .unselected-card {
-	opacity:0.6;
+	opacity:0.46;
   cursor: pointer; cursor: hand;
 }
 .options-card {
@@ -221,6 +221,11 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 
 }
 
+.section-padding-container {
+  padding-left: 6%; 
+  padding-right: 6%; 
+}
+
 .review-input {
     width:80%;
 }
@@ -297,11 +302,9 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 
 ul.filter-type {
     list-style-type: none;
-    margin: 0;
     overflow: hidden;
     background-color: #ffffff;
     width: 840px;
-    margin: auto;
 }
 
 li.filter-type {
@@ -387,10 +390,6 @@ li.selected  {
     color:whitesmoke;
 }
 
-.card-content-wrapper {
-    padding-left: 10%;
-    padding-right: 10%;
-}
 
 .uploader {
     flex: 1;
