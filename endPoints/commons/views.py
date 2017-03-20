@@ -226,13 +226,15 @@ class NewsViewSet(viewsets.ModelViewSet):
         
         # Create object of common class 
         objCommon = utils.common()
-        
-        basicURL = objCommon.getBaseURL(constants.staticFileDir.newsPDFDir)
-        
-        #basicURL = getBaseURL(constants.staticFileDir.newsPDFDir)
-        for objNew in serializer.data :
-            if objNew['pdfFileURL'] :
-                objNew['pdfFileURL'] = basicURL +str(objNew['pdfFileURL'])
+             
+        pdfBaseURL = objCommon.getBaseURL(constants.newsDir.pdfDir)
+
+        #get image URLs and PDF URL
+        for newsObject in serializer.data :
+            newsObject['imageURL'] = getNewsImageURL(newsObject)
+            
+            if newsObject['pdfFileURL'] :
+                newsObject['pdfFileURL'] = pdfBaseURL +str(newsObject['pdfFileURL'])
                 
         return Response({"response_message": constants.messages.success, "data": serializer.data})
     
@@ -261,7 +263,7 @@ class NewsViewSet(viewsets.ModelViewSet):
         departmentCodeID = request.data.get('departmentCodeID')
         newsImportanceCodeID = request.data.get('newsImportanceCodeID')
         statusCodeID = request.data.get('statusCodeID')
-        pdfFileURL = request.data.get('pdfFileURL')
+        pdfFile = request.FILES['pdfFile'] if 'pdfFile' in request.FILES else None
         
         imageOne = request.FILES['imageOne'] if 'imageOne' in request.FILES else None
         imageTwo = request.FILES['imageTwo'] if 'imageTwo' in request.FILES else None
@@ -274,47 +276,12 @@ class NewsViewSet(viewsets.ModelViewSet):
         
        #Get userID from authToken
         userID = getUserIDFromAuthToken(authToken)
+        
+        if not newsID or newsID == 0: 
+            responseMessage = validateRequest(userID, engNewsTitle, marNewsTitle, newsCategoryCodeID, departmentCodeID, newsImportanceCodeID, statusCodeID)
                
-        # Check if userID is passed in post param
-        if not userID:
-            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
-                             "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED)
-        
-        
-        # Check if NewsTitle for english is passed in post param
-        if not engNewsTitle or engNewsTitle is None or engNewsTitle.isspace():
-            return Response({"response_message": constants.messages.saveNews_newsTitle_english_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED) 
-            
-        # Check if NewsTitle for marathi is passed in post param
-        if not marNewsTitle or marNewsTitle is None or marNewsTitle.isspace():
-            return Response({"response_message": constants.messages.saveNews_newsTitle_marathi_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED) 
-            
-        # Check if newsCategoryCodeID is passed in post param
-        if not newsCategoryCodeID and newsCategoryCodeID != 0:
-            return Response({"response_message": constants.messages.saveNews_newsCategory_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED) 
-        
-        # Check if departmentCodeID is passed in post param
-        if not departmentCodeID and departmentCodeID != 0:
-            return Response({"response_message": constants.messages.saveNews_departmentCodeID_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED) 
-                     
-        # Check if newsImportanceCodeID is passed in post param
-        if not newsImportanceCodeID and newsImportanceCodeID != 0:
-            return Response({"response_message": constants.messages.saveNews_newsImportanceCodeID_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED)    
-              
-        # Check if statusCodeID is passed in post param
-        if not statusCodeID:
-            return Response({"response_message": constants.messages.saveNews_statusCodeID_cannot_be_empty,
+            if responseMessage != 0:
+                return response({"response_message": responseMessage,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
                   
@@ -322,41 +289,31 @@ class NewsViewSet(viewsets.ModelViewSet):
         try:
             objUser = user.objects.get(userID = userID)
         except user.DoesNotExist:
-            return Response({"response_message": constants.messages.saveNews_user_not_exists,
-                             "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
+            return statusHttpNotFound(constants.messages.saveNews_user_not_exists)
             
         # If statusCodeID parameter is passed, then check status exists or not
         try:
             objStatus = code.objects.get(codeID = statusCodeID)
         except code.DoesNotExist:
-            return Response({"response_message": constants.messages.saveNews_status_not_exists,
-                             "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
+            return statusHttpNotFound(constants.messages.saveNews_status_not_exists)
             
         # If newsCategoryCodeID parameter is passed, then check newsCategoryCodeID exists or not
         try:
             objnewsCategory = code.objects.get(codeID = newsCategoryCodeID)
         except code.DoesNotExist:
-            return Response({"response_message": constants.messages.saveNews_newsCategory_not_exists,
-                             "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
+            return statusHttpNotFound(constants.messages.saveNews_newsCategory_not_exists)
              
         # If departmentCodeID parameter is passed, then check departmentCodeID exists or not    
         try:
             objDepartment = code.objects.get(codeID = departmentCodeID)
         except code.DoesNotExist:
-            return Response({"response_message": constants.messages.saveNews_department_does_not_exists,
-                     "data": []},
-                    status = status.HTTP_404_NOT_FOUND)
+            return statusHttpNotFound(constants.messages.saveNews_department_does_not_exists)
         
         # If newsImportanceCodeID parameter is passed, then check newsImportanceCodeID exists or not        
         try:
             objNewsImportance = code.objects.get(codeID = newsImportanceCodeID)
         except code.DoesNotExist:
-            return Response({"response_message": constants.messages.saveNews_newsImportance_does_not_exists,
-                     "data": []},
-                    status = status.HTTP_404_NOT_FOUND)  
+            return statusHttpNotFound(constants.messages.saveNews_newsImportance_does_not_exists)  
                        
         # Get app language instances for english and marathi.
         objAppLanguageEng = code.objects.get(codeID = constants.appLanguage.english)
@@ -368,7 +325,6 @@ class NewsViewSet(viewsets.ModelViewSet):
                 # Save the newsID.
                 objNews =news.objects.create(department = objDepartment, 
                                             publishDate = publishDate,
-                                            pdfFileURL = pdfFileURL,
                                             newsCategory = objnewsCategory,
                                             newsImportance = objNewsImportance,
                                             status = objStatus,
@@ -396,7 +352,9 @@ class NewsViewSet(viewsets.ModelViewSet):
                                                     ]
                                                  )
 
-                newsID =  objNews.newsID 
+                newsID = objNews.newsID 
+                savePDFFile(pdfFile, newsID)
+                saveImages(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID, objUser)
             
             else:
                 # If news parameter is passed, then check news exists or not and update the newsID details.       
@@ -410,7 +368,6 @@ class NewsViewSet(viewsets.ModelViewSet):
                 # If newsID valid, update the details.
                 news.objects.filter(newsID = newsID).update(department = objDepartment, 
                                                             publishDate = publishDate,
-                                                            pdfFileURL = pdfFileURL,
                                                             newsCategory = objnewsCategory,
                                                             newsImportance = objNewsImportance,
                                                             status = objStatus,
@@ -429,15 +386,21 @@ class NewsViewSet(viewsets.ModelViewSet):
                                                                                       author = marAuthor , 
                                                                                       content = marContent,
                                                                                       tags = marTags)
+                                             
+                if pdfFile != None:
+                    removePreviouslySavedPDF(newsID)
+                    savePDFFile(pdfFile, newsID)
+                    
+                checkIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, imageFive)
                                                
         except Exception as e:
-            # Error occured while uploading the content.
-            #print e
+            # Error occured while uploading the content
+            print e
             return Response({"response_message": constants.messages.saveNews_news_save_failed,
                      "data": []},
                      status = status.HTTP_400_BAD_REQUEST)
 
-        saveImages(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID, objUser)
+        
         #Return the response
         return Response({"response_message": constants.messages.success, "data": [{"newsID" : newsID}]})
      
@@ -588,25 +551,26 @@ def getUserIDFromAuthToken(authToken):
 """
 fuction to get comma separated string of Image URLs for a news
 """
-def getNewsImageURL(NewsObject):
-    #declare array
-    #basicURL = getBaseURL(constants.staticFileDir.newsImageDir)
+def getNewsImageURL(newsObject):
     
+    print "************** news ", newsObject   
     # Create object of common class 
     objCommon = utils.common()
-    #Get basic URL.
-    basicURL = objCommon.getBaseURL(constants.staticFileDir.newsImageDir)
+    tempNewsImageArray = []
+    imageURL = None
     
-    arrOut = []
-    userImageURL = None
-    objImageList = newsImage.objects.filter(news= NewsObject['newsID'])
+    #Get basic URL.
+    basicURL = objCommon.getBaseURL(constants.newsDir.imageDir)
+  
+    objImageList = newsImage.objects.filter(news = newsObject['news'])
+    
     for objImage in objImageList:
         if objImage.imageURL:
-            arrOut.append(basicURL + str(objImage.imageURL))
+            tempNewsImageArray.append(basicURL + str(objImage.imageURL))
     
-    userImageURL = ",".join(arrOut)
+    imageURL = ",".join(tempNewsImageArray)
     # return image url string
-    return userImageURL;    
+    return imageURL;    
 
 """
 Common function used to get the userID from authToken.
@@ -631,7 +595,8 @@ def getLatestCodeIDfromCodeGroup(codeGroupID):
 """
 Common function to get news List
 """
-def getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser , newsCategoryCodeID, statusCodeID , appLanguageCodeID):
+def getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser , newsCategoryCodeID, statusCodeID , 
+                appLanguageCodeID):
     
     if not objUser:
         # get all news of respective appLanguageCodeID.
@@ -661,11 +626,12 @@ def getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser , news
     # check input newsCategoryCodeID exists or not
     if statusCodeID:
         queryset = queryset.filter(news__status__in = statusCodeID)
-        
+                
     # descending order of publish date
     queryset = queryset.order_by('news__publishDate')
 
     return queryset
+
 """
 common function for news filter validation
 """
@@ -719,10 +685,13 @@ def saveImages(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID, obj
     
     imageArray = [imageOne, imageTwo, imageThree, imageFour, imageFive]
     objnews = news.objects.get(newsID = newsID)
+    index = 1;
     
-    for index, image in enumerate(imageArray):
+    for image in imageArray:
         if image != None:
-            fileLocation = constructImageName(newsID, image, index)
+            imageName = constructImageName(newsID, image, index)
+            index = index + 1
+            fileLocation = str(constants.newsDir.imageDir) + str(imageName)
     
             #open the file in chunks and write it the to the destination
             with open(fileLocation, 'wb+') as destination:
@@ -732,7 +701,7 @@ def saveImages(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID, obj
 #             create an entry in the database under newsImage table                    
             objImage = newsImage.objects.create (
                                           news = objnews,
-                                          imageURL = fileLocation,
+                                          imageURL = imageName,
                                           createdBy = objUser    
                                          )
             objImage.save()
@@ -744,16 +713,100 @@ def constructImageName(newsID, image, index) :
     
     currentDateTime = strftime("%y%m%d%H%M%S", time.localtime())
     tempFileName, fileExtension = os.path.splitext(image.name)    
-
-    baseDir = constants.newsDir.imageDir
     
     imageName = (str(newsID) + "_" + str(index+1) + "_" + currentDateTime + fileExtension)
-    return str(baseDir) + str(imageName)
+    return imageName
     
+'''
+ function to save PDF file
+'''
+def savePDFFile(pdfFile, newsID):
+    currentDateTime = strftime("%y%m%d%H%M%S", time.localtime())
+    baseDir = constants.newsDir.pdfDir
+    
+    fileName = (str(newsID) + "_" + currentDateTime + ".pdf")
+    fileLocation = str(baseDir) + str(fileName)
+    
+    with open(fileLocation, 'wb+') as destination:
+                for chunk in pdfFile.chunks():
+                   destination.write(chunk)
+                   
+    news.objects.filter(newsID = newsID).update(pdfFileURL = fileName);
+    
+'''
+function to validate save news request
+'''
+def validateRequest(userID, engNewsTitle, marNewsTitle, newsCategoryCodeID, departmentCodeID, 
+                    newsImportanceCodeID, statusCodeID):
+    
+        # Check if userID is passed in post param
+        if not userID:
+            return  constants.messages.user_userid_cannot_be_empty;
+        
+        # Check if NewsTitle for english is passed in post param
+        if not engNewsTitle or engNewsTitle is None or engNewsTitle.isspace():
+            return  constants.messages.saveNews_newsTitle_english_cannot_be_empty;
+            
+        # Check if NewsTitle for marathi is passed in post param
+        if not marNewsTitle or marNewsTitle is None or marNewsTitle.isspace():
+            return  constants.messages.saveNews_newsTitle_marathi_cannot_be_empty;
+            
+        # Check if newsCategoryCodeID is passed in post param
+        if not newsCategoryCodeID and newsCategoryCodeID != 0:
+            return  constants.messages.saveNews_newsCategory_cannot_be_empty;
+        
+        # Check if departmentCodeID is passed in post param
+        if not departmentCodeID and departmentCodeID != 0:
+            return  constants.messages.saveNews_departmentCodeID_cannot_be_empty;
+                     
+        # Check if newsImportanceCodeID is passed in post param
+        if not newsImportanceCodeID and newsImportanceCodeID != 0:
+            return  constants.messages.saveNews_newsImportanceCodeID_cannot_be_empty;
+                                  
+        # Check if statusCodeID is passed in post param
+        if not statusCodeID:
+            return  constants.messages.saveNews_statusCodeID_cannot_be_empty;
+                           
+        return 0;
+    
+"""
+common function to return HTTP 404
+"""              
+def statusHttpNotFound(responseMessage):
+        return Response({"response_message": responseMessage,
+                                 "data": []},
+                                status = status.HTTP_404_NOT_FOUND)
+        
+"""
+common function to get basic url for all files
+"""
+def getBaseURL(dirName):
+    basicURL  = settings.DOMAIN_NAME + settings.STATIC_URL + dirName 
+    return basicURL
 
+'''
+function to delete file from a location
+'''
+def removePreviouslySavedPDF(newsID):
     
-    
-    
+    #under the static/news/pdf directory, search for file that starts with the given newsID 
+    for root, dirs, files in os.walk(constants.newsDir.pdfDir, topdown=False):
+        for name in files:
+            #if the file is found, remove it
+            if(name.startswith(str(newsID))):
+                os.remove(os.path.join(root, name))
+                
+'''
+function to delete file from a location
+'''
+def checkIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID):
+    imageArray = [imageOne, imageTwo, imageThree, imageFour, imageFive]
+    for image in imageArray:
+        if image != None:
+            removeImage(image, newsID)
+            saveImage()
+            
+
     
     
     
