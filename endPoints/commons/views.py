@@ -155,7 +155,7 @@ class CodeViewSet(viewsets.ModelViewSet):
         
         except Exception as e:
             # Error occured while saving the code.
-            print e
+#             print e
             return Response({"response_message": constants.messages.saveCode_save_code_failed,
                      "data": []},
                      status = status.HTTP_400_BAD_REQUEST)
@@ -270,9 +270,7 @@ class NewsViewSet(viewsets.ModelViewSet):
         imageThree = request.FILES['imageThree'] if 'imageThree' in request.FILES else None
         imageFour = request.FILES['imageFour'] if 'imageFour' in request.FILES else None
         imageFive = request.FILES['imageFive'] if 'imageFive' in request.FILES else None
-        
-        print "****image three", imageThree
-        print "****image two", imageTwo        
+    
         #Get user token
         authToken = request.META.get('HTTP_AUTHTOKEN')
         
@@ -397,7 +395,7 @@ class NewsViewSet(viewsets.ModelViewSet):
                                                
         except Exception as e:
             # Error occured while uploading the content
-            print e
+#             print e
             return Response({"response_message": constants.messages.saveNews_news_save_failed,
                      "data": []},
                      status = status.HTTP_400_BAD_REQUEST)
@@ -555,7 +553,6 @@ fuction to get comma separated string of Image URLs for a news
 """
 def getNewsImageURL(newsObject):
     
-    print "************** news ", newsObject   
     # Create object of common class 
     objCommon = utils.common()
     tempNewsImageArray = []
@@ -818,19 +815,19 @@ def editImagesIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, ima
 
     for index, image in enumerate(imageArray):
         if image != None:
-            print "******** previous image name :", image
-            previousImageName = image
             removeImage(newsID, index + 1)
             newImageName = constructImageName(newsID, image, index + 1)
-            fileLocation = str(constants.newsDir.imageDir) + str(imageName)
+            fileLocation = str(constants.newsDir.imageDir) + str(newImageName)
     
             #open the file in chunks and write it the to the destination
             with open(fileLocation, 'wb+') as destination:
                 for chunk in image.chunks():
                    destination.write(chunk)
+                   
+                   string__contains='pattern'
  
 #            update the image name in newsImages table in DB
-            newsImage.objects.filter(imageURL = previousImageName).update(imageURL = imageName)
+            newsImage.objects.filter(imageURL__contains = (str(newsID) + '_' + str(index + 1))).update(imageURL = newImageName)
 
     
     
