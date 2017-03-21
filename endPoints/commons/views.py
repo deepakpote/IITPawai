@@ -823,8 +823,6 @@ def editImagesIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, ima
             with open(fileLocation, 'wb+') as destination:
                 for chunk in image.chunks():
                    destination.write(chunk)
-                   
-                   string__contains='pattern'
  
 #            update the image name in newsImages table in DB
             newsImage.objects.filter(imageURL__contains = (str(newsID) + '_' + str(index + 1))).update(imageURL = newImageName)
