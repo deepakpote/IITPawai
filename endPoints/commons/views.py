@@ -270,7 +270,9 @@ class NewsViewSet(viewsets.ModelViewSet):
         imageThree = request.FILES['imageThree'] if 'imageThree' in request.FILES else None
         imageFour = request.FILES['imageFour'] if 'imageFour' in request.FILES else None
         imageFive = request.FILES['imageFive'] if 'imageFive' in request.FILES else None
-                
+        
+        print "****image three", imageThree
+        print "****image two", imageTwo        
         #Get user token
         authToken = request.META.get('HTTP_AUTHTOKEN')
         
@@ -391,7 +393,7 @@ class NewsViewSet(viewsets.ModelViewSet):
                     removePreviouslySavedPDF(newsID)
                     savePDFFile(pdfFile, newsID)
                     
-                checkIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, imageFive)
+                editImagesIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID)
                                                
         except Exception as e:
             # Error occured while uploading the content
@@ -714,7 +716,7 @@ def constructImageName(newsID, image, index) :
     currentDateTime = strftime("%y%m%d%H%M%S", time.localtime())
     tempFileName, fileExtension = os.path.splitext(image.name)    
     
-    imageName = (str(newsID) + "_" + str(index+1) + "_" + currentDateTime + fileExtension)
+    imageName = (str(newsID) + "_" + str(index) + "_" + currentDateTime + fileExtension)
     return imageName
     
 '''
@@ -785,7 +787,7 @@ def getBaseURL(dirName):
     return basicURL
 
 '''
-function to delete file from a location
+function to delete a pdf file from a location
 '''
 def removePreviouslySavedPDF(newsID):
     
@@ -797,15 +799,38 @@ def removePreviouslySavedPDF(newsID):
                 os.remove(os.path.join(root, name))
                 
 '''
-function to delete file from a location
+function to delete a specific image from news/image directory
 '''
-def checkIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID):
+def removeImage(newsID, imageNumber):
+    #under the static/news/image directory, search for file that starts with the given newsID plus image number 
+    for root, dirs, files in os.walk(constants.newsDir.imageDir, topdown=False):
+        for name in files:
+            #if the file is found, remove it
+            if(name.startswith(str(newsID) + "_" + str(imageNumber))):
+                os.remove(os.path.join(root, name))
+
+
+'''
+function to check if images are edited 
+'''
+def editImagesIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID):
     imageArray = [imageOne, imageTwo, imageThree, imageFour, imageFive]
-    for image in imageArray:
+
+    for index, image in enumerate(imageArray):
         if image != None:
-            removeImage(image, newsID)
-            saveImage()
-            
+            print "******** previous image name :", image
+            previousImageName = image
+            removeImage(newsID, index + 1)
+            newImageName = constructImageName(newsID, image, index + 1)
+            fileLocation = str(constants.newsDir.imageDir) + str(imageName)
+    
+            #open the file in chunks and write it the to the destination
+            with open(fileLocation, 'wb+') as destination:
+                for chunk in image.chunks():
+                   destination.write(chunk)
+ 
+#            update the image name in newsImages table in DB
+            newsImage.objects.filter(imageURL = previousImageName).update(imageURL = imageName)
 
     
     
