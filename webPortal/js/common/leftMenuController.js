@@ -33,6 +33,9 @@
                     case "main.loggedIn.teachingAids":
                         $scope.selectedItem = 'add-teaching-aids';
                         break;
+                    case "main.loggedIn.addNews":
+                        $scope.selectedItem = 'add-news';
+                        break;
                 }
             });
     }
