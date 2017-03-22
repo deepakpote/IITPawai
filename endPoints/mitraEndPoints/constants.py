@@ -248,6 +248,8 @@ class newsDir():
     baseDir = currentDir + path
     pdfDir = baseDir + "pdf/"
     imageDir = baseDir + "image/"
+    newsPdf = "news/pdf/"
+    newsImage = "news/image/"
     
 class uploadedContentDir():
     path = "/static/content/"
