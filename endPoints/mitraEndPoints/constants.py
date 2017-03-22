@@ -122,8 +122,8 @@ class messages():
     uploadContent_statusCodeID_cannot_be_empty = 100201
     uploadContent_status_not_exists = 100200
 
-    uploadContent_upload_file_or_give_filename = 100220
-    uploadContent_upload_a_valid_file = 100221
+    uploadContent_upload_file_or_give_filename = 100241
+    uploadContent_upload_a_valid_file = 100242
     uploadContent_contentTitle_marathi_cannot_be_empty = 100202
     
     userRole_list_user_id_cannot_be_empty = 100203
@@ -220,7 +220,9 @@ class mitraCode():
     sentForReview = 114101
     published = 114102
     content_or_news_uploaded_by_user_me = 118100
-
+    news_category_maa = 115100
+    human_resources_department = 112101
+    high_priority = 116100
     
 class contentSearchRecords():
     default = 20
@@ -240,10 +242,12 @@ class imageDir():
     currentDir = settings.PROJECT_DIR
     baseDir = currentDir + path
     
-class staticFileDir():
-    userDir = "user/"
-    newsImageDir = "news/image/"
-    newsPDFDir = "news/pdf/"
+class newsDir():
+    path = "/static/news/"
+    currentDir = settings.PROJECT_DIR
+    baseDir = currentDir + path
+    pdfDir = baseDir + "pdf/"
+    imageDir = baseDir + "image/"
     
 class uploadedContentDir():
     path = "/static/content/"
