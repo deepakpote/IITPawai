@@ -225,9 +225,8 @@ class NewsViewSet(viewsets.ModelViewSet):
         serializer = customNewsSerializer(newsData, many = True)
         
         # Create object of common class 
-        objCommon = utils.common()
-             
-        pdfBaseURL = objCommon.getBaseURL(constants.newsDir.pdfDir)
+        objCommon = utils.common()     
+        pdfBaseURL = objCommon.getBaseURL(constants.newsDir.newsPdf)
 
         #get image URLs and PDF URL
         for newsObject in serializer.data :
@@ -353,7 +352,8 @@ class NewsViewSet(viewsets.ModelViewSet):
                                                  )
 
                 newsID = objNews.newsID 
-                savePDFFile(pdfFile, newsID)
+                if pdfFile != None:
+                    savePDFFile(pdfFile, newsID)
                 saveImages(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID, objUser)
             
             else:
@@ -488,15 +488,10 @@ class NewsViewSet(viewsets.ModelViewSet):
                      
         # Serialize the news data.
         serializer = customNewsSerializer(newsData, many = True)
-        
-        # Create object of common class 
+
         objCommon = utils.common()
-        #Get basic URL.
-        basicURL = objCommon.getBaseURL(constants.staticFileDir.newsPDFDir)
-        
-        #Get basic URL.
-        #basicURL = getBaseURL(constants.staticFileDir.newsPDFDir)
-        
+        basicURL = objCommon.getBaseURL(constants.newsDir.newsPdf)
+           
         #Build the pdfFileURL.
         for objNew in serializer.data :
             if objNew['pdfFileURL'] :
@@ -553,13 +548,13 @@ fuction to get comma separated string of Image URLs for a news
 """
 def getNewsImageURL(newsObject):
     
-    # Create object of common class 
-    objCommon = utils.common()
     tempNewsImageArray = []
     imageURL = None
     
+     # Create object of common class 
+    objCommon = utils.common() 
     #Get basic URL.
-    basicURL = objCommon.getBaseURL(constants.newsDir.imageDir)
+    basicURL = objCommon.getBaseURL(constants.newsDir.newsImage)
   
     objImageList = newsImage.objects.filter(news = newsObject['news'])
     
@@ -776,13 +771,6 @@ def statusHttpNotFound(responseMessage):
                                  "data": []},
                                 status = status.HTTP_404_NOT_FOUND)
         
-"""
-common function to get basic url for all files
-"""
-def getBaseURL(dirName):
-    basicURL  = settings.DOMAIN_NAME + settings.STATIC_URL + dirName 
-    return basicURL
-
 '''
 function to delete a pdf file from a location
 '''
