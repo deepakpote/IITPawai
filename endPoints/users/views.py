@@ -830,7 +830,9 @@ class UserViewSet(viewsets.ModelViewSet):
                                                 CC.languageCodeID,
                                                 CC.subjectCodeID,
                                                 CC.topicCodeID,
-                                                group_concat(CG.gradeCodeID) as gradeCodeIDs
+                                                group_concat(CG.gradeCodeID) as gradeCodeIDs,
+                                                CC.createdOn,
+                                                CC.modifiedOn
                                                 from con_content CC 
                                                 INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
                                                 INNER JOIN usr_userContent UC ON CC.contentID = UC.contentID
@@ -865,7 +867,9 @@ class UserViewSet(viewsets.ModelViewSet):
                                         'language':     item[9],
                                         'subject':      item[10],
                                         'topic' :       item[11],
-                                        'gradeCodeIDs': str(item[12])
+                                        'gradeCodeIDs': str(item[12]),
+                                        'createdOn':    item[13],
+                                        'modifiedOn':   item[14]
                                         }
                 response_data.append(objResponse_data)
 
@@ -925,7 +929,9 @@ class UserViewSet(viewsets.ModelViewSet):
                                                 CC.fileTypeCodeID,
                                                 CC.languageCodeID,
                                                 CC.subjectCodeID,
-                                                CC.topicCodeID
+                                                CC.topicCodeID,
+                                                CC.createdOn,
+                                                CC.modifiedOn
                                                 from con_content CC 
                                                 INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
                                                 INNER JOIN usr_userContent UC ON CC.contentID = UC.contentID
@@ -957,7 +963,9 @@ class UserViewSet(viewsets.ModelViewSet):
                                     'fileType' :        item[9],
                                     'language':         item[10],
                                     'subject':          item[11],
-                                    'topic' :           item[12]
+                                    'topic' :           item[12],
+                                    'createdOn':        item[13],
+                                    'modifiedOn':       item[14]
                                     }
                  
                 response_data.append(objResponse_data)

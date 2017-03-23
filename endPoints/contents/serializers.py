@@ -21,11 +21,14 @@ class teachingAidSerializer(serializers.ModelSerializer):
     instruction = serializers.CharField()
     author = serializers.CharField() 
     requirementCodeIDs = serializers.CharField() 
+    createdOn = serializers.CharField() 
+    modifiedOn = serializers.CharField() 
+    
   
 
     class Meta:
         model = content
-        fields = ('contentID', 'contentTitle', 'contentType' ,'gradeCodeIDs','subject','topic','requirementCodeIDs','instruction','fileType','fileName','author','objectives','language')
+        fields = ('contentID', 'contentTitle', 'contentType' ,'gradeCodeIDs','subject','topic','requirementCodeIDs','instruction','fileType','fileName','author','objectives','language','createdOn','modifiedOn',)
 
 class contentSerializer(serializers.ModelSerializer):
      
@@ -46,10 +49,12 @@ class selfLearningSerializer(serializers.ModelSerializer):
     requirementCodeIDs = serializers.CharField()
     fileName = serializers.CharField()
     objectives = serializers.CharField()
+    createdOn = serializers.CharField() 
+    modifiedOn = serializers.CharField() 
     
 
     class Meta:
         model = contentDetail
-        fields = ( 'contentID', 'contentTitle' , 'contentType', 'topic' , 'requirementCodeIDs', 'instruction', 'fileType', 'fileName','author','objectives','language',)
+        fields = ( 'contentID', 'contentTitle' , 'contentType', 'topic' , 'requirementCodeIDs', 'instruction', 'fileType', 'fileName','author','objectives','language','createdOn','modifiedOn',)
    
             
