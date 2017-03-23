@@ -28,7 +28,8 @@ angular.module("mitraPortal").controller("reviewContentController",
       engAuthor: false,
       engContentTitle: false,
       engInstruction: false,
-      fileName: false
+      fileName: false,
+      fileType: false
     }
 
     $scope.setDirty = function(form){
@@ -74,7 +75,7 @@ angular.module("mitraPortal").controller("reviewContentController",
         if ($scope.checked.subject && $scope.checked.language && $scope.checked.requirements && $scope.checked.grades && 
             $scope.checked.marAuthor && $scope.checked.marContentTitle && $scope.checked.marInstruction && 
             $scope.checked.engAuthor && $scope.checked.engContentTitle && $scope.checked.engInstruction && 
-            $scope.checked.fileName) {
+            $scope.checked.fileName && $scope.checked.fileType) {
           nextState = 'main.loggedIn.teachingAids';
         }
         else{
@@ -86,7 +87,7 @@ angular.module("mitraPortal").controller("reviewContentController",
         if ($scope.checked.language && $scope.checked.topic && 
             $scope.checked.marAuthor && $scope.checked.marContentTitle && $scope.checked.marInstruction && 
             $scope.checked.engAuthor && $scope.checked.engContentTitle && $scope.checked.engInstruction && 
-            $scope.checked.fileName) {
+            $scope.checked.fileName && $scope.checked.fileType) {
           nextState = 'main.loggedIn.selfLearning';
         }
         else{
