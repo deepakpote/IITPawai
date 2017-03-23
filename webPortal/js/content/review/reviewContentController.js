@@ -11,6 +11,10 @@ angular.module("mitraPortal").controller("reviewContentController",
                 "108105" : ""             //Ek Step
             };
     $scope.inputs= {};
+    $scope.isAdmin = appUtils.isAdmin();
+    $scope.isTeacher = appUtils.isTeacher();
+
+    $log.debug($scope.isAdmin, $scope.isTeacher, appUtils.isAdmin(), appUtils.isTeacher());
 
     $scope.mode = "PREVIEW"; // can be "EDIT" or "PREVIEW" or "GIVE FEEDBACK"
     $scope.content = {};

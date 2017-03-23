@@ -109,6 +109,26 @@ angular.module("mitraPortal").service('appUtils', ['$http', '$log', '$rootScope'
 
         };
 
+        service.isAdmin = function () {
+            var roleIDs = $cookies.get("roleIDs");
+            if (roleIDs.split(',').indexOf(appConstants.role.admin.toString()) > -1){
+                return true;
+            }
+            else{
+                return false
+            }
+        };
+
+        service.isTeacher = function () {
+            var roleIDs = $cookies.get("roleIDs");
+            if (roleIDs.split(',').indexOf(appConstants.role.teacher.toString()) > -1){
+                return true;
+            }
+            else{
+                return false
+            }
+        };
+
         return service;
 
     }]);

@@ -44,6 +44,11 @@ angular.module("mitraPortal").service('appConstants', [
         selfLearning : 107101
     };
 
+    service.role = {
+    	admin : 1,
+    	teacher : 2
+    }
+
 	return service;
 
 }]);
