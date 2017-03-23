@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.mavericklabs.mitra.R;
@@ -265,6 +266,13 @@ public class VerifyOtpActivity extends BaseActivity {
                             realm.commitTransaction();
 
                             progressDialog.dismiss();
+
+                            // Obtain the FirebaseAnalytics instance.
+                            FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
+                            firebaseAnalytics.setUserId(user.getUserID());
+                            firebaseAnalytics.setUserProperty("district",
+                                    CommonCodeUtils.getObjectFromCode(user.getDistrict()).getCodeNameEnglish());
+
                             Intent home = new Intent(VerifyOtpActivity.this,HomeActivity.class);
                             startActivity(home);
                             finishAffinity();

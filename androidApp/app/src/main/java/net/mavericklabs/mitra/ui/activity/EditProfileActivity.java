@@ -34,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.model.api.BaseModel;
@@ -430,6 +431,12 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         progressDialog.setCancelable(false);
         progressDialog.show();
 
+
+        // Obtain the FirebaseAnalytics instance.
+        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
+        firebaseAnalytics.setUserProperty("district",
+                CommonCodeUtils.getObjectFromCode(user.getDistrictCodeID()).getCodeNameEnglish());
+
         RestClient.getApiService(token).updateUser(user).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
             @Override
             public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
@@ -737,6 +744,8 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         progressDialog.setCancelable(false);
         progressDialog.show();
 
+        final Integer userDistrict = user.getDistrict();
+
         RestClient.getApiService("").registerUser(user).enqueue(new Callback<BaseModel<RegisterUserResponse>>() {
             @Override
             public void onResponse(Call<BaseModel<RegisterUserResponse>> call, Response<BaseModel<RegisterUserResponse>> response) {
@@ -756,6 +765,11 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
                         realm.copyToRealm(dbUser);
                         realm.commitTransaction();
 
+                        // Obtain the FirebaseAnalytics instance.
+                        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
+                        firebaseAnalytics.setUserId(serverResponse.getUserID());
+                        firebaseAnalytics.setUserProperty("district",
+                                CommonCodeUtils.getObjectFromCode(userDistrict).getCodeNameEnglish());
 
                         //store userId,token in shared preferences
                         String token = serverResponse.getToken();
