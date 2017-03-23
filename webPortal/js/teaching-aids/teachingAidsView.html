@@ -20,6 +20,19 @@
             ng-click=teachingAids.setStatus(114102)>Published</li>
         <li class="filter-type" ng-class="{selected : teachingAids.status === ''}"
             ng-click=teachingAids.setStatus('')>All</li>
+        <li class="filter-type-no-hover" style="padding-left: 50%;padding-top: 26px;">
+            <i class="material-icons" style="font-size: 14px;">sort</i>
+        </li>
+        <li class="filter-type" style="padding-right: 0px;" ng-class="{selected : teachingAids.orderByKey === 'createdOn'}"
+            ng-click=teachingAids.setAscending()>Date
+            <span style="vertical-align: sub;">
+                <i class="material-icons pointer" style="font-size: 14px;">arrow_downward</i>
+            </span>
+        </li>
+        <li class="filter-type" ng-class="{selected : teachingAids.orderByKey === '-createdOn'}"
+            ng-click=teachingAids.setDescending()>
+            <i class="material-icons pointer" style="font-size: 14px;padding-top: 2px;">arrow_upward</i>
+        </li>
     </ul>
 </div>
 
@@ -44,8 +57,6 @@
             ng-click=teachingAids.setFileType(108105)>Genie</li>
         <li class="filter-type" ng-class="{selected : teachingAids.fileType === ''}"
             ng-click=teachingAids.setFileType('')>All</li>
-        <!--<li class="filter-type" ng-click=teachingAids.setAscending()>Date(Asc)</li>-->
-        <!--<li class="filter-type" ng-click=teachingAids.setDescending()>Date(Desc)</li>-->
     </ul>
 </div>
 

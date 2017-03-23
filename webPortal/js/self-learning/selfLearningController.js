@@ -27,6 +27,9 @@
         vm.loadMore = loadMore;
         vm.hasMoreData = true;
         vm.goToReview =goToReview;
+        vm.orderByKey = '';
+        vm.setAscending = setAscending;
+        vm.setDescending = setDescending;
 
         activate();
 
@@ -178,6 +181,14 @@
 
                 }
             }, true);
+        }
+
+        function setAscending() {
+            vm.orderByKey = "createdOn";
+        }
+
+        function setDescending() {
+            vm.orderByKey = "-createdOn";
         }
     }
 

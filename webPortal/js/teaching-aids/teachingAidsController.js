@@ -236,10 +236,10 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     }
 
     function setAscending() {
-
+        vm.orderByKey = "createdOn";
     }
 
     function setDescending() {
-
+        vm.orderByKey = "-createdOn";
     }
 }

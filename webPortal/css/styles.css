@@ -315,9 +315,15 @@ ul.filter-type {
 li.filter-type {
     float: left;
     cursor: pointer;
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 24px 16px 24px 0;
+    text-decoration: none;
 }
 
-li.filter-type {
+li.filter-type-no-hover {
+    float: left;
     display: block;
     color: black;
     text-align: center;
