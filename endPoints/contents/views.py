@@ -199,7 +199,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.languageCodeID,
                                             CC.subjectCodeID,
                                             CC.topicCodeID,
-                                            group_concat(CG.gradeCodeID) as gradeCodeIDs
+                                            group_concat(CG.gradeCodeID) as gradeCodeIDs,
+                                            CC.createdOn,
+                                            CC.modifiedOn
                                             from con_content CC 
                                             INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
@@ -243,7 +245,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                                     'fileName':         item[4],
                                     'author':           item[5],
                                     'objectives' :      item[6],
-                                    'language':         item[9]
+                                    'language':         item[9],
+                                    'createdOn':        item[13],
+                                    'modifiedOn':       item[14]
                                 }
             response_data.append(objResponse_data)
 
@@ -406,7 +410,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.fileTypeCodeID,
                                             CC.languageCodeID,
                                             CC.subjectCodeID,
-                                            CC.topicCodeID
+                                            CC.topicCodeID,
+                                            CC.createdOn,
+                                            CC.modifiedOn
                                             from con_content CC 
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
                                             where """ + uploadedByCheck + """ CC.languageCodeID IN %s 
@@ -436,7 +442,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                                 'fileType' :        item[9],
                                 'language':         item[10],
                                 'subject':          item[11],
-                                'topic' :           item[12]
+                                'topic' :           item[12],
+                                'createdOn':        item[13],
+                                'modifiedOn':       item[14]
                                 }
              
             response_data.append(objResponse_data)
