@@ -223,6 +223,11 @@ class mitraCode():
     news_category_maa = 115100
     human_resources_department = 112101
     high_priority = 116100
+    userType_teacher = 109100
+    
+class role():
+    admin = 1;
+    teacher = 2;
     
 class contentSearchRecords():
     default = 20

@@ -12,7 +12,7 @@ from contents.serializers import teachingAidSerializer , contentSerializer , sel
 from users.authentication import TokenAuthentication
 from contents.models import content , contentResponse  , contentGrade , contentDetail
 from commons.models import code
-from users.models import userSubject, user, userGrade, userTopic , userContent
+from users.models import userSubject, user, userGrade, userTopic , userContent, userRole
 from mitraEndPoints import constants , utils
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from pip._vendor.requests.api import request
@@ -43,28 +43,57 @@ class ContentViewSet(viewsets.ModelViewSet):
         appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
         statusCodeID = request.data.get('statusCodeID')
         uploadedBy = request.data.get('uploadedBy')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+  
         
         # On web portal, user no need to login to watch the video's so authentication is removed (commented) for now.
         #authToken = request.META.get('HTTP_AUTHTOKEN')
         
-        #Get userID from authToken
-        #userID = getUserIDFromAuthToken(authToken)
-                
-        # Check if userID/languageID is passed in post param
-#         if not userID:
-#             return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
-#                              "data": []},
-#                              status = status.HTTP_401_UNAUTHORIZED)
-         
-        # If userID parameter is passed, then check user is exists or not
-#         try:
-#             objUser = user.objects.get(userID = userID)
-#         except user.DoesNotExist:
-#             return Response({"response_message": constants.messages.teaching_aid_search_user_not_exists,
-#                              "data": []},
-#                             status = status.HTTP_404_NOT_FOUND)
-
+        myDraftCheck = ''
         
+        if authToken:
+            #Get userID from authToken
+            userID = getUserIDFromAuthToken(authToken)
+                     
+             #Check if userID/languageID is passed in post param
+            if not userID:
+                 return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                                  "data": []},
+                                  status = status.HTTP_401_UNAUTHORIZED)
+              
+             #If userID parameter is passed, then check user is exists or not
+            try:
+                 objUser = user.objects.get(userID = userID)
+            except user.DoesNotExist:
+                 return Response({"response_message": constants.messages.teaching_aid_search_user_not_exists,
+                                  "data": []},
+                                 status = status.HTTP_404_NOT_FOUND)
+                 
+            roleID = None
+            #Chek any role assigned or not
+            try:
+                 objUserRole= userRole.objects.get(user = objUser)
+                 roleID = objUserRole.role.roleID
+            except userRole.DoesNotExist:
+                objUserType = user.objects.get(userID = userID)
+                roleID = objUserType.userType.codeID
+                 
+                 
+            if roleID == constants.role.admin:
+                if statusCodeID == constants.mitraCode.created:
+                    #contentIDs = getDraftContentID(objUser)
+                    #if contentIDs:
+                    myDraftCheck = '( CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100 ) AND ')
+                elif statusCodeID == None or not statusCodeID:
+                    myDraftCheck = '((CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100) ') + 'OR statusCodeID IN (114101,114102)) AND '
+            elif roleID == constants.role.teacher or roleID == constants.mitraCode.userType_teacher:
+                if statusCodeID == constants.mitraCode.created:
+                    #contentIDs = getDraftContentID(objUser)
+                    #if contentIDs:
+                    myDraftCheck = '( CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100 ) AND ')
+                elif statusCodeID == None or not statusCodeID:
+                    myDraftCheck = '((CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100) ') + 'OR statusCodeID IN (114102)) AND '
+            
         # Check if appLanguageCodeID is passed in header
         if not appLanguageCodeID:
             return Response({"response_message": constants.messages.contentSearch_appLanguageCodeID_cannot_be_empty,
@@ -127,6 +156,9 @@ class ContentViewSet(viewsets.ModelViewSet):
              # Get all statuscodeIDs.
             statusCodeID = getCodeIDs(constants.mitraCodeGroup.content_News_TrainingCreation_Status)
             
+            if not authToken:
+                statusCodeID.remove(constants.mitraCode.created)
+            
             arrStatusCodeID = tuple(map(int, statusCodeID))
     
             #If the length of statusCodeID is 1 then remove last comma.
@@ -138,7 +170,12 @@ class ContentViewSet(viewsets.ModelViewSet):
             # If statusCodeID parameter is passed, then check user is exists or not
             try:
                 objStatusCode = code.objects.get(codeID = statusCodeID)
-                arrStatusCodeID = '('+ str(statusCodeID) + ')'
+                
+                if not authToken and statusCodeID == constants.mitraCode.created:
+                    #This is not a correct way to do...Need to modify.
+                    arrStatusCodeID = '(1141000)'
+                else:
+                    arrStatusCodeID = '('+ str(statusCodeID) + ')'
             except code.DoesNotExist:
                 return Response({"response_message": constants.messages.search_content_status_not_exists,
                                  "data": []},
@@ -205,7 +242,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             from con_content CC 
                                             INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
-                                            where """ + uploadedByCheck + """CCG.appLanguageCodeID = %s
+                                            where """ + uploadedByCheck + myDraftCheck +  """CCG.appLanguageCodeID = %s
                                             and CC.fileTypeCodeID IN %s 
                                             and CC.statusCodeID IN %s
                                             and CC.contentTypeCodeID = %s 
@@ -223,7 +260,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.languageCodeID,
                                             CC.subjectCodeID,
                                             CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,str(arrFileTypeCodeID),str(arrStatusCodeID),constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
-                                         
+                                   
         cursor.execute(searchTeachingAidQuery)
     
         #Queryset
@@ -282,25 +319,55 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         statusCodeID = request.data.get('statusCodeID') 
         uploadedBy = request.data.get('uploadedBy')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
         # On web portal, user no need to login to watch the video's so authentication  is removed (commented) for now.
 #         authToken = request.META.get('HTTP_AUTHTOKEN')
-#         
-#         #Get userID from authToken
-#         userID = getUserIDFromAuthToken(authToken)
-#                 
-#         # Check if userID/languageID is passed in post param
-#         if not userID:
-#             return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
-#                              "data": []},
-#                              status = status.HTTP_401_UNAUTHORIZED)
-#          
-#         # If userID parameter is passed, then check user is exists or not
-#         try:
-#             objUser = user.objects.get(userID = userID)
-#         except user.DoesNotExist:
-#             return Response({"response_message": constants.messages.self_learning_search_user_not_exists,
-#                              "data": []},
-#                             status = status.HTTP_404_NOT_FOUND)
+
+        myDraftCheck = ''
+        
+        if authToken: 
+            #Get userID from authToken
+            userID = getUserIDFromAuthToken(authToken)
+                     
+            # Check if userID/languageID is passed in post param
+            if not userID:
+                return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                                 "data": []},
+                                 status = status.HTTP_401_UNAUTHORIZED)
+              
+            # If userID parameter is passed, then check user is exists or not
+            try:
+                objUser = user.objects.get(userID = userID)
+            except user.DoesNotExist:
+                return Response({"response_message": constants.messages.self_learning_search_user_not_exists,
+                                 "data": []},
+                                status = status.HTTP_404_NOT_FOUND)
+                
+            roleID = None
+            #Chek any role assigned or not
+            try:
+                 objUserRole= userRole.objects.get(user = objUser)
+                 roleID = objUserRole.role.roleID
+            except userRole.DoesNotExist:
+                objUserType = user.objects.get(userID = userID)
+                roleID = objUserType.userType.codeID
+                 
+                 
+            if roleID == constants.role.admin:
+                if statusCodeID == constants.mitraCode.created:
+                    #contentIDs = getDraftContentID(objUser)
+                    #if contentIDs:
+                    myDraftCheck = '( CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100 ) AND ')
+                elif statusCodeID == None or not statusCodeID:
+                    myDraftCheck = '((CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100) ') + 'OR statusCodeID IN (114101,114102)) AND '
+            elif roleID == constants.role.teacher or roleID == constants.mitraCode.userType_teacher:
+                if statusCodeID == constants.mitraCode.created:
+                    #contentIDs = getDraftContentID(objUser)
+                    #if contentIDs:
+                    myDraftCheck = '( CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100 ) AND ')
+                elif statusCodeID == None or not statusCodeID:
+                    myDraftCheck = '((CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100) ') + 'OR statusCodeID IN (114102)) AND '
 
         # Check if appLanguageCodeID is passed in header
         if not appLanguageCodeID:
@@ -352,6 +419,9 @@ class ContentViewSet(viewsets.ModelViewSet):
             # Get all statuscodeIDs.
             statusCodeID = getCodeIDs(constants.mitraCodeGroup.content_News_TrainingCreation_Status)
             
+            if not authToken:
+                statusCodeID.remove(constants.mitraCode.created)
+            
             arrStatusCodeID = tuple(map(int, statusCodeID))
     
             #If the length of statusCodeID is 1 then remove last comma.
@@ -361,7 +431,12 @@ class ContentViewSet(viewsets.ModelViewSet):
             # If statusCodeID parameter is passed, then check user is exists or not
             try:
                 objStatusCode = code.objects.get(codeID = statusCodeID)
-                arrStatusCodeID = '('+ str(statusCodeID) + ')'
+                
+                if not authToken and statusCodeID == constants.mitraCode.created:
+                    #This is not a correct way to do...Need to modify.
+                    arrStatusCodeID = '(1141000)'
+                else:    
+                    arrStatusCodeID = '('+ str(statusCodeID) + ')'
             except code.DoesNotExist:
                 return Response({"response_message": constants.messages.search_content_status_not_exists,
                                  "data": []},
@@ -415,7 +490,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CC.modifiedOn
                                             from con_content CC 
                                             INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
-                                            where """ + uploadedByCheck + """ CC.languageCodeID IN %s 
+                                            where """ + uploadedByCheck + myDraftCheck +""" CC.languageCodeID IN %s 
                                             and CC.contentTypeCodeID = %s 
                                             and CC.statusCodeID IN %s
                                             and CC.topicCodeID IN %s 
@@ -1545,7 +1620,23 @@ def saveUploadedFile(uploadedFile, fileTypeCodeID, contentID):
     
     #updating the corresponding entry in the database                    
     content.objects.filter(contentID = contentID).update(fileName = uploadedFileName)  
- 
+
+"""
+Function to get draft content from userID.
+"""   
+def getDraftContentID(objUser):
+    
+    # Initialize the array for storing content ids with status 'Created'
+    arrDraftContentIDs = []
+    
+    objContentStatusCreated = code.objects.get(codeID = constants.mitraCode.created)
+    objContentList = content.objects.filter(status = objContentStatusCreated,createdBy = objUser)
+    for objContent in objContentList:
+        arrDraftContentIDs.append(objContent.contentID)
+        
+    if len(arrDraftContentIDs) > 0:
+        return arrDraftContentIDs    
+    
 """
 Function to update the video or ekStep URL in DB
 """      
