@@ -3,6 +3,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
+from django.core import signing
 #from users.models import user 
 from rest_framework import viewsets,permissions
 from users.serializers import userSerializer, otpSerializer, userRoleSerializer
@@ -29,6 +30,7 @@ from contents.serializers import contentSerializer , teachingAidSerializer
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from commons.models import code 
 from pyfcm import FCMNotification
+
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -318,9 +320,12 @@ class UserViewSet(viewsets.ModelViewSet):
                          "data": []},
                         status = status.HTTP_401_UNAUTHORIZED)
         
+        # Encrypt password.
+        encrptedPassword = signing.dumps({settings.SECRET_KEY  : password })
+        
         # If user valid, update user password.
         token.objects.filter(token = authToken , user = objUser).update(
-                                                                        password = password.strip()
+                                                                        password = encrptedPassword.strip()
                                                                        )
 
         return Response({"response_message": constants.messages.success, "data": []})
@@ -352,16 +357,27 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.webSignIn_phone_number_is_invalid, "data": []},
                     status=status.HTTP_401_UNAUTHORIZED)
 
-
         # authenticate user phoneNumber and password.
         try:
             #authResponse = userAuth.objects.get(loginID = phoneNumber , password = password.strip())
-            authResponse = token.objects.get(user = objUser , password = password.strip())
+            authResponse = token.objects.get(user = objUser)
         except token.DoesNotExist:
             return Response({"response_message": constants.messages.webSignIn_invalid_credentials,
                          "data": []},
                         status = status.HTTP_404_NOT_FOUND)
-        
+            
+        try:
+            dbPassword = signing.loads(authResponse.password)
+        except (BadSignature, SignatureExpired):
+            return Response({"response_message": constants.messages.webSignIn_invalid_credentials,
+                         "data": []},
+                        status = status.HTTP_401_UNAUTHORIZED)
+            
+        if password != dbPassword[settings.SECRET_KEY]:
+            return Response({"response_message": constants.messages.webSignIn_invalid_credentials,
+                         "data": []},
+                        status = status.HTTP_401_UNAUTHORIZED)
+            
         # Add user token to the response.
         response = { 'token' : authResponse.token }
             
@@ -814,7 +830,9 @@ class UserViewSet(viewsets.ModelViewSet):
                                                 CC.languageCodeID,
                                                 CC.subjectCodeID,
                                                 CC.topicCodeID,
-                                                group_concat(CG.gradeCodeID) as gradeCodeIDs
+                                                group_concat(CG.gradeCodeID) as gradeCodeIDs,
+                                                CC.createdOn,
+                                                CC.modifiedOn
                                                 from con_content CC 
                                                 INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
                                                 INNER JOIN usr_userContent UC ON CC.contentID = UC.contentID
@@ -849,7 +867,9 @@ class UserViewSet(viewsets.ModelViewSet):
                                         'language':     item[9],
                                         'subject':      item[10],
                                         'topic' :       item[11],
-                                        'gradeCodeIDs': str(item[12])
+                                        'gradeCodeIDs': str(item[12]),
+                                        'createdOn':    item[13],
+                                        'modifiedOn':   item[14]
                                         }
                 response_data.append(objResponse_data)
 
@@ -909,7 +929,9 @@ class UserViewSet(viewsets.ModelViewSet):
                                                 CC.fileTypeCodeID,
                                                 CC.languageCodeID,
                                                 CC.subjectCodeID,
-                                                CC.topicCodeID
+                                                CC.topicCodeID,
+                                                CC.createdOn,
+                                                CC.modifiedOn
                                                 from con_content CC 
                                                 INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
                                                 INNER JOIN usr_userContent UC ON CC.contentID = UC.contentID
@@ -941,7 +963,9 @@ class UserViewSet(viewsets.ModelViewSet):
                                     'fileType' :        item[9],
                                     'language':         item[10],
                                     'subject':          item[11],
-                                    'topic' :           item[12]
+                                    'topic' :           item[12],
+                                    'createdOn':        item[13],
+                                    'modifiedOn':       item[14]
                                     }
                  
                 response_data.append(objResponse_data)
