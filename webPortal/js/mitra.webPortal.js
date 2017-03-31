@@ -149,7 +149,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         }
                     },
                     'content' : {
-                        templateUrl: '/js/content/review/reviewContentView.html',
+                        templateUrl: templateChange() + '/js/content/review/reviewContentView.html',
                         controller: 'reviewContentController'
                     }
                 },
