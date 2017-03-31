@@ -20,6 +20,19 @@
             ng-click=selfLearning.setStatus(114102)>Published</li>
         <li class="filter-type" ng-class="{selected : selfLearning.status === ''}"
             ng-click=selfLearning.setStatus('')>All</li>
+        <li class="filter-type-no-hover" style="padding-left: 50%;padding-top: 26px;">
+            <i class="material-icons" style="font-size: 14px;">sort</i>
+        </li>
+        <li class="filter-type" style="padding-right: 0px;" ng-class="{selected : selfLearning.orderByKey === 'createdOn'}"
+            ng-click=selfLearning.setAscending()>Date
+            <span style="vertical-align: sub;">
+                <i class="material-icons pointer" style="font-size: 14px;">arrow_downward</i>
+            </span>
+        </li>
+        <li class="filter-type" ng-class="{selected : selfLearning.orderByKey === '-createdOn'}"
+            ng-click=selfLearning.setDescending()>
+            <i class="material-icons pointer" style="font-size: 14px;padding-top: 2px;">arrow_upward</i>
+        </li>
     </ul>
 </div>
 
@@ -27,10 +40,10 @@
 
 <!-- granular filters start -->
 
-<div class="row" style="padding: 6%;">
+<div class="row row-no-margin" style="padding: 6%;">
 
-    <div class="col-md-4">
-        <div class="card">
+    <div class="col-md-4 no-gutter">
+        <div class="card card-250">
             <div class="options-card" ng-mouseenter=selfLearning.setSelectedOption("Topic") ng-mouseleave=selfLearning.setSelectedOption("Topic")>
                 <div class="card-content">
                     Topic
@@ -59,8 +72,8 @@
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card">
+    <div class="col-md-4 no-gutter">
+        <div class="card card-250">
             <div class="options-card" ng-mouseenter=selfLearning.setSelectedOption("Language") ng-mouseleave=selfLearning.setSelectedOption("Language")>
                 <div class="card-content">
                     Language
@@ -98,8 +111,9 @@
 
 <div class="section-padding-container">
     <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
-    <div class="col-md-4 list-view" ng-repeat="data in selfLearning.data track by data.contentID">
-        <div class="card" style="display: flex;flex-direction: column;"  ng-click=selfLearning.goToReview(data)>
+    <div class="col-md-4 list-view no-gutter" ng-repeat="data in selfLearning.data | orderBy:selfLearning.orderByKey
+                                                            track by data.contentID">
+        <div class="card card-250" style="display: flex;flex-direction: column;"  ng-click=selfLearning.goToReview(data)>
             <div class="content-panel"
                  style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.74), rgba(0, 0, 0, 0.1)),
                                         url({{data.thumbnailUrl}});
@@ -129,7 +143,7 @@
             </div>
         </div>
     </div>
-    <div ng-hide="selfLearning.data.length" style="line-height: 12em;text-align: center">No resources found!</div>
+    <div ng-hide="selfLearning.data.length" style="line-height: 12em;text-align: center;padding-top: 48px;">No resources found!</div>
     <div class="text-center" style="clear:left;">
         <input ng-show="selfLearning.hasMoreData" type="button"
                value="Load More" class="btn btn-warning"

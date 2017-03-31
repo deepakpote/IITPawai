@@ -122,8 +122,8 @@ class messages():
     uploadContent_statusCodeID_cannot_be_empty = 100201
     uploadContent_status_not_exists = 100200
 
-    uploadContent_upload_file_or_give_filename = 100220
-    uploadContent_upload_a_valid_file = 100221
+    uploadContent_upload_file_or_give_filename = 100241
+    uploadContent_upload_a_valid_file = 100242
     uploadContent_contentTitle_marathi_cannot_be_empty = 100202
     
     userRole_list_user_id_cannot_be_empty = 100203
@@ -170,6 +170,9 @@ class messages():
     author_list_no_records_found = 100236
     author_list_appLanguageCodeID_cannot_be_empty = 100237
     author_list_appLanguageCodeID_does_not_exist = 100238
+    
+    content_uploadedBy_list_user_does_not_exist = 100239
+    content_uploadedBy_list_no_records_found = 100240
 
 
 class webportalmessages():    
@@ -198,6 +201,7 @@ class mitraCodeGroup():
     fileType = 108
     language = 101
     content_News_TrainingCreation_Status = 114
+    content_or_news_uploaded_by_user = 118
     
 class mitraCode():
     teachingAids = 107100
@@ -215,7 +219,15 @@ class mitraCode():
     created = 114100
     sentForReview = 114101
     published = 114102
-
+    content_or_news_uploaded_by_user_me = 118100
+    news_category_maa = 115100
+    human_resources_department = 112101
+    high_priority = 116100
+    userType_teacher = 109100
+    
+class role():
+    admin = 1;
+    teacher = 2;
     
 class contentSearchRecords():
     default = 20
@@ -235,10 +247,14 @@ class imageDir():
     currentDir = settings.PROJECT_DIR
     baseDir = currentDir + path
     
-class staticFileDir():
-    userDir = "user/"
-    newsImageDir = "news/image/"
-    newsPDFDir = "news/pdf/"
+class newsDir():
+    path = "/static/news/"
+    currentDir = settings.PROJECT_DIR
+    baseDir = currentDir + path
+    pdfDir = baseDir + "pdf/"
+    imageDir = baseDir + "image/"
+    newsPdf = "news/pdf/"
+    newsImage = "news/image/"
     
 class uploadedContentDir():
     path = "/static/content/"

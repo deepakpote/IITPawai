@@ -28,6 +28,9 @@
         vm.hasMoreData = true;
         vm.goToReview =goToReview;
         vm.isAdmin = appUtils.isAdmin();
+        vm.orderByKey = '';
+        vm.setAscending = setAscending;
+        vm.setDescending = setDescending;
 
         activate();
 
@@ -179,6 +182,14 @@
 
                 }
             }, true);
+        }
+
+        function setAscending() {
+            vm.orderByKey = "createdOn";
+        }
+
+        function setDescending() {
+            vm.orderByKey = "-createdOn";
         }
     }
 
