@@ -9,10 +9,10 @@
         .module('mitraPortal')
         .controller('selfLearningController', SelfLearningController);
 
-    SelfLearningController.$inject = ['SelfLearningService','$scope','commonService','appConstants', '$state'];
+    SelfLearningController.$inject = ['SelfLearningService','$scope','commonService','appConstants', '$state','appUtils'];
 
     /* @ngInject */
-    function SelfLearningController(SelfLearningService,$scope,commonService,appConstants, $state) {
+    function SelfLearningController(SelfLearningService,$scope,commonService,appConstants, $state, appUtils) {
         var vm = this;
         vm.title = 'SelfLearningController';
         vm.fetch = fetchSelfLearning;
@@ -27,6 +27,7 @@
         vm.loadMore = loadMore;
         vm.hasMoreData = true;
         vm.goToReview =goToReview;
+        vm.isAdmin = appUtils.isAdmin();
         vm.orderByKey = '';
         vm.setAscending = setAscending;
         vm.setDescending = setDescending;

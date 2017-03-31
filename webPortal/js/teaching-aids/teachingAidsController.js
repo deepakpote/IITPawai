@@ -1,9 +1,9 @@
 angular.module("mitraPortal").controller("teachingAidsController", TeachingAidsController);
 
 
-TeachingAidsController.$inject = ['TeachingAidsService','commonService','$scope','appConstants','$filter', '$state'];
+TeachingAidsController.$inject = ['TeachingAidsService','commonService','$scope','appConstants','$filter', '$state', 'appUtils'];
 
-function TeachingAidsController(TeachingAidsService,commonService,$scope,appConstants,filter,$state) {
+function TeachingAidsController(TeachingAidsService,commonService,$scope,appConstants,filter,$state,appUtils) {
 
     var vm = this;
     vm.setStatus = setStatus;
@@ -26,7 +26,7 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     vm.setAscending = setAscending;
     vm.setDescending = setDescending;
     vm.orderByKey = '';
-
+    vm.isAdmin = appUtils.isAdmin();
     activate();
 
     ////////////////

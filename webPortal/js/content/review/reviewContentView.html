@@ -440,7 +440,7 @@ ng-click="mode='GIVE FEEDBACK'">
 <div class = "hr"> </div>
 
 <div class="upload-container">
- <input type="submit" ng-value="'Publish'" ng-click="publish()" class="btn btn-warning" ng-if="mode=='PREVIEW'" /> 
+ <input type="submit" ng-value="'Publish'" ng-click="publish()" class="btn btn-warning" ng-if="mode=='PREVIEW' && isAdmin" /> 
 
   <input type="submit" ng-value="'Save Changes'" ng-click=" frmContentUpload.$invalid? setDirty(frmContentUpload) : saveChanges()" class="btn btn-warning" ng-if="mode=='EDIT'" /> 
 
