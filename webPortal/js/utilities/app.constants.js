@@ -33,6 +33,22 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 		requirement: 117
 	};
 
+
+	service.fileTypeCode = {
+	    video : 108100
+    };
+
+    service.statusCode = {
+        created : 114100,
+        sentForReview : 114101
+
+    };
+
+    service.contentTypeCode = {
+        teachingAids : 107100,
+        selfLearning : 107101
+    };
+    
 	function getServerUrl() {
 	    if($window.location.host.includes("8000") ||
             $window.location.host.includes("localhost")) {

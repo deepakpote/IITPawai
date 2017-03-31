@@ -37,8 +37,12 @@ a:hover, a:focus {
 	padding:0px!important;
 }
 .leftmenu{
-	height: 700px;
     z-index: 999;
+    overflow-y: auto;
+    height: 100%;
+    box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
+    -webkit-box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
+    -moz-box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
 }
 .left-menu-item {
 	padding-top: 5%;
@@ -49,9 +53,6 @@ a:hover, a:focus {
 .left-menu-container {
     margin-right: -15px;
     padding-top: 20px;
-    box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
-    -webkit-box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
-    -moz-box-shadow: 11px 0px 8px -10px rgba(154,154,154,1);
     height: 100%;
 }
 
@@ -137,12 +138,11 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 .selected-card {
 }
 .unselected-card {
-	opacity:0.6;
+	opacity:0.46;
   cursor: pointer; cursor: hand;
 }
 .options-card {
 	border: 1px solid #ccc;
-
 }
 
 .options-card .card-content{
@@ -220,6 +220,11 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 
 }
 
+.section-padding-container {
+  padding-left: 6%; 
+  padding-right: 6%; 
+}
+
 .review-input {
     width:80%;
 }
@@ -248,8 +253,14 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 .no-padding{
 	padding: 0px !important;
 }
+
+.no-gutter {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
 .orange-background{
-	background-color:#ff6d00;
+	background-color:#ff9100;
 }
 
 .teal-background{
@@ -296,19 +307,23 @@ box-shadow: inset 0px 12px 3px -3px rgba(202,202,202,0.8);
 
 ul.filter-type {
     list-style-type: none;
-    margin: 0;
     overflow: hidden;
     background-color: #ffffff;
     width: 840px;
-    margin: auto;
 }
 
 li.filter-type {
     float: left;
     cursor: pointer;
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 24px 16px 24px 0;
+    text-decoration: none;
 }
 
-li.filter-type {
+li.filter-type-no-hover {
+    float: left;
     display: block;
     color: black;
     text-align: center;
@@ -361,7 +376,7 @@ li.selected  {
 }
 
 .mid-content {
-    clear: right;background-color: #009698;
+    clear: right;background-color: #009688;
     padding-top: 12px;
     padding-bottom: 12px;
     padding-left: 8px;
@@ -386,10 +401,6 @@ li.selected  {
     color:whitesmoke;
 }
 
-.card-content-wrapper {
-    padding-left: 10%;
-    padding-right: 10%;
-}
 
 .uploader {
     flex: 1;
@@ -443,10 +454,22 @@ a.selectedItem {
     margin-left: 16px !important;
 }
 
+.row-no-margin {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+
 .weight-400 {
     font-weight: 400;
 }
 
+.pointer {
+    cursor: pointer;
+}
+
+.btn-warning {
+    background-color: #ff9100 !important;
+}
 
 input[type=text]:focus:not([readonly]),
 input[type=password]:focus:not([readonly]),
@@ -461,6 +484,11 @@ input[type=search-md]:focus:not([readonly]),
 textarea.materialize-textarea:focus:not([readonly]) {
     border-bottom: 1px solid #ff9100;
     box-shadow: 0 1px 0 0 #ff9100;
+}
+
+.card-250 {
+    width: 250px;
+    cursor: pointer;
 }
 
 /* Rules for sizing the icon. */

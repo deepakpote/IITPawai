@@ -22,9 +22,9 @@ angular.module("mitraPortal").service('commonService', ['appUtils', 'appConstant
 		service.getCodeListPerCodeGroup = function (codeGroupID) {
 			storedCodeList = appUtils.getFromLocalStorage(appConstants.localStorage.codeListKey, []);
 			
-			return _.filter(storedCodeList, function(code){ 
+			return JSON.parse(JSON.stringify(_.filter(storedCodeList, function(code){ 
 				return code.codeGroup === codeGroupID
-			});
+			})));
 		};
 
 		service.getValueByCode = function(codeId) {

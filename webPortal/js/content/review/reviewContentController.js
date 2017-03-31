@@ -1,9 +1,20 @@
-angular.module("mitraPortal").controller("reviewTeachingAidsController",
+angular.module("mitraPortal").controller("reviewContentController",
   ['$scope','$stateParams', '$state', '$window', '$log', '$http', 'appUtils', 'appConstants', 'commonService',
   function($scope, $stateParams, $state, $window, $log, $http, appUtils, appConstants, commonService) {
 
+    $scope.acceptedFileTypes = {
+                "108100" : "",              //Video
+                "108101" : "audio/*",       //Audio
+                "108102" : ".ppt,.pptx",    //PPT
+                "108103" : ".xls,.xlsx",    //Worksheet
+                "108104" : ".pdf",          //PDF
+                "108105" : ""             //Ek Step
+            };
+    $scope.inputs= {};
+
     $scope.mode = "PREVIEW"; // can be "EDIT" or "PREVIEW" or "GIVE FEEDBACK"
     $scope.content = {};
+    $scope.contentEditable = false;
 
     $scope.checked = {
       subject: false,
@@ -20,6 +31,11 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
       fileName: false
     }
 
+    $scope.setDirty = function(form){
+                angular.forEach(form.$error.required, function(field) {
+                    field.$dirty = true;
+                });
+            };
 
 
     $scope.setSelectedOption = function (selectedOption){
@@ -114,11 +130,26 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
           
         }
 
-        fd.append("marInstruction", "marathi description.");
         fd.append("contentID", $stateParams.contentID);
-        fd.delete("fileName");
 
 
+        if ($scope.content.newFileTypeCodeID){
+          // file changed
+          if ($scope.content.newFileTypeCodeID == appConstants.fileTypeCode.video){
+              $log.debug("video");
+              fd.append('fileName',$scope.inputs.newFileName);
+          }
+          else{
+              $log.debug("not a video");
+              $log.debug($scope.myFile);
+              fd.append('uploadedFile', $scope.myFile);
+          }
+        }
+        else{
+          // file not changed. so don't send anything.
+          fd.delete("fileName");
+        }
+        
         var headers = { "authToken": appUtils.getFromCookies("token",""),
         "appLanguageCodeID":"113101",
         'Content-Type': undefined};
@@ -276,4 +307,17 @@ angular.module("mitraPortal").controller("reviewTeachingAidsController",
 
 
   }
-  ]);
+  ])
+  .directive('fileModel', ['$parse', '$log', function ($parse, $log) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+
+
+                element.bind('change', function () {
+                    scope.$parent.myFile = element[0].files[0];
+                    scope.$apply();
+                });
+            }
+        };
+    }]);
