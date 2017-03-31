@@ -9,11 +9,14 @@
         .module('mitraPortal')
         .controller('leftMenuController', leftMenuController);
 
-    leftMenuController.$inject = ['$scope'];
+    leftMenuController.$inject = ['$scope','appUtils'];
 
     /* @ngInject */
-    function leftMenuController($scope) {
+    function leftMenuController($scope, appUtils) {
         $scope.selectedItem = 'home';
+        $scope.isAdmin = appUtils.isAdmin();
+        $scope.isTeacher = appUtils.isTeacher();
+
         $scope.setSelected = function(item) {
             $scope.selectedItem = item;
         };

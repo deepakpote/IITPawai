@@ -13,7 +13,7 @@
   </span>
   <span ng-class="mode =='EDIT' ? 'orange-text':''" 
   style="text-align:center;display: inline-block;margin-left:40px;cursor: pointer;"
-  ng-click="mode='EDIT'">
+  ng-click="mode='EDIT'" ng-if="isAdmin || (isTeacher && content.statusCodeID == 114100)">
 
   <div>
     <i class="material-icons" style="font-size:24px;margin:auto;">mode_edit</i>
@@ -82,6 +82,35 @@ ng-click="mode='GIVE FEEDBACK'">
               check
             </i> 
           </div>
+          <br />
+
+          <div class="card">
+              <div class="options-card" ng-mouseenter=setSelectedOption("contentType") ng-mouseleave=setSelectedOption("") >
+                <div class="card-content">
+                  Content Type
+                </div>
+                <div class="card-select" ng-class="($parent.content.fileTypeCodeID?'orange-background':'teal-background')">
+                  <span ng-if="$parent.content.fileTypeCodeID" ng-repeat="fileType in fileTypeList | filter:{codeID : $parent.content.fileTypeCodeID}">
+                    {{fileType.codeNameEn}}
+                  </span>
+                  <span ng-if="!$parent.content.fileTypeCodeID">
+                    Select
+                  </span>
+                </div>
+               
+              </div>
+            </div>
+
+            <br />
+            <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'"> 
+              <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('fileType')"
+              ng-class="checked['fileType']?'orange-text':''">
+              check
+            </i> 
+          </div>
+          <br />
+
+
         </div>
 
         <div class="col-md-1" ng-if="content.contentTypeCodeID == 107100"></div>

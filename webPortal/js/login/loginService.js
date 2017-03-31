@@ -40,4 +40,11 @@ angular.module("mitraPortal").service('loginService', function(appUtils){
         options.url = 'user/setPassword/';
         appUtils.ajax(options,onSuccess,onFailure);
     };
+
+    this.getUserRoleList = function(onSuccess, onFailure) {
+        var authToken = appUtils.getFromCookies("token","");
+        options.headers = {"authToken" : authToken};
+        options.url = 'user/getUserRoleList/';
+        appUtils.ajax(options,onSuccess,onFailure);
+    };
 });

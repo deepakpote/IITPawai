@@ -12,7 +12,7 @@
             <div class="col-md-10">Home</div>
         </a><br/>
     </div>
-    <div class="left-menu-item">
+    <div class="left-menu-item" ng-if="isTeacher || isAdmin">
         <a ui-sref="#"
            ng-click="setSelected('dashboard')"
            ng-class="{selectedItem : selectedItem === 'dashboard'}">
@@ -22,7 +22,7 @@
             <div class="col-md-10">Data Dashboard</div>
         </a><br/>
     </div>
-    <div class="left-menu-item" >
+    <div class="left-menu-item" ng-if="isTeacher || isAdmin" >
         <a ui-sref="main.loggedIn.contentUpload"
            ng-class="{selectedItem : selectedItem === 'content-upload'}">
             <div class="col-md-2">
@@ -31,7 +31,7 @@
             <div class="col-md-10">Upload Content</div>
         </a><br/>
     </div>
-    <div class="left-menu-item" >
+    <div class="left-menu-item" ng-if="isAdmin" >
         <a ui-sref="#"
            ng-click="setSelected('add-training')"
            ng-class="{selectedItem : selectedItem === 'add-training'}">
@@ -41,7 +41,7 @@
             <div class="col-md-10">Add Training</div>
         </a><br/>
     </div>
-    <div class="left-menu-item" >
+    <div class="left-menu-item" ng-if="isAdmin" >
         <a ui-sref="#"
            ng-click="setSelected('add-news')"
            ng-class="{selectedItem : selectedItem === 'add-news'}">
@@ -51,7 +51,7 @@
             <div class="col-md-10">Add News & Circulars</div>
         </a><br/>
     </div>
-    <div class="left-menu-item" >
+    <div class="left-menu-item" ng-if="isAdmin" >
         <a ui-sref="#"
            ng-click="setSelected('add-discussion')"
            ng-class="{selectedItem : selectedItem === 'add-discussion'}">
@@ -61,7 +61,7 @@
             <div class="col-md-10">Add Discussion</div>
         </a><br/>
     </div>
-    <div class="left-menu-item" >
+    <div class="left-menu-item" ng-if="isAdmin" >
         <a ui-sref="#"
            ng-click="setSelected('send-notification')"
            ng-class="{selectedItem : selectedItem === 'send-notification'}">
@@ -71,7 +71,7 @@
             <div class="col-md-10">Send Notification</div>
         </a><br/>
     </div>
-    <div class="left-menu-item" >
+    <div class="left-menu-item" ng-if="isTeacher || isAdmin" >
         <a ui-sref="main.loggedIn.teachingAids"
            ng-class="{selectedItem : selectedItem === 'add-teaching-aids'}">
             <div class="col-md-2">
@@ -80,7 +80,7 @@
             <div class="col-md-10">Teaching Aids</div>
         </a><br/>
     </div>
-    <div class="left-menu-item" >
+    <div class="left-menu-item" ng-if="isTeacher || isAdmin" >
         <a ui-sref="main.loggedIn.selfLearning"
            ng-class="{selectedItem : selectedItem === 'add-self-learning'}">
             <div class="col-md-2">
@@ -89,7 +89,7 @@
             <div class="col-md-10">Self Learning</div>
         </a><br/>
     </div>
-    <div class="left-menu-item" >
+    <div class="left-menu-item" ng-if="isTeacher || isAdmin" >
         <a ui-sref="#"
            ng-click="setSelected('training-calendar')"
            ng-class="{selectedItem : selectedItem === 'training-calendar'}">
@@ -99,7 +99,7 @@
             <div class="col-md-10">Training Calendar</div>
         </a><br/>
     </div>
-    <div class="left-menu-item" >
+    <div class="left-menu-item" ng-if="isTeacher || isAdmin" >
         <a ui-sref="#"
            ng-click="setSelected('news-circular')"
            ng-class="{selectedItem : selectedItem === 'news-circular'}">
@@ -109,7 +109,7 @@
             <div class="col-md-10">News and Circulars</div>
         </a><br/>
     </div>
-    <div class="left-menu-item" >
+    <div class="left-menu-item" ng-if="isTeacher || isAdmin" >
         <a ui-sref="#"
            ng-click="setSelected('discussion')"
            ng-class="{selectedItem : selectedItem === 'discussion'}">

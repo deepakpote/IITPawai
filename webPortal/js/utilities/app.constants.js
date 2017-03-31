@@ -58,6 +58,11 @@ angular.module("mitraPortal").service('appConstants', ['$window',
         }
     }
 
+    service.role = {
+    	admin : 1,
+    	teacher : 2
+    }
+
 	return service;
 
 }]);
