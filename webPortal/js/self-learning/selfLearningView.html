@@ -13,7 +13,7 @@
 <div class="section-padding-container">
     <ul class="filter-type">
         <li class="filter-type" ng-class="{selected : selfLearning.status === 114101}"
-            ng-click=selfLearning.setStatus(114101)>Review</li>
+            ng-click=selfLearning.setStatus(114101) ng-if="selfLearning.isAdmin">Review</li>
         <li class="filter-type" ng-class="{selected : selfLearning.status === 114100}"
             ng-click=selfLearning.setStatus(114100)>Drafts</li>
         <li class="filter-type" ng-class="{selected : selfLearning.status === 114102}"

@@ -45,6 +45,7 @@ angular.module("mitraPortal").service('loginService', function(appUtils){
         var authToken = appUtils.getFromCookies("token","");
         options.headers = {"authToken" : authToken};
         options.url = 'user/getUserRoleList/';
+        options.method = 'get';
         appUtils.ajax(options,onSuccess,onFailure);
     };
 });
