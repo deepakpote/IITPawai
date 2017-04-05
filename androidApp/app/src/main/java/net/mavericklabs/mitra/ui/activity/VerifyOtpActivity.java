@@ -104,7 +104,7 @@ public class VerifyOtpActivity extends BaseActivity {
             }
             @Override
             public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
-                //TODO show error
+                Toast.makeText(VerifyOtpActivity.this, getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -195,6 +195,7 @@ public class VerifyOtpActivity extends BaseActivity {
 
                     @Override
                     public void onFailure(Call<BaseModel<Token>> call, Throwable t) {
+                        Toast.makeText(VerifyOtpActivity.this, getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
                     }
                 });
@@ -277,12 +278,14 @@ public class VerifyOtpActivity extends BaseActivity {
                             startActivity(home);
                             finishAffinity();
                         } else {
+                            Toast.makeText(VerifyOtpActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT).show();
                             progressDialog.dismiss();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<BaseModel<LoginUser>> call, Throwable t) {
+                        Toast.makeText(VerifyOtpActivity.this, getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
                     }
                 });

@@ -55,6 +55,7 @@ public class Migration implements RealmMigration {
 
         RealmSchema schema = realm.getSchema();
 
+        Logger.d("Old  " + oldVersion);
         if(oldVersion == 0) {
             Logger.d(" oldversion " + oldVersion);
 
@@ -77,6 +78,24 @@ public class Migration implements RealmMigration {
 
             schema.create("Language")
                     .addField("language", Integer.class);
+            oldVersion++;
+        }
+
+        if(oldVersion == 1) {
+            schema.create("Content")
+                    .addField("contentID", String.class, FieldAttribute.PRIMARY_KEY)
+                    .addField("title", String.class)
+                    .addField("contentTypeCodeID",Integer.class)
+                    .addField("subject", Integer.class)
+                    .addField("grade", String.class)
+                    .addField("topic", Integer.class)
+                    .addField("requirement",String.class)
+                    .addField("instruction",String.class)
+                    .addField("fileType", Integer.class)
+                    .addField("fileName",String.class)
+                    .addField("author",String.class)
+                    .addField("objectives",String.class)
+                    .addField("language",Integer.class);
         }
 
     }

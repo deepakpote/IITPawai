@@ -180,20 +180,41 @@ public class HomeFragment extends Fragment{
                 if(response.isSuccessful()) {
                     if(response.body().getData() != null) {
                         List<Content> contents = response.body().getData();
+
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
                         popularVideosRecyclerView.setLayoutManager(linearLayoutManager);
                         teachingAidsAdapter = new BaseHorizontalCardListAdapter(getContext(), contents);
                         popularVideosRecyclerView.setAdapter(teachingAidsAdapter);
 
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+                        realm.copyToRealmOrUpdate(contents);
+                        realm.commitTransaction();
+
                     }
+                } else {
+                    loadTeachingAidsFromDb();
                 }
             }
 
             @Override
             public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
                 Logger.d(" on fail");
+                teachingAidsLoadingPanel.setVisibility(View.GONE);
+                loadTeachingAidsFromDb();
             }
         });
+    }
+
+    private void loadTeachingAidsFromDb() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Content> contents = realm.where(Content.class).equalTo("contentTypeCodeID",
+                Constants.ContentTypeTeachingAids).findAll();
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+        popularVideosRecyclerView.setLayoutManager(linearLayoutManager);
+        teachingAidsAdapter = new BaseHorizontalCardListAdapter(getContext(), contents);
+        popularVideosRecyclerView.setAdapter(teachingAidsAdapter);
     }
 
     private void loadPopularSelfLearning() {
@@ -213,15 +234,35 @@ public class HomeFragment extends Fragment{
                         selfLearningAdapter = new BaseHorizontalCardListAdapter(getContext(), contents);
                         popularSelfLearningRecyclerView.setAdapter(selfLearningAdapter);
 
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+                        realm.copyToRealmOrUpdate(contents);
+                        realm.commitTransaction();
+
                     }
+                } else {
+                    loadSelfLearningFromDb();
                 }
             }
 
             @Override
             public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
                 Logger.d(" on fail");
+                selfLearningLoadingPanel.setVisibility(View.GONE);
+                loadSelfLearningFromDb();
             }
         });
+    }
+
+    private void loadSelfLearningFromDb() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Content> contents = realm.where(Content.class).equalTo("contentTypeCodeID",
+                Constants.ContentTypeSelfLearning).findAll();
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+        popularSelfLearningRecyclerView.setLayoutManager(linearLayoutManager);
+        selfLearningAdapter = new BaseHorizontalCardListAdapter(getContext(), contents);
+        popularSelfLearningRecyclerView.setAdapter(selfLearningAdapter);
     }
 
     private void loadNewsFromDb() {

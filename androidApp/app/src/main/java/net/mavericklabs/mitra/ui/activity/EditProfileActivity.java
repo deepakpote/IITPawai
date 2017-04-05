@@ -519,7 +519,7 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
             }
             @Override
             public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
-                //TODO show error
+                Toast.makeText(EditProfileActivity.this, getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
             }
         });
@@ -792,6 +792,7 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
             @Override
             public void onFailure(Call<BaseModel<RegisterUserResponse>> call, Throwable t) {
                 progressDialog.dismiss();
+                Toast.makeText(EditProfileActivity.this, getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
                 Logger.d(" on fail");
             }
         });

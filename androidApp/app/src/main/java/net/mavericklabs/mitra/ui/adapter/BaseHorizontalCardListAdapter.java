@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -113,7 +114,7 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
             public void onClick(View view) {
                 Intent intent = new Intent(context, ContentDetailsActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("content", (Serializable) contents.get(holder.getAdapterPosition()));
+                bundle.putParcelable("content", contents.get(holder.getAdapterPosition()));
                 intent.putExtras(bundle);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);

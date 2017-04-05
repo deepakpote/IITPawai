@@ -95,6 +95,7 @@ public class RegisterUserActivity extends BaseActivity {
 
                     @Override
                     public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                        Toast.makeText(RegisterUserActivity.this, getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
                     }
                 });

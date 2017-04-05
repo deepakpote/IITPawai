@@ -23,15 +23,23 @@
 
 package net.mavericklabs.mitra.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+
+import io.realm.RealmModel;
+import io.realm.RealmObject;
+import io.realm.annotations.RealmClass;
 
 /**
  * Created by vishakha on 10/11/16.
  */
 
-public class Content implements Serializable{
+@RealmClass
+public class Content implements Serializable, RealmModel, Parcelable {
 
     @SerializedName("contentID")
     private String contentID;
@@ -90,6 +98,35 @@ public class Content implements Serializable{
         this.objectives = objectives;
         this.language = language;
     }
+
+    protected Content(Parcel in) {
+        contentID = (String) in.readValue(String.class.getClassLoader());
+        title = (String) in.readValue(String.class.getClassLoader());
+        grade = (String) in.readValue(String.class.getClassLoader());
+        requirement = (String) in.readValue(String.class.getClassLoader());
+        instruction = (String) in.readValue(String.class.getClassLoader());
+        fileName = (String) in.readValue(String.class.getClassLoader());
+        author = (String) in.readValue(String.class.getClassLoader());
+        objectives = (String) in.readValue(String.class.getClassLoader());
+
+        contentTypeCodeID = (Integer) in.readValue(Integer.class.getClassLoader());
+        fileType = (Integer) in.readValue(Integer.class.getClassLoader());
+        language = (Integer) in.readValue(Integer.class.getClassLoader());
+        subject = (Integer) in.readValue(Integer.class.getClassLoader());
+        topic = (Integer) in.readValue(Integer.class.getClassLoader());
+    }
+
+    public static final Creator<Content> CREATOR = new Creator<Content>() {
+        @Override
+        public Content createFromParcel(Parcel in) {
+            return new Content(in);
+        }
+
+        @Override
+        public Content[] newArray(int size) {
+            return new Content[size];
+        }
+    };
 
     public String getContentID() {
         return contentID;
@@ -193,5 +230,29 @@ public class Content implements Serializable{
 
     public void setTopic(Integer topic) {
         this.topic = topic;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeValue(contentID);
+        parcel.writeValue(title);
+        parcel.writeValue(grade);
+        parcel.writeValue(requirement);
+        parcel.writeValue(instruction);
+        parcel.writeValue(fileName);
+        parcel.writeValue(author);
+        parcel.writeValue(objectives);
+
+        parcel.writeValue(contentTypeCodeID);
+        parcel.writeValue(fileType);
+        parcel.writeValue(language);
+        parcel.writeValue(subject);
+        parcel.writeValue(topic);
+
     }
 }

@@ -35,7 +35,7 @@ public class SplashActivity extends AppCompatActivity {
 
 
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .schemaVersion(1) // Must be bumped when the schema changes
+                .schemaVersion(2) // Must be bumped when the schema changes
                 .migration(new Migration()) // Migration to run
                 .build();
 
@@ -43,12 +43,14 @@ public class SplashActivity extends AppCompatActivity {
 
         RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
                 .where(CommonCode.class).findAll();
-        String codeVersion;
+        String currentCodeVersion;
         if(!commonCodes.isEmpty()) {
-            codeVersion = MitraSharedPreferences.readFromPreferences(getApplicationContext(),"code_version","0");
+            currentCodeVersion = MitraSharedPreferences.readFromPreferences(getApplicationContext(),"code_version","0");
         } else {
-            codeVersion = "0";
+            currentCodeVersion = "0";
         }
+
+        final String codeVersion = currentCodeVersion;
 
         Call<BaseModel<CommonCodeWrapper>> codeNameListCall = RestClient.getApiService("").getCodeNameList(codeVersion);
         codeNameListCall.enqueue(new Callback<BaseModel<CommonCodeWrapper>>() {
@@ -81,69 +83,78 @@ public class SplashActivity extends AppCompatActivity {
                         }
                     }
 
-                    int languageCode = LanguageUtils.getCurrentLanguage();
-                    LanguageUtils.setLocale(languageCode, getApplicationContext());
-
-                    Thread timerThread = new Thread() {
-                        public void run() {
-                            try {
-                                sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            } finally {
-                                String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
-
-                                //case 1 : user has not entered his phone number
-                                if(StringUtils.isEmpty(phoneNumber)) {
-                                    Intent selectLanguage = new Intent(SplashActivity.this,SelectLanguageActivity.class);
-                                    startActivity(selectLanguage);
-                                    finishAffinity();
-                                } else { // user has entered phone number ..
-
-                                    //case 2: but has not verified his phone number
-                                    if(!UserDetailUtils.isVerifiedMobileNumber(getApplicationContext())) {
-                                        Intent verifyOtp = new Intent(SplashActivity.this,VerifyOtpActivity.class);
-                                        Bundle bundle = new Bundle();
-                                        bundle.putString("phone_number",phoneNumber);
-                                        boolean signIn= MitraSharedPreferences.readFromPreferences(
-                                                getApplicationContext(),
-                                                "sign_in",Boolean.FALSE);
-                                        bundle.putBoolean("is_from_sign_in",signIn);
-                                        verifyOtp.putExtras(bundle);
-                                        startActivity(verifyOtp);
-                                        finishAffinity();
-                                    } else { // has verified his phone number
-                                        boolean hasEnteredInformation = UserDetailUtils.hasEnteredInformation(getApplicationContext());
-
-                                        // case 3 : not yet entered personal information
-                                        if(!hasEnteredInformation) {
-                                            Intent selectLanguage = new Intent(SplashActivity.this,EditProfileActivity.class);
-                                            startActivity(selectLanguage);
-                                            finishAffinity();
-
-                                        } else { // case 4 : everything good to go. take user home :)
-                                            Intent selectLanguage = new Intent(SplashActivity.this,HomeActivity.class);
-                                            startActivity(selectLanguage);
-                                            finishAffinity();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    };
-                    timerThread.start();
-                } else {
+                    proceed();
+                } else if(codeVersion.equals("0")){
                     Toast.makeText(SplashActivity.this, getString(R.string.error_code_list), Toast.LENGTH_LONG).show();
                     finish();
+                } else {
+                    Toast.makeText(SplashActivity.this, getString(R.string.error_no_internet), Toast.LENGTH_LONG).show();
+                    proceed();
                 }
             }
 
             @Override
             public void onFailure(Call<BaseModel<CommonCodeWrapper>> call, Throwable t) {
                 Logger.d(" on failure ");
-                Toast.makeText(SplashActivity.this, getString(R.string.error_code_list), Toast.LENGTH_LONG).show();
-                finish();
+                Toast.makeText(SplashActivity.this, getString(R.string.error_no_internet), Toast.LENGTH_LONG).show();
+                proceed();
             }
         });
+    }
+
+    private void proceed() {
+
+        final String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
+        int languageCode = LanguageUtils.getCurrentLanguage();
+        LanguageUtils.setLocale(languageCode, getApplicationContext());
+
+        Thread timerThread = new Thread() {
+            public void run() {
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+
+                    //case 1 : user has not entered his phone number
+                    if(StringUtils.isEmpty(phoneNumber)) {
+                        Intent selectLanguage = new Intent(SplashActivity.this,SelectLanguageActivity.class);
+                        startActivity(selectLanguage);
+                        finishAffinity();
+                    } else { // user has entered phone number ..
+
+                        //case 2: but has not verified his phone number
+                        if(!UserDetailUtils.isVerifiedMobileNumber(getApplicationContext())) {
+                            Intent verifyOtp = new Intent(SplashActivity.this,VerifyOtpActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("phone_number",phoneNumber);
+                            boolean signIn= MitraSharedPreferences.readFromPreferences(
+                                    getApplicationContext(),
+                                    "sign_in",Boolean.FALSE);
+                            bundle.putBoolean("is_from_sign_in",signIn);
+                            verifyOtp.putExtras(bundle);
+                            startActivity(verifyOtp);
+                            finishAffinity();
+                        } else { // has verified his phone number
+                            boolean hasEnteredInformation = UserDetailUtils.hasEnteredInformation(getApplicationContext());
+
+                            // case 3 : not yet entered personal information
+                            if(!hasEnteredInformation) {
+                                Intent selectLanguage = new Intent(SplashActivity.this,EditProfileActivity.class);
+                                startActivity(selectLanguage);
+                                finishAffinity();
+
+                            } else { // case 4 : everything good to go. take user home :)
+                                Intent selectLanguage = new Intent(SplashActivity.this,HomeActivity.class);
+                                startActivity(selectLanguage);
+                                finishAffinity();
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        timerThread.start();
+
     }
 }

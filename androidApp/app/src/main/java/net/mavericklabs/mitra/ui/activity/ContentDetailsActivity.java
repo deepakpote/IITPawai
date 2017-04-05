@@ -362,7 +362,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
         Bundle bundle = getIntent().getExtras();
         if(bundle != null) {
-            content = (Content) bundle.getSerializable("content");
+            content = (Content) bundle.getParcelable("content");
         }
 
         if(content != null) {

@@ -97,6 +97,8 @@
     <string name="error_invalid_otp">Invalid OTP</string>
     <string name="choose_profile_photo">Choose profile photo</string>
     <string name="error_code_list">Oops.. There was some problem. Please check your internet connection or relaunch the MITRA app.</string>
+    <string name="error_check_internet">Please check your internet connection.</string>
+    <string name="error_no_internet">You are not connected to internet. Some functionality might not work.</string>
     <string name="message_share">\"Sharing content from Mitra app \"</string>
     <string name="message_no_notifications">No Notifications</string>
     <string name="subject">Subject</string>
