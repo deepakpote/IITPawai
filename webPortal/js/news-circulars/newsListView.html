@@ -1,0 +1,48 @@
+<!-- Add news tags here.. -->
+<div class="section-padding-container" style="padding-top: 6%;">
+    <ul class="filter-type">
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108100}"
+            ng-click=teachingAids.setFileType(108100)>Video</li>
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108101}"
+            ng-click=teachingAids.setFileType(108101)>Audio</li>
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108102}"
+            ng-click=teachingAids.setFileType(108102)>PPT</li>
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108103}"
+            ng-click=teachingAids.setFileType(108103)>Worksheet</li>
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108104}"
+            ng-click=teachingAids.setFileType(108104)>PDF</li>
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108105}"
+            ng-click=teachingAids.setFileType(108105)>Genie</li>
+        <li class="filter-type" ng-class="{selected : teachingAids.fileType === ''}"
+            ng-click=teachingAids.setFileType('')>All</li>
+    </ul>
+</div>
+
+<!-- content type filter end -->
+
+<div class="divider"></div>
+
+<div class="section-padding-container">
+    <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
+    <div class="col-md-4 list-view no-gutter" ng-repeat="news in newsList">
+        <div class="card card-250" style="display: flex;flex-direction: column;">
+            <div class="mid-content">
+                <div class="single-line">
+                    <!--{{news.title}}-->
+                    News Title
+                </div>
+                <div style="font-size: smaller;">
+                    <!--{{news}} | {{teachingAid.grades}}-->
+                    News | Ticker
+                </div>
+            </div>
+            <div class="bottom-content">
+                <div class="uploader single-line" style="">
+                    <!--Uploaded by : {{teachingAid.author}}-->
+                    News by - Name
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-hide="teachingAids.data.length" style="line-height: 12em;text-align: center">No news available</div>
+</div>

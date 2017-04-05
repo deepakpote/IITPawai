@@ -154,6 +154,25 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
+            .state('main.loggedIn.newsList', {
+                url: '/newsList',
+                views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'News';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content': {
+                        templateUrl: templateChange() + '/js/news-circulars/newsListView.html',
+                        controller: 'newsListController'
+                    }
+                }
+            })
             .state('main.loggedIn.reviewContent', {        //check proper routing for this.
                 url: '/content/review/:contentID',
                 views : {
