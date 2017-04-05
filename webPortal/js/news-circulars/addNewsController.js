@@ -25,6 +25,13 @@ angular.module("mitraPortal").controller("addNewsController",
       }
     }
 
+      $scope.showDate = function() {
+          console.log('show date');
+          $scope.makeDateVisible = true;
+          $scope.selectedDate = "";
+
+      };
+
     $scope.setDirty = function(form){
       angular.forEach(form.$error.required, function(field) {
         field.$dirty = true;

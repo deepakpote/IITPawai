@@ -27,27 +27,6 @@
         <div class="upload-container">
             <div class="no-padding-container">
                 <div class="upload-title" style="margin-top:50px;"> Details</div>
-
-                <div class="col-md-3">
-                    <div class="card">
-                        <div class="options-card" ng-click=setSelectedOption("DatePicker") >
-                            <div class="card-content">
-                                Date
-                            </div>
-                            <div class="card-select" ng-class="(news.selectedDate?'orange-background':'teal-background')">
-                                <span id="datepicker" ng-if="!news.selectedDate">
-                                    Select
-                                </span>
-                                <span ng-if="news.selectedDate" ng-click='showDate()'>
-                                    {{news.selectedDate}}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <br />
-                </div>
-
-
                 <div class="col-md-3">
                     <div class="card">
                         <div class="options-card" ng-click=setSelectedOption("Department") >
@@ -261,6 +240,8 @@
         </div>
     </div>
 
+    <div class = "hr"> </div>
+
     <div class="upload-container">
 
         <div class="upload-title">Attach PDF/LINK</div>
@@ -292,6 +273,7 @@
             </div>
         </div>
     </div>
+
     <div class = "hr"> </div>
     <div class = "hr"> </div>
 
