@@ -256,6 +256,9 @@ class newsDir():
     newsPdf = "news/pdf/"
     newsImage = "news/image/"
     
+class staticFileDir():
+    userDir = "user/"
+    
 class uploadedContentDir():
     path = "/static/content/"
     currentDir = settings.PROJECT_DIR
