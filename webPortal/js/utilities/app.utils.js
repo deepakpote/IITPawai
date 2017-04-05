@@ -85,31 +85,48 @@ angular.module("mitraPortal").service('appUtils', ['$http', '$log', '$rootScope'
          */
         service.getFromCookies = function (key, defaultValue) {
 
-            var value = $cookies.key;
+            var value = $cookies.get(key);
             if (value == undefined) {
                 value = defaultValue;
             }
             console.log("get from cookie " + value);
             console.log("get from cookie expires ");
-            console.log($cookies.options);
             return value;
         };
 
         service.saveToCookies = function (key, value) {
             var expireDate = new Date();
             expireDate.setDate(expireDate.getDate() + 1);
-            $cookies.options = {'expires': expireDate};
-            $cookies.key = value;
-            console.log("put to cookie " + $cookies.key);
-            console.log("put to cookie expires");
-            console.log($cookies.options);
+            var expires = {'expires': expireDate};
+            $cookies.put(key,value,expires);
+            console.log("put to cookie " + $cookies.get(key));
         };
 
         service.isLoggedInUser = function () {
             var key = "token";
-            var cookie = $cookies.key;
+            var cookie = $cookies.get(key);
             return cookie != undefined;
 
+        };
+
+        service.isAdmin = function () {
+            var roleIDs = $cookies.get("roleIDs");
+            if (roleIDs.split(',').indexOf(appConstants.role.admin.toString()) > -1){
+                return true;
+            }
+            else{
+                return false
+            }
+        };
+
+        service.isTeacher = function () {
+            var roleIDs = $cookies.get("roleIDs");
+            if (roleIDs.split(',').indexOf(appConstants.role.teacher.toString()) > -1){
+                return true;
+            }
+            else{
+                return false
+            }
         };
 
         return service;

@@ -1,6 +1,5 @@
 <!-- unnecessary header -->
-<div style="
-padding: 64px;">
+<div style="padding-top:64px;padding-bottom:64px;" class="section-padding-container">
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
     labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
     nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
@@ -11,15 +10,29 @@ padding: 64px;">
 <div class="divider"></div>
 
 <!-- content status filter start-->
-<div>
+<div class="section-padding-container">
     <ul class="filter-type">
         <li class="filter-type" ng-class="{selected : selfLearning.status === 114101}"
-            ng-click=selfLearning.setStatus(114101)>Review</li>
+            ng-click=selfLearning.setStatus(114101) ng-if="selfLearning.isAdmin">Review</li>
         <li class="filter-type" ng-class="{selected : selfLearning.status === 114100}"
             ng-click=selfLearning.setStatus(114100)>Drafts</li>
         <li class="filter-type" ng-class="{selected : selfLearning.status === 114102}"
             ng-click=selfLearning.setStatus(114102)>Published</li>
-        <li class="filter-type" ng-click=selfLearning.setStatus()>All</li>
+        <li class="filter-type" ng-class="{selected : selfLearning.status === ''}"
+            ng-click=selfLearning.setStatus('')>All</li>
+        <li class="filter-type-no-hover" style="padding-left: 50%;padding-top: 26px;">
+            <i class="material-icons" style="font-size: 14px;">sort</i>
+        </li>
+        <li class="filter-type" style="padding-right: 0px;" ng-class="{selected : selfLearning.orderByKey === 'createdOn'}"
+            ng-click=selfLearning.setAscending()>Date
+            <span style="vertical-align: sub;">
+                <i class="material-icons pointer" style="font-size: 14px;">arrow_downward</i>
+            </span>
+        </li>
+        <li class="filter-type" ng-class="{selected : selfLearning.orderByKey === '-createdOn'}"
+            ng-click=selfLearning.setDescending()>
+            <i class="material-icons pointer" style="font-size: 14px;padding-top: 2px;">arrow_upward</i>
+        </li>
     </ul>
 </div>
 
@@ -27,28 +40,23 @@ padding: 64px;">
 
 <!-- granular filters start -->
 
-<div class="row" style="padding: 5%;">
+<div class="row row-no-margin" style="padding: 6%;">
 
-    <div class="col-md-4 col-md-offset-2">
-        <div class="card">
-            <div class="options-card">
+    <div class="col-md-4 no-gutter">
+        <div class="card card-250">
+            <div class="options-card" ng-mouseenter=selfLearning.setSelectedOption("Topic") ng-mouseleave=selfLearning.setSelectedOption("Topic")>
                 <div class="card-content">
                     Topic
                 </div>
                 <div class="card-select" ng-class="(((topicList |
                                     filter:{checked:true}).length > 0)?'orange-background':'teal-background')"
-                     ng-click=selfLearning.setSelectedOption("Grade") >
-                  <span ng-if="((topicList | filter:{checked:true}).length > 0)"
-                        ng-repeat="topic in topicList | filter:{checked:true}">
-                    {{topic.codeNameEn}}
-                  </span>
+                      >
+                  {{displayTopicsString}}
                     <span ng-if="!((topicList | filter:{checked:true}).length > 0)">
                     Select
-                        <i ng-if="!selfLearning.selectedOption" class="material-icons pull-right">expand_more</i>
-                        <i ng-if="selfLearning.selectedOption" class="material-icons pull-right">expand_less</i>
                   </span>
                 </div>
-                <div class="card-action" ng-show="(selfLearning.selectedOption == 'Grade')">
+                <div class="card-action" ng-show="(selfLearning.selectedOption == 'Topic')">
                     <div ng-repeat="topic in topicList">
                         <div>
                             <div class="col-md-9 no-padding align-left">
@@ -64,26 +72,21 @@ padding: 64px;">
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card">
-            <div class="options-card">
+    <div class="col-md-4 no-gutter">
+        <div class="card card-250">
+            <div class="options-card" ng-mouseenter=selfLearning.setSelectedOption("Language") ng-mouseleave=selfLearning.setSelectedOption("Language")>
                 <div class="card-content">
                     Language
                 </div>
                 <div class="card-select" ng-class="(((contentLanguageList |
                                     filter:{checked:true}).length > 0)?'orange-background':'teal-background')"
-                     ng-click=selfLearning.setSelectedOption("Subject")>
-                  <span ng-if="((contentLanguageList | filter:{checked:true}).length > 0)"
-                        ng-repeat="language in contentLanguageList | filter:{checked:true}">
-                    {{language.codeNameEn}}
-                  </span>
+                     >
+                    {{displayLanguagesString}}
                     <span ng-if="!((contentLanguageList | filter:{checked:true}).length > 0)">
                     Select
-                        <i ng-if="!selfLearning.selectedOption" class="material-icons pull-right">expand_more</i>
-                        <i ng-if="selfLearning.selectedOption" class="material-icons pull-right">expand_less</i>
                   </span>
                 </div>
-                <div class="card-action" ng-show="(selfLearning.selectedOption == 'Subject')">
+                <div class="card-action" ng-show="(selfLearning.selectedOption == 'Language')">
                     <div ng-repeat="language in contentLanguageList">
                         <div>
                             <div class="col-md-9 no-padding align-left">
@@ -106,21 +109,22 @@ padding: 64px;">
 
 <!-- content below -->
 
-<div class="card-content-wrapper">
+<div class="section-padding-container">
     <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
-    <div class="col-md-4 list-view" ng-repeat="data in selfLearning.data track by data.contentID">
-        <div class="card" style="display: flex;flex-direction: column;">
+    <div class="col-md-4 list-view no-gutter" ng-repeat="data in selfLearning.data | orderBy:selfLearning.orderByKey
+                                                            track by data.contentID">
+        <div class="card card-250" style="display: flex;flex-direction: column;"  ng-click=selfLearning.goToReview(data)>
             <div class="content-panel"
                  style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.74), rgba(0, 0, 0, 0.1)),
                                         url({{data.thumbnailUrl}});
                                         background-size: contain;">
                 <div class="right-panel">
 
-                    <i class="material-icons icon-white">mode_edit</i>
-                    <div class="text">EDIT</div>
+                    <i class="material-icons icon-white pointer">mode_edit</i>
+                    <div class="text pointer">EDIT</div>
 
-                    <i style="margin-top: 16px;" class="material-icons icon-white">close</i>
-                    <div class="text">REMOVE</div>
+                    <i style="margin-top: 16px;" class="material-icons icon-white pointer">close</i>
+                    <div class="text pointer">REMOVE</div>
 
                 </div>
             </div>
@@ -133,13 +137,13 @@ padding: 64px;">
                 </div>
             </div>
             <div class="bottom-content">
-                <div class="uploader">
+                <div class="uploader single-line">
                     Uploaded by : {{data.author}}
                 </div>
             </div>
         </div>
     </div>
-    <div ng-hide="selfLearning.data.length" style="line-height: 12em;text-align: center">No resources found!</div>
+    <div ng-hide="selfLearning.data.length" style="line-height: 12em;text-align: center;padding-top: 48px;">No resources found!</div>
     <div class="text-center" style="clear:left;">
         <input ng-show="selfLearning.hasMoreData" type="button"
                value="Load More" class="btn btn-warning"

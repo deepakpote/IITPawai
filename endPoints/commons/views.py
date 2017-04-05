@@ -815,15 +815,20 @@ def editImagesIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, ima
 #            update the image name in newsImages table in DB
             newsImage.objects.filter(imageURL__contains = (str(newsID) + '_' + str(index + 1))).update(imageURL = newImageName)
 
+"""
+common function to return user roles
+"""      
+def getUserRoleIDs(objUser):
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    #Declare array.
+    arrRoleIDs = []
+
+    # Get all codeIDs for respective CodeGroup.
+    objUserRoleList= userRole.objects.filter(user = objUser)
+    for objRole in objUserRoleList:
+        arrRoleIDs.append(objRole.roleID)
+        
+    if len(arrRoleIDs) > 0:
+        return arrRoleIDs
     
     

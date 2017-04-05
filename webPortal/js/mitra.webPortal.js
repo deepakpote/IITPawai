@@ -154,15 +154,22 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
-            .state('main.loggedIn.reviewTeachingAids', {        
-                url: '/teachingAids/review/:contentID',
+            .state('main.loggedIn.reviewContent', {        //check proper routing for this.
+                url: '/content/review/:contentID',
                 views : {
                     'header': {
-                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html'
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Review';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
                     },
                     'content' : {
-                        templateUrl: templateChange() + '/js/teaching-aids/review/reviewTeachingAidsView.html',
-                        controller: 'reviewTeachingAidsController'
+                        templateUrl: templateChange() + '/js/content/review/reviewContentView.html',
+                        controller: 'reviewContentController'
                     }
                 },
                 params :{

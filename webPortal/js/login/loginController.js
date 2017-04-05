@@ -25,7 +25,25 @@ function LoginController($location, $uibModalInstance, $rootScope,$cookies, logi
             if(HttpUtils.isSuccessful(response)){
                 var data = response.data[0];
                 appUtils.saveToCookies("token",data.token);
-                $state.go('main.loggedIn.home');
+                loginService.getUserRoleList( 
+                    //on success of getUserRoleList
+                    function (response){
+                        var data = response.data;
+                        var roleIDs = [];
+                        for (i=0;i<data.length;i++){
+                            roleIDs.push(data[i].roleID);
+                        }
+                        appUtils.saveToCookies("roleIDs",roleIDs.join(','));
+                        console.log(roleIDs);
+                        $state.go('main.loggedIn.home');
+                    },
+                    //on failure of getUserRoleList
+                    function (response){
+                       vm.hasError = true;
+                        vm.errorMessage = commonService.getValueByCode(response.response_message)[0].codeNameEn
+                    }
+                )
+
             }else{
                 vm.hasError = true;
                 vm.errorMessage = commonService.getValueByCode(response.response_message)[0].codeNameEn
