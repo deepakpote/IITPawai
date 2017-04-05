@@ -10,6 +10,10 @@ angular.module("mitraPortal").controller("addNewsController",
 
     $scope.inputs= {}
 
+      $scope.popup2 = {
+          opened: false
+      };
+
     $scope.selectedOption = "";
 
     $scope.setSelectedOption = function (selectedOption){
