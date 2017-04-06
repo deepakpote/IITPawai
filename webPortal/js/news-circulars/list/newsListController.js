@@ -68,7 +68,6 @@
                 console.log("clicked..");
                 modalInstance.dismiss();
             };
-
         }
     }
 
