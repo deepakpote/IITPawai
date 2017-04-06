@@ -34,6 +34,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -138,6 +139,7 @@ public class HomeFragment extends Fragment{
                     List<News> news = response.body().getData();
 
                     for (News newsItem : news) {
+                        Logger.d("newsitem " + newsItem.getNewsID());
                         Logger.d(" seen item " + newsItem.isSeen());
                         News newsInDb = realm.where(News.class).equalTo("newsID", newsItem.getNewsID()).findFirst();
                         if(newsInDb != null) {
@@ -188,7 +190,18 @@ public class HomeFragment extends Fragment{
 
                         Realm realm = Realm.getDefaultInstance();
                         realm.beginTransaction();
-                        realm.copyToRealmOrUpdate(contents);
+
+                        for (Content content : contents) {
+                            Content contentInDb = realm.where(Content.class).equalTo("contentID",
+                                    content.getContentID()).findFirst();
+                            if(contentInDb != null) {
+                                content.setSaved(contentInDb.getSaved());
+                            } else {
+                                content.setSaved(false);
+                            }
+
+                            realm.copyToRealmOrUpdate(content);
+                        }
                         realm.commitTransaction();
 
                     }
@@ -236,9 +249,19 @@ public class HomeFragment extends Fragment{
 
                         Realm realm = Realm.getDefaultInstance();
                         realm.beginTransaction();
-                        realm.copyToRealmOrUpdate(contents);
-                        realm.commitTransaction();
 
+                        for (Content content : contents) {
+                            Content contentInDb = realm.where(Content.class).equalTo("contentID",
+                                    content.getContentID()).findFirst();
+                            if(contentInDb != null) {
+                                content.setSaved(contentInDb.getSaved());
+                            } else {
+                                content.setSaved(false);
+                            }
+
+                            realm.copyToRealmOrUpdate(content);
+                        }
+                        realm.commitTransaction();
                     }
                 } else {
                     loadSelfLearningFromDb();
@@ -268,7 +291,7 @@ public class HomeFragment extends Fragment{
     private void loadNewsFromDb() {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<News> dbNews = realm.where(News.class).equalTo("showOnMainPage",
-                Boolean.TRUE).findAll();
+                Boolean.TRUE).findAllSorted("dateToCompare", Sort.DESCENDING);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         newsRecyclerView.setLayoutManager(layoutManager);
         NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), realm.copyFromRealm(dbNews));

@@ -68,6 +68,7 @@ import net.mavericklabs.mitra.utils.UserDetailUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +76,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okio.BufferedSink;
@@ -335,6 +337,14 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
                         if(response.isSuccessful()) {
                             Logger.d("content saved..");
+
+                            Realm realm = Realm.getDefaultInstance();
+                            realm.beginTransaction();
+                            Content content = contents.get(holder.getAdapterPosition());
+                            content.setSaved(false);
+                            realm.copyToRealmOrUpdate(content);
+                            realm.commitTransaction();
+
                             contents.remove(holder.getAdapterPosition());
                             notifyItemRemoved(holder.getAdapterPosition());
                         } else {
@@ -345,7 +355,9 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
 
                     @Override
                     public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
-                        Logger.d("is saved onfailure");
+                        if(t instanceof ConnectException) {
+                            Toast.makeText(context, context.getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                        }
                         Toast.makeText(context, context.getString(R.string.error_message), Toast.LENGTH_SHORT).show();
                     }
                 });

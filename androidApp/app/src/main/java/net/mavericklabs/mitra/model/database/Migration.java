@@ -95,7 +95,8 @@ public class Migration implements RealmMigration {
                     .addField("fileName",String.class)
                     .addField("author",String.class)
                     .addField("objectives",String.class)
-                    .addField("language",Integer.class);
+                    .addField("language",Integer.class)
+                    .addField("isSaved", Boolean.class);
         }
 
     }

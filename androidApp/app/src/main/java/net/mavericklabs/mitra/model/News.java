@@ -23,6 +23,8 @@
 
 package net.mavericklabs.mitra.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 
 import io.realm.RealmObject;
@@ -35,6 +37,8 @@ import io.realm.annotations.PrimaryKey;
 public class News extends RealmObject{
 
     @PrimaryKey
+
+    @SerializedName("news")
     private String newsID;
     private String newsTitle;
     private String author;

@@ -95,6 +95,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okio.BufferedSink;
@@ -214,6 +215,14 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                     public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
                         if(response.isSuccessful()) {
                             Logger.d("content saved..");
+
+                            Realm realm = Realm.getDefaultInstance();
+                            realm.beginTransaction();
+                            content.setSaved(isSaved);
+                            realm.copyToRealmOrUpdate(content);
+                            realm.commitTransaction();
+
+
                         } else {
                             Logger.d("is liked " + isSaved);
                             if(isSaved) {

@@ -61,6 +61,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Created by amoghpalnitkar on 14/11/16.
@@ -328,7 +329,7 @@ public class NewsFragment extends Fragment{
                         .lessThanOrEqualTo("dateToCompare", DateUtils.convertToDate(toDate, "d MMM yyyy"));
             }
 
-            dbNews = realmQuery.findAll();
+            dbNews = realmQuery.findAllSorted("dateToCompare", Sort.DESCENDING);;
 
 
             errorView.setVisibility(View.GONE);

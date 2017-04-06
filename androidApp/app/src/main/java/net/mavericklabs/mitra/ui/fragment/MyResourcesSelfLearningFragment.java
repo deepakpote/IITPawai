@@ -54,6 +54,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -214,6 +215,15 @@ public class MyResourcesSelfLearningFragment extends BaseContentFragment {
                         if(fragment.isAdded()) {
                             fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved, contents.size(), contents.size()));
                         }
+
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+
+                        for (Content content : contents) {
+                            content.setSaved(true);
+                            realm.copyToRealmOrUpdate(content);
+                        }
+                        realm.commitTransaction();
 
                     } else {
 

@@ -32,6 +32,7 @@ import java.io.Serializable;
 
 import io.realm.RealmModel;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmClass;
 
 /**
@@ -42,6 +43,7 @@ import io.realm.annotations.RealmClass;
 public class Content implements Serializable, RealmModel, Parcelable {
 
     @SerializedName("contentID")
+    @PrimaryKey
     private String contentID;
 
     @SerializedName("contentTitle")
@@ -79,6 +81,8 @@ public class Content implements Serializable, RealmModel, Parcelable {
 
     @SerializedName("language")
     private Integer language;
+
+    private Boolean isSaved;
 
     public Content() {
 
@@ -254,5 +258,13 @@ public class Content implements Serializable, RealmModel, Parcelable {
         parcel.writeValue(subject);
         parcel.writeValue(topic);
 
+    }
+
+    public Boolean getSaved() {
+        return isSaved;
+    }
+
+    public void setSaved(Boolean saved) {
+        isSaved = saved;
     }
 }

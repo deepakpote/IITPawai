@@ -56,6 +56,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -248,6 +250,15 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
                             errorView.setVisibility(View.GONE);
                         }
 
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+
+                        for (Content content : contents) {
+                            content.setSaved(true);
+                            realm.copyToRealmOrUpdate(content);
+                        }
+                        realm.commitTransaction();
+
 
                     } else {
 
@@ -275,13 +286,36 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
                     errorView.setVisibility(View.VISIBLE);
                     errorView.setText(error);
 
-
             }
 
             @Override
             public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
                 Logger.d(" on fail");
+                loadingPanel.setVisibility(View.GONE);
+                loadFromDb();
+
             }
         });
+    }
+
+    private void loadFromDb() {
+
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Content> contents = realm.where(Content.class).equalTo("contentTypeCodeID",
+                Constants.ContentTypeTeachingAids).equalTo("isSaved", Boolean.TRUE).findAll();
+
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        contentRecyclerView.setLayoutManager(linearLayoutManager);
+        adapter = new ContentVerticalCardListAdapter(getContext(), contents, fragment);
+        adapter.setShowDeleteOption(true);
+        contentRecyclerView.setAdapter(adapter);
+
+        if(fragment.isAdded()) {
+            fragment.subtitle0.setText(getResources().getQuantityString(R.plurals.resources_saved,
+                    contents.size(), contents.size()));
+            contentRecyclerView.setVisibility(View.VISIBLE);
+            errorView.setVisibility(View.GONE);
+        }
     }
 }
