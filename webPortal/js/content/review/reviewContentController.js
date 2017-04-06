@@ -63,6 +63,8 @@ angular.module("mitraPortal").controller("reviewContentController",
     }
 
     $scope.setMode = function(mode) {
+        console.log("function arg mode" + mode);
+        console.log("scope mode" + $scope.mode);
       if ($scope.mode == 'EDIT' && mode == 'PREVIEW' && $scope.originalContent){
         $scope.content = JSON.parse(JSON.stringify($scope.originalContent)); //deepcopy
         setGradesFromContent();

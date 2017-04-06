@@ -362,6 +362,27 @@ li.selected  {
 .content-panel .right-panel .text{
     font-size: x-small;
     margin-top: 4px;
+    color:black;
+}
+
+.content-panel-news {
+    background-color:rgba(128, 128, 128, 0.24);
+    position: absolute;
+    right: 0;
+}
+
+.content-panel-news .right-panel {
+    float: right;
+    margin-top: 16px;
+    text-align: center;
+    margin-right: 12px;
+    margin-bottom: 8px;
+    margin-left: 12px;
+}
+
+.content-panel-news .right-panel .text{
+    font-size: x-small;
+    margin-top: 4px;
     color:whitesmoke;
 }
 

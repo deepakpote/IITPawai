@@ -26,23 +26,30 @@
     <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
     <div class="col-md-4 list-view no-gutter" ng-repeat="news in newsList">
         <div class="card card-250" style="display: flex;flex-direction: column;">
+            <div class="content-panel-news" ng-if="isAdmin">
+                <div class="right-panel">
+                    <i class="material-icons icon-white pointer">mode_edit</i>
+                    <div class="text pointer">EDIT</div>
+
+                    <i style="margin-top: 16px;" class="material-icons icon-white pointer">close</i>
+                    <div class="text pointer">REMOVE</div>
+                </div>
+            </div>
+            <embed src="http://www.pdf995.com/samples/pdf.pdf" width="inherit" height="inherit" type='application/pdf'>
             <div class="mid-content">
                 <div class="single-line">
-                    <!--{{news.title}}-->
-                    News Title
+                    {{news.newsTitle}}
                 </div>
                 <div style="font-size: smaller;">
-                    <!--{{news}} | {{teachingAid.grades}}-->
-                    News | Ticker
+                    {{news.publishDate}}
                 </div>
             </div>
             <div class="bottom-content">
                 <div class="uploader single-line" style="">
-                    <!--Uploaded by : {{teachingAid.author}}-->
-                    News by - Name
+                    News by - {{news.author}}
                 </div>
             </div>
         </div>
     </div>
-    <div ng-hide="teachingAids.data.length" style="line-height: 12em;text-align: center">No news available</div>
+    <div ng-hide="newsList.length" style="line-height: 12em;text-align: center">No news available</div>
 </div>

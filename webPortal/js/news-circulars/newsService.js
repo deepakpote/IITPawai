@@ -13,7 +13,7 @@ angular.module("mitraPortal").service('newsService', ['appUtils', 'appConstants'
 
 		service.getNews = function(success,error) {
 		    options = {};
-            options.url = 'news/newsList';
+            options.url = 'news/newsList/';
             var authToken = appUtils.getFromCookies("token","");
             options.method = 'POST';
             options.headers = {"authToken" : authToken , "appLanguageCodeID" : "113101"};
