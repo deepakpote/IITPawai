@@ -19,6 +19,15 @@ angular.module("mitraPortal").service('newsService', ['appUtils', 'appConstants'
             options.headers = {"authToken" : authToken , "appLanguageCodeID" : "113101"};
             appUtils.ajax(options,success,error);
         };
+
+        service.getNewsDetails = function(id,success,error) {
+            options = {};
+            options.url = 'news/getNewsDetails/';
+            var authToken = appUtils.getFromCookies("token","");
+            options.method = 'GET';
+            options.headers = {"authToken" : authToken , "appLanguageCodeID" : "113101"};
+        };
+
 		return service;
 	}
 ]);

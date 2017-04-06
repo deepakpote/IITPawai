@@ -109,7 +109,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         }
                     },
                     'content': {
-                        templateUrl: templateChange() + '/js/news-circulars/addNewsView.html',
+                        templateUrl: templateChange() + '/js/news-circulars/add/addNewsView.html',
                         controller: 'addNewsController'
                     }
                 }
@@ -168,13 +168,13 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         }
                     },
                     'content': {
-                        templateUrl: templateChange() + '/js/news-circulars/newsListView.html',
+                        templateUrl: templateChange() + '/js/news-circulars/list/newsListView.html',
                         controller: 'newsListController'
                     }
                 }
             })
-            .state('main.loggedIn.reviewContent', {        //check proper routing for this.
-                url: '/content/review/:contentID',
+            .state('main.loggedIn.reviewContent', {
+                url: '/content/view/:contentID',
                 views : {
                     'header': {
                         templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
@@ -195,7 +195,27 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     'teachingAid' : null,
                     'contentID' : null
                 }
-            });
+            })
+            .state('main.loggedIn.viewNews', {
+                url: '/content/news/:newsID',
+                views : {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'View';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content' : {
+                        templateUrl: templateChange() + '/js/news-circulars/view/previewNews.html',
+                        controller: 'previewNewsController'
+                    }
+                }
+            })
+            ;
             // define login route
             loginModalStateProvider.state('main.notLoggedIn.home.login', {
                 url: '/login',

@@ -28,11 +28,11 @@
         <div class="card card-250" style="display: flex;flex-direction: column;">
             <div class="content-panel-news" ng-if="isAdmin">
                 <div class="right-panel">
-                    <i class="material-icons icon-white pointer">mode_edit</i>
+                    <i class="material-icons icon-black pointer" ng-click="goToView(news)">mode_edit</i>
                     <div class="text pointer">EDIT</div>
 
-                    <i style="margin-top: 16px;" class="material-icons icon-white pointer">close</i>
-                    <div class="text pointer">REMOVE</div>
+                    <i style="margin-top: 16px;" class="material-icons icon-black pointer" ng-click="deleteNews(news)">close</i>
+                    <div class="text pointer" ng-click="showDeleteConfirmation(news)">REMOVE</div>
                 </div>
             </div>
             <embed src="http://www.pdf995.com/samples/pdf.pdf" width="inherit" height="inherit" type='application/pdf'>

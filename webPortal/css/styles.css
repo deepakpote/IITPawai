@@ -362,7 +362,7 @@ li.selected  {
 .content-panel .right-panel .text{
     font-size: x-small;
     margin-top: 4px;
-    color:black;
+    color:whitesmoke;
 }
 
 .content-panel-news {
@@ -383,7 +383,7 @@ li.selected  {
 .content-panel-news .right-panel .text{
     font-size: x-small;
     margin-top: 4px;
-    color:whitesmoke;
+    color:black;
 }
 
 .list-view{
@@ -422,6 +422,9 @@ li.selected  {
     color:whitesmoke;
 }
 
+.icon-black {
+    color:black;
+}
 
 .uploader {
     flex: 1;
