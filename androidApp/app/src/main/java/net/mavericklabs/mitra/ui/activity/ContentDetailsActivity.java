@@ -89,6 +89,7 @@ import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -224,7 +225,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
 
                         } else {
-                            Logger.d("is liked " + isSaved);
+                            Logger.d("is saved " + isSaved);
                             if(isSaved) {
                                 saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
                                 isSaved = false;
@@ -237,14 +238,26 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
                     @Override
                     public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
-                        Logger.d("is liked " + isLiked);
-                        if(isSaved) {
-                            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
-                            isSaved = false;
+                        Logger.d("is saved " + isSaved);
+                        if(t instanceof ConnectException && isSaved) {
+                            //If content save failed because of no internet connection, store locally.
+                            //Removing content from saved resources is not allowed while offline.
+                            Realm realm = Realm.getDefaultInstance();
+                            realm.beginTransaction();
+                            content.setSaved(isSaved);
+                            realm.copyToRealmOrUpdate(content);
+                            realm.commitTransaction();
+
                         } else {
-                            saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
-                            isSaved = true;
+                            if(isSaved) {
+                                saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_lightgrey_24dp));
+                                isSaved = false;
+                            } else {
+                                saveIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_accent_24dp));
+                                isSaved = true;
+                            }
                         }
+
                     }
                 });
     }

@@ -15,6 +15,9 @@ import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.News;
+import net.mavericklabs.mitra.model.api.GenericListDataModel;
+import net.mavericklabs.mitra.model.api.SavedSelfLearningRequest;
+import net.mavericklabs.mitra.model.api.SavedTeachingAidsRequest;
 import net.mavericklabs.mitra.model.api.SelfLearningContentRequest;
 import net.mavericklabs.mitra.model.api.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.model.Content;
@@ -27,6 +30,7 @@ import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -123,6 +127,7 @@ public class HomeFragment extends Fragment{
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
 
+        syncBookmarksToServer();
         loadPopularTeachingAids();
         loadPopularSelfLearning();
         loadNews();
@@ -139,11 +144,8 @@ public class HomeFragment extends Fragment{
                     List<News> news = response.body().getData();
 
                     for (News newsItem : news) {
-                        Logger.d("newsitem " + newsItem.getNewsID());
-                        Logger.d(" seen item " + newsItem.isSeen());
                         News newsInDb = realm.where(News.class).equalTo("newsID", newsItem.getNewsID()).findFirst();
                         if(newsInDb != null) {
-                            Logger.d(" seen db " + newsItem.isSeen());
                             newsItem.setSeen(newsInDb.isSeen());
                             newsItem.setSaved(newsInDb.isSaved());
                             newsItem.setShowOnMainPage(newsInDb.isShowOnMainPage());
@@ -296,6 +298,83 @@ public class HomeFragment extends Fragment{
         newsRecyclerView.setLayoutManager(layoutManager);
         NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), realm.copyFromRealm(dbNews));
         newsRecyclerView.setAdapter(newsListAdapter);
+    }
+
+    private void syncBookmarksToServer() {
+
+        //Get all bookmarked content
+        final List<String> bookmarkedContentFromServer = new ArrayList<>();
+
+        SavedTeachingAidsRequest contentRequest = new SavedTeachingAidsRequest(
+                Constants.ContentTypeTeachingAids, "", "", "");
+        final String token = UserDetailUtils.getToken(getContext());
+        RestClient.getApiService(token).getSavedTeachingAids(LanguageUtils.getCurrentLanguage(),
+                contentRequest).enqueue(new Callback<BaseModel<Content>>() {
+
+            @Override
+            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                Logger.d("on response - ta ");
+                for (Content content : response.body().getData()) {
+                    bookmarkedContentFromServer.add(content.getContentID());
+                }
+
+                SavedSelfLearningRequest selfLearningRequest = new SavedSelfLearningRequest(Constants.ContentTypeSelfLearning,
+                        "", "");
+
+                RestClient.getApiService(token).getSavedSelfLearning(LanguageUtils.getCurrentLanguage(),
+                        selfLearningRequest).enqueue(new Callback<BaseModel<Content>>() {
+
+                    @Override
+                    public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                        Logger.d("on response - sl ");
+                        for (Content content : response.body().getData()) {
+                            bookmarkedContentFromServer.add(content.getContentID());
+                        }
+                        Logger.d(" bookmarked from server " + bookmarkedContentFromServer.toString() + " " + bookmarkedContentFromServer.size());
+
+                        //Check content to sync
+                        Realm realm = Realm.getDefaultInstance();
+                        RealmResults<Content> localBookmarkedContents = realm.where(Content.class).equalTo("isSaved", Boolean.TRUE).findAll();
+                        for (Content content : localBookmarkedContents) {
+                            if(!bookmarkedContentFromServer.contains(content.getContentID())) {
+                                bookmarkContent(content);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    private void bookmarkContent(Content content) {
+        String token = UserDetailUtils.getToken(getContext());
+        Logger.d(" Saving content " + content.getTitle());
+        RestClient.getApiService(token).saveContent(content.getContentID(), true)
+                .enqueue(new Callback<BaseModel<GenericListDataModel>>() {
+
+                    @Override
+                    public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
+                        if(response.isSuccessful()) {
+                            Logger.d("content saved..");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
+                        Logger.d("failed to save " );
+                    }
+                });
     }
 
     @Override
