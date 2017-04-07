@@ -208,7 +208,7 @@ public class MyResourcesSelfLearningFragment extends BaseContentFragment {
                         Logger.d(" contents " + contents.size());
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                         contentRecyclerView.setLayoutManager(linearLayoutManager);
-                        adapter = new ContentVerticalCardListAdapter(getContext(), contents, fragment);
+                        adapter = new ContentVerticalCardListAdapter(getActivity(), contents, fragment);
                         adapter.setShowDeleteOption(true);
                         contentRecyclerView.setAdapter(adapter);
                         contentRecyclerView.setVisibility(View.VISIBLE);
@@ -272,7 +272,7 @@ public class MyResourcesSelfLearningFragment extends BaseContentFragment {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         contentRecyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new ContentVerticalCardListAdapter(getContext(), contents, fragment);
+        adapter = new ContentVerticalCardListAdapter(getActivity(), contents, fragment);
         adapter.setShowDeleteOption(true);
         contentRecyclerView.setAdapter(adapter);
 

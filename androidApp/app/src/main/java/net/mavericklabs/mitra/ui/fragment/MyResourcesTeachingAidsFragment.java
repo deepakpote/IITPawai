@@ -239,7 +239,7 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
 
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                         contentRecyclerView.setLayoutManager(linearLayoutManager);
-                        adapter = new ContentVerticalCardListAdapter(getContext(), contents, fragment);
+                        adapter = new ContentVerticalCardListAdapter(getActivity(), contents, fragment);
                         adapter.setShowDeleteOption(true);
                         contentRecyclerView.setAdapter(adapter);
 
@@ -307,7 +307,7 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         contentRecyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new ContentVerticalCardListAdapter(getContext(), contents, fragment);
+        adapter = new ContentVerticalCardListAdapter(getActivity(), contents, fragment);
         adapter.setShowDeleteOption(true);
         contentRecyclerView.setAdapter(adapter);
 

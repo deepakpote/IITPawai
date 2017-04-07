@@ -23,6 +23,10 @@
 
 package net.mavericklabs.mitra.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.model.api.BaseModel;
@@ -65,5 +69,12 @@ public class HttpUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static Boolean isNetworkAvailable(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }

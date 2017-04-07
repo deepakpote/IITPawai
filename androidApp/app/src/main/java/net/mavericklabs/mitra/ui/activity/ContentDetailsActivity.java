@@ -67,21 +67,23 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.model.CommonCode;
+import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.model.Requirements;
 import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.api.ContentDataRequest;
 import net.mavericklabs.mitra.model.api.ContentDataResponse;
-import net.mavericklabs.mitra.model.api.MetaContent;
 import net.mavericklabs.mitra.model.api.GenericListDataModel;
 import net.mavericklabs.mitra.model.api.LikeRequest;
+import net.mavericklabs.mitra.model.api.MetaContent;
 import net.mavericklabs.mitra.model.api.SelfLearningContentRequest;
 import net.mavericklabs.mitra.model.api.TeachingAidsContentRequest;
-import net.mavericklabs.mitra.model.Content;
-import net.mavericklabs.mitra.model.Requirements;
 import net.mavericklabs.mitra.ui.adapter.BaseHorizontalCardListAdapter;
 import net.mavericklabs.mitra.ui.adapter.RequirementsListAdapter;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
+import net.mavericklabs.mitra.utils.DownloadUtils;
+import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
@@ -125,8 +127,6 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
     @BindView(R.id.content_layout) RelativeLayout contentLayout;
     @BindView(R.id.content_web_view) WebView contentWebView;
     @BindView(R.id.loading_panel_for_web_view) RelativeLayout loadingPanelForWebView;
-
-    private static final int EXTERNAL_STORE_WRITE_REQUEST_CODE = 1;
 
     @OnClick(R.id.share_icon)
     void shareContent() {
@@ -264,99 +264,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
     @OnClick(R.id.download_icon)
     void downloadContent() {
-        Logger.d(" download ");
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(ContentDetailsActivity.this,
-                Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(ContentDetailsActivity.this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        EXTERNAL_STORE_WRITE_REQUEST_CODE);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-        } else {
-            downloadPdf();
-        }
-    }
-
-    private void downloadPdf() {
-        String token = UserDetailUtils.getToken(getApplicationContext());
-        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService(token)
-                .download(new ContentDataRequest(content.getContentID()));
-
-        saveRequest.enqueue(new Callback<BaseModel<ContentDataResponse>>() {
-            @Override
-            public void onResponse(Call<BaseModel<ContentDataResponse>> call, Response<BaseModel<ContentDataResponse>> response) {
-                if(response.isSuccessful()) {
-                    List<ContentDataResponse> responseList = response.body().getData();
-                    Logger.d(" file " + responseList.get(0).getFileName());
-
-                    String url = responseList.get(0).getFileName();
-                    // get download service and enqueue file
-                    StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.append(Environment.getExternalStorageDirectory());
-                    stringBuilder.append(File.separator);
-                    stringBuilder.append("MITRA");
-                    final String mitraDirectoryPath = stringBuilder.toString();
-                    File mitraDirectory = new File(mitraDirectoryPath);
-                    Logger.d("Directory Path " + mitraDirectoryPath);
-                    mitraDirectory.mkdirs();
-                    final OkHttpClient client = new OkHttpClient();
-                    try {
-                        Request request = new Request.Builder()
-                                .url(url)
-                                .build();
-                        final String extension;
-                        if(content.getFileType() == Constants.FileTypeAudio) {
-                            extension = ".mp3";
-                        } else {
-                            extension = ".pdf";
-                        }
-                        client.newCall(request).enqueue(new okhttp3.Callback() {
-                            @Override
-                            public void onFailure(okhttp3.Call call, IOException e) {
-
-                            }
-
-                            @Override
-                            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                                if(response.isSuccessful()) {
-                                    String downloadFileName = mitraDirectoryPath +
-                                            File.separator + content.getTitle() + extension;
-                                    File downloadedFile = new File(downloadFileName);
-                                    BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-                                    sink.writeAll(response.body().source());
-                                    sink.close();
-                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getApplicationContext(), getString(R.string.download_complete),
-                                                    Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                        Toast.makeText(getApplicationContext(), getString(R.string.download_file_location,
-                                mitraDirectoryPath + File.separator +content.getTitle()),
-                                Toast.LENGTH_LONG).show();
-                    }catch (IllegalArgumentException ex) {
-                        Logger.d(" error " + ex.getMessage());
-                        Toast.makeText(ContentDetailsActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT).show();
-                    }
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BaseModel<ContentDataResponse>> call, Throwable t) {
-                Logger.d(" on failure ");
-            }
-        });
+        DownloadUtils.downloadResource(content, ContentDetailsActivity.this);
     }
 
     BaseHorizontalCardListAdapter similarContentsAdapter;
@@ -433,10 +341,15 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                 contentImageView.setVisibility(View.GONE);
                 contentWebView.setVisibility(View.GONE);
                 contentLayout.setBackgroundColor(Color.BLACK);
-                downloadIcon.setVisibility(View.GONE);
+                downloadIcon.setVisibility(View.VISIBLE);
+
+
+
                 YouTubePlayerSupportFragment frag =
                         (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
                 frag.initialize(Constants.youtubeDeveloperKey, this);
+
+
 
             } else if (content.getFileType().equals(Constants.FileTypePPT) ||
                     content.getFileType().equals(Constants.FileTypeWorksheet) ||
@@ -689,6 +602,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored) {
         if (!wasRestored) {
@@ -697,6 +611,59 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
             Logger.d("file name is : " + fileName);
             String videoID = StringUtils.getVideoKeyFromUrl(fileName);
             Logger.d("video id is : " + videoID);
+
+            //TODO : use isDownloaded instead of isSaved
+            player.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
+
+                @Override
+                public void onError(YouTubePlayer.ErrorReason errorReason) {
+                    Logger.d("Error" + errorReason);
+                    if(errorReason.equals(YouTubePlayer.ErrorReason.NETWORK_ERROR)
+                            && !HttpUtils.isNetworkAvailable(getApplicationContext())
+                            && content.getSaved()) {
+
+                        AlertDialog alertDialog = new AlertDialog.Builder(ContentDetailsActivity.this)
+                                .setMessage(getString(R.string.youtube_offline_available))
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(content.getFileName()));
+                                        startActivity(intent);
+                                    }
+                                })
+                                .setNegativeButton("Not Now", null)
+                                .create();
+
+                        alertDialog.show();
+                    }
+                }
+
+                @Override
+                public void onLoading() {
+
+                }
+
+                @Override
+                public void onLoaded(String s) {
+
+                }
+
+                @Override
+                public void onAdStarted() {
+
+                }
+
+                @Override
+                public void onVideoStarted() {
+
+                }
+
+                @Override
+                public void onVideoEnded() {
+
+                }
+            });
+
             player.cueVideo(videoID);
         }
     }
@@ -742,13 +709,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == EXTERNAL_STORE_WRITE_REQUEST_CODE) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                downloadPdf();
-            } else {
-                Toast.makeText(this, "Permission denied. Unable to download.", Toast.LENGTH_SHORT).show();
-            }
-        }
+        DownloadUtils.onRequestPermissionResult(requestCode, grantResults, ContentDetailsActivity.this,
+                content);
     }
 }

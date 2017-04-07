@@ -118,6 +118,8 @@ public class Content implements Serializable, RealmModel, Parcelable {
         language = (Integer) in.readValue(Integer.class.getClassLoader());
         subject = (Integer) in.readValue(Integer.class.getClassLoader());
         topic = (Integer) in.readValue(Integer.class.getClassLoader());
+
+        isSaved = (Boolean) in.readValue(Boolean.class.getClassLoader());
     }
 
     public static final Creator<Content> CREATOR = new Creator<Content>() {
@@ -257,6 +259,7 @@ public class Content implements Serializable, RealmModel, Parcelable {
         parcel.writeValue(language);
         parcel.writeValue(subject);
         parcel.writeValue(topic);
+        parcel.writeValue(isSaved);
 
     }
 

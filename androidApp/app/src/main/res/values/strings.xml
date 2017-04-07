@@ -114,5 +114,8 @@
     <string name="date_from">DATE FROM</string>
     <string name="date_to">DATE TO</string>
 
+    <string name="youtube_save_offline_dialog">You will now be taken to Youtube App. Please click \'Save\' to download the video to your device</string>
+    <string name="youtube_offline_available">You are currently offline. This video might be available offline. Go to Youtube App and check Offline Videos to see the video.</string>
+
 
 </resources>

@@ -171,7 +171,7 @@ public class BaseContentFragment extends Fragment {
                     if(contentRecyclerView.getAdapter() == null) {
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                         contentRecyclerView.setLayoutManager(linearLayoutManager);
-                        adapter = new ContentVerticalCardListAdapter(getContext(), contents, BaseContentFragment.this);
+                        adapter = new ContentVerticalCardListAdapter(getActivity(), contents, BaseContentFragment.this);
                         contentRecyclerView.setAdapter(adapter);
                     } else {
                         adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();

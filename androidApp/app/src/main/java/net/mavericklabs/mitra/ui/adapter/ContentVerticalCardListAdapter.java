@@ -24,6 +24,7 @@
 package net.mavericklabs.mitra.ui.adapter;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -61,6 +62,7 @@ import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
+import net.mavericklabs.mitra.utils.DownloadUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
@@ -99,9 +101,11 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
     private Fragment callingFragment;
     private boolean showDeleteOption = false;
     private int loaderPosition = -1;
+    private Activity activity;
 
-    public ContentVerticalCardListAdapter(Context applicationContext, List<Content> contents, Fragment fragment) {
-        this.context = applicationContext;
+    public ContentVerticalCardListAdapter(Activity activity, List<Content> contents, Fragment fragment) {
+        this.context = activity.getApplicationContext();
+        this.activity = activity;
         this.contents = contents;
         this.callingFragment = fragment;
         thumbnailViewToLoaderMap = new HashMap<>();
@@ -207,24 +211,24 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
             DisplayUtils.displayFileIcon(getObject(holder).getFileType(), holder.fileIcon);
             //Load Video
             if(holder.getItemViewType() == 0) {
-                holder.saveButton.setVisibility(View.GONE);
+                holder.saveButton.setVisibility(View.VISIBLE);
                 loadContent(holder);
             } else if(holder.getItemViewType() == 1) {
-
-                holder.saveButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        toDownloadHolder = holder;
-                        if(checkPermission()) {
-                            downloadContent(holder);
-                        }
-                    }
-                });
 
                 //Show file Icon
                 holder.youTubeThumbnailView.setVisibility(View.GONE);
                 loadContent(holder);
             }
+
+            holder.saveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    toDownloadHolder = holder;
+                    Logger.d(" download resource call");
+                    DownloadUtils.downloadResource(contents.get(holder.getAdapterPosition()), activity);
+                }
+            });
+
         } else if(viewHolder instanceof LoaderViewHolder) {
             LoaderViewHolder holder = (LoaderViewHolder) viewHolder;
 
@@ -363,16 +367,6 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
                 });
     }
 
-    private boolean checkPermission() {
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // No explanation needed, we can request the permission.
-            callingFragment.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-            return false;
-        }
-
-        return true;
-    }
 
     private Content getObject(RecyclerView.ViewHolder holder) {
         return contents.get(holder.getAdapterPosition());
@@ -387,90 +381,9 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         Logger.d(" on permission result");
-        switch (requestCode) {
-            case 0: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    downloadContent(toDownloadHolder);
 
-                }
-            }
-        }
-    }
-
-    private void downloadContent(final CardViewHolder holder) {
-        Logger.d(" download ");
-        Content content = contents.get(holder.getAdapterPosition());
-        String token = UserDetailUtils.getToken(context);
-        Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService(token)
-                .download(new ContentDataRequest(content.getContentID()));
-
-        saveRequest.enqueue(new Callback<BaseModel<ContentDataResponse>>() {
-            @Override
-            public void onResponse(Call<BaseModel<ContentDataResponse>> call, Response<BaseModel<ContentDataResponse>> response) {
-                if(response.isSuccessful()) {
-                    List<ContentDataResponse> responseList = response.body().getData();
-                    Logger.d(" file " + responseList.get(0).getFileName());
-
-                    final Content content = contents.get(holder.getAdapterPosition());
-
-                    String url = responseList.get(0).getFileName();
-                    // get download service and enqueue file
-                    StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.append(Environment.getExternalStorageDirectory());
-                    stringBuilder.append(File.separator);
-                    stringBuilder.append("MITRA");
-                    final String mitraDirectoryPath = stringBuilder.toString();
-                    File mitraDirectory = new File(mitraDirectoryPath);
-                    Logger.d("Directory Path " + mitraDirectoryPath);
-                    mitraDirectory.mkdirs();
-                    final OkHttpClient client = new OkHttpClient();
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .build();
-                    final String extension;
-                    if(content.getFileType() == Constants.FileTypeAudio) {
-                        extension = ".mp3";
-                    } else {
-                        extension = ".pdf";
-                    }
-                    client.newCall(request).enqueue(new okhttp3.Callback() {
-                        @Override
-                        public void onFailure(okhttp3.Call call, IOException e) {
-
-                        }
-
-                        @Override
-                        public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                            if(response.isSuccessful()) {
-                                String downloadFileName = mitraDirectoryPath +
-                                        File.separator + content.getTitle() + extension;
-                                File downloadedFile = new File(downloadFileName);
-                                BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-                                sink.writeAll(response.body().source());
-                                sink.close();
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(context, context.getString(R.string.download_complete),
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-                        }
-                    });
-                    Toast.makeText(context, context.getString(R.string.download_file_location,
-                            mitraDirectoryPath + File.separator +content.getTitle()),
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BaseModel<ContentDataResponse>> call, Throwable t) {
-                Logger.d(" on failure ");
-            }
-        });
+        DownloadUtils.onRequestPermissionResult(requestCode, grantResults, activity,
+                contents.get(toDownloadHolder.getAdapterPosition()));
     }
 
     @Override

@@ -27,14 +27,28 @@ import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import net.mavericklabs.mitra.model.database.Migration;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.MitraContextWrapper;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class BaseActivity extends AppCompatActivity {
 
 
     @Override
     protected void attachBaseContext(Context newBase) {
+
+        //Set realm schema version
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .schemaVersion(2) // Must be bumped when the schema changes
+                .migration(new Migration()) // Migration to run
+                .build();
+
+        Realm.setDefaultConfiguration(config);
+
+
         Context context = MitraContextWrapper.wrap(newBase, LanguageUtils.getCurrentLocale());
         super.attachBaseContext(context);
     }
