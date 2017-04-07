@@ -16,13 +16,14 @@
         var vm = this;
         vm.title = 'reviewNewsController';
         $scope.isAdmin = appUtils.isAdmin();
+        $scope.mode = "PREVIEW";
 
         activate();
 
         ////////////////
 
         function activate() {
-
+            //TODO fetch news details from server
         }
     }
 

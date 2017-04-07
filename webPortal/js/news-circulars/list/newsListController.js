@@ -69,6 +69,10 @@
                 modalInstance.dismiss();
             };
         }
+
+        function getNewsTags() {
+            //TODO fetch tags from the server
+        }
     }
 
 })();

@@ -495,6 +495,17 @@ a.selectedItem {
     background-color: #ff9100 !important;
 }
 
+ul.uib-datepicker-popup.dropdown-menu {
+    display: block;
+    float: none;
+    margin: 0;
+    width: 414px !important;
+}
+
+.uib-button-bar {
+    display:none !important;
+}
+
 input[type=text]:focus:not([readonly]),
 input[type=password]:focus:not([readonly]),
 input[type=email]:focus:not([readonly]),
