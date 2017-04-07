@@ -42,6 +42,7 @@ import android.widget.Toast;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.api.ContentDataRequest;
 import net.mavericklabs.mitra.model.api.ContentDataResponse;
@@ -150,14 +151,8 @@ public class DownloadUtils {
                     String url = responseList.get(0).getFileName();
 
                     // get download service and enqueue file
-                    StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.append(Environment.getExternalStorageDirectory());
-                    stringBuilder.append(File.separator);
-                    stringBuilder.append("MITRA");
-                    final String mitraDirectoryPath = stringBuilder.toString();
-                    File mitraDirectory = new File(mitraDirectoryPath);
-                    Logger.d("Directory Path " + mitraDirectoryPath);
-                    mitraDirectory.mkdirs();
+                    final String mitraDirectoryPath = createDirectoryStructure();
+
                     final OkHttpClient client = new OkHttpClient();
                     try {
                         Request request = new Request.Builder()
@@ -170,11 +165,6 @@ public class DownloadUtils {
                             extension = ".pdf";
                         }
                         client.newCall(request).enqueue(new okhttp3.Callback() {
-                            @Override
-                            public void onFailure(okhttp3.Call call, IOException e) {
-
-                            }
-
                             @Override
                             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
                                 if(response.isSuccessful()) {
@@ -193,7 +183,13 @@ public class DownloadUtils {
                                     });
                                 }
                             }
+
+                            @Override
+                            public void onFailure(okhttp3.Call call, IOException e) {
+
+                            }
                         });
+
                         Toast.makeText(context, context.getString(R.string.download_file_location,
                                 mitraDirectoryPath + File.separator +content.getTitle()),
                                 Toast.LENGTH_LONG).show();
@@ -228,5 +224,26 @@ public class DownloadUtils {
                 Toast.makeText(activity, "Permission denied. Unable to download.", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private static String createDirectoryStructure(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(Environment.getExternalStorageDirectory());
+        stringBuilder.append(File.separator);
+        stringBuilder.append("MITRA");
+        String mitraDirectoryPath = stringBuilder.toString();
+        File mitraDirectory = new File(mitraDirectoryPath);
+        Logger.d("Directory Path " + mitraDirectoryPath);
+        mitraDirectory.mkdirs();
+
+        return mitraDirectoryPath;
+    }
+
+    public static void downloadNewsPDF(final Context context, List<News> newsList) {
+        // get download service and enqueue file
+        final String mitraDirectoryPath = createDirectoryStructure();
+        new DownloadNewsPdf(mitraDirectoryPath).execute(newsList.toArray(new News[newsList.size()]));
+
+
     }
 }
