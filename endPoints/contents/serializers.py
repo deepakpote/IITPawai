@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User 
 from rest_framework import serializers
-from contents.models import content , contentGrade , contentDetail
+from contents.models import content , contentGrade , contentDetail , chapter , chapterDetail
 from django.core.validators import RegexValidator
 
 
@@ -23,12 +23,12 @@ class teachingAidSerializer(serializers.ModelSerializer):
     requirementCodeIDs = serializers.CharField() 
     createdOn = serializers.CharField() 
     modifiedOn = serializers.CharField() 
-    
+    chapterID = serializers.CharField() 
   
 
     class Meta:
         model = content
-        fields = ('contentID', 'contentTitle', 'contentType' ,'gradeCodeIDs','subject','topic','requirementCodeIDs','instruction','fileType','fileName','author','objectives','language','createdOn','modifiedOn',)
+        fields = ('contentID', 'contentTitle', 'contentType' ,'gradeCodeIDs','subject', 'chapterID' ,'topic','requirementCodeIDs','instruction','fileType','fileName','author','objectives','language','createdOn','modifiedOn',)
 
 class contentSerializer(serializers.ModelSerializer):
      
@@ -52,9 +52,13 @@ class selfLearningSerializer(serializers.ModelSerializer):
     createdOn = serializers.CharField() 
     modifiedOn = serializers.CharField() 
     
-
     class Meta:
         model = contentDetail
         fields = ( 'contentID', 'contentTitle' , 'contentType', 'topic' , 'requirementCodeIDs', 'instruction', 'fileType', 'fileName','author','objectives','language','createdOn','modifiedOn',)
-   
-            
+ 
+class chapterDetailSerializer(serializers.ModelSerializer):
+     
+    class Meta:
+        model = chapterDetail
+        fields = ('chapter', 'chapterEng' ,'chapterMar',)
+ 
