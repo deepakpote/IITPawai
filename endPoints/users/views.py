@@ -832,7 +832,8 @@ class UserViewSet(viewsets.ModelViewSet):
                                                 CC.topicCodeID,
                                                 group_concat(CG.gradeCodeID) as gradeCodeIDs,
                                                 CC.createdOn,
-                                                CC.modifiedOn
+                                                CC.modifiedOn,
+                                                CC.chapterID
                                                 from con_content CC 
                                                 INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
                                                 INNER JOIN usr_userContent UC ON CC.contentID = UC.contentID
@@ -869,8 +870,9 @@ class UserViewSet(viewsets.ModelViewSet):
                                         'topic' :       item[11],
                                         'gradeCodeIDs': str(item[12]),
                                         'createdOn':    item[13],
-                                        'modifiedOn':   item[14]
-                                        }
+                                        'modifiedOn':   item[14],
+                                        'chapterID':    item[15]
+                                        }   
                 response_data.append(objResponse_data)
 
             objUserContentTypeCode = response_data

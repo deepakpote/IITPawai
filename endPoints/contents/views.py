@@ -8,9 +8,9 @@ import string
 from time import strftime
 import os,time
 from django.db import connection
-from contents.serializers import teachingAidSerializer , contentSerializer , selfLearningSerializer
+from contents.serializers import teachingAidSerializer , contentSerializer , selfLearningSerializer , chapterDetailSerializer
 from users.authentication import TokenAuthentication
-from contents.models import content , contentResponse  , contentGrade , contentDetail
+from contents.models import content , contentResponse  , contentGrade , contentDetail, chapter, chapterDetail
 from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent, userRole
 from mitraEndPoints import constants , utils
@@ -38,6 +38,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         subjectCodeIDs = request.data.get('subjectCodeIDs') 
         gradeCodeIDs = request.data.get('gradeCodeIDs')
+        chapterID = request.data.get('chapterID')
         pageNumber = request.data.get('pageNumber')
         
         appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
@@ -83,16 +84,16 @@ class ContentViewSet(viewsets.ModelViewSet):
                 if statusCodeID == constants.mitraCode.created:
                     #contentIDs = getDraftContentID(objUser)
                     #if contentIDs:
-                    myDraftCheck = '( CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100 ) AND ')
+                    myDraftCheck = '( CV.createdBy = ' + str(userID) + ' AND CV.statusCodeID = ' + str('114100 ) AND ')
                 elif statusCodeID == None or not statusCodeID:
-                    myDraftCheck = '((CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100) ') + 'OR statusCodeID IN (114101,114102)) AND '
+                    myDraftCheck = '((CV.createdBy = ' + str(userID) + ' AND CV.statusCodeID = ' + str('114100) ') + 'OR statusCodeID IN (114101,114102)) AND '
             elif roleID == constants.role.teacher or roleID == constants.mitraCode.userType_teacher:
                 if statusCodeID == constants.mitraCode.created:
                     #contentIDs = getDraftContentID(objUser)
                     #if contentIDs:
-                    myDraftCheck = '( CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100 ) AND ')
+                    myDraftCheck = '( CV.createdBy = ' + str(userID) + ' AND CV.statusCodeID = ' + str('114100 ) AND ')
                 elif statusCodeID == None or not statusCodeID:
-                    myDraftCheck = '((CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100) ') + 'OR statusCodeID IN (114102)) AND '
+                    myDraftCheck = '((CV.createdBy = ' + str(userID) + ' AND CV.statusCodeID = ' + str('114100) ') + 'OR statusCodeID IN (114102)) AND '
             
         # Check if appLanguageCodeID is passed in header
         if not appLanguageCodeID:
@@ -208,6 +209,13 @@ class ContentViewSet(viewsets.ModelViewSet):
         else:
             # Added the check for uploadedBy.
             uploadedByCheck = 'CC.createdBy = ' + str(uploadedBy) + ' AND '
+        
+        chapterCheck = ''
+        # If subjectCodeIDs and gradeCodeIDs are provided then check for 'chapterID'
+        if subjectCodeIDs and gradeCodeIDs and chapterID:
+            # Added check for Chapter. 
+            chapterCheck = 'CV.chapterID = ' + str(chapterID) + ' AND '
+            
                  
         # Connection
         cursor = connection.cursor()  
@@ -216,51 +224,52 @@ class ContentViewSet(viewsets.ModelViewSet):
         objCommon = utils.common()
         
         # SQL Query
-        searchTeachingAidQuery = """ select CC.contentID,
-                                            CCG.contentTitle,
-                                            CC.requirement,
-                                            CCG.instruction,
-                                            CASE CC.fileTypeCodeID
-                                                WHEN 108100 THEN  CC. fileName
-                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CC.fileName) 
-                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CC.fileName) 
-                                                WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CC.fileName) 
-                                                WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CC.fileName) 
-                                                WHEN 108105 THEN  CC. fileName
+        searchTeachingAidQuery = """ select CV.contentID,
+                                            CV.contentTitle,
+                                            CV.requirement,
+                                            CV.instruction,
+                                            CASE CV.fileTypeCodeID
+                                                WHEN 108100 THEN  CV. fileName
+                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CV.fileName) 
+                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CV.fileName) 
+                                                WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CV.fileName) 
+                                                WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CV.fileName) 
+                                                WHEN 108105 THEN  CV. fileName
                                                 ELSE NULL
                                                 END as fileName,
-                                            CCG.author,
-                                            CC.objectives,
-                                            CC.contentTypeCodeID,
-                                            CC.fileTypeCodeID,
-                                            CC.languageCodeID,
-                                            CC.subjectCodeID,
-                                            CC.topicCodeID,
+                                            CV.author,
+                                            CV.objectives,
+                                            CV.contentTypeCodeID,
+                                            CV.fileTypeCodeID,
+                                            CV.languageCodeID,
+                                            CV.subjectCodeID,
+                                            CV.topicCodeID,
                                             group_concat(CG.gradeCodeID) as gradeCodeIDs,
-                                            CC.createdOn,
-                                            CC.modifiedOn
-                                            from con_content CC 
-                                            INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
-                                            INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
-                                            where """ + uploadedByCheck + myDraftCheck +  """CCG.appLanguageCodeID = %s
-                                            and CC.fileTypeCodeID IN %s 
-                                            and CC.statusCodeID IN %s
-                                            and CC.contentTypeCodeID = %s 
-                                            and CC.subjectCodeID IN %s 
+                                            CV.createdOn,
+                                            CV.modifiedOn,
+                                            CV.chapterID
+                                            from vw_con_contentDetail CV 
+                                            INNER JOIN con_contentGrade CG ON CV.contentID = CG.contentID 
+                                            where """ + uploadedByCheck + myDraftCheck + chapterCheck +  """CV.appLanguageCodeID = %s
+                                            and CV.fileTypeCodeID IN %s 
+                                            and CV.statusCodeID IN %s
+                                            and CV.contentTypeCodeID = %s 
+                                            and CV.subjectCodeID IN %s 
                                             and CG.gradeCodeID IN %s
-                                            group by CC.contentID,
-                                            CCG.contentTitle,
-                                            CC.requirement,
-                                            CCG.instruction,
-                                            CC.fileName,
-                                            CCG.author,
-                                            CC.objectives,
-                                            CC.contentTypeCodeID,
-                                            CC.fileTypeCodeID,
-                                            CC.languageCodeID,
-                                            CC.subjectCodeID,
-                                            CC.topicCodeID order by CC.contentID limit %s,%s"""%(appLanguageCodeID,str(arrFileTypeCodeID),str(arrStatusCodeID),constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
-                                   
+                                            group by CV.contentID,
+                                            CV.contentTitle,
+                                            CV.requirement,
+                                            CV.instruction,
+                                            CV.fileName,
+                                            CV.author,
+                                            CV.objectives,
+                                            CV.contentTypeCodeID,
+                                            CV.fileTypeCodeID,
+                                            CV.languageCodeID,
+                                            CV.subjectCodeID,
+                                            CV.topicCodeID order by CV.contentID limit %s,%s"""%(appLanguageCodeID,str(arrFileTypeCodeID),str(arrStatusCodeID),constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
+                       
+        #print "searchTeachingAidQuery:",searchTeachingAidQuery            
         cursor.execute(searchTeachingAidQuery)
     
         #Queryset
@@ -284,7 +293,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                                     'objectives' :      item[6],
                                     'language':         item[9],
                                     'createdOn':        item[13],
-                                    'modifiedOn':       item[14]
+                                    'modifiedOn':       item[14],
+                                    'chapterID':        item[15]
                                 }
             response_data.append(objResponse_data)
 
@@ -358,16 +368,16 @@ class ContentViewSet(viewsets.ModelViewSet):
                 if statusCodeID == constants.mitraCode.created:
                     #contentIDs = getDraftContentID(objUser)
                     #if contentIDs:
-                    myDraftCheck = '( CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100 ) AND ')
+                    myDraftCheck = '( CV.createdBy = ' + str(userID) + ' AND CV.statusCodeID = ' + str('114100 ) AND ')
                 elif statusCodeID == None or not statusCodeID:
-                    myDraftCheck = '((CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100) ') + 'OR statusCodeID IN (114101,114102)) AND '
+                    myDraftCheck = '((CV.createdBy = ' + str(userID) + ' AND CV.statusCodeID = ' + str('114100) ') + 'OR statusCodeID IN (114101,114102)) AND '
             elif roleID == constants.role.teacher or roleID == constants.mitraCode.userType_teacher:
                 if statusCodeID == constants.mitraCode.created:
                     #contentIDs = getDraftContentID(objUser)
                     #if contentIDs:
-                    myDraftCheck = '( CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100 ) AND ')
+                    myDraftCheck = '( CV.createdBy = ' + str(userID) + ' AND CV.statusCodeID = ' + str('114100 ) AND ')
                 elif statusCodeID == None or not statusCodeID:
-                    myDraftCheck = '((CC.createdBy = ' + str(userID) + ' AND CC.statusCodeID = ' + str('114100) ') + 'OR statusCodeID IN (114102)) AND '
+                    myDraftCheck = '((CV.createdBy = ' + str(userID) + ' AND CV.statusCodeID = ' + str('114100) ') + 'OR statusCodeID IN (114102)) AND '
 
         # Check if appLanguageCodeID is passed in header
         if not appLanguageCodeID:
@@ -457,7 +467,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             uploadedByCheck = ''
         else:
             # Added the check for uploadedBy.
-            uploadedByCheck = 'CC.createdBy = ' + str(uploadedBy) + ' AND '
+            uploadedByCheck = 'CV.createdBy = ' + str(uploadedBy) + ' AND '
             
         # Connection
         cursor = connection.cursor()  
@@ -466,36 +476,35 @@ class ContentViewSet(viewsets.ModelViewSet):
         objCommon = utils.common()
          
         # SQL Query
-        searchSelfLearningQuery = """ select CC.contentID, CCG.contentDetailID,
-                                            CCG.contentTitle ,
-                                            CC.requirement,
-                                            CCG.instruction  ,
-                                            CASE CC.fileTypeCodeID
-                                                WHEN 108100 THEN  CC. fileName
-                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CC.fileName) 
-                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CC.fileName) 
-                                                WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CC.fileName) 
-                                                WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CC.fileName) 
-                                                WHEN 108105 THEN  CC. fileName
+        searchSelfLearningQuery = """ select CV.contentID, CV.contentDetailID,
+                                            CV.contentTitle ,
+                                            CV.requirement,
+                                            CV.instruction  ,
+                                            CASE CV.fileTypeCodeID
+                                                WHEN 108100 THEN  CV. fileName
+                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CV.fileName) 
+                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CV.fileName) 
+                                                WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CV.fileName) 
+                                                WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CV.fileName) 
+                                                WHEN 108105 THEN  CV. fileName
                                                 ELSE NULL
                                                 END as fileName,
-                                            CCG.author ,
-                                            CC.objectives,
-                                            CC.contentTypeCodeID,
-                                            CC.fileTypeCodeID,
-                                            CC.languageCodeID,
-                                            CC.subjectCodeID,
-                                            CC.topicCodeID,
-                                            CC.createdOn,
-                                            CC.modifiedOn
-                                            from con_content CC 
-                                            INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
-                                            where """ + uploadedByCheck + myDraftCheck +""" CC.languageCodeID IN %s 
-                                            and CC.contentTypeCodeID = %s 
-                                            and CC.statusCodeID IN %s
-                                            and CC.topicCodeID IN %s 
-                                            and CCG.appLanguageCodeID = %s 
-                                            order by CC.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,str(arrStatusCodeID),str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
+                                            CV.author ,
+                                            CV.objectives,
+                                            CV.contentTypeCodeID,
+                                            CV.fileTypeCodeID,
+                                            CV.languageCodeID,
+                                            CV.subjectCodeID,
+                                            CV.topicCodeID,
+                                            CV.createdOn,
+                                            CV.modifiedOn
+                                            from vw_con_contentDetail CV
+                                            where """ + uploadedByCheck + myDraftCheck +""" CV.languageCodeID IN %s 
+                                            and CV.contentTypeCodeID = %s 
+                                            and CV.statusCodeID IN %s
+                                            and CV.topicCodeID IN %s 
+                                            and CV.appLanguageCodeID = %s 
+                                            order by CV.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,str(arrStatusCodeID),str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
          
         cursor.execute(searchSelfLearningQuery)
            
@@ -1254,6 +1263,176 @@ class ContentViewSet(viewsets.ModelViewSet):
                     status = status.HTTP_200_OK)
         
         return Response({"response_message": constants.messages.success, "data": objUploadedBy})
+    
+    """
+    API to Add the Chapter
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def addChapter(self,request):
+        # get inputs
+        chapterID = request.data.get('chapterID')
+        subjectCodeID = request.data.get('subjectCodeID')
+        gradeCodeID = request.data.get('gradeCodeID')
+        chapterEng = request.data.get('chapterEng')
+        chapterMar = request.data.get('chapterMar')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+               
+        # Check if userID is valid or not.
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+        # check userID exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.addChapter_user_does_not_exist, 
+                             "data": []}, status = status.HTTP_404_NOT_FOUND)
+            
+        # Check if subjectCodeID is passed in post param
+        if not subjectCodeID or subjectCodeID is None:
+            return Response({"response_message": constants.messages.addChapter_subjectCodeID_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # Check if gradeCodeID is passed in post param
+        if not gradeCodeID or gradeCodeID is None:
+            return Response({"response_message": constants.messages.addChapter_gradeCodeID_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # Check if chapterEng is passed in post param
+        if not chapterEng  or chapterEng.isspace() or chapterEng is None:
+            return Response({"response_message": constants.messages.addChapter_chapterEng_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # Check if chapterMar is passed in post param
+        if not chapterMar or chapterMar.isspace() or chapterMar is None:
+            return Response({"response_message": constants.messages.addChapter_chapterMar_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # If subjectCodeID parameter is passed, then check subjectCodeID exists or not
+        try:
+            objSubject = code.objects.get(codeID = subjectCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.addChapter_subject_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+            
+        # If gradeCodeID parameter is passed, then check gradeCodeID exists or not
+        try:
+            objGrade = code.objects.get(codeID = gradeCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.addChapter_grade_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+            
+        if not chapterID or chapterID == 0:
+            # Save chapter
+            objChapter = chapter.objects.create(
+                                            subject = objSubject,       # Subject
+                                            grade = objGrade,           # Grade
+                                            createdBy = objUser,
+                                            modifiedBy = objUser
+                                            )
+    
+            objChapter.save()
+            
+            # Save chapter details
+            objChapterDetail = chapterDetail.objects.create(
+                                            chapter = objChapter,       # Chpter
+                                            chapterEng = chapterEng,    # Chapter name in English
+                                            chapterMar = chapterMar     # Chapter name in Marathi
+                                            )
+    
+            objChapterDetail.save()
+        else:
+            
+            # If chapterID parameter is passed, then check chapter exists or not
+            try:
+                objChapter = chapter.objects.get(chapterID = chapterID)
+            except chapter.DoesNotExist:
+                return Response({"response_message": constants.messages.addChapter_chapter_not_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
+            
+            #Update chapter
+            chapter.objects.filter(chapterID = chapterID).update(subject = objSubject, grade = objGrade,modifiedBy = objUser)
+            
+            #Update chapter details
+            chapterDetail.objects.filter(chapter = objChapter).update(chapterEng = chapterEng,chapterMar = chapterMar)
+            
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": []})  
+    
+    """
+    Get Chapter list
+    """   
+    @list_route(methods=['POST'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def chapterList(self, request):
+        subjectCodeID = request.data.get('subjectCodeID')
+        gradeCodeID = request.data.get('gradeCodeID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+
+        #get UserID from auth token
+        userID  =  getUserIDFromAuthToken(authToken)
+        
+        # check user is not null 
+        if not userID or userID == 0:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty, 
+                             "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+    
+        # check userID exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.chapterList_user_does_not_exist, 
+                             "data": []}, status = status.HTTP_404_NOT_FOUND)
+            
+        # Check if subjectCodeID is passed in post param
+        if not subjectCodeID or subjectCodeID is None:
+            return Response({"response_message": constants.messages.chapterList_subjectCodeID_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # Check if gradeCodeID is passed in post param
+        if not gradeCodeID or gradeCodeID is None:
+            return Response({"response_message": constants.messages.chapterList_gradeCodeID_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # If subjectCodeID parameter is passed, then check subjectCodeID exists or not
+        try:
+            objSubject = code.objects.get(codeID = subjectCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.chapterList_subject_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+            
+        # If gradeCodeID parameter is passed, then check gradeCodeID exists or not
+        try:
+            objGrade = code.objects.get(codeID = gradeCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.chapterList_grade_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        chapterDetailQuerySet = chapterDetail.objects.filter(chapter__grade = objGrade, chapter__subject = objSubject)
+        
+        if not chapterDetailQuerySet:
+            return Response({"response_message": constants.messages.chapterList_no_records_found,
+                    "data": []},
+                    status = status.HTTP_200_OK)
+            
+        #Chapter detail serializer.            
+        serializer = chapterDetailSerializer(chapterDetailQuerySet, many = True)
+        
+        return Response({"response_message": constants.messages.success, "data": serializer.data})
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array

@@ -13,7 +13,8 @@ class content(models.Model):
     subject = models.ForeignKey('commons.code', db_column='subjectCodeID', related_name='content_subjectCodeID', null = True)
     #grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='content_gradeCodeID', null = True)
     topic = models.ForeignKey('commons.code', db_column='topicCodeID', related_name='content_topicCodeID', null = True)
-    
+    chapter = models.ForeignKey('chapter', db_column='chapterID', related_name='content_chapterID', null = True)
+       
     requirement = models.TextField(null = True)
     #instruction = models.TextField(null = True)
     
@@ -74,3 +75,32 @@ class contentResponse(models.Model):
      
     class Meta:
         db_table = 'con_contentResponse'
+        
+"""
+chapter model
+"""                 
+class chapter(models.Model):
+    chapterID = models.AutoField(primary_key = True)
+    subject = models.ForeignKey('commons.code', db_column='subjectCodeID', related_name='chapter_subjectCodeID')
+    grade = models.ForeignKey('commons.code', db_column='gradeCodeID', related_name='chapter_gradeCodeID')
+    displayOrder = models.IntegerField(null = True, blank = True)
+    
+    createdBy = models.ForeignKey('users.user', related_name='chapter_createdBy', db_column = 'createdBy')
+    createdOn = models.DateTimeField(auto_now_add=True)
+    modifiedBy = models.ForeignKey('users.user', related_name='chapter_modifiedBy', db_column = 'modifiedBy')
+    modifiedOn = models.DateTimeField(auto_now=True)
+       
+    class Meta:
+        db_table = 'con_chapter'
+        
+"""
+chapter detail model
+"""                 
+class chapterDetail(models.Model):
+    chapterDetailID = models.AutoField(primary_key = True)
+    chapter = models.ForeignKey('chapter', db_column = 'chapterID', null = False, related_name="chapterDetail_chapterID")
+    chapterEng = models.TextField(null = False)
+    chapterMar = models.TextField(null = False)
+       
+    class Meta:
+        db_table = 'con_chapterDetail'

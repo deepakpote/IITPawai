@@ -173,6 +173,24 @@ class messages():
     
     content_uploadedBy_list_user_does_not_exist = 100239
     content_uploadedBy_list_no_records_found = 100240
+    
+    addChapter_subjectCodeID_cannot_be_empty = 100241
+    addChapter_gradeCodeID_cannot_be_empty = 100242
+    addChapter_chapterEng_cannot_be_empty = 100243
+    addChapter_chapterMar_cannot_be_empty = 100244
+    addChapter_subject_not_exists = 100245
+    addChapter_grade_not_exists = 100246
+    addChapter_user_does_not_exist = 100247
+    
+    chapterList_user_does_not_exist = 100248
+    chapterList_subjectCodeID_cannot_be_empty = 100249
+    chapterList_gradeCodeID_cannot_be_empty = 100250
+    chapterList_subject_not_exists = 100251
+    chapterList_grade_not_exists = 100252
+    chapterList_no_records_found = 100253
+    
+    addChapter_chapter_not_exists = 100254
+    
 
 
 class webportalmessages():    
