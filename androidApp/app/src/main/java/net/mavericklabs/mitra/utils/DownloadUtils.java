@@ -246,4 +246,10 @@ public class DownloadUtils {
 
 
     }
+
+    public static String getFilePath(String title, String extension) {
+        final String mitraDirectoryPath = createDirectoryStructure();
+        return mitraDirectoryPath +
+                File.separator + title + extension;
+    }
 }

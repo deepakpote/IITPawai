@@ -303,7 +303,11 @@ public class HomeFragment extends Fragment{
                 Boolean.TRUE).findAllSorted("dateToCompare", Sort.DESCENDING);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         newsRecyclerView.setLayoutManager(layoutManager);
-        NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), realm.copyFromRealm(dbNews));
+        List<News> newsListToShow = realm.copyFromRealm(dbNews);
+        if(newsListToShow.size() > 5) {
+            newsListToShow = newsListToShow.subList(0,5);
+        }
+        NewsListAdapter newsListAdapter = new NewsListAdapter(getContext(), newsListToShow);
         newsRecyclerView.setAdapter(newsListAdapter);
     }
 

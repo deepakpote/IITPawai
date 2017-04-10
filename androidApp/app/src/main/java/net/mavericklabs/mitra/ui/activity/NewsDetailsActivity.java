@@ -1,7 +1,9 @@
 package net.mavericklabs.mitra.ui.activity;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,9 +23,12 @@ import com.bumptech.glide.request.target.Target;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.utils.DateUtils;
+import net.mavericklabs.mitra.utils.DownloadUtils;
+import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -118,14 +123,36 @@ public class NewsDetailsActivity extends BaseActivity {
                     showPDF.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Logger.d(" clicked " + news.getPdfFileURL());
-//                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(news.getPdfFileURL()));
-//                            startActivity(browserIntent);
-                            Intent pdfActivity = new Intent(NewsDetailsActivity.this, PDFViewerActivity.class);
-                            Bundle bundle1 = new Bundle();
-                            bundle1.putString("pdf_url", news.getPdfFileURL());
-                            pdfActivity.putExtras(bundle1);
-                            startActivity(pdfActivity);
+
+                            if(HttpUtils.isNetworkAvailable(getApplicationContext())) {
+                                //If online, load in webview
+                                Intent pdfActivity = new Intent(NewsDetailsActivity.this, PDFViewerActivity.class);
+                                Bundle bundle1 = new Bundle();
+                                bundle1.putString("pdf_url", news.getPdfFileURL());
+                                pdfActivity.putExtras(bundle1);
+                                startActivity(pdfActivity);
+                            } else {
+                                //If offline, launch intent
+                                Logger.d(" news " + DownloadUtils.getFilePath(news.getNewsTitle(), ".pdf"));
+                                try {
+                                    File file = new File(DownloadUtils.getFilePath(news.getNewsTitle(), ".pdf"));
+                                    if(file.exists()) {
+                                        Uri uri = Uri.fromFile(file);
+
+                                        Intent intentUrl = new Intent(Intent.ACTION_VIEW);
+                                        intentUrl.setDataAndType(uri, "application/pdf");
+                                        intentUrl.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        startActivity(intentUrl);
+                                    } else {
+                                        Toast.makeText(NewsDetailsActivity.this, getString(R.string.toast_not_available_offline), Toast.LENGTH_LONG).show();
+                                    }
+
+                                }
+                                catch (ActivityNotFoundException e) {
+                                    Toast.makeText(NewsDetailsActivity.this, getString(R.string.toast_cannot_open_file), Toast.LENGTH_LONG).show();
+                                }
+                            }
+
 
                         }
                     });

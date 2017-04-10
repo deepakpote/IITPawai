@@ -62,9 +62,7 @@ public class DownloadNewsPdf extends AsyncTask<News, Void, Void> {
                 String extension = ".pdf";
                 Response response = client.newCall(request).execute();
                 if(response.isSuccessful()) {
-                    Logger.d("Downloaded " + news.getNewsTitle());
-                    String downloadFileName = mitraDirectoryPath +
-                            File.separator + news.getNewsTitle() + extension;
+                    String downloadFileName = DownloadUtils.getFilePath(news.getNewsTitle(), extension);
                     File downloadedFile = new File(downloadFileName);
                     BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
                     sink.writeAll(response.body().source());
