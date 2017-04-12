@@ -208,7 +208,7 @@ class ContentViewSet(viewsets.ModelViewSet):
             uploadedByCheck = ''
         else:
             # Added the check for uploadedBy.
-            uploadedByCheck = 'CC.createdBy = ' + str(uploadedBy) + ' AND '
+            uploadedByCheck = 'CV.createdBy = ' + str(uploadedBy) + ' AND '
         
         chapterCheck = ''
         # If subjectCodeIDs and gradeCodeIDs are provided then check for 'chapterID'
