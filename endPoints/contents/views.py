@@ -17,7 +17,6 @@ from mitraEndPoints import constants , utils
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from pip._vendor.requests.api import request
 from fileinput import filename
-from pip._vendor.pkg_resources import null_ns_handler
 
 
 class ContentViewSet(viewsets.ModelViewSet):
