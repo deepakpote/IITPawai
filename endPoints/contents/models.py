@@ -42,7 +42,7 @@ class contentDetail(models.Model):
     contentDetailID = models.AutoField(primary_key = True)
     content = models.ForeignKey('content', db_column = 'contentID', null = False, related_name="contentDetail_contentID")
     appLanguage = models.ForeignKey('commons.code', db_column='appLanguageCodeID', related_name='contentDetail_appLanguageCodeID')
-    contentTitle = models.CharField(null = False, unique = False, max_length = 255)
+    contentTitle = models.CharField(null = True, unique = False, max_length = 255)
     instruction = models.TextField(null = True)
     author = models.CharField(null = True, max_length = 255)
        

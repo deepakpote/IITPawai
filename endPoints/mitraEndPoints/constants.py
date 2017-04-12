@@ -190,6 +190,13 @@ class messages():
     chapterList_no_records_found = 100253
     
     addChapter_chapter_not_exists = 100254
+    uploadContent_chapterID_cannot_be_empty = 100255
+    uploadContent_chapter_does_not_exists = 100256
+    uploadContent_select_single_grade = 100257
+    uploadContent_instruction_english_cannot_be_empty = 100258
+    uploadContent_instruction_marathi_cannot_be_empty = 100259
+    uploadContent_author_english_cannot_be_empty = 100260
+    uploadContent_author_marathi_cannot_be_empty = 100261
     
 
 

@@ -17,6 +17,7 @@ from mitraEndPoints import constants , utils
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from pip._vendor.requests.api import request
 from fileinput import filename
+from pip._vendor.pkg_resources import null_ns_handler
 
 
 class ContentViewSet(viewsets.ModelViewSet):
@@ -813,6 +814,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         if objContentDetails.contentType.codeID == constants.mitraCode.teachingAids:
             subjectCodeID = objContentDetails.subject.codeID 
             topicCodeID = None
+                
         # If content type is self learning.
         elif objContentDetails.contentType.codeID == constants.mitraCode.selfLearning:
             subjectCodeID = None
@@ -837,7 +839,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                       'fileTypeCodeID':         objContentDetails.fileType.codeID,
                       'fileName':               objContentFileName,
                       'contentLanguageCodeID':  objContentDetails.language.codeID,
-                      'statusCodeID':           objContentDetails.status.codeID
+                      'statusCodeID':           objContentDetails.status.codeID,
+                      'chapterID':              (objContentDetails.chapter.chapterID if objContentDetails.chapter != None else None)
                     }
         
        
@@ -871,6 +874,7 @@ class ContentViewSet(viewsets.ModelViewSet):
 
         subjectCodeID = request.data.get('subjectCodeID')
         gradeCodeIDs = request.data.get('gradeCodeIDs')
+        chapterID = request.data.get('chapterID')
         topicCodeID = request.data.get('topicCodeID')
         requirementCodeIDs = request.data.get('requirementCodeIDs')
         fileTypeCodeID = request.data.get('fileTypeCodeID')
@@ -909,11 +913,30 @@ class ContentViewSet(viewsets.ModelViewSet):
         #Get userID from authToken
         userID = getUserIDFromAuthToken(authToken)
         
-        responseMessage = validateRequest(userID, engContentTitle, marContentTitle, engInstruction, marInstruction, 
-                               contentTypeCodeID, fileTypeCodeID, languageCodeID, statusCodeID)
+        responseMessage = None
         
-        if responseMessage != 0:
-            return statusHttpUnauthorized(responseMessage)
+        # Check if contentType CodeID is passed in post param
+        if not contentTypeCodeID and contentTypeCodeID != 0:
+            return statusHttpUnauthorized(constants.messages.uploadContent_contentType_cannot_be_empty)
+        
+        # Check if fileType is passed in post param
+        if not fileTypeCodeID and fileTypeCodeID != 0:
+            return statusHttpUnauthorized(constants.messages.uploadContent_fileType_cannot_be_empty)
+                
+        # Check if language is passed in post param
+        if not languageCodeID:
+            return statusHttpUnauthorized(constants.messages.uploadContent_languageCodeID_cannot_be_empty)
+            
+        # Check if statusCodeID is passed in post param
+        if not statusCodeID:
+            return statusHttpUnauthorized(constants.messages.uploadContent_statusCodeID_cannot_be_empty)
+        
+        if statusCodeID != constants.mitraCode.created:
+            responseMessage = validateRequest(userID, engContentTitle, marContentTitle, engInstruction, marInstruction, 
+                                   contentTypeCodeID, fileTypeCodeID, languageCodeID, statusCodeID,engAuthor ,marAuthor)
+        
+            if responseMessage != 0:
+                return statusHttpUnauthorized(responseMessage)
         
         # If userID parameter is passed, then check user exists or not
         try:
@@ -971,6 +994,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         objGrade = None
         objTopic = None
         arrGradeCodeIDs = None
+        objChapter = None
         
         # Check content type of uploaded file.    
         if contentTypeCodeID == int(constants.mitraCode.teachingAids):
@@ -980,12 +1004,26 @@ class ContentViewSet(viewsets.ModelViewSet):
             
             if not gradeCodeIDs:
                 return statusHttpUnauthorized(constants.messages.uploadContent_gradeCodeID_cannot_be_empty)
+            
+            if subjectCodeID and gradeCodeIDs:
+            
+                if not chapterID:
+                    return statusHttpUnauthorized(constants.messages.uploadContent_chapterID_cannot_be_empty)
+            
+            # If chapter parameter is passed, then check chapter exists or not        
+            try:
+                objChapter = chapter.objects.get(chapterID = chapterID)
+            except chapter.DoesNotExist:
+                return statusHttpNotFound(constants.messages.uploadContent_chapter_does_not_exists) 
                 
             # Get the respective instance of subject and grade
             objSubject = code.objects.get(codeID = subjectCodeID)
             
             # Build array from comma seprated string (Comma seprated GradeCodeIDs)
             arrGradeCodeIDs = getArrayFromCommaSepString(gradeCodeIDs)
+            
+            if len(arrGradeCodeIDs) > 1:
+                return statusHttpUnauthorized(constants.messages.uploadContent_select_single_grade)
         # If content type is self learning.
         elif contentTypeCodeID == constants.mitraCode.selfLearning:
             # If content type is selfLearning then topicCodeID can not be empty.
@@ -1008,6 +1046,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                 # Save the content.
                 objRec = content.objects.create(contentType = objContentType, 
                                                 subject = objSubject,
+                                                chapter = objChapter,
                                                 topic = objTopic,
                                                 requirement = requirementCodeIDs,
                                                 fileType = objFileType,
@@ -1051,6 +1090,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                 # If contentID valid, update the details.
                 content.objects.filter(contentID = contentID).update(contentType = objContentType, 
                                                                      subject = objSubject,
+                                                                     chapter = objChapter,
                                                                      topic = objTopic,
                                                                      requirement = requirementCodeIDs,
                                                                      fileType = objFileType,
@@ -1394,36 +1434,47 @@ class ContentViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.chapterList_user_does_not_exist, 
                              "data": []}, status = status.HTTP_404_NOT_FOUND)
             
-        # Check if subjectCodeID is passed in post param
-        if not subjectCodeID or subjectCodeID is None:
-            return Response({"response_message": constants.messages.chapterList_subjectCodeID_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED) 
+        chapterDetailQuerySet = None
             
-        # Check if gradeCodeID is passed in post param
-        if not gradeCodeID or gradeCodeID is None:
-            return Response({"response_message": constants.messages.chapterList_gradeCodeID_cannot_be_empty,
-                     "data": []},
-                     status = status.HTTP_401_UNAUTHORIZED) 
+        # if subjectCodeID and gradeCodeID are passed then fetch chapters for passed subject & grade, else fetch all the chapters
+        if subjectCodeID or gradeCodeID:
             
-        # If subjectCodeID parameter is passed, then check subjectCodeID exists or not
-        try:
-            objSubject = code.objects.get(codeID = subjectCodeID)
-        except code.DoesNotExist:
-            return Response({"response_message": constants.messages.chapterList_subject_not_exists,
-                     "data": []},
-                    status = status.HTTP_404_NOT_FOUND)
+            # Check if subjectCodeID is passed in post param
+            if not subjectCodeID or subjectCodeID is None:
+                return Response({"response_message": constants.messages.chapterList_subjectCodeID_cannot_be_empty,
+                         "data": []},
+                         status = status.HTTP_401_UNAUTHORIZED) 
+                
+            # Check if gradeCodeID is passed in post param
+            if not gradeCodeID or gradeCodeID is None:
+                return Response({"response_message": constants.messages.chapterList_gradeCodeID_cannot_be_empty,
+                         "data": []},
+                         status = status.HTTP_401_UNAUTHORIZED) 
+                
+            # If subjectCodeID parameter is passed, then check subjectCodeID exists or not
+            try:
+                objSubject = code.objects.get(codeID = subjectCodeID)
+            except code.DoesNotExist:
+                return Response({"response_message": constants.messages.chapterList_subject_not_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
+                
+            # If gradeCodeID parameter is passed, then check gradeCodeID exists or not
+            try:
+                objGrade = code.objects.get(codeID = gradeCodeID)
+            except code.DoesNotExist:
+                return Response({"response_message": constants.messages.chapterList_grade_not_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
             
-        # If gradeCodeID parameter is passed, then check gradeCodeID exists or not
-        try:
-            objGrade = code.objects.get(codeID = gradeCodeID)
-        except code.DoesNotExist:
-            return Response({"response_message": constants.messages.chapterList_grade_not_exists,
-                     "data": []},
-                    status = status.HTTP_404_NOT_FOUND)
-        
-        chapterDetailQuerySet = chapterDetail.objects.filter(chapter__grade = objGrade, chapter__subject = objSubject)
-        
+            chapterDetailQuerySet = chapterDetail.objects.filter(chapter__grade = objGrade, chapter__subject = objSubject)
+          
+        # Fetch all the chapters    
+        else:
+            
+            chapterDetailQuerySet = chapterDetail.objects.all()
+            
+        # if no records found
         if not chapterDetailQuerySet:
             return Response({"response_message": constants.messages.chapterList_no_records_found,
                     "data": []},
@@ -1733,7 +1784,7 @@ def removePreviouslyUploadedFile(contentID):
 Function to validate and send back response messages for several request parameters
 """                
 def validateRequest(userID, engContentTitle, marContentTitle, engInstruction, marInstruction, 
-                               contentTypeCodeID, fileTypeCodeID, languageCodeID, statusCodeID):
+                               contentTypeCodeID, fileTypeCodeID, languageCodeID, statusCodeID , engAuthor , marAuthor):
     
         # Check if userID is passed in post param
         if not userID:
@@ -1746,22 +1797,38 @@ def validateRequest(userID, engContentTitle, marContentTitle, engInstruction, ma
          # Check if contentTitle for marathi is passed in post param
         if not marContentTitle or marContentTitle is None or marContentTitle.isspace():
             return constants.messages.uploadContent_contentTitle_marathi_cannot_be_empty
-            
-        # Check if contentType CodeID is passed in post param
-        if not contentTypeCodeID and contentTypeCodeID != 0:
-            return constants.messages.uploadContent_contentType_cannot_be_empty
         
-        # Check if fileType is passed in post param
-        if not fileTypeCodeID and fileTypeCodeID != 0:
-            return constants.messages.uploadContent_fileType_cannot_be_empty
-                
-        # Check if language is passed in post param
-        if not languageCodeID:
-            return constants.messages.uploadContent_languageCodeID_cannot_be_empty
+        # Check if engInstruction for english is passed in post param
+        if not engInstruction or engInstruction is None or engInstruction.isspace():
+            return constants.messages.uploadContent_instruction_english_cannot_be_empty
             
-        # Check if statusCodeID is passed in post param
-        if not statusCodeID:
-            return constants.messages.uploadContent_statusCodeID_cannot_be_empty
+         # Check if contentTitle for marathi is passed in post param
+        if not marInstruction or marInstruction is None or marInstruction.isspace():
+            return constants.messages.uploadContent_instruction_marathi_cannot_be_empty
+        
+        # Check if engAuthor for english is passed in post param
+        if not engAuthor or engAuthor is None or engAuthor.isspace():
+            return constants.messages.uploadContent_author_english_cannot_be_empty
+            
+         # Check if marAuthor for marathi is passed in post param
+        if not marAuthor or marAuthor is None or marAuthor.isspace():
+            return constants.messages.uploadContent_author_marathi_cannot_be_empty
+            
+#         # Check if contentType CodeID is passed in post param
+#         if not contentTypeCodeID and contentTypeCodeID != 0:
+#             return constants.messages.uploadContent_contentType_cannot_be_empty
+#         
+#         # Check if fileType is passed in post param
+#         if not fileTypeCodeID and fileTypeCodeID != 0:
+#             return constants.messages.uploadContent_fileType_cannot_be_empty
+#                 
+#         # Check if language is passed in post param
+#         if not languageCodeID:
+#             return constants.messages.uploadContent_languageCodeID_cannot_be_empty
+#             
+#         # Check if statusCodeID is passed in post param
+#         if not statusCodeID:
+#             return constants.messages.uploadContent_statusCodeID_cannot_be_empty
 
         return 0
  

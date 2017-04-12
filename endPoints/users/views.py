@@ -411,6 +411,12 @@ class UserViewSet(viewsets.ModelViewSet):
         objCreatedUser = user.objects.get(phoneNumber = phoneNumber)
         user.objects.filter(phoneNumber = phoneNumber).update(createdBy = objCreatedUser, modifiedBy = objCreatedUser)
         
+        #if registred user is a Teacher, then add role "Teacher"
+        if objCreatedUser.userType.codeID == constants.mitraCode.userType_teacher:
+            # get teacher role.
+            objTeacherRole = role.objects.get(roleID = constants.role.teacher)
+            userRole(user = objCreatedUser , role = objTeacherRole ).save()
+        
         #Save user subject
         subjectCodeIDs = request.data.get('subjectCodeIDs')
         userSubjectSave(subjectCodeIDs, objUserSerializer.instance)
