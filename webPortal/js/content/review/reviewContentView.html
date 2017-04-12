@@ -13,7 +13,7 @@
   </span>
         <span ng-class="mode =='EDIT' ? 'orange-text':''"
               style="text-align:center;display: inline-block;margin-left:40px;cursor: pointer;"
-              ng-click="mode='EDIT'" ng-if="isAdmin || (isTeacher && content.statusCodeID == 114100)">
+              ng-click="mode='EDIT'" ng-show="isAdmin || (isTeacher && content.statusCodeID == 114100)">
 
   <div>
     <i class="material-icons" style="font-size:24px;margin:auto;">mode_edit</i>
@@ -236,32 +236,27 @@
 
                     <div class="card">
                         <div class="options-card" ng-mouseenter=setSelectedOption("Chapter")
-                             ng-mouseleave=setSelectedOption("")>
+                             ng-mouseleave=setSelectedOption("") >
                             <div class="card-content">
                                 Chapter
                             </div>
-                            <div>
-                                <div class="card-select"
-                                     ng-class="($parent.content.chapterID?'orange-background':'teal-background')">
-                                  <span ng-if="$parent.content.chapterID"
-                                        ng-repeat="chapter in chapterList | filter:{chapter : $parent.content.chapterID}">
-                                    {{chapter.chapterEng}}
-                                  </span>
-                                    <span ng-if="!$parent.content.chapterID">
-                                        Select
-                                    </span>
-                                </div>
-                                <div class="card-action" ng-show="(selectedOption == 'Chapter')">
-                                    <div ng-repeat="chapter in chapterList">
-                                        <div>
-                                            <div class="col-md-9 no-padding align-left">
-                                                {{chapter.chapterEng}}
-                                            </div>
-                                            <div class="col-md-3 align-right no-padding" >
-                                                <input type="radio" ng-model="$parent.content.chapterID"
-                                                       ng-click = "showContentObject()" ng-value="chapter.chapter"
-                                                       name="chapter" ng-required="!($parent.content.chapterID)"/>
-                                            </div>
+                            <div class="card-select" ng-class="($parent.content.chapterID?'orange-background':'teal-background')">
+                              <span ng-if="$parent.content.chapterID"
+                                    ng-repeat="chapter in chapterList | filter:{chapter : $parent.content.chapterID}">
+                                {{chapter.chapterEng}}
+                              </span>
+                                <span ng-if="!$parent.content.chapterID">
+                                    Select
+                                </span>
+                            </div>
+                            <div class="card-action" ng-show="(selectedOption == 'Chapter')">
+                                <div ng-repeat="chapter in chapterList">
+                                    <div>
+                                        <div class="col-md-9 no-padding align-left">
+                                            {{chapter.chapterEng}}
+                                        </div>
+                                        <div class="col-md-3 align-right no-padding" >
+                                            <input type="radio" ng-model="$parent.content.chapterID" ng-click = "showContentObject()" ng-value="chapter.chapter" />
                                         </div>
                                     </div>
                                 </div>
@@ -270,8 +265,8 @@
                     </div>
                     <br />
                     <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'">
-                        <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('topic')"
-                           ng-class="checked['topic']?'orange-text':''">
+                        <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('chapter')"
+                           ng-class="checked['chapter']?'orange-text':''">
                             check
                         </i>
                     </div>

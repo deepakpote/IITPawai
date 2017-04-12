@@ -1,6 +1,7 @@
 angular.module("mitraPortal").controller("reviewContentController",
     ['$scope', '$stateParams', '$state', '$window', '$log', '$http', 'appUtils', 'appConstants', 'commonService',
-        function ($scope, $stateParams, $state, $window, $log, $http, appUtils, appConstants, commonService) {
+        'contentService',
+        function ($scope, $stateParams, $state, $window, $log, $http, appUtils, appConstants, commonService,contentService) {
 
             $scope.acceptedFileTypes = {
                 "108100": "",              //Video
@@ -33,7 +34,8 @@ angular.module("mitraPortal").controller("reviewContentController",
                 engContentTitle: false,
                 engInstruction: false,
                 fileName: false,
-                fileType: false
+                fileType: false,
+                chapter : false
             };
 
             $scope.setDirty = function (form) {
@@ -199,6 +201,7 @@ angular.module("mitraPortal").controller("reviewContentController",
 
                         setGradesFromContent();
                         setRequirementsFromContent();
+                        fetchChapterList($scope.content.gradeCodeIDs,$scope.content.subjectCodeID);
 
                         //make a copy in case user goes to edit and discards
                         $scope.originalContent = JSON.parse(JSON.stringify($scope.content)); //deepcopy
@@ -303,6 +306,18 @@ angular.module("mitraPortal").controller("reviewContentController",
                     appConstants.codeGroup.requirement
                 );
             };
+
+            function fetchChapterList(gradeId,subjectId) {
+                contentService.getChapterList(gradeId,subjectId,
+                    function onSuccess(response) {
+                        console.log("response list");
+                        console.log(response);
+                        $scope.chapterList = response.data;
+                    }, function onFailure(response) {
+
+                    }
+                )
+            }
 
             $scope.$on('codesAvailable', function (event, data) {
                 populateDropDowns();
