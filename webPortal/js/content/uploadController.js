@@ -26,26 +26,32 @@ angular.module("mitraPortal").controller("uploadController",
                 }
             };
 
-
-            $scope.$watch('gradeList', function (gradeList){
-                var checkedGrades = gradeList.filter(function(grade){ return (grade.checked == true)});
-                var gradesString = "";
-                var displayGradesString = "";
-                if (checkedGrades.length > 0){
-                    gradesString = checkedGrades[0].codeID;
-                    displayGradesString = checkedGrades[0].codeNameEn;
+            $scope.$watchGroup(['content.gradeCodeIDs', 'content.subjectCodeID'], function(newValues, oldValues, scope) {
+                if(newValues[0] && newValues[1]) {
+                    getChapterList(newValues[0],newValues[1]);
+                    $scope.isGradeAndSubjectSelected = true;
+                } else {
+                    $scope.isGradeAndSubjectSelected = false;
                 }
-                for (i=1;i<checkedGrades.length;i++){
+            });
 
-                    gradesString += ',' + checkedGrades[i].codeID;
-                    displayGradesString += ', ' + checkedGrades[i].codeNameEn;
+            function getChapterList(gradeId, subjectId) {
+                if(gradeId && subjectId) {
+                    contentService.getChapterList($scope.content.subjectCodeID,$scope.content.gradeCodeIDs,
+                        fetchedChapterList,
+                        failureInFetchingChapterList
+                    );
                 }
-                $scope.content.gradeCodeIDs = gradesString;
-                $scope.displayGradesString = displayGradesString;
-                $log.debug(gradesString);
+            }
 
-            }, true);
+            function fetchedChapterList(response) {
+                console.log(response);
+                $scope.chapterList = response.data;
+            }
 
+            function failureInFetchingChapterList(response) {
+                console.log(response);
+            }
 
             $scope.$watch('requirementList', function (requirementList){
                 var checkedRequirements = requirementList.filter(function(requirement){ return (requirement.checked == true)});
