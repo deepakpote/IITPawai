@@ -80,11 +80,11 @@ angular.module("mitraPortal").controller("uploadController",
 
             $scope.save = function() {
 
-                if(validateOptions()){
+                //if(validateOptions()){
                     $scope.statusCodeID = appConstants.statusCode.created;
                     $log.debug("in save");
                     submit();
-                }
+                //}
             };
 
             $scope.sendForReview = function() {
@@ -150,7 +150,7 @@ angular.module("mitraPortal").controller("uploadController",
                             var modalInstance = $uibModal.open({
                                 url: 'result',
                                 scope: $scope,
-                                templateUrl : '/mitra.test/js/content/submittedSuccessView.html'
+                                templateUrl : 'js/content/submittedSuccessView.html'
                             });
                             modalInstance.result.finally(function(){
                                 if ($scope.content.contentTypeCodeID == appConstants.contentTypeCode.teachingAids){
