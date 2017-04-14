@@ -877,6 +877,9 @@ class ContentViewSet(viewsets.ModelViewSet):
         topicCodeID = request.data.get('topicCodeID')
         requirementCodeIDs = request.data.get('requirementCodeIDs')
         fileTypeCodeID = request.data.get('fileTypeCodeID')
+        languageCodeID = request.data.get('contentLanguageCodeID')       
+        statusCodeID = request.data.get('statusCodeID')
+        fileName = None
         
         if(contentID == 0):
             uploadedFile = request.FILES['uploadedFile'] if 'uploadedFile' in request.FILES else None
@@ -894,13 +897,13 @@ class ContentViewSet(viewsets.ModelViewSet):
                 fileName = request.data.get('fileName')
         
             else:
-                return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
+                if statusCodeID != constants.mitraCode.created:
+                    return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
         
         if(contentID > 0):
             uploadedFile = request.FILES['uploadedFile'] if 'uploadedFile' in request.FILES else None
         
-        languageCodeID = request.data.get('contentLanguageCodeID')       
-        statusCodeID = request.data.get('statusCodeID')
+
         
         #This is not getting used any where in the webportal as well as app so commented for now.
         #objectives = request.data.get('objectives')
@@ -913,18 +916,21 @@ class ContentViewSet(viewsets.ModelViewSet):
         userID = getUserIDFromAuthToken(authToken)
         
         responseMessage = None
+        objContentType = None
+        objFileType = None
+        objLanguage = None
         
         # Check if contentType CodeID is passed in post param
         if not contentTypeCodeID and contentTypeCodeID != 0:
             return statusHttpUnauthorized(constants.messages.uploadContent_contentType_cannot_be_empty)
         
-        # Check if fileType is passed in post param
-        if not fileTypeCodeID and fileTypeCodeID != 0:
-            return statusHttpUnauthorized(constants.messages.uploadContent_fileType_cannot_be_empty)
-                
-        # Check if language is passed in post param
-        if not languageCodeID:
-            return statusHttpUnauthorized(constants.messages.uploadContent_languageCodeID_cannot_be_empty)
+#         # Check if fileType is passed in post param
+#         if not fileTypeCodeID and fileTypeCodeID != 0:
+#             return statusHttpUnauthorized(constants.messages.uploadContent_fileType_cannot_be_empty)
+#                 
+#         # Check if language is passed in post param
+#         if not languageCodeID:
+#             return statusHttpUnauthorized(constants.messages.uploadContent_languageCodeID_cannot_be_empty)
             
         # Check if statusCodeID is passed in post param
         if not statusCodeID:
@@ -932,7 +938,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         if statusCodeID != constants.mitraCode.created:
             responseMessage = validateRequest(userID, engContentTitle, marContentTitle, engInstruction, marInstruction, 
-                                   contentTypeCodeID, fileTypeCodeID, languageCodeID, statusCodeID,engAuthor ,marAuthor)
+                                   contentTypeCodeID, fileTypeCodeID, languageCodeID, statusCodeID,engAuthor ,marAuthor, )
         
             if responseMessage != 0:
                 return statusHttpUnauthorized(responseMessage)
@@ -955,38 +961,45 @@ class ContentViewSet(viewsets.ModelViewSet):
         except code.DoesNotExist:
             return statusHttpNotFound(constants.messages.uploadContent_contentType_does_not_exists)
          
-        # If fileType parameter is passed, then check fileType exists or not    
-        try:
-            objFileType = code.objects.get(codeID = fileTypeCodeID)
-        except code.DoesNotExist:
-            return statusHttpNotFound(constants.messages.uploadContent_fileType_does_not_exists)
-         
-        # If language parameter is passed, then check language exists or not        
-        try:
-            objLanguage = code.objects.get(codeID = languageCodeID)
-        except code.DoesNotExist:
-            return statusHttpNotFound(constants.messages.uploadContent_language_does_not_exists)  
+        if fileTypeCodeID:        
+            # If fileType parameter is passed, then check fileType exists or not    
+            try:
+                objFileType = code.objects.get(codeID = fileTypeCodeID)
+            except code.DoesNotExist:
+                if statusCodeID != constants.mitraCode.created:
+                    return statusHttpNotFound(constants.messages.uploadContent_fileType_does_not_exists)
+        
+        if languageCodeID:
+            # If language parameter is passed, then check language exists or not        
+            try:
+                objLanguage = code.objects.get(codeID = languageCodeID)
+            except code.DoesNotExist:
+                if statusCodeID != constants.mitraCode.created:
+                    return statusHttpNotFound(constants.messages.uploadContent_language_does_not_exists)  
                 
-        # If the filetype is video or ekStep then validate the URL.
-        if isVideoOrEkStep(fileTypeCodeID) == True:  
-            if contentID == 0: 
-            # Check if fileName is passed in post param
-                if not fileName:
-                    return statusHttpUnauthorized(constants.messages.uploadContent_fileName_cannot_be_empty)
-                
-                if int(fileTypeCodeID) == int(constants.mitraCode.video):
-                    #Validate youtube URL.
-                    isValidYoutubeURL = validateYoutubeURL(fileName)
+        if fileTypeCodeID:
+            # If the filetype is video or ekStep then validate the URL.
+            if isVideoOrEkStep(fileTypeCodeID) == True:  
+                if contentID == 0: 
+                # Check if fileName is passed in post param
+                    if not fileName:
+                        if statusCodeID != constants.mitraCode.created:
+                            return statusHttpUnauthorized(constants.messages.uploadContent_fileName_cannot_be_empty)
                     
-                    #If Youtube URL is Invaild 
-                    if not isValidYoutubeURL:
-                        return statusHttpBadRequest(constants.messages.uploadContent_fileName_invaild)
-            
+                    if int(fileTypeCodeID) == int(constants.mitraCode.video):
+                        if fileName:
+                            #Validate youtube URL.
+                            isValidYoutubeURL = validateYoutubeURL(fileName)
+                        
+                            #If Youtube URL is Invaild 
+                            if not isValidYoutubeURL:
+                                return statusHttpBadRequest(constants.messages.uploadContent_fileName_invaild)
+                
+                else:
+                    fileName = request.data.get('fileName')
+    
             else:
-                fileName = request.data.get('fileName')
-
-        else:
-            fileName = "upload_pending"
+                fileName = "upload_pending"
         
         #Declare empty object for subject,Grade and topic
         objSubject = None
@@ -997,38 +1010,44 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         # Check content type of uploaded file.    
         if contentTypeCodeID == int(constants.mitraCode.teachingAids):
-            # If content type is teaching Aid then subjetCodeID & gradeCodeIDs can not be empty.
-            if not subjectCodeID or subjectCodeID == 0:
-                return statusHttpUnauthorized(constants.messages.uploadContent_subjectCodeID_cannot_be_empty)
-            
-            if not gradeCodeIDs:
-                return statusHttpUnauthorized(constants.messages.uploadContent_gradeCodeID_cannot_be_empty)
-            
-            if subjectCodeID and gradeCodeIDs:
-            
-                if not chapterID:
-                    return statusHttpUnauthorized(constants.messages.uploadContent_chapterID_cannot_be_empty)
-            
-            # If chapter parameter is passed, then check chapter exists or not        
-            try:
-                objChapter = chapter.objects.get(chapterID = chapterID)
-            except chapter.DoesNotExist:
-                return statusHttpNotFound(constants.messages.uploadContent_chapter_does_not_exists) 
+            if statusCodeID != constants.mitraCode.created:
+                # If content type is teaching Aid then subjetCodeID & gradeCodeIDs can not be empty.
+                if not subjectCodeID or subjectCodeID == 0:
+                    return statusHttpUnauthorized(constants.messages.uploadContent_subjectCodeID_cannot_be_empty)
                 
-            # Get the respective instance of subject and grade
-            objSubject = code.objects.get(codeID = subjectCodeID)
+                if not gradeCodeIDs:
+                    return statusHttpUnauthorized(constants.messages.uploadContent_gradeCodeID_cannot_be_empty)
+                
+                if subjectCodeID and gradeCodeIDs:
+                
+                    if not chapterID:
+                        return statusHttpUnauthorized(constants.messages.uploadContent_chapterID_cannot_be_empty)
             
-            # Build array from comma seprated string (Comma seprated GradeCodeIDs)
-            arrGradeCodeIDs = getArrayFromCommaSepString(gradeCodeIDs)
+            if chapterID:
+                # If chapter parameter is passed, then check chapter exists or not        
+                try:
+                    objChapter = chapter.objects.get(chapterID = chapterID)
+                except chapter.DoesNotExist:
+                    if statusCodeID != constants.mitraCode.created:
+                        return statusHttpNotFound(constants.messages.uploadContent_chapter_does_not_exists) 
             
-            if len(arrGradeCodeIDs) > 1:
-                return statusHttpUnauthorized(constants.messages.uploadContent_select_single_grade)
+            if subjectCodeID:
+                # Get the respective instance of subject and grade
+                objSubject = code.objects.get(codeID = subjectCodeID)
+            
+            if gradeCodeIDs:
+                # Build array from comma seprated string (Comma seprated GradeCodeIDs)
+                arrGradeCodeIDs = getArrayFromCommaSepString(gradeCodeIDs)
+            
+                if len(arrGradeCodeIDs) > 1:
+                    return statusHttpUnauthorized(constants.messages.uploadContent_select_single_grade)
         # If content type is self learning.
         elif contentTypeCodeID == constants.mitraCode.selfLearning:
-            # If content type is selfLearning then topicCodeID can not be empty.
-            if not topicCodeID:
-                return statusHttpUnauthorized(constants.messages.uploadContent_topicCodeID_cannot_be_empty)
-            else:
+            if statusCodeID != constants.mitraCode.created:
+                # If content type is selfLearning then topicCodeID can not be empty.
+                if not topicCodeID:
+                    return statusHttpUnauthorized(constants.messages.uploadContent_topicCodeID_cannot_be_empty)
+            if topicCodeID:
                 # Get the respective instance topic.
                 objTopic = code.objects.get(codeID = topicCodeID)
         # Invalid content type.
@@ -1076,8 +1095,9 @@ class ContentViewSet(viewsets.ModelViewSet):
              
                 contentID =  objRec.contentID 
                 
-                if (isVideoOrEkStep(fileTypeCodeID) == False):
-                    saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
+                if fileTypeCodeID and uploadedFile and fileTypeCodeID and contentID:
+                    if (isVideoOrEkStep(fileTypeCodeID) == False):
+                        saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
             
             else:
                 # If contentID parameter is passed, then check contentID exists or not and update the content details.       
@@ -1128,16 +1148,19 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                                   author = marAuthor)
                         objMarConDetail.save()
                  
-                if (isVideoOrEkStep(fileTypeCodeID) == False and uploadedFile):
-                    removePreviouslyUploadedFile(contentID)
-                    saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
-                
-                elif(isVideoOrEkStep(fileTypeCodeID) == True and fileName):
-                    updateFileName(fileName, contentID)
+                if fileTypeCodeID: 
+                    if (isVideoOrEkStep(fileTypeCodeID) == False and uploadedFile):
+                        removePreviouslyUploadedFile(contentID)
+                        saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
+                    
+                    elif(isVideoOrEkStep(fileTypeCodeID) == True and fileName):
+                        if fileName:
+                            updateFileName(fileName, contentID)
             
             # Check content type of uploaded file.If teachingAids then save GradeCodeIDs     
             if contentTypeCodeID == constants.mitraCode.teachingAids:
-                saveContentGrade(arrGradeCodeIDs , contentID)
+                if arrGradeCodeIDs:
+                    saveContentGrade(arrGradeCodeIDs , contentID)
             
 #             if (isVideoOrEkStep(fileTypeCodeID) == False):
 #                 saveUploadedFile(uploadedFile, fileTypeCodeID, contentID)
@@ -1813,17 +1836,17 @@ def validateRequest(userID, engContentTitle, marContentTitle, engInstruction, ma
         if not marAuthor or marAuthor is None or marAuthor.isspace():
             return constants.messages.uploadContent_author_marathi_cannot_be_empty
             
-#         # Check if contentType CodeID is passed in post param
-#         if not contentTypeCodeID and contentTypeCodeID != 0:
-#             return constants.messages.uploadContent_contentType_cannot_be_empty
-#         
-#         # Check if fileType is passed in post param
-#         if not fileTypeCodeID and fileTypeCodeID != 0:
-#             return constants.messages.uploadContent_fileType_cannot_be_empty
-#                 
-#         # Check if language is passed in post param
-#         if not languageCodeID:
-#             return constants.messages.uploadContent_languageCodeID_cannot_be_empty
+        # Check if contentType CodeID is passed in post param
+        if not contentTypeCodeID and contentTypeCodeID != 0:
+            return constants.messages.uploadContent_contentType_cannot_be_empty
+         
+        # Check if fileType is passed in post param
+        if not fileTypeCodeID and fileTypeCodeID != 0:
+            return constants.messages.uploadContent_fileType_cannot_be_empty
+                 
+        # Check if language is passed in post param
+        if not languageCodeID:
+            return constants.messages.uploadContent_languageCodeID_cannot_be_empty
 #             
 #         # Check if statusCodeID is passed in post param
 #         if not statusCodeID:

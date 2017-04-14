@@ -18,12 +18,12 @@ class content(models.Model):
     requirement = models.TextField(null = True)
     #instruction = models.TextField(null = True)
     
-    fileType = models.ForeignKey('commons.code', db_column='fileTypeCodeID', related_name='content_fileTypeCodeID')
-    fileName = models.CharField(null = False, max_length = 255)
+    fileType = models.ForeignKey('commons.code', db_column='fileTypeCodeID', related_name='content_fileTypeCodeID', null = True)
+    fileName = models.CharField(null = True, max_length = 255)
     
     #author = models.CharField(null = False, max_length = 255)
     objectives = models.TextField(null = True)
-    language = models.ForeignKey('commons.code', db_column='languageCodeID', related_name='content_languageCodeID')
+    language = models.ForeignKey('commons.code', db_column='languageCodeID', related_name='content_languageCodeID', null = True)
     status = models.ForeignKey('commons.code', db_column='statusCodeID', related_name='content_statusCodeID')
      
     createdBy = models.ForeignKey('users.user', related_name='content_createdBy', db_column = 'createdBy')
