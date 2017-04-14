@@ -1111,12 +1111,12 @@ class ContentViewSet(viewsets.ModelViewSet):
                                                     [
                                                     contentDetail(content = objRec,
                                                                   appLanguage = objAppLanguageEng,
-                                                                  contentTitle = engContentTitle.strip(),
+                                                                  contentTitle = engContentTitle,
                                                                   instruction = engInstruction , 
                                                                   author = engAuthor),
                                                     contentDetail(content = objRec,
                                                                   appLanguage = objAppLanguageMar ,
-                                                                  contentTitle = marContentTitle.strip(), 
+                                                                  contentTitle = marContentTitle, 
                                                                   instruction = marInstruction , 
                                                                   author = marAuthor),
                                                     ]
@@ -1149,14 +1149,14 @@ class ContentViewSet(viewsets.ModelViewSet):
                     objContentDetail = contentDetail.objects.get(content = objcontent , appLanguage = objAppLanguageEng)
                     # update content details for english language.
                     contentDetail.objects.filter(content = objcontent,
-                                                 appLanguage = objAppLanguageEng).update(contentTitle = engContentTitle.strip(),  
-                                                                                        instruction = engInstruction.strip(),
+                                                 appLanguage = objAppLanguageEng).update(contentTitle = engContentTitle,  
+                                                                                        instruction = engInstruction,
                                                                                         author = engAuthor)
                 except contentDetail.DoesNotExist:
                     # Save the content detail for English language.
                     objEngConDetail = contentDetail.objects.create(content = objcontent,
                                                               appLanguage = objAppLanguageEng,
-                                                              contentTitle = engContentTitle.strip(),
+                                                              contentTitle = engContentTitle,
                                                               instruction = engInstruction , 
                                                               author = engAuthor)
                     objEngConDetail.save()
@@ -1165,14 +1165,14 @@ class ContentViewSet(viewsets.ModelViewSet):
                     objContentDetail = contentDetail.objects.get(content = objcontent , appLanguage = objAppLanguageMar)
                     # update content details for marathi language.
                     contentDetail.objects.filter(content = objcontent,
-                                                 appLanguage = objAppLanguageMar).update(contentTitle = marContentTitle.strip(),  
-                                                                                         instruction = marInstruction.strip(),
+                                                 appLanguage = objAppLanguageMar).update(contentTitle = marContentTitle,  
+                                                                                         instruction = marInstruction,
                                                                                          author = marAuthor)
                 except contentDetail.DoesNotExist:
                      # Save the content detail for Marathi language.
                         objMarConDetail = contentDetail.objects.create(content = objcontent,
                                                                   appLanguage = objAppLanguageMar ,
-                                                                  contentTitle = marContentTitle.strip(), 
+                                                                  contentTitle = marContentTitle, 
                                                                   instruction = marInstruction , 
                                                                   author = marAuthor)
                         objMarConDetail.save()
