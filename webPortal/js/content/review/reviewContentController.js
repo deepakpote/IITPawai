@@ -284,9 +284,14 @@ angular.module("mitraPortal").controller("reviewContentController",
             }, true);
 
             $scope.$watchGroup(['content.gradeCodeIDs', 'content.subjectCodeID'], function(newValues, oldValues, scope) {
-                if(oldValues[0] == undefined && oldValues[1] == undefined) {
+                console.log("old value grade");
+                console.log(oldValues[0]);
+                console.log("old value subject");
+                console.log(oldValues[1]);
+                if(oldValues[0] == "" && oldValues[1] == undefined) {
                     console.log("first condition.. only fetch chapter list");
                     fetchChapterList(newValues[0],newValues[1]);
+                    $scope.isGradeAndSubjectSelected = true;
                 } else if(newValues[0] && newValues[1]) {
                     fetchChapterList(newValues[0],newValues[1]);
                     console.log("new values for subject || grade.. set chapterID to blank");
