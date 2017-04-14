@@ -137,7 +137,7 @@
                 </div>
                 <div class="card-select" ng-class="(teachingAids.uploadedBy?'orange-background':'teal-background')">
                   <span ng-if="teachingAids.uploadedBy"
-                        ng-repeat="uploader in uploaderList | filter:{userID : teachingAids.uploadedBy}">
+                        ng-repeat="uploader in uploaderList | filter:{userID : teachingAids.uploadedBy} : true">
                     {{uploader.userName}}
                   </span>
                     <span ng-if="!teachingAids.uploadedBy">

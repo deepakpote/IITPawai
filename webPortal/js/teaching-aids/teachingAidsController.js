@@ -204,24 +204,6 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
 
             }
         }, true);
-
-        /**
-         * watch uploader list to make the server call on change
-         * */
-        // $scope.$watch('uploaderList', function (uploaderList){
-        //     if(uploaderList != undefined) {
-        //         // var checkedUploader = uploaderList.filter(function(uploader){ return (uploader.checked == true)});
-        //         // var subjectString = "";
-        //         // if (checkedSubjects.length > 0){
-        //         //     subjectString = checkedSubjects[0].codeID;
-        //         // }
-        //         // for (var i = 1;i < checkedSubjects.length; i++){
-        //         //     subjectString += ',' + checkedSubjects[i].codeID;
-        //         // }
-        //         // vm.dataFilter.subjectCodeIDs = subjectString;
-        //         // fetchTeachingAids();
-        //     }
-        // }, true);
     }
 
     function getGrades() {
