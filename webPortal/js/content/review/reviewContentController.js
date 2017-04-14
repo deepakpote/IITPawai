@@ -283,6 +283,19 @@ angular.module("mitraPortal").controller("reviewContentController",
 
             }, true);
 
+            $scope.$watchGroup(['content.gradeCodeIDs', 'content.subjectCodeID'], function(newValues, oldValues, scope) {
+                if(newValues[0] && newValues[1]) {
+                    fetchChapterList(newValues[0],newValues[1]);
+                    console.log("new values for subject || grade.. set chapterID to blank");
+                    if($scope.content.chapterID) {
+                        $scope.content.chapterID = undefined;
+                    }
+                    $scope.isGradeAndSubjectSelected = true;
+                } else {
+                    $scope.isGradeAndSubjectSelected = false;
+                }
+            });
+
             var populateDropDowns = function () {
                 $scope.contentTypeList = commonService.getCodeListPerCodeGroup(
                     appConstants.codeGroup.contentType
@@ -308,7 +321,7 @@ angular.module("mitraPortal").controller("reviewContentController",
             };
 
             function fetchChapterList(gradeId,subjectId) {
-                contentService.getChapterList(gradeId,subjectId,
+                contentService.getChapterList(subjectId,gradeId,
                     function onSuccess(response) {
                         console.log("response list");
                         console.log(response);
