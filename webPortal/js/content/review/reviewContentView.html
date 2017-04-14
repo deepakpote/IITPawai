@@ -240,25 +240,32 @@
                             <div class="card-content">
                                 Chapter
                             </div>
-                            <div class="card-select" ng-class="($parent.content.chapterID?'orange-background':'teal-background')">
-                              <span ng-if="$parent.content.chapterID"
-                                    ng-repeat="chapter in chapterList | filter:{chapter : $parent.content.chapterID}">
-                                {{chapter.chapterEng}}
-                              </span>
-                                <span ng-if="!$parent.content.chapterID">
-                                    Select
-                                </span>
-                            </div>
-                            <div class="card-action" ng-show="(selectedOption == 'Chapter')">
-                                <div ng-repeat="chapter in chapterList">
-                                    <div>
-                                        <div class="col-md-9 no-padding align-left">
-                                            {{chapter.chapterEng}}
-                                        </div>
-                                        <div class="col-md-3 align-right no-padding" >
-                                            <input type="radio" ng-model="$parent.content.chapterID" ng-click = "showContentObject()" ng-value="chapter.chapter" />
+                            <div ng-show="isGradeAndSubjectSelected">
+                                <div class="card-select" ng-class="($parent.content.chapterID?'orange-background':'teal-background')">
+                                  <span ng-if="$parent.content.chapterID"
+                                        ng-repeat="chapter in chapterList | filter:{chapter : $parent.content.chapterID}">
+                                    {{chapter.chapterEng}}
+                                  </span>
+                                    <span ng-if="!$parent.content.chapterID">
+                                        Select
+                                    </span>
+                                </div>
+                                <div class="card-action" ng-show="(selectedOption == 'Chapter')">
+                                    <div ng-repeat="chapter in chapterList">
+                                        <div>
+                                            <div class="col-md-9 no-padding align-left">
+                                                {{chapter.chapterEng}}
+                                            </div>
+                                            <div class="col-md-3 align-right no-padding" >
+                                                <input type="radio" ng-model="$parent.content.chapterID" ng-click = "showContentObject()" ng-value="chapter.chapter" />
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div ng-hide="isGradeAndSubjectSelected">
+                                <div class="card-select" style="color: red;font-size: 12px;">
+                                    Please select grade and subject.
                                 </div>
                             </div>
                         </div>
