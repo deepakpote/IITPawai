@@ -893,9 +893,13 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         if request.data.get('fileTypeCodeID'):
             fileTypeCodeID = int(request.data.get('fileTypeCodeID'))
+        else:
+            fileTypeCodeID = None
             
         if request.data.get('contentLanguageCodeID') :
             languageCodeID = int(request.data.get('contentLanguageCodeID'))
+        else:
+            languageCodeID = None
              
         if request.data.get('statusCodeID'):      
             statusCodeID = int(request.data.get('statusCodeID'))
