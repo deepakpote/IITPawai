@@ -871,14 +871,37 @@ class ContentViewSet(viewsets.ModelViewSet):
         else:
             contentTypeCodeID = None
 
-        subjectCodeID = request.data.get('subjectCodeID')
+        if request.data.get('subjectCodeID'):
+            subjectCodeID = int(request.data.get('subjectCodeID'))
+        else:
+            subjectCodeID = None
+            
+        
         gradeCodeIDs = request.data.get('gradeCodeIDs')
-        chapterID = request.data.get('chapterID')
-        topicCodeID = request.data.get('topicCodeID')
+        
+        if request.data.get('chapterID'):
+            chapterID = int(request.data.get('chapterID'))
+        else:
+            chapterID = None
+            
+        if request.data.get('topicCodeID'):
+            topicCodeID = int(request.data.get('topicCodeID'))
+        else:
+            topicCodeID = None
+            
         requirementCodeIDs = request.data.get('requirementCodeIDs')
-        fileTypeCodeID = request.data.get('fileTypeCodeID')
-        languageCodeID = request.data.get('contentLanguageCodeID')       
-        statusCodeID = request.data.get('statusCodeID')
+        
+        if request.data.get('fileTypeCodeID'):
+            fileTypeCodeID = int(request.data.get('fileTypeCodeID'))
+            
+        if request.data.get('contentLanguageCodeID') :
+            languageCodeID = int(request.data.get('contentLanguageCodeID'))
+             
+        if request.data.get('statusCodeID'):      
+            statusCodeID = int(request.data.get('statusCodeID'))
+        else:
+            statusCodeID = None
+            
         fileName = None
         
         if(contentID == 0):
