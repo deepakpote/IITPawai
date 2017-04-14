@@ -60,7 +60,7 @@
                     <div ng-messages="frmContentUpload.subject.$error" ng-if="frmContentUpload.subject.$dirty">
                         <span class="error-message" ng-show="frmContentUpload.subject.$error.required">Please select a subject.</span>
                     </div>
-                    <br />
+                    
                     <div class="card">
                         <div class="options-card" ng-mouseenter=setSelectedOption("ContentType") ng-mouseleave=setSelectedOption("ContentType") >
                             <div class="card-content">
@@ -208,44 +208,7 @@
 
 
                 <div class="col-md-3">
-                    <div class="card">
-                        <div class="options-card" ng-mouseenter=setSelectedOption("Language") ng-mouseleave=setSelectedOption("Language")>
-                            <div class="card-content">
-                                Language
-                            </div>
-                            <div class="card-select" ng-class="($parent.content.contentLanguageCodeID?'orange-background':'teal-background')">
-                              <span ng-if="$parent.content.contentLanguageCodeID" ng-repeat="language in languageList | filter:{codeID : $parent.content.contentLanguageCodeID}">
-                                {{language.codeNameEn}}
-                              </span>
-                                            <span ng-if="!$parent.content.contentLanguageCodeID">
-                                Select
-                              </span>
-                            </div>
-                            <div class="card-action" ng-show="(selectedOption == 'Language')">
-                                <div ng-repeat="language in languageList">
-                                    <div>
-                                        <div class="col-md-9 no-padding align-left">
-                                            {{language.codeNameEn}}
-                                        </div>
-                                        <div class="col-md-3 align-right no-padding" >
-                                            <input type="radio"
-                                                   ng-model="$parent.content.contentLanguageCodeID"
-                                                   ng-click = "showContentObject()" ng-value="language.codeID"
-                                                   name="language" ng-required="!($parent.content.contentLanguageCodeID)"/>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br />
-                    <div ng-messages="frmContentUpload.language.$error" ng-if="frmContentUpload.language.$dirty">
-                        <span class="error-message"
-                              ng-show="frmContentUpload.language.$error.required">Please select a language.</span>
-                    </div>
-                    <br />
-                    <div class="card">
+                    <div class="card" ng-if="isContentTypeTeachingAid()">
                         <div class="options-card" ng-mouseenter=setSelectedOption("Chapter")
                              ng-mouseleave=setSelectedOption("")>
                             <div class="card-content">
@@ -284,16 +247,54 @@
                             </div>
                         </div>
                     </div>
-                    <br>
                     <div ng-messages="frmContentUpload.chapter.$error" ng-if="frmContentUpload.chapter.$dirty">
+                        <br>
                         <span class="error-message" ng-show="frmContentUpload.chapter.$error.required">Please select a chapter.</span>
                     </div>
                     <br>
+                    <div class="card">
+                        <div class="options-card" ng-mouseenter=setSelectedOption("Language") ng-mouseleave=setSelectedOption("Language")>
+                            <div class="card-content">
+                                Language
+                            </div>
+                            <div class="card-select" ng-class="($parent.content.contentLanguageCodeID?'orange-background':'teal-background')">
+                              <span ng-if="$parent.content.contentLanguageCodeID" ng-repeat="language in languageList | filter:{codeID : $parent.content.contentLanguageCodeID}">
+                                {{language.codeNameEn}}
+                              </span>
+                                            <span ng-if="!$parent.content.contentLanguageCodeID">
+                                Select
+                              </span>
+                            </div>
+                            <div class="card-action" ng-show="(selectedOption == 'Language')">
+                                <div ng-repeat="language in languageList">
+                                    <div>
+                                        <div class="col-md-9 no-padding align-left">
+                                            {{language.codeNameEn}}
+                                        </div>
+                                        <div class="col-md-3 align-right no-padding" >
+                                            <input type="radio"
+                                                   ng-model="$parent.content.contentLanguageCodeID"
+                                                   ng-click = "showContentObject()" ng-value="language.codeID"
+                                                   name="language" ng-required="!($parent.content.contentLanguageCodeID)"/>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div ng-messages="frmContentUpload.language.$error" ng-if="frmContentUpload.language.$dirty">
+                        <span class="error-message"
+                              ng-show="frmContentUpload.language.$error.required">Please select a language.</span>
+                    </div>
+                    <br />
                 </div>
 
                 <div class="col-md-1"></div>
 
                 <div class="col-md-3" ng-if="isContentTypeSelfLearning()">
+                    <br>
                     <div class="card">
                         <div class="options-card" ng-mouseenter=setSelectedOption("Topic") ng-mouseleave=setSelectedOption("Topic")>
                             <div class="card-content">
