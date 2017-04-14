@@ -29,6 +29,10 @@ angular.module("mitraPortal").controller("uploadController",
             $scope.$watchGroup(['content.gradeCodeIDs', 'content.subjectCodeID'], function(newValues, oldValues, scope) {
                 if(newValues[0] && newValues[1]) {
                     getChapterList(newValues[0],newValues[1]);
+                    console.log("new values for subject || grade.. set chapterID to blank");
+                    if($scope.content.chapterID) {
+                        $scope.content.chapterID = undefined;
+                    }
                     $scope.isGradeAndSubjectSelected = true;
                 } else {
                     $scope.isGradeAndSubjectSelected = false;
@@ -80,11 +84,11 @@ angular.module("mitraPortal").controller("uploadController",
 
             $scope.save = function() {
 
-                //if(validateOptions()){
+                if(validateOptions()){
                     $scope.statusCodeID = appConstants.statusCode.created;
                     $log.debug("in save");
                     submit();
-                //}
+                }
             };
 
             $scope.sendForReview = function() {
@@ -150,7 +154,7 @@ angular.module("mitraPortal").controller("uploadController",
                             var modalInstance = $uibModal.open({
                                 url: 'result',
                                 scope: $scope,
-                                templateUrl : 'js/content/submittedSuccessView.html'
+                                templateUrl : '/mitra.test/js/content/submittedSuccessView.html'
                             });
                             modalInstance.result.finally(function(){
                                 if ($scope.content.contentTypeCodeID == appConstants.contentTypeCode.teachingAids){
@@ -172,7 +176,7 @@ angular.module("mitraPortal").controller("uploadController",
                             var modalInstance = $uibModal.open({
                                 url: 'result',
                                 scope: $scope,
-                                templateUrl : '/mitra.test/js/content/submittedErrorView.html',
+                                templateUrl : '/mitra.test/js/content/submittedErrorView.html'
                             });
                         });
             };
