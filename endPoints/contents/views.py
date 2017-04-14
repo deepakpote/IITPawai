@@ -886,6 +886,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                          
             if uploadedFile:
                 if request.data.get('fileName'):
+                    print "IFFF"
                     return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
                 else:
                     try:
@@ -898,6 +899,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         
             else:
                 if statusCodeID != constants.mitraCode.created:
+                    print "NOT CREATED"
                     return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
         
         if(contentID > 0):
