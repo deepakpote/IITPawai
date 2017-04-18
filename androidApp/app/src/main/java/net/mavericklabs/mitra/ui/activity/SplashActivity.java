@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.model.Chapter;
 import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.CommonCodeWrapper;
@@ -41,6 +42,10 @@ public class SplashActivity extends AppCompatActivity {
 
         Realm.setDefaultConfiguration(config);
 
+        loadCommonCodes();
+    }
+
+    private void loadCommonCodes() {
         RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
                 .where(CommonCode.class).findAll();
         String currentCodeVersion;
@@ -85,7 +90,7 @@ public class SplashActivity extends AppCompatActivity {
 
                     proceed();
                 } else if(codeVersion.equals("0")){
-                    Toast.makeText(SplashActivity.this, getString(R.string.error_code_list), Toast.LENGTH_LONG).show();
+                    Toast.makeText(SplashActivity.this, getString(R.string.error_relaunch_app), Toast.LENGTH_LONG).show();
                     finish();
                 } else {
                     Toast.makeText(SplashActivity.this, getString(R.string.error_no_internet), Toast.LENGTH_LONG).show();
@@ -144,10 +149,8 @@ public class SplashActivity extends AppCompatActivity {
                                 startActivity(selectLanguage);
                                 finishAffinity();
 
-                            } else { // case 4 : everything good to go. take user home :)
-                                Intent selectLanguage = new Intent(SplashActivity.this,HomeActivity.class);
-                                startActivity(selectLanguage);
-                                finishAffinity();
+                            } else { // case 4 : everything good to go. sync chapters and take user home :)
+                                loadChapters();
                             }
                         }
                     }
@@ -157,4 +160,53 @@ public class SplashActivity extends AppCompatActivity {
         timerThread.start();
 
     }
+
+    private void loadChapters() {
+        String token = UserDetailUtils.getToken(getApplicationContext());
+        Call<BaseModel<Chapter>> chapterListCall = RestClient.getApiService(token).getChapters("","");
+
+        RealmResults<Chapter> chapters = Realm.getDefaultInstance()
+                .where(Chapter.class).findAll();
+        final int chapterCount = chapters.size();
+
+        chapterListCall.enqueue(new Callback<BaseModel<Chapter>>() {
+            @Override
+            public void onResponse(Call<BaseModel<Chapter>> call, Response<BaseModel<Chapter>> response) {
+
+                if(response.isSuccessful()) {
+                    Realm realm = Realm.getDefaultInstance();
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(response.body().getData());
+                    realm.commitTransaction();
+                    gotoHomePage();
+                } else {
+                    if(chapterCount == 0) {
+                        Toast.makeText(SplashActivity.this, getString(R.string.error_relaunch_app), Toast.LENGTH_LONG).show();
+                        finish();
+                    } else {
+                        gotoHomePage();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<Chapter>> call, Throwable t) {
+                Logger.d(" on failure " + t.getMessage());
+                if(chapterCount == 0) {
+                    Toast.makeText(SplashActivity.this, getString(R.string.error_relaunch_app), Toast.LENGTH_LONG).show();
+                    finish();
+                } else {
+                    gotoHomePage();
+                }
+            }
+        });
+    }
+
+    private void gotoHomePage() {
+        Intent home = new Intent(SplashActivity.this,HomeActivity.class);
+        startActivity(home);
+        finishAffinity();
+    }
+
 }

@@ -53,6 +53,7 @@ import com.google.android.youtube.player.YouTubeThumbnailView;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.model.Chapter;
 import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.api.ContentDataRequest;
 import net.mavericklabs.mitra.model.api.ContentDataResponse;
@@ -63,6 +64,7 @@ import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DisplayUtils;
 import net.mavericklabs.mitra.utils.DownloadUtils;
+import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
@@ -172,7 +174,7 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
 
             ViewGroup.LayoutParams layoutParams = holder.contentView.getLayoutParams();
             layoutParams.width = displayMetrics.widthPixels / 3;
-            layoutParams.height = layoutParams.width  + (DisplayUtils.dpToPx(8, context));
+            layoutParams.height = layoutParams.width  + (DisplayUtils.dpToPx(16, context));
             holder.contentView.setLayoutParams(layoutParams);
 
             if(showDeleteOption) {
@@ -252,6 +254,20 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
             }
             String grades = StringUtils.stringify(gradeNames);
             holder.details.setText(subject +  " | "  + context.getResources().getString(R.string.grade) + " " + grades);
+            holder.chapter.setVisibility(View.GONE);
+            String chapterID = contents.get(holder.getAdapterPosition()).getChapterID();
+            if(chapterID != null) {
+                Chapter chapter = Realm.getDefaultInstance().where(Chapter.class).equalTo("chapterID",
+                        chapterID).findFirst();
+                if(chapter != null) {
+                    String chapterTitle = chapter.getChapterForCurrentLocale();
+                    if(!StringUtils.isEmpty(chapterTitle)) {
+                        holder.chapter.setVisibility(View.VISIBLE);
+                        holder.chapter.setText(chapterTitle);
+                    }
+                }
+            }
+
         } else {
 
             Integer topicCode = contents.get(holder.getAdapterPosition()).getTopic();
@@ -425,6 +441,9 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
 
         @BindView(R.id.details)
         TextView details;
+
+        @BindView(R.id.content_chapter)
+        TextView chapter;
 
         @BindView(R.id.save_button)
         TextView saveButton;

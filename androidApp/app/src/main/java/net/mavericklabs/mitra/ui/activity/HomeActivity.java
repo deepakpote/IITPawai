@@ -20,10 +20,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.model.Chapter;
+import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.ui.custom.CropCircleTransformation;
 import net.mavericklabs.mitra.ui.fragment.EventCalendarFragment;
@@ -38,12 +42,16 @@ import net.mavericklabs.mitra.ui.fragment.TeachingAidsFragment;
 import net.mavericklabs.mitra.utils.AnimationUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
+import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeActivity extends BaseActivity {
 
@@ -98,6 +106,7 @@ public class HomeActivity extends BaseActivity {
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
         tabLayout = (TabLayout) findViewById(R.id.tabs_my_resources);
+        loadChapters();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -366,6 +375,38 @@ public class HomeActivity extends BaseActivity {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void loadChapters() {
+
+        RealmResults<Chapter> chapters = Realm.getDefaultInstance()
+                .where(Chapter.class).findAll();
+        final int chapterCount = chapters.size();
+
+        //If chapters have not been loaded yet.
+        if(chapterCount == 0) {
+            String token = UserDetailUtils.getToken(getApplicationContext());
+            Call<BaseModel<Chapter>> chapterListCall = RestClient.getApiService(token).getChapters("","");
+
+            chapterListCall.enqueue(new Callback<BaseModel<Chapter>>() {
+                @Override
+                public void onResponse(Call<BaseModel<Chapter>> call, Response<BaseModel<Chapter>> response) {
+
+                    if(response.isSuccessful()) {
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+                        realm.copyToRealmOrUpdate(response.body().getData());
+                        realm.commitTransaction();
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<BaseModel<Chapter>> call, Throwable t) {
+                    Logger.d(" on failure ");
+                }
+            });
+        }
     }
 
 }

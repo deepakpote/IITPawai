@@ -66,6 +66,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.model.Chapter;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.Requirements;
@@ -127,6 +128,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
     @BindView(R.id.content_layout) RelativeLayout contentLayout;
     @BindView(R.id.content_web_view) WebView contentWebView;
     @BindView(R.id.loading_panel_for_web_view) RelativeLayout loadingPanelForWebView;
+    @BindView(R.id.content_chapter) TextView contentChapter;
 
     @OnClick(R.id.share_icon)
     void shareContent() {
@@ -466,6 +468,19 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                 }
                 String grades = StringUtils.stringify(gradeNames);
                 details.setText(subject +  " | "  + getResources().getString(R.string.grade) + " " + grades);
+
+                String chapterID = content.getChapterID();
+                if(chapterID != null) {
+                    Chapter chapter = Realm.getDefaultInstance().where(Chapter.class).equalTo("chapterID",
+                            chapterID).findFirst();
+                    if(chapter != null) {
+                        String chapterTitle = chapter.getChapterForCurrentLocale();
+                        if(!StringUtils.isEmpty(chapterTitle)) {
+                            contentChapter.setVisibility(View.VISIBLE);
+                            contentChapter.setText(chapterTitle);
+                        }
+                    }
+                }
 
                 loadSimilarTeachingAids();
 

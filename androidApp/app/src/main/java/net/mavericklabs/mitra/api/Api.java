@@ -1,5 +1,6 @@
 package net.mavericklabs.mitra.api;
 
+import net.mavericklabs.mitra.model.Chapter;
 import net.mavericklabs.mitra.model.api.Attend;
 import net.mavericklabs.mitra.model.api.BaseModel;
 
@@ -118,5 +119,10 @@ public interface Api {
 
     @POST("news/newsList/")
     Call<BaseModel<News>> listNews(@Header("appLanguageCodeID") int appLanguageCodeID);
+
+    @POST("content/chapterList/")
+    @FormUrlEncoded
+    Call<BaseModel<Chapter>> getChapters(@Field("subjectCodeID") String subjectCodeID,
+                                         @Field("gradeCodeID") String gradeCodeID);
 
 }

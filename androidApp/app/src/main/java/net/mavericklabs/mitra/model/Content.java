@@ -58,6 +58,9 @@ public class Content implements Serializable, RealmModel, Parcelable {
     @SerializedName("gradeCodeIDs")
     private String grade;
 
+    @SerializedName("chapterID")
+    private String chapterID;
+
     @SerializedName("topic")
     private Integer topic;
 
@@ -112,6 +115,7 @@ public class Content implements Serializable, RealmModel, Parcelable {
         fileName = (String) in.readValue(String.class.getClassLoader());
         author = (String) in.readValue(String.class.getClassLoader());
         objectives = (String) in.readValue(String.class.getClassLoader());
+        chapterID = (String) in.readValue(String.class.getClassLoader());
 
         contentTypeCodeID = (Integer) in.readValue(Integer.class.getClassLoader());
         fileType = (Integer) in.readValue(Integer.class.getClassLoader());
@@ -238,6 +242,14 @@ public class Content implements Serializable, RealmModel, Parcelable {
         this.topic = topic;
     }
 
+    public String getChapterID() {
+        return chapterID;
+    }
+
+    public void setChapterID(String chapterID) {
+        this.chapterID = chapterID;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -253,6 +265,7 @@ public class Content implements Serializable, RealmModel, Parcelable {
         parcel.writeValue(fileName);
         parcel.writeValue(author);
         parcel.writeValue(objectives);
+        parcel.writeValue(chapterID);
 
         parcel.writeValue(contentTypeCodeID);
         parcel.writeValue(fileType);

@@ -80,7 +80,7 @@ public class SelectLanguageActivity extends BaseActivity {
         RealmResults<CommonCode> commonCodes = Realm.getDefaultInstance()
                 .where(CommonCode.class).findAll();
         if(commonCodes.isEmpty()) {
-            Toast.makeText(getApplicationContext(), R.string.error_code_list,Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.error_relaunch_app,Toast.LENGTH_LONG).show();
             return;
         }
         Intent intent = new Intent(SelectLanguageActivity.this,ChooseSignInOrRegisterActivity.class);
