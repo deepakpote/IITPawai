@@ -16,6 +16,7 @@ from users.models import userSubject, user, userGrade, userTopic , userContent, 
 from mitraEndPoints import constants , utils
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from pip._vendor.requests.api import request
+import requests
 from fileinput import filename
 
 
@@ -182,7 +183,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                                  "data": []},
                                 status = status.HTTP_404_NOT_FOUND)
                 
-
+        if fileTypeCodeID == 108105:
+             getContentFromEkStepAPI()
+            
         #Get the applicable subject list for the respective user.    
         arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs)         
 
@@ -1972,4 +1975,80 @@ def statusHttpBadRequest(responseMessage):
         return Response({"response_message": responseMessage,
                      "data": []},
                      status = status.HTTP_400_BAD_REQUEST)
+        
+'''
+Function to fetch data from ekStep
+'''
+def getContentFromEkStepAPI():
+    url = 'https://qa.ekstep.in/api/content/v3/search'
+    headers = {'Content-Type': 'application/json',
+               'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI4N2JhOTkzODA1NmM0YTJmOGI0MjcwYjQ3NmEwMjBjMiJ9.EDYxG8Tv-NOipka1_FcHj5ZOEJ0dHiwp_GG0Ge7o4rI'
+               }
+    requestBody = {
+        "request": { 
+            "search": {
+                "contentType": ["Story", "Worksheet", "Collection", "Game"],
+                "fields": ["name", "downloadUrl", "mediaType", "status", "domain", "subject","language", "gradeLevel", "contentType"],
+                "tags" : [],
+                "status": [],
+                "limit" : 3
+            }
+        }
+    }
+        
+    try :
+        ekStepResponse = requests.post(url, headers=headers, json=requestBody)
+#         print "*********************", ekStepResponse.text
+        for entry, value in ekStepResponse.json().iteritems():
+            if entry == "result":
+                contentArray = value['content']
+        
+        for entry in contentArray:  
+            responseDataEntry = {
+                        'contentID' : "",
+                        'contentTitle' : entry['name'],
+                        'contentType' : entry['mimeType'],
+                        'gradeCodeIDs' : entry['gradeLevel'],
+                        'subject' : entry['subject'],
+                        'topic' : "",
+                        'requirementCodeIDs': "",
+                        'instruction':"",
+                        'fileType' : "108105",
+                        'fileName': "",
+                        'author': "",
+                        'objectives' :"",
+                        'language': "language",
+                        'createdOn': item[13],
+                        'modifiedOn':       item[14],
+                        'chapterID':        item[15]
+                    }
+        
+        print responseDataEntry
+        
+#         objResponse_data = {
+#                                     'contentID':        item[0], 
+#                                     'contentTitle':     item[1], 
+#                                     'contentType':      item[7],
+#                                     'gradeCodeIDs':     str(item[12]),
+#                                     'subject':          item[10],
+#                                     'topic' :           item[11],
+#                                     'requirementCodeIDs':      item[2],
+#                                     'instruction':      item[3],
+#                                     'fileType' :        item[8],
+#                                     'fileName':         item[4],
+#                                     'author':           item[5],
+#                                     'objectives' :      item[6],
+#                                     'language':         item[9],
+#                                     'createdOn':        item[13],
+#                                     'modifiedOn':       item[14],
+#                                     'chapterID':        item[15]
+#                                 }
+#             response_data.append(objResponse_data)
+        
+    except Exception as e:
+            print e
+#     return Response({"response_message": constants.messages.self_learning_search_no_records_found,
+#                     "data": ekStepResponse},
+#                     status = status.HTTP_200_OK) 
+        
     
