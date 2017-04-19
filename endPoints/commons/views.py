@@ -513,8 +513,19 @@ def getCodeIDs(codeGroupID):
     if len(arrCodeIDs) > 0:
         return arrCodeIDs
     
+def getCodeIDsAndCodeName(codeGroupID):
+        
+    idAndNameDict = {}
+    
+    #get all code IDs with their respective code name
+    objCodeList = code.objects.filter(codeGroup = codeGroupID)
+    for objCode in objCodeList:
+        idAndNameDict[objCode.codeNameEn] = objCode.codeID
+        
+    return idAndNameDict
+
 """
-Common function used to get the array from comma seprated string.
+Common function used to get the array from comma separated string.
 """    
 def getArrayFromCommaSepString(CommaSepString):
     

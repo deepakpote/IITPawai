@@ -199,8 +199,6 @@ class messages():
     uploadContent_upload_file_or_give_filename = 100262
     uploadContent_upload_a_valid_file = 100263
     
-
-
 class webportalmessages():    
     web_admin_invalid_token = 200100
     web_admin_phoneno_not_registered = 200101

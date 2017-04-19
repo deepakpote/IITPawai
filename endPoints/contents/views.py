@@ -14,7 +14,7 @@ from contents.models import content , contentResponse  , contentGrade , contentD
 from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent, userRole
 from mitraEndPoints import constants , utils
-from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
+from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken, getCodeIDsAndCodeName
 from pip._vendor.requests.api import request
 import requests
 from fileinput import filename
@@ -184,7 +184,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                 status = status.HTTP_404_NOT_FOUND)
                 
         if fileTypeCodeID == 108105:
-             getContentFromEkStepAPI()
+             return getContentFromEkStepAPI()
             
         #Get the applicable subject list for the respective user.    
         arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs)         
@@ -1988,67 +1988,102 @@ def getContentFromEkStepAPI():
         "request": { 
             "search": {
                 "contentType": ["Story", "Worksheet", "Collection", "Game"],
-                "fields": ["name", "downloadUrl", "mediaType", "status", "domain", "subject","language", "gradeLevel", "contentType"],
-                "tags" : [],
-                "status": [],
-                "limit" : 3
+                "fields": ["name", "downloadUrl", "createdOn", "lastUpdatedOn", "subject","language", 
+                           "gradeLevel", "contentType", "lastUpdatedBy", "identifier"],
+                "tags" : ["MAA"],
+                "status": []
             }
         }
     }
         
     try :
         ekStepResponse = requests.post(url, headers=headers, json=requestBody)
-#         print "*********************", ekStepResponse.text
+        responseData = []
+
         for entry, value in ekStepResponse.json().iteritems():
             if entry == "result":
                 contentArray = value['content']
         
         for entry in contentArray:  
-            responseDataEntry = {
-                        'contentID' : "",
+            responseDataSingle = {
+                        'contentID' : 0,
                         'contentTitle' : entry['name'],
-                        'contentType' : entry['mimeType'],
-                        'gradeCodeIDs' : entry['gradeLevel'],
-                        'subject' : entry['subject'],
+                        'contentType' : constants.mitraCode.teachingAids,
+                        'gradeCodeIDs' : mapGrades(entry['gradeLevel']),
+                        'subject' : mapSubject(entry['subject']),
                         'topic' : "",
                         'requirementCodeIDs': "",
-                        'instruction':"",
-                        'fileType' : "108105",
-                        'fileName': "",
+                        'instruction': "",
+                        'fileType' : constants.mitraCode.ekStep,
+                        'fileName': getFileNameFromEkStep(entry['identifier']),
                         'author': "",
-                        'objectives' :"",
-                        'language': "language",
-                        'createdOn': item[13],
-                        'modifiedOn':       item[14],
-                        'chapterID':        item[15]
+                        'objectives' : "",
+                        'language': mapLanguage(entry['language']),
+                        'createdOn': formatDate(entry['createdOn']),
+                        'modifiedOn': entry['lastUpdatedOn'],
+                        'chapterID': ""
                     }
         
-        print responseDataEntry
-        
-#         objResponse_data = {
-#                                     'contentID':        item[0], 
-#                                     'contentTitle':     item[1], 
-#                                     'contentType':      item[7],
-#                                     'gradeCodeIDs':     str(item[12]),
-#                                     'subject':          item[10],
-#                                     'topic' :           item[11],
-#                                     'requirementCodeIDs':      item[2],
-#                                     'instruction':      item[3],
-#                                     'fileType' :        item[8],
-#                                     'fileName':         item[4],
-#                                     'author':           item[5],
-#                                     'objectives' :      item[6],
-#                                     'language':         item[9],
-#                                     'createdOn':        item[13],
-#                                     'modifiedOn':       item[14],
-#                                     'chapterID':        item[15]
-#                                 }
-#             response_data.append(objResponse_data)
-        
+            responseData.append(responseDataSingle)
+            
+#         print responseData        
     except Exception as e:
-            print e
-#     return Response({"response_message": constants.messages.self_learning_search_no_records_found,
-#                     "data": ekStepResponse},
-#                     status = status.HTTP_200_OK) 
+            print "Exception", e
+    
+    #Set query string to the contentSerializer
+    objContentSerializer = teachingAidSerializer(responseData, many = True)
+         
+    #Set serializer data to the response 
+    response = objContentSerializer.data
+    
+    print "****************************", response
+          
+    #Return the response
+    return Response({"response_message": constants.messages.success, "data": response})
+
+
+def mapGrades(gradeLevel):
+    
+    ekStepGradesToMitraGradesDict = {'Grade 1' : '104100',
+                                     'Grade 2' : '104101',
+                                     'Grade 3' : '104102',
+                                     'Grade 4' : '104103',
+                                     'Grade 5' : '104104',
+                                     'Grade 6' : '104105',
+                                     'Grade 7' : '104106',
+                                     'Grade 8' : '104107',
+                                     'Grade 9' : '104108',
+                                     'Grade 10': '104109'
+                                    }
+      
+    gradesOut = ""
+    for grade in gradeLevel:
+        gradesOut = gradesOut + str(ekStepGradesToMitraGradesDict[grade]) + "," 
+
+    return gradesOut[:-1]    
+
+
+def mapSubject(subjectEkStep):
+
+    subjectIdAndName = getCodeIDsAndCodeName(constants.mitraCodeGroup.subject)
+    
+    if subjectIdAndName[subjectEkStep] is None:
+        return subjectIdAndName['Literacy']
+    else :
+        return subjectIdAndName[subjectEkStep]
+    
+def mapLanguage(languageArray):
+    languageOut = ""
+    for language in languageArray:
+        languageOut = languageOut + language + ","
         
+    return languageOut[:-1]
+    
+       
+def getFileNameFromEkStep(identifier):
+    contextPath = "https://qa.ekstep.in/preview/content/"
+    return contextPath + str(identifier)     
+
+def formatDate(dateEkStep):
+     strftime
     
