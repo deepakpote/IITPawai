@@ -29,6 +29,7 @@ import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 
 import java.io.File;
+import java.net.ConnectException;
 import java.util.Date;
 import java.util.List;
 
@@ -221,7 +222,11 @@ public class NewsDetailsActivity extends BaseActivity {
                 @Override
                 public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                     loadingPanel.setVisibility(View.GONE);
-                    Toast.makeText(mContext, "Something went wrong " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    if(e instanceof ConnectException) {
+                        Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                    }
                     return false;
                 }
 

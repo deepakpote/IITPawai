@@ -70,7 +70,6 @@ public class PDFViewerActivity extends AppCompatActivity {
             @Override
             public void onLoadResource(WebView view, String url) {
                 super.onLoadResource(view, url);
-                Logger.d("on load resource..");
             }
 
             @Override
