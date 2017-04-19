@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
@@ -20,6 +21,7 @@ import net.mavericklabs.mitra.ui.custom.CalendarView;
 import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.Logger;
 
+import java.net.ConnectException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -139,6 +141,11 @@ public class EventCalendarFragment extends Fragment implements OnMonthSelectedLi
             @Override
             public void onFailure(Call<BaseModel<Event>> call, Throwable t) {
                 Logger.d(" on fail");
+                if(t instanceof ConnectException) {
+                    Toast.makeText(getContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

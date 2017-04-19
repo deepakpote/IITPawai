@@ -277,7 +277,7 @@ public class MyResourcesSelfLearningFragment extends BaseContentFragment {
         contentRecyclerView.setAdapter(adapter);
 
         if(fragment.isAdded()) {
-            fragment.subtitle0.setText(getResources().getQuantityString(R.plurals.resources_saved,
+            fragment.subtitle1.setText(getResources().getQuantityString(R.plurals.resources_saved,
                     contents.size(), contents.size()));
             contentRecyclerView.setVisibility(View.VISIBLE);
             errorView.setVisibility(View.GONE);

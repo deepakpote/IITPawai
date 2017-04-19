@@ -43,6 +43,7 @@ import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.net.ConnectException;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -90,6 +91,11 @@ public class CustomBottomSheetDialogFragment extends BottomSheetDialogFragment {
                     @Override
                     public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
                         Logger.d("on failure");
+                        if(t instanceof ConnectException) {
+                            Toast.makeText(getContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
     }

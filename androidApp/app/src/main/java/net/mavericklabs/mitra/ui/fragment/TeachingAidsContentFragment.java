@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
@@ -49,6 +50,7 @@ import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -300,6 +302,12 @@ public class TeachingAidsContentFragment extends BaseContentFragment {
             @Override
             public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
                 Logger.d(" on fail");
+                if(t instanceof ConnectException) {
+                    Toast.makeText(getContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                }
+
                 if(pageNumber > 0) {
                     adapter = (ContentVerticalCardListAdapter) contentRecyclerView.getAdapter();
                     adapter.stopLoading();

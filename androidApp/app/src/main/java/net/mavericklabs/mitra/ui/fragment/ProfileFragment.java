@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.model.database.DbGrade;
@@ -94,6 +95,7 @@ public class ProfileFragment extends Fragment {
         ButterKnife.bind(this,view);
         RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
                 .where(DbUser.class).findAll();
+        Logger.d(" User " + dbUser);
         if(dbUser.size() == 1) {
             DbUser user = dbUser.get(0);
             userNameTextView.setText(user.getName());
@@ -154,11 +156,13 @@ public class ProfileFragment extends Fragment {
             if(!StringUtils.isEmpty(user.getProfilePhotoPath())) {
                 Glide.with(this).load(user.getProfilePhotoPath())
                         .bitmapTransform(new CropCircleTransformation(getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
                         .into(profilePhotoImageView);
             } else {
                 Glide.with(this).load(R.drawable.placeholder_user).
-                        bitmapTransform(new CropCircleTransformation(getContext())).
-                        into(profilePhotoImageView);
+                        bitmapTransform(new CropCircleTransformation(getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(profilePhotoImageView);
             }
         }
     }

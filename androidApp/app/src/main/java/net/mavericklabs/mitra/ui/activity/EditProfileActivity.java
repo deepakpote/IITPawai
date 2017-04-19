@@ -72,6 +72,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -519,7 +520,12 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
             }
             @Override
             public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
-                Toast.makeText(EditProfileActivity.this, getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+
+                if(t instanceof ConnectException) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                }
                 progressDialog.dismiss();
             }
         });
@@ -792,7 +798,11 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
             @Override
             public void onFailure(Call<BaseModel<RegisterUserResponse>> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(EditProfileActivity.this, getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                if(t instanceof ConnectException) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                }
                 Logger.d(" on fail");
             }
         });
@@ -841,7 +851,11 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
 
                 @Override
                 public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
-                    Logger.d("failure : " + t.getLocalizedMessage());
+                    if(t instanceof ConnectException) {
+                        Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                    }
                     progressDialog.dismiss();
                 }
             });

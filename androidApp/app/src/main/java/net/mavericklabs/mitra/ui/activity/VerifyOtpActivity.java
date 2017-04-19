@@ -38,6 +38,7 @@ import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.net.ConnectException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -104,7 +105,11 @@ public class VerifyOtpActivity extends BaseActivity {
             }
             @Override
             public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
-                Toast.makeText(VerifyOtpActivity.this, getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                if(t instanceof ConnectException) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -195,7 +200,11 @@ public class VerifyOtpActivity extends BaseActivity {
 
                     @Override
                     public void onFailure(Call<BaseModel<Token>> call, Throwable t) {
-                        Toast.makeText(VerifyOtpActivity.this, getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                        if(t instanceof ConnectException) {
+                            Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                        }
                         progressDialog.dismiss();
                     }
                 });
@@ -285,7 +294,11 @@ public class VerifyOtpActivity extends BaseActivity {
 
                     @Override
                     public void onFailure(Call<BaseModel<LoginUser>> call, Throwable t) {
-                        Toast.makeText(VerifyOtpActivity.this, getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                        if(t instanceof ConnectException) {
+                            Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                        }
                         progressDialog.dismiss();
                     }
                 });

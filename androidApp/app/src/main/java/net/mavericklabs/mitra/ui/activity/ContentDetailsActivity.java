@@ -156,6 +156,11 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
             @Override
             public void onFailure(Call<BaseModel<ContentDataResponse>> call, Throwable t) {
                 Logger.d(" on failure ");
+                if(t instanceof ConnectException) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -191,6 +196,12 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                     @Override
                     public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
                         Logger.d("is liked " + isLiked);
+                        if(t instanceof ConnectException) {
+                            Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                        }
+
                         if(isLiked) {
                             likeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_grey_24dp));
                             isLiked = false;
@@ -553,6 +564,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
             @Override
             public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
                 Logger.d(" on fail");
+                loadingPanel.setVisibility(View.GONE);
             }
         });
     }
@@ -598,6 +610,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
             @Override
             public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
                 Logger.d(" on fail");
+                loadingPanel.setVisibility(View.GONE);
             }
         });
     }
@@ -626,7 +639,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
             Logger.d("file name is : " + fileName);
             String videoID = StringUtils.getVideoKeyFromUrl(fileName);
             Logger.d("video id is : " + videoID);
-            
+
             player.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
 
                 @Override

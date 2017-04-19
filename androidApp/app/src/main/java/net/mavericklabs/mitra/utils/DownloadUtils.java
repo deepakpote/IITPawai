@@ -109,7 +109,11 @@ public class DownloadUtils {
 
                             @Override
                             public void onFailure(Call<BaseModel<ContentDataResponse>> call, Throwable t) {
-
+                                if(t instanceof ConnectException) {
+                                    Toast.makeText(context, context.getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(context, context.getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
                     }

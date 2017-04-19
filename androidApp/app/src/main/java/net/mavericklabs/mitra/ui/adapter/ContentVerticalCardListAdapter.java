@@ -377,8 +377,9 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
                     public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
                         if(t instanceof ConnectException) {
                             Toast.makeText(context, context.getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.error_message), Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(context, context.getString(R.string.error_message), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

@@ -17,6 +17,8 @@ import net.mavericklabs.mitra.model.api.NewUser;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.net.ConnectException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -95,7 +97,11 @@ public class SignInUserActivity extends BaseActivity {
 
                     @Override
                     public void onFailure(Call<BaseModel<GenericListDataModel>> call, Throwable t) {
-                        Toast.makeText(SignInUserActivity.this, getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                        if(t instanceof ConnectException) {
+                            Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                        }
                         progressDialog.dismiss();
                     }
                 });

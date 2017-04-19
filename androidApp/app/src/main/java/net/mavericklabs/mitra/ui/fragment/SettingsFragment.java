@@ -27,6 +27,7 @@ import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.net.ConnectException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -116,8 +117,11 @@ public class SettingsFragment extends Fragment {
                                                                               Throwable t) {
                                                             loadingPanel.setVisibility(View.GONE);
                                                             languageSpinner.setSelection(currentLanguageIndex,false);
-                                                            Toast.makeText(getContext(), getString(R.string.error_message),
-                                                                    Toast.LENGTH_SHORT).show();
+                                                            if(t instanceof ConnectException) {
+                                                                Toast.makeText(getContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                                                            } else {
+                                                                Toast.makeText(getContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                                                            }
                                                         }
                                                     });
                                         }
