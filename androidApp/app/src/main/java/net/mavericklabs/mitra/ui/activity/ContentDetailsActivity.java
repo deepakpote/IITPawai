@@ -626,8 +626,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
             Logger.d("file name is : " + fileName);
             String videoID = StringUtils.getVideoKeyFromUrl(fileName);
             Logger.d("video id is : " + videoID);
-
-            //TODO : use isDownloaded instead of isSaved
+            
             player.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
 
                 @Override
@@ -635,7 +634,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                     Logger.d("Error" + errorReason);
                     if(errorReason.equals(YouTubePlayer.ErrorReason.NETWORK_ERROR)
                             && !HttpUtils.isNetworkAvailable(getApplicationContext())
-                            && content.getSaved()) {
+                            && content.getDownloaded()) {
 
                         AlertDialog alertDialog = new AlertDialog.Builder(ContentDetailsActivity.this)
                                 .setMessage(getString(R.string.youtube_offline_available))

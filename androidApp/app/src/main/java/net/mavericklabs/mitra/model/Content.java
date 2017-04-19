@@ -86,6 +86,7 @@ public class Content implements Serializable, RealmModel, Parcelable {
     private Integer language;
 
     private Boolean isSaved;
+    private Boolean isDownloaded;
 
     public Content() {
 
@@ -124,6 +125,7 @@ public class Content implements Serializable, RealmModel, Parcelable {
         topic = (Integer) in.readValue(Integer.class.getClassLoader());
 
         isSaved = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        isDownloaded = (Boolean) in.readValue(Boolean.class.getClassLoader());
     }
 
     public static final Creator<Content> CREATOR = new Creator<Content>() {
@@ -250,6 +252,14 @@ public class Content implements Serializable, RealmModel, Parcelable {
         this.chapterID = chapterID;
     }
 
+    public Boolean getDownloaded() {
+        return isDownloaded;
+    }
+
+    public void setDownloaded(Boolean downloaded) {
+        isDownloaded = downloaded;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -273,6 +283,7 @@ public class Content implements Serializable, RealmModel, Parcelable {
         parcel.writeValue(subject);
         parcel.writeValue(topic);
         parcel.writeValue(isSaved);
+        parcel.writeValue(isDownloaded);
 
     }
 

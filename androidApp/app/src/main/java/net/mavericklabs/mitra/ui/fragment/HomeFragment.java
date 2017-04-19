@@ -205,8 +205,10 @@ public class HomeFragment extends Fragment{
                                     content.getContentID()).findFirst();
                             if(contentInDb != null) {
                                 content.setSaved(contentInDb.getSaved());
+                                content.setDownloaded(contentInDb.getDownloaded());
                             } else {
                                 content.setSaved(false);
+                                content.setDownloaded(false);
                             }
 
                             realm.copyToRealmOrUpdate(content);
@@ -264,8 +266,10 @@ public class HomeFragment extends Fragment{
                                     content.getContentID()).findFirst();
                             if(contentInDb != null) {
                                 content.setSaved(contentInDb.getSaved());
+                                content.setDownloaded(contentInDb.getDownloaded());
                             } else {
                                 content.setSaved(false);
+                                content.setDownloaded(false);
                             }
 
                             realm.copyToRealmOrUpdate(content);

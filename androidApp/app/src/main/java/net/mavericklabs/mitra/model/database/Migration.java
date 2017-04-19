@@ -96,6 +96,7 @@ public class Migration implements RealmMigration {
                     .addField("author",String.class)
                     .addField("objectives",String.class)
                     .addField("language",Integer.class)
+                    .addField("isDownloaded", Boolean.class)
                     .addField("isSaved", Boolean.class);
 
             schema.create("Chapter")

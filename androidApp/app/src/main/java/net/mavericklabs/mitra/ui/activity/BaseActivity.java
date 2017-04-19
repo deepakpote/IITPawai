@@ -44,6 +44,7 @@ public class BaseActivity extends AppCompatActivity {
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .schemaVersion(2) // Must be bumped when the schema changes
                 .migration(new Migration()) // Migration to run
+                .deleteRealmIfMigrationNeeded()
                 .build();
 
         Realm.setDefaultConfiguration(config);

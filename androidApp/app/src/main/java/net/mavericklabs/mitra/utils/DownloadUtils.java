@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.util.List;
 
+import io.realm.Realm;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okio.BufferedSink;
@@ -95,6 +96,14 @@ public class DownloadUtils {
                                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     context.startActivity(intent);
+
+                                    Realm realm = Realm.getDefaultInstance();
+                                    Content content = realm.where(Content.class).equalTo("contentID",contentID).findFirst();
+                                    realm.beginTransaction();
+                                    content.setDownloaded(true);
+                                    realm.copyToRealmOrUpdate(content);
+                                    realm.commitTransaction();
+
                                 }
                             }
 

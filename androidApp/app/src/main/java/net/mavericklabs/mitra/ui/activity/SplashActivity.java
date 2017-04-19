@@ -37,6 +37,7 @@ public class SplashActivity extends AppCompatActivity {
 
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .schemaVersion(2) // Must be bumped when the schema changes
+                .deleteRealmIfMigrationNeeded()
                 .migration(new Migration()) // Migration to run
                 .build();
 
@@ -82,7 +83,11 @@ public class SplashActivity extends AppCompatActivity {
                         Logger.d("server version : " + serverVersion);
                         if(!serverVersion.equalsIgnoreCase(localVersion)) {
                             realm.beginTransaction();
-                            realm.copyToRealmOrUpdate(wrapper.getCommonCode());
+
+                            RealmResults<CommonCode> results = realm.where(CommonCode.class).findAll();
+                            results.deleteAllFromRealm();
+                            realm.copyToRealm(wrapper.getCommonCode());
+
                             realm.commitTransaction();
                             MitraSharedPreferences.saveToPreferences(getApplicationContext(),"code_version",serverVersion);
                         }
