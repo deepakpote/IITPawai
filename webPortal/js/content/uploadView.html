@@ -218,7 +218,7 @@
                                 <div class="card-select"
                                      ng-class="($parent.content.chapterID?'orange-background':'teal-background')">
                                   <span ng-if="$parent.content.chapterID"
-                                        ng-repeat="chapter in chapterList | filter:{chapter : $parent.content.chapterID}">
+                                        ng-repeat="chapter in chapterList | filter:{chapter : $parent.content.chapterID} : true">
                                     {{chapter.chapterEng}}
                                   </span>
                                     <span ng-if="!$parent.content.chapterID">
