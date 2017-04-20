@@ -75,6 +75,40 @@ angular.module("mitraPortal").controller("reviewContentController",
                 $scope.mode = mode;
             };
 
+            $scope.sendForReview = function() {
+                var nextState = null;
+                if ($scope.content.contentTypeCodeID == '107100') {
+                    nextState = 'main.loggedIn.teachingAids';
+                }
+                else if ($scope.content.contentTypeCodeID == '107101') {
+                    nextState = 'main.loggedIn.selfLearning';
+                }
+
+                var options = {};
+                var data = {
+                    "contentID": $stateParams.contentID,
+                    "statusCodeID": appConstants.statusCode.sentForReview
+                };
+                options.data = data;
+                options.url = 'content/saveContentStatus/';
+                options.headers = {"authToken": appUtils.getFromCookies("token", "")};
+
+                appUtils.ajax(options,
+                    function (responseBody) {
+                        $log.debug("success");
+                        $log.debug(responseBody);
+                        $window.scrollTo(0, 0);
+                        $state.go(nextState);
+
+                    },
+                    function (responseBody) {
+                        $log.debug($scope.content.gradeCodeIDs);
+                        $log.debug("error");
+                        $log.debug(responseBody);
+                    }
+                );
+            };
+
             $scope.publish = function () {
                 var nextState = null;
                 if ($scope.content.contentTypeCodeID == '107100') {

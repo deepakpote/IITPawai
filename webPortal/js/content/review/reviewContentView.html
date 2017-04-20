@@ -76,7 +76,7 @@
                     </div>
 
                     <br />
-                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'">
+                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW' && isAdmin">
                         <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('subject')"
                            ng-class="checked['subject']?'orange-text':''">
                             check
@@ -102,7 +102,7 @@
                     </div>
 
                     <br />
-                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'">
+                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW' && isAdmin">
                         <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('fileType')"
                            ng-class="checked['fileType']?'orange-text':''">
                             check
@@ -142,7 +142,7 @@
                         </div>
                     </div>
                     <br />
-                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'">
+                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW' && isAdmin">
                         <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('grades')"
                            ng-class="checked['grades']?'orange-text':''">
                             check
@@ -180,7 +180,7 @@
 
 
                     <br />
-                    <div style="text-align:center;width:100%; " ng-if="mode=='PREVIEW'">
+                    <div style="text-align:center;width:100%; " ng-if="mode=='PREVIEW' && isAdmin">
                         <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('requirements')"
                            ng-class="checked['requirements']?'orange-text':''">
                             check
@@ -226,7 +226,7 @@
                         </div>
                     </div>
                     <br />
-                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'">
+                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW' && isAdmin">
                         <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('language')"
                            ng-class="checked['language']?'orange-text':''">
                             check
@@ -243,7 +243,7 @@
                             <div ng-show="isGradeAndSubjectSelected">
                                 <div class="card-select" ng-class="($parent.content.chapterID?'orange-background':'teal-background')">
                                   <span ng-if="$parent.content.chapterID"
-                                        ng-repeat="chapter in chapterList | filter:{chapter : $parent.content.chapterID}">
+                                        ng-repeat="chapter in chapterList | filter:{chapter : $parent.content.chapterID} : true">
                                     {{chapter.chapterEng}}
                                   </span>
                                     <span ng-if="!$parent.content.chapterID">
@@ -271,7 +271,7 @@
                         </div>
                     </div>
                     <br />
-                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'">
+                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW' && isAdmin">
                         <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('chapter')"
                            ng-class="checked['chapter']?'orange-text':''">
                             check
@@ -312,7 +312,7 @@
                         </div>
                     </div>
                     <br />
-                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW'">
+                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW' && isAdmin">
                         <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('topic')"
                            ng-class="checked['topic']?'orange-text':''">
                             check
@@ -336,7 +336,7 @@
                     <input type="text" class="form-control col-xs-4 review-input" style="width:80%" id="engContentTitle" name="engContentTitle" ng-disabled="mode!='EDIT'"
                            placeholder="English" ng-model="content.engContentTitle" required />
                     <i class="material-icons review-check" style="margin-left:40px;" ng-click="toggle('engContentTitle')"
-                       ng-class="checked['engContentTitle']?'orange-text':''" ng-if="mode=='PREVIEW'">
+                       ng-class="checked['engContentTitle']?'orange-text':''" ng-if="mode=='PREVIEW' && isAdmin">
                         check
                     </i>
 
@@ -353,7 +353,7 @@
                     <input type="text" class="form-control col-xs-4 review-input" style="width:80%"  id="marContentTitle" name="marContentTitle" placeholder="मराठी"  ng-disabled="mode!='EDIT'"
                            ng-model="content.marContentTitle" required />
                     <i class="material-icons review-check" ng-click="toggle('marContentTitle')"
-                       ng-class="checked['marContentTitle']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
+                       ng-class="checked['marContentTitle']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin">
                         check
                     </i>
                     <div ng-messages="frmContentUpload.marContentTitle.$error" ng-if="frmContentUpload.marContentTitle.$dirty">
@@ -377,7 +377,7 @@
                     <input type="text" class="form-control col-xs-4 review-input" style="width:80%"  id="engAuthor" name="engAuthor" placeholder="मराठी" style="width:80%"  ng-disabled="mode!='EDIT'"
                            ng-model="content.engAuthor" required />
                     <i class="material-icons review-check" ng-click="toggle('engAuthor')"
-                       ng-class="checked['engAuthor']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
+                       ng-class="checked['engAuthor']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin">
                         check
                     </i>
                     <div ng-messages="frmContentUpload.engAuthor.$error" ng-if="frmContentUpload.engAuthor.$dirty">
@@ -390,7 +390,7 @@
                     <input type="text" class="form-control col-xs-4 review-input" style="width:80%"  id="marAuthor" name="marAuthor" placeholder="मराठी"  ng-disabled="mode!='EDIT'"
                            ng-model="content.marAuthor" required />
                     <i class="material-icons review-check" ng-click="toggle('marAuthor')"
-                       ng-class="checked['marAuthor']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
+                       ng-class="checked['marAuthor']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin">
                         check
                     </i>
                     <div ng-messages="frmContentUpload.marAuthor.$error" ng-if="frmContentUpload.marAuthor.$dirty">
@@ -408,7 +408,7 @@
      <textarea form="frmContentUpload" class="form-control review-input" id="engInstruction" name="engInstruction" placeholder="English" style="width:80%"  ng-disabled="mode!='EDIT'"
                ng-model="content.engInstruction" required ></textarea>
                     <i class="material-icons review-check" ng-click="toggle('engInstruction')"
-                       ng-class="checked['engInstruction']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
+                       ng-class="checked['engInstruction']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin">
                         check
                     </i>
                     <div ng-messages="frmContentUpload.engInstruction.$error" ng-if="frmContentUpload.engInstruction.$dirty">
@@ -421,7 +421,7 @@
      <textarea form="frmContentUpload" class="form-control review-input" id="marInstruction" name="marInstruction" placeholder="मराठी" style="width:80%"  ng-disabled="mode!='EDIT'"
                ng-model="content.marInstruction" required ></textarea>
                     <i class="material-icons review-check" ng-click="toggle('marInstruction')"
-                       ng-class="checked['marInstruction']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
+                       ng-class="checked['marInstruction']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin">
                         check
                     </i>
                     <div ng-messages="frmContentUpload.marInstruction.$error" ng-if="frmContentUpload.marInstruction.$dirty">
@@ -443,7 +443,7 @@
                         <div style="display:inline-block;cursor:pointer;" ng-click="contentEditable=true"><i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'">edit</i></div>
                     </div>
                     <i class="material-icons review-check" ng-click="toggle('fileName')"
-                       ng-class="checked['fileName']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW'">
+                       ng-class="checked['fileName']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin">
                         check
                     </i>
                 </div>
@@ -486,6 +486,10 @@
 <div class = "hr"> </div>
 
 <div class="upload-container">
+
+    <!-- TODO Add send for review button here only for that user-->
+    <input type="submit" ng-value="'Send for review'" ng-click="sendForReview()" class="btn btn-warning" ng-if="mode=='PREVIEW' && !isAdmin" />
+
     <input type="submit" ng-value="'Publish'" ng-click="publish()" class="btn btn-warning" ng-if="mode=='PREVIEW' && isAdmin" />
 
     <input type="submit" ng-value="'Save Changes'" ng-click=" frmContentUpload.$invalid? setDirty(frmContentUpload) : saveChanges()" class="btn btn-warning" ng-if="mode=='EDIT'" />
