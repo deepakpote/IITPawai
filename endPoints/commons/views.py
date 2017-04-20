@@ -524,6 +524,22 @@ def getCodeIDsAndCodeName(codeGroupID):
         
     return idAndNameDict
 
+'''
+common function to compare to arrays for similarities
+'''
+def shouldFilterFor(input, filterBasis):
+    if filterBasis is None:
+        return False
+
+    inputArray = getArrayFromCommaSepString(input)
+    
+    verdict = True;
+    for entry in inputArray:
+        if entry in filterBasis:
+            verdict = False
+     
+    return verdict
+
 """
 Common function used to get the array from comma separated string.
 """    
@@ -554,6 +570,7 @@ def getUserIDFromAuthToken(authToken):
     userID = int(objToken.user.userID)
     # return userID
     return userID
+
 """
 fuction to get comma separated string of Image URLs for a news
 """

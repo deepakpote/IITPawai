@@ -220,7 +220,15 @@ class sms():
     
 class ekStep():
     url = 'https://qa.ekstep.in/api/content/v3/search'
+    apiKey = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI4N2JhOTkzODA1NmM0YTJmOGI0MjcwYjQ3NmEwMjBjMiJ9.EDYxG8Tv-NOipka1_FcHj5ZOEJ0dHiwp_GG0Ge7o4rI'
+    contentPreviewUrl = 'https://qa.ekstep.in/preview/content/'
 
+class ekStepCodes():
+    numeracy = 'numeracy'
+    literacy = 'literacy'
+    marathi = 'Marathi'
+    english = 'English'
+    
 class mitraCodeGroup():
     subject = 103 
     grade = 104   
@@ -266,6 +274,12 @@ class language():
 class appLanguage():
     english = 113100
     marathi = 113101
+    
+class grade():
+    gradeOne = 104100
+    gradeTwo = 104101
+    gradeThree = 104102
+    gradeFour = 104103
 
 class imageDir():
     path = "/static/user/"
