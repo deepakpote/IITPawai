@@ -1991,7 +1991,7 @@ def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
                            "gradeLevel", "contentType", "lastUpdatedBy", "identifier", "domain"],
                 "tags" : ["MAA"],
                 "status": ["Live"],
-                "limit" : 10
+                "limit" : constants.ekStep.paginationSize
             }
         }
     }
