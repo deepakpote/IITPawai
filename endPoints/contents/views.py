@@ -183,8 +183,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                                  "data": []},
                                 status = status.HTTP_404_NOT_FOUND)
                 
-        if fileTypeCodeID == 108105:
-             return getContentFromEkStepAPI()
+        if fileTypeCodeID == constants.mitraCode.ekStep:
+             return getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs)
             
         #Get the applicable subject list for the respective user.    
         arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs)         
@@ -1979,8 +1979,8 @@ def statusHttpBadRequest(responseMessage):
 '''
 Function to fetch data from ekStep
 '''
-def getContentFromEkStepAPI():
-    url = 'https://qa.ekstep.in/api/content/v3/search'
+def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
+    url = constants.ekStep.url
     headers = {'Content-Type': 'application/json',
                'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI4N2JhOTkzODA1NmM0YTJmOGI0MjcwYjQ3NmEwMjBjMiJ9.EDYxG8Tv-NOipka1_FcHj5ZOEJ0dHiwp_GG0Ge7o4rI'
                }
@@ -1989,9 +1989,10 @@ def getContentFromEkStepAPI():
             "search": {
                 "contentType": ["Story", "Worksheet", "Collection", "Game"],
                 "fields": ["name", "downloadUrl", "createdOn", "lastUpdatedOn", "subject","language", 
-                           "gradeLevel", "contentType", "lastUpdatedBy", "identifier"],
+                           "gradeLevel", "contentType", "lastUpdatedBy", "identifier", "domain"],
                 "tags" : ["MAA"],
-                "status": []
+                "status": [],
+                "limit" : 10
             }
         }
     }
@@ -2004,13 +2005,13 @@ def getContentFromEkStepAPI():
             if entry == "result":
                 contentArray = value['content']
         
-        for entry in contentArray:  
+        for entry in contentArray:
             responseDataSingle = {
                         'contentID' : 0,
                         'contentTitle' : entry['name'],
                         'contentType' : constants.mitraCode.teachingAids,
                         'gradeCodeIDs' : mapGrades(entry['gradeLevel']),
-                        'subject' : mapSubject(entry['subject']),
+                        'subject' : mapSubject(entry['domain'], entry['language']),
                         'topic' : "",
                         'requirementCodeIDs': "",
                         'instruction': "",
@@ -2024,9 +2025,12 @@ def getContentFromEkStepAPI():
                         'chapterID': ""
                     }
         
-            responseData.append(responseDataSingle)
+#             print "*****************", shouldFilterFor(responseDataSingle['gradeCodeIDs'], gradeCodeIDs)        
+            if not shouldFilterFor(responseDataSingle['gradeCodeIDs'], gradeCodeIDs):
+                if not shouldFilterFor(responseDataSingle['subject'], subjectCodeIDs): 
+                    responseData.append(responseDataSingle)
             
-#         print responseData        
+#         print responseData         
     except Exception as e:
             print "Exception", e
     
@@ -2044,16 +2048,11 @@ def getContentFromEkStepAPI():
 
 def mapGrades(gradeLevel):
     
-    ekStepGradesToMitraGradesDict = {'Grade 1' : '104100',
+    ekStepGradesToMitraGradesDict = {
+                                     'Grade 1' : '104100',
                                      'Grade 2' : '104101',
                                      'Grade 3' : '104102',
-                                     'Grade 4' : '104103',
-                                     'Grade 5' : '104104',
-                                     'Grade 6' : '104105',
-                                     'Grade 7' : '104106',
-                                     'Grade 8' : '104107',
-                                     'Grade 9' : '104108',
-                                     'Grade 10': '104109'
+                                     'Grade 4' : '104103'
                                     }
       
     gradesOut = ""
@@ -2062,20 +2061,32 @@ def mapGrades(gradeLevel):
 
     return gradesOut[:-1]    
 
-
-def mapSubject(subjectEkStep):
-
-    subjectIdAndName = getCodeIDsAndCodeName(constants.mitraCodeGroup.subject)
+def mapSubject(domainArray, languageArray):
     
-    if subjectIdAndName[subjectEkStep] is None:
-        return subjectIdAndName['Literacy']
-    else :
-        return subjectIdAndName[subjectEkStep]
+    subjectIdNameDict = getCodeIDsAndCodeName(constants.mitraCodeGroup.subject)
+    subjectOut = ""
+    
+    if domainArray[0] == "numeracy":
+        subjectOut = subjectOut + str(subjectIdNameDict['Maths']) + ","
+    elif domainArray[0] == "literacy" and languageArray[0] == "Marathi":
+        subjectOut = subjectOut + str(subjectIdNameDict['Marathi']) + ","  
+    elif domainArray[0] == "literacy" and languageArray[0] == "English":
+        subjectOut = subjectOut + str(subjectIdNameDict['English']) + ","
+    
+    return subjectOut[:-1] 
     
 def mapLanguage(languageArray):
+    
+    languageIdNameDict = getCodeIDsAndCodeName(constants.mitraCodeGroup.language)
+    
+    ekStepLanguageToCodeDict = {
+                                'English' : languageIdNameDict['English'],
+                                'Marathi' : languageIdNameDict['Marathi']
+                                }
+    
     languageOut = ""
     for language in languageArray:
-        languageOut = languageOut + language + ","
+        languageOut = languageOut + str(ekStepLanguageToCodeDict[language]) + ","
         
     return languageOut[:-1]
     
@@ -2083,6 +2094,20 @@ def mapLanguage(languageArray):
 def getFileNameFromEkStep(identifier):
     contextPath = "https://qa.ekstep.in/preview/content/"
     return contextPath + str(identifier)     
+
+
+def shouldFilterFor(input, filterBasis):
+    if filterBasis is None:
+        return False
+
+    inputArray = getArrayFromCommaSepString(input)
+    
+    verdict = True;
+    for entry in inputArray:
+        if entry in filterBasis:
+            verdict = False
+     
+    return verdict
 
 def formatDate(dateEkStep):
      strftime
