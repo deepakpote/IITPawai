@@ -14,10 +14,10 @@ from contents.models import content , contentResponse  , contentGrade , contentD
 from commons.models import code
 from users.models import userSubject, user, userGrade, userTopic , userContent, userRole
 from mitraEndPoints import constants , utils
-from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
+from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken, getCodeIDsAndCodeName, shouldFilterFor
 from pip._vendor.requests.api import request
+import requests
 from fileinput import filename
-
 
 class ContentViewSet(viewsets.ModelViewSet):
     """
@@ -182,7 +182,9 @@ class ContentViewSet(viewsets.ModelViewSet):
                                  "data": []},
                                 status = status.HTTP_404_NOT_FOUND)
                 
-
+        if fileTypeCodeID == constants.mitraCode.ekStep:
+             return getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs)
+            
         #Get the applicable subject list for the respective user.    
         arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs)         
 
@@ -1972,4 +1974,131 @@ def statusHttpBadRequest(responseMessage):
         return Response({"response_message": responseMessage,
                      "data": []},
                      status = status.HTTP_400_BAD_REQUEST)
+        
+'''
+Function to fetch data from ekStep
+'''
+def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
+    url = constants.ekStep.url
+    headers = {'Content-Type': 'application/json',
+               'Authorization' : constants.ekStep.apiKey
+               }
+    requestBody = {
+        "request": { 
+            "search": {
+                "contentType": ["Story", "Worksheet", "Collection", "Game"],
+                "fields": ["name", "downloadUrl", "createdOn", "lastUpdatedOn", "subject","language", 
+                           "gradeLevel", "contentType", "lastUpdatedBy", "identifier", "domain"],
+                "tags" : ["MAA"],
+                "status": ["Live"],
+                "limit" : constants.ekStep.paginationSize
+            }
+        }
+    }
+        
+    try :
+#         call ekstep to get a respnse
+        ekStepResponse = requests.post(url, headers=headers, json=requestBody)
+        responseData = []
+        
+#         process every entry for key - result which has an array of content
+        for entry, value in ekStepResponse.json().iteritems():
+            if entry == "result":
+                contentArray = value['content']
+        
+#         construct a response for mitra
+        for entry in contentArray:
+            responseDataSingle = {
+                        'contentID' : 0,
+                        'contentTitle' : entry['name'],
+                        'contentType' : constants.mitraCode.teachingAids,
+                        'gradeCodeIDs' : mapGrades(entry['gradeLevel']),
+                        'subject' : mapSubject(entry['domain'], entry['language']),
+                        'topic' : "",
+                        'requirementCodeIDs': "",
+                        'instruction': "",
+                        'fileType' : constants.mitraCode.ekStep,
+                        'fileName': getFileNameFromEkStep(entry['identifier']),
+                        'author': "",
+                        'objectives' : "",
+                        'language': mapLanguage(entry['language']),
+                        'createdOn': entry['createdOn'],
+                        'modifiedOn': entry['lastUpdatedOn'],
+                        'chapterID': ""
+                    }
+#            filters for subject and grade  
+            if  (shouldFilterFor(responseDataSingle['gradeCodeIDs'], gradeCodeIDs) == False and
+                 shouldFilterFor(responseDataSingle['subject'], subjectCodeIDs) == False): 
+                    responseData.append(responseDataSingle)
+                     
+    except Exception as e:
+            print "Exception", e
+    
+    #Set query string to the contentSerializer
+    objContentSerializer = teachingAidSerializer(responseData, many = True)
+    #Set serializer data to the response 
+    response = objContentSerializer.data
+    
+    #Return the response
+    return Response({"response_message": constants.messages.success, "data": response})
+
+'''
+function to map ekStep grades with mitra grade codes
+'''
+def mapGrades(gradeLevel):
+    
+    ekStepGradesToMitraGradesDict = {
+                                     'Grade 1' : constants.grade.gradeOne,
+                                     'Grade 2' : constants.grade.gradeTwo,
+                                     'Grade 3' : constants.grade.gradeThree,
+                                     'Grade 4' : constants.grade.gradeFour
+                                    }
+      
+    gradesOut = ""
+    for grade in gradeLevel:
+        gradesOut = gradesOut + str(ekStepGradesToMitraGradesDict[grade]) + "," 
+#     return the entire string except the last comma
+    return gradesOut[:-1]    
+
+'''
+function to map ekStep domain and language to mitra's subject
+'''
+def mapSubject(domainArray, languageArray):
+    
+    subjectIdNameDict = getCodeIDsAndCodeName(constants.mitraCodeGroup.subject)
+    subjectOut = ""
+    
+    if domainArray[0] == constants.ekStepCodes.numeracy:
+        subjectOut = subjectOut + str(subjectIdNameDict['Maths']) + ","
+    elif domainArray[0] == constants.ekStepCodes.literacy and languageArray[0] == constants.ekStepCodes.marathi:
+        subjectOut = subjectOut + str(subjectIdNameDict['Marathi']) + ","  
+    elif domainArray[0] == constants.ekStepCodes.literacy and languageArray[0] == constants.ekStepCodes.english:
+        subjectOut = subjectOut + str(subjectIdNameDict['English']) + ","
+    #     return the entire string except the last comma
+    return subjectOut[:-1] 
+
+'''
+function to map ekStep language to mitra language codes
+'''    
+def mapLanguage(languageArray):
+    
+    ekStepLanguageToCodeDict = {
+                                constants.ekStepCodes.marathi : constants.language.english,
+                                constants.ekStepCodes.english : constants.language.marathi
+                                }
+    
+    languageOut = ""
+    for language in languageArray:
+        languageOut = languageOut + str(ekStepLanguageToCodeDict[language]) + ","
+#     return the entire string except the last comma   
+    return languageOut[:-1]
+    
+'''
+function to cnstruct a preview URL of ekstep content
+'''       
+def getFileNameFromEkStep(identifier):
+    contextPath = constants.ekStep.contentPreviewUrl
+    return contextPath + str(identifier)     
+
+
     

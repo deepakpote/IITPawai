@@ -199,8 +199,6 @@ class messages():
     uploadContent_upload_file_or_give_filename = 100262
     uploadContent_upload_a_valid_file = 100263
     
-
-
 class webportalmessages():    
     web_admin_invalid_token = 200100
     web_admin_phoneno_not_registered = 200101
@@ -219,7 +217,19 @@ class sms():
     registrationMessage = "Thank you for registering with MITRA. Your OTP Code is : "
     signInMessage = "Your MITRA Sign In OTP is : "
     sendSMS = False
+    
+class ekStep():
+    url = 'https://qa.ekstep.in/api/content/v3/search'
+    apiKey = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI4N2JhOTkzODA1NmM0YTJmOGI0MjcwYjQ3NmEwMjBjMiJ9.EDYxG8Tv-NOipka1_FcHj5ZOEJ0dHiwp_GG0Ge7o4rI'
+    contentPreviewUrl = 'https://qa.ekstep.in/preview/content/'
+    paginationSize = 100
 
+class ekStepCodes():
+    numeracy = 'numeracy'
+    literacy = 'literacy'
+    marathi = 'Marathi'
+    english = 'English'
+    
 class mitraCodeGroup():
     subject = 103 
     grade = 104   
@@ -265,6 +275,12 @@ class language():
 class appLanguage():
     english = 113100
     marathi = 113101
+    
+class grade():
+    gradeOne = 104100
+    gradeTwo = 104101
+    gradeThree = 104102
+    gradeFour = 104103
 
 class imageDir():
     path = "/static/user/"

@@ -513,8 +513,35 @@ def getCodeIDs(codeGroupID):
     if len(arrCodeIDs) > 0:
         return arrCodeIDs
     
+def getCodeIDsAndCodeName(codeGroupID):
+        
+    idAndNameDict = {}
+    
+    #get all code IDs with their respective code name
+    objCodeList = code.objects.filter(codeGroup = codeGroupID)
+    for objCode in objCodeList:
+        idAndNameDict[objCode.codeNameEn] = objCode.codeID
+        
+    return idAndNameDict
+
+'''
+common function to compare to arrays for similarities
+'''
+def shouldFilterFor(input, filterBasis):
+    if filterBasis is None:
+        return False
+
+    inputArray = getArrayFromCommaSepString(input)
+    
+    verdict = True;
+    for entry in inputArray:
+        if entry in filterBasis:
+            verdict = False
+     
+    return verdict
+
 """
-Common function used to get the array from comma seprated string.
+Common function used to get the array from comma separated string.
 """    
 def getArrayFromCommaSepString(CommaSepString):
     
@@ -543,6 +570,7 @@ def getUserIDFromAuthToken(authToken):
     userID = int(objToken.user.userID)
     # return userID
     return userID
+
 """
 fuction to get comma separated string of Image URLs for a news
 """
