@@ -27,6 +27,9 @@ function TeachingAidsController(TeachingAidsService,commonService,$scope,appCons
     vm.setDescending = setDescending;
     vm.orderByKey = '';
     vm.isAdmin = appUtils.isAdmin();
+    if(!vm.isAdmin) {
+        vm.status = 114100;
+    }
     activate();
 
     ////////////////
