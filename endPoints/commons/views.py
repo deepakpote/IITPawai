@@ -525,10 +525,10 @@ def getCodeIDsAndCodeName(codeGroupID):
     return idAndNameDict
 
 '''
-common function to compare to arrays for similarities
+common function to compare two lists for similarities
 '''
 def shouldFilterFor(input, filterBasis):
-    if filterBasis is None:
+    if filterBasis is None or not filterBasis:
         return False
 
     inputArray = getArrayFromCommaSepString(input)
