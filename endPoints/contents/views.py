@@ -2034,10 +2034,16 @@ def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
     except Exception as e:
             print "Exception", e
     
+    if not responseData:
+            return Response({"response_message": constants.messages.teaching_aid_search_no_records_found,
+                    "data": []},
+                    status = status.HTTP_200_OK) 
+            
     #Set query string to the contentSerializer
     objContentSerializer = teachingAidSerializer(responseData, many = True)
     #Set serializer data to the response 
     response = objContentSerializer.data
+    
     
     #Return the response
     return Response({"response_message": constants.messages.success, "data": response})
