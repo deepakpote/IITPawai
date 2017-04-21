@@ -2014,7 +2014,7 @@ def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
                         'contentType' : constants.mitraCode.teachingAids,
                         'gradeCodeIDs' : mapGrades(entry['gradeLevel']),
                         'subject' : mapSubject(entry['domain'], entry['language']),
-                        'topic' : "",
+                        'topic' : None,
                         'requirementCodeIDs': "",
                         'instruction': "",
                         'fileType' : constants.mitraCode.ekStep,
