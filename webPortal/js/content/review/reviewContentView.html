@@ -234,7 +234,7 @@
                     </div>
                     <br />
 
-                    <div class="card">
+                    <div class="card" ng-if="content.contentTypeCodeID == 107100">
                         <div class="options-card" ng-mouseenter=setSelectedOption("Chapter")
                              ng-mouseleave=setSelectedOption("") >
                             <div class="card-content">
@@ -271,7 +271,7 @@
                         </div>
                     </div>
                     <br />
-                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW' && isAdmin">
+                    <div style="text-align:center;width:100%;" ng-if="mode=='PREVIEW' && isAdmin && content.contentTypeCodeID == 107100">
                         <i class="material-icons" style="font-size:36px;cursor:pointer;" ng-click="toggle('chapter')"
                            ng-class="checked['chapter']?'orange-text':''">
                             check

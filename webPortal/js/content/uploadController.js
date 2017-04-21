@@ -204,6 +204,11 @@ angular.module("mitraPortal").controller("uploadController",
 
             $scope.contentTypeOnClick = function (selectedContentTypeCodeID) {
                 $scope.content.contentTypeCodeID = selectedContentTypeCodeID;
+                if($scope.content.contentTypeCodeID === appConstants.contentTypeCode.selfLearning) {
+                    $scope.content.fileTypeCodeID = appConstants.fileTypeCode.video;
+                } else {
+                    $scope.content.fileTypeCodeID = undefined;
+                }
             };
 
             $scope.isContentTypeSelected = function (contentTypeCodeID) {
