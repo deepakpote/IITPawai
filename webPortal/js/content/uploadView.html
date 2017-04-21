@@ -420,7 +420,7 @@
 
             <div class="upload-title">Content Link/Upload</div>
             <div class="col-md-8">
-                <div ng-if="!content.fileTypeCodeID">
+                <div ng-if="!content.fileTypeCodeID && !isContentTypeSelfLearning()">
                     Please select a content type to upload a file or enter a video link.
                 </div>
 

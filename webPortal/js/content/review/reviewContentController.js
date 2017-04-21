@@ -127,10 +127,19 @@ angular.module("mitraPortal").controller("reviewContentController",
                     if ($scope.checked.language && $scope.checked.topic &&
                         $scope.checked.marAuthor && $scope.checked.marContentTitle && $scope.checked.marInstruction &&
                         $scope.checked.engAuthor && $scope.checked.engContentTitle && $scope.checked.engInstruction &&
-                        $scope.checked.fileName && $scope.checked.fileType) {
+                        $scope.checked.fileName) {
                         nextState = 'main.loggedIn.selfLearning';
                     }
                     else {
+                        console.log($scope.checked.language);
+                        console.log($scope.checked.topic);
+                        console.log($scope.checked.marAuthor);
+                        console.log($scope.checked.marContentTitle);
+                        console.log($scope.checked.marInstruction);
+                        console.log($scope.checked.engAuthor);
+                        console.log($scope.checked.engContentTitle);
+                        console.log($scope.checked.engInstruction);
+                        console.log($scope.checked.fileName);
                         alert("Please check all fields and mark as correct");
                         return
                     }

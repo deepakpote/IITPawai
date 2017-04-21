@@ -31,6 +31,9 @@
         vm.orderByKey = '';
         vm.setAscending = setAscending;
         vm.setDescending = setDescending;
+        if(!vm.isAdmin) {
+            vm.status = 114100;
+        }
 
         activate();
 
