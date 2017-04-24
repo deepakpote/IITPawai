@@ -1983,27 +1983,40 @@ def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
     headers = {'Content-Type': 'application/json',
                'Authorization' : constants.ekStep.apiKey
                }
-    requestBody = {
-        "request": { 
-            "search": {
-                "contentType": ["Story", "Worksheet", "Collection", "Game"],
-                "fields": ["name", "downloadUrl", "createdOn", "lastUpdatedOn", "subject","language", 
-                           "gradeLevel", "contentType", "lastUpdatedBy", "identifier", "domain"],
-                "tags" : ["MAA"],
-                "status": ["Live"],
-                "limit" : constants.ekStep.paginationSize
+      
+    filters = {
+            "contentType":["Story","Worksheet","Game","Collection","Textbook"],
+            "objectType":["Content"],
+            "status":["Live"],
+            "tags":["MAA"]
             }
-        }
-    }
+    # if no inputs for gradeCodeIDs then fetch content for grade 1 to 4
+    if not gradeCodeIDs or gradeCodeIDs == None:
+        filters["gradeLevel"] =  ["Grade 1","Grade 2","Grade 3","Grade 4"]
         
+    # if no inputs for subjectCodeID then fetch contents for english, marathi and hindi language only
+    if not subjectCodeIDs or subjectCodeIDs == None:
+          filters["language"] = ["English","Marathi","Hindi"]
+        
+    requestBody = {
+                    "request":
+                        {
+                            "filters": filters,
+                            "limit": "1000"
+                        }
+                   }
+        
+    responseData = []    
     try :
-#         call ekstep to get a respnse
+#         call ekstep to get a response
         ekStepResponse = requests.post(url, headers=headers, json=requestBody)
-        responseData = []
+        count = 0;
+        
+        print "ekStepResponse:",ekStepResponse
         
 #         process every entry for key - result which has an array of content
         for entry, value in ekStepResponse.json().iteritems():
-            if entry == "result":
+            if entry == "result":                
                 contentArray = value['content']
         
 #         construct a response for mitra
@@ -2030,14 +2043,22 @@ def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
             if  (shouldFilterFor(responseDataSingle['gradeCodeIDs'], gradeCodeIDs) == False and
                  shouldFilterFor(responseDataSingle['subject'], subjectCodeIDs) == False): 
                     responseData.append(responseDataSingle)
+                    
+        print "ekStepResponse:",ekStepResponse
                      
     except Exception as e:
             print "Exception", e
     
+    if not responseData:
+            return Response({"response_message": constants.messages.teaching_aid_search_no_records_found,
+                    "data": []},
+                    status = status.HTTP_200_OK) 
+            
     #Set query string to the contentSerializer
     objContentSerializer = teachingAidSerializer(responseData, many = True)
     #Set serializer data to the response 
     response = objContentSerializer.data
+    
     
     #Return the response
     return Response({"response_message": constants.messages.success, "data": response})
@@ -2056,6 +2077,8 @@ def mapGrades(gradeLevel):
       
     gradesOut = ""
     for grade in gradeLevel:
+        if grade == 'Kindergarten' or grade == 'Other' or grade == 'Grade 5':
+            continue
         gradesOut = gradesOut + str(ekStepGradesToMitraGradesDict[grade]) + "," 
 #     return the entire string except the last comma
     return gradesOut[:-1]    
