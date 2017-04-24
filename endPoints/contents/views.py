@@ -1983,27 +1983,29 @@ def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
     headers = {'Content-Type': 'application/json',
                'Authorization' : constants.ekStep.apiKey
                }
-    requestBody = {
-        "request": { 
-            "search": {
-                "contentType": ["Story", "Worksheet", "Collection", "Game"],
-                "fields": ["name", "downloadUrl", "createdOn", "lastUpdatedOn", "subject","language", 
-                           "gradeLevel", "contentType", "lastUpdatedBy", "identifier", "domain"],
-                "tags" : ["MAA"],
-                "status": ["Live"],
-                "limit" : constants.ekStep.paginationSize
+    filters = {
+            "contentType":["Story","Worksheet","Game","Collection","Textbook"],
+            "objectType":["Content"],
+            "status":["Live"],
+            "tags":["MAA"]
             }
-        }
-    }
+    requestBody = {
+                    "request":
+                        {
+                            "filters": filters,
+                            "limit": "1000"
+                        }
+                   }
         
+    responseData = []    
     try :
-#         call ekstep to get a respnse
+#         call ekstep to get a response
         ekStepResponse = requests.post(url, headers=headers, json=requestBody)
-        responseData = []
+        count = 0;
         
 #         process every entry for key - result which has an array of content
         for entry, value in ekStepResponse.json().iteritems():
-            if entry == "result":
+            if entry == "result":                
                 contentArray = value['content']
         
 #         construct a response for mitra

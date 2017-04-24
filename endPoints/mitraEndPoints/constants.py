@@ -219,10 +219,10 @@ class sms():
     sendSMS = False
     
 class ekStep():
-    url = 'https://qa.ekstep.in/api/content/v3/search'
-    apiKey = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI4N2JhOTkzODA1NmM0YTJmOGI0MjcwYjQ3NmEwMjBjMiJ9.EDYxG8Tv-NOipka1_FcHj5ZOEJ0dHiwp_GG0Ge7o4rI'
-    contentPreviewUrl = 'https://qa.ekstep.in/assets/public/preview/preview.html?webview=true&id='
-    paginationSize = 100
+    url = 'https://api.ekstep.in/content/v3/adv/search'
+    apiKey = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJmOGE0OTY3ZDM1MGE0ZGZmOTIwZGZkMzBhNGIzMWEyZCJ9.fBbwEvh3uapTCCVFekBqV4n_Ef_5IlVomOgt6p9ITOY'
+    contentPreviewUrl = 'https://community.ekstep.in/assets/public/preview/preview.html?webview=true&id='
+    paginationSize = 1000
 
 class ekStepCodes():
     numeracy = 'numeracy'
