@@ -1983,12 +1983,21 @@ def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
     headers = {'Content-Type': 'application/json',
                'Authorization' : constants.ekStep.apiKey
                }
+      
     filters = {
             "contentType":["Story","Worksheet","Game","Collection","Textbook"],
             "objectType":["Content"],
             "status":["Live"],
             "tags":["MAA"]
             }
+    # if no inputs for gradeCodeIDs then fetch content for grade 1 to 4
+    if not gradeCodeIDs or gradeCodeIDs == None:
+        filters["gradeLevel"] =  ["Grade 1","Grade 2","Grade 3","Grade 4"]
+        
+    # if no inputs for subjectCodeID then fetch contents for english, marathi and hindi language only
+    if not subjectCodeIDs or subjectCodeIDs == None:
+          filters["language"] = ["English","Marathi","Hindi"]
+        
     requestBody = {
                     "request":
                         {
@@ -2002,6 +2011,8 @@ def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
 #         call ekstep to get a response
         ekStepResponse = requests.post(url, headers=headers, json=requestBody)
         count = 0;
+        
+        print "ekStepResponse:",ekStepResponse
         
 #         process every entry for key - result which has an array of content
         for entry, value in ekStepResponse.json().iteritems():
@@ -2032,6 +2043,8 @@ def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
             if  (shouldFilterFor(responseDataSingle['gradeCodeIDs'], gradeCodeIDs) == False and
                  shouldFilterFor(responseDataSingle['subject'], subjectCodeIDs) == False): 
                     responseData.append(responseDataSingle)
+                    
+        print "ekStepResponse:",ekStepResponse
                      
     except Exception as e:
             print "Exception", e
@@ -2064,6 +2077,8 @@ def mapGrades(gradeLevel):
       
     gradesOut = ""
     for grade in gradeLevel:
+        if grade == 'Kindergarten' or grade == 'Other' or grade == 'Grade 5':
+            continue
         gradesOut = gradesOut + str(ekStepGradesToMitraGradesDict[grade]) + "," 
 #     return the entire string except the last comma
     return gradesOut[:-1]    
