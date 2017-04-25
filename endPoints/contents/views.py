@@ -2107,6 +2107,8 @@ def mapSubject(domainArray, languageArray):
         subjectOut = subjectOut + str(subjectIdNameDict['Marathi']) + ","  
     elif constants.ekStepCodes.literacy in domainArray and languageArray[0] == constants.ekStepCodes.english:
         subjectOut = subjectOut + str(subjectIdNameDict['English']) + ","
+    else:
+        subjectOut = None
     return subjectOut[:-1] 
 
 '''
