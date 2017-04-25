@@ -2093,13 +2093,20 @@ def mapSubject(domainArray, languageArray):
     subjectIdNameDict = getCodeIDsAndCodeName(constants.mitraCodeGroup.subject)
     subjectOut = ""
     
-    if domainArray[0] == constants.ekStepCodes.numeracy:
-        subjectOut = subjectOut + str(subjectIdNameDict['Maths']) + ","
-    elif domainArray[0] == constants.ekStepCodes.literacy and languageArray[0] == constants.ekStepCodes.marathi:
-        subjectOut = subjectOut + str(subjectIdNameDict['Marathi']) + ","  
-    elif domainArray[0] == constants.ekStepCodes.literacy and languageArray[0] == constants.ekStepCodes.english:
-        subjectOut = subjectOut + str(subjectIdNameDict['English']) + ","
+#     if domainArray[0] == constants.ekStepCodes.numeracy:
+#         subjectOut = subjectOut + str(subjectIdNameDict['Maths']) + ","
+#     elif domainArray[0] == constants.ekStepCodes.literacy and languageArray[0] == constants.ekStepCodes.marathi:
+#         subjectOut = subjectOut + str(subjectIdNameDict['Marathi']) + ","  
+#     elif domainArray[0] == constants.ekStepCodes.literacy and languageArray[0] == constants.ekStepCodes.english:
+#         subjectOut = subjectOut + str(subjectIdNameDict['English']) + ","
     #     return the entire string except the last comma
+    
+    if constants.ekStepCodes.numeracy in domainArray:
+        subjectOut = subjectOut + str(subjectIdNameDict['Maths']) + ","
+    elif constants.ekStepCodes.literacy in domainArray and languageArray[0] == constants.ekStepCodes.marathi:
+        subjectOut = subjectOut + str(subjectIdNameDict['Marathi']) + ","  
+    elif constants.ekStepCodes.literacy in domainArray and languageArray[0] == constants.ekStepCodes.english:
+        subjectOut = subjectOut + str(subjectIdNameDict['English']) + ","
     return subjectOut[:-1] 
 
 '''
