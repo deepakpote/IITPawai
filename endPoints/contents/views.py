@@ -1988,7 +1988,8 @@ def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
             "contentType":["Story","Worksheet","Game","Collection","Textbook"],
             "objectType":["Content"],
             "status":["Live"],
-            "tags":["MAA"]
+            "tags":["MAA"],
+            "domain": ["literacy","numeracy"],
             }
     # if no inputs for gradeCodeIDs then fetch content for grade 1 to 4
     if not gradeCodeIDs or gradeCodeIDs == None:
@@ -1997,7 +1998,8 @@ def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
     # if no inputs for subjectCodeID then fetch contents for english, marathi and hindi language only
     if not subjectCodeIDs or subjectCodeIDs == None:
           filters["language"] = ["English","Marathi","Hindi"]
-        
+          
+     
     requestBody = {
                     "request":
                         {
