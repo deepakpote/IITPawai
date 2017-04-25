@@ -108,4 +108,6 @@
     <string name="toast_not_available_offline">फाइल ऑफलाइन उपलब्ध नाही</string>
     <string name="youtube_offline_available">आपण सध्या ऑफलाइन आहात. हा व्हिडिओ ऑफलाइन उपलब्ध असू शकतो. YouTube अॅप वर जा आणि व्हिडिओ पाहण्यासाठी ऑफलाइन व्हिडिओ तपासा.</string>
     <string name="youtube_save_offline_dialog">तुम्हाला आता YouTube अॅप वर नेले जाईल. आपल्या डिव्हाइसवर व्हिडिओ डाउनलोड करण्यासाठी \'Save\' वर क्लिक करा</string>
+    <string name="not_now">नाही</string>
+    <string name="ok">ठीक आहे</string>
 </resources>

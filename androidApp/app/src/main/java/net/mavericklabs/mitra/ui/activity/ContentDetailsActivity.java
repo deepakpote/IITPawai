@@ -23,21 +23,14 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
-import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
@@ -90,8 +83,6 @@ import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,10 +91,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okio.BufferedSink;
-import okio.Okio;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -119,6 +106,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
     @BindView(R.id.details) TextView details;
     @BindView(R.id.description) TextView description;
     @BindView(R.id.requirements_layout) LinearLayout requirementsLayout;
+    @BindView(R.id.actions_layout) LinearLayout actionsLayout;
     @BindView(R.id.loading_panel) RelativeLayout loadingPanel;
     @BindView(R.id.like_icon) ImageView likeIcon;
     @BindView(R.id.save_icon) ImageView saveIcon;
@@ -129,6 +117,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
     @BindView(R.id.content_web_view) WebView contentWebView;
     @BindView(R.id.loading_panel_for_web_view) RelativeLayout loadingPanelForWebView;
     @BindView(R.id.content_chapter) TextView contentChapter;
+    @BindView(R.id.view_full_screen) ImageView viewFullScreen;
 
     @OnClick(R.id.share_icon)
     void shareContent() {
@@ -286,6 +275,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
     private boolean isLiked;
     private boolean isSaved;
     private FirebaseAnalytics firebaseAnalytics;
+    private DisplayMetrics displayMetrics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -297,7 +287,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
         ButterKnife.bind(this);
 
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        displayMetrics = getResources().getDisplayMetrics();
 
         ViewGroup.LayoutParams imageLayoutParams = contentImageView.getLayoutParams();
         imageLayoutParams.height = displayMetrics.heightPixels / 3;
@@ -354,8 +344,8 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                 contentImageView.setVisibility(View.GONE);
                 contentWebView.setVisibility(View.GONE);
                 contentLayout.setBackgroundColor(Color.BLACK);
-                downloadIcon.setVisibility(View.VISIBLE);
-
+                actionsLayout.setVisibility(View.VISIBLE);
+                viewFullScreen.setVisibility(View.GONE);
 
 
                 YouTubePlayerSupportFragment frag =
@@ -367,47 +357,12 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
             } else if (content.getFileType().equals(Constants.FileTypePPT) ||
                     content.getFileType().equals(Constants.FileTypeWorksheet) ||
                     content.getFileType().equals(Constants.FileTypePDF)) {
+                actionsLayout.setVisibility(View.VISIBLE);
+                viewFullScreen.setVisibility(View.GONE);
                 youTubeLayout.setVisibility(View.GONE);
                 contentImageView.setVisibility(View.GONE);
-                ViewGroup.LayoutParams webViewLayoutParams = contentWebView.getLayoutParams();
-                webViewLayoutParams.height = (int)(displayMetrics.heightPixels / 2.62);
-                contentWebView.setLayoutParams(webViewLayoutParams);
-                contentWebView.getSettings().setJavaScriptEnabled(true);
-                contentWebView.getSettings().setDomStorageEnabled(true);
-                contentWebView.setWebViewClient(new WebViewClient(){
-                    @Override
-                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                        super.onPageStarted(view, url, favicon);
-                        loadingPanelForWebView.setVisibility(View.VISIBLE);
-                    }
+                setupContentWebView();
 
-                    @Override
-                    public void onLoadResource(WebView view, String url) {
-                        super.onLoadResource(view, url);
-                        Logger.d("on load resource..");
-                    }
-
-                    @Override
-                    public void onPageFinished(WebView view, String url) {
-                        super.onPageFinished(view, url);
-                        Logger.d("on page finished..");
-                        loadingPanelForWebView.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                        super.onReceivedError(view, request, error);
-                        Logger.d("error : " + error.toString());
-                        loadingPanelForWebView.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onReceivedHttpError(WebView view, WebResourceRequest request,
-                                                    WebResourceResponse errorResponse) {
-                        super.onReceivedHttpError(view, request, errorResponse);
-                        Logger.d("received http error : ");
-                    }
-                });
                 Logger.d("file path " + content.getFileName());
                 contentWebView.loadUrl("http://docs.google.com/gview?embedded=true&url=" + content.getFileName());
 
@@ -420,6 +375,38 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                             return true;
                         }
                         return false;
+                    }
+                });
+            } else if (content.getFileType().equals(Constants.FileTypeEkStep)) {
+
+                //Ekstep - No content ID - so cannot perform any actions
+                actionsLayout.setVisibility(View.GONE);
+                youTubeLayout.setVisibility(View.GONE);
+                viewFullScreen.setVisibility(View.VISIBLE);
+                contentWebView.setVisibility(View.GONE);
+
+                contentLayout.setBackgroundResource(R.drawable.gradient_background);
+                contentImageView.setVisibility(View.VISIBLE);
+
+                viewFullScreen.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getApplicationContext(), GenieActivity.class);
+                        Bundle genie = new Bundle();
+                        genie.putParcelable("content", content);
+                        intent.putExtras(genie);
+                        startActivity(intent);
+                    }
+                });
+
+                contentLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getApplicationContext(), GenieActivity.class);
+                        Bundle genie = new Bundle();
+                        genie.putParcelable("content", content);
+                        intent.putExtras(genie);
+                        startActivity(intent);
                     }
                 });
             } else {
@@ -467,6 +454,8 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                     requirementsGridView.setLayoutManager(gridLayoutManager);
                     requirementsGridView.setAdapter(new RequirementsListAdapter(getApplicationContext(), requirementsList));
 
+                } else {
+                    requirementsLayout.setVisibility(View.GONE);
                 }
 
                 Integer subjectCode = content.getSubject();
@@ -508,9 +497,18 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                 loadSimilarSelfLearning();
             }
 
+            if(StringUtils.isEmpty(content.getAuthor())) {
+                authorName.setVisibility(View.GONE);
+            } else {
+                authorName.setText(content.getAuthor());
+            }
+
+            if(StringUtils.isEmpty(content.getInstruction())) {
+                description.setVisibility(View.GONE);
+            } else {
+                description.setText(content.getInstruction());
+            }
             title.setText(content.getTitle());
-            authorName.setText(content.getAuthor());
-            description.setText(content.getInstruction());
 
             if(getSupportActionBar() != null) {
                 Logger.d(" action bar is not null");
@@ -524,8 +522,6 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
     }
 
     private void loadSimilarTeachingAids() {
-        //TODO similar resources - get resources with same file type, language, subject, grade - confirm
-
 
         TeachingAidsContentRequest contentRequest = new TeachingAidsContentRequest(content.getFileType(),
                 content.getSubject().toString(),
@@ -569,8 +565,49 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
         });
     }
 
+    private void setupContentWebView() {
+        ViewGroup.LayoutParams webViewLayoutParams = contentWebView.getLayoutParams();
+        webViewLayoutParams.height = (int)(displayMetrics.heightPixels / 2.62);
+        contentWebView.setLayoutParams(webViewLayoutParams);
+        contentWebView.getSettings().setJavaScriptEnabled(true);
+        contentWebView.getSettings().setDomStorageEnabled(true);
+        contentWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                loadingPanelForWebView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                super.onLoadResource(view, url);
+                Logger.d("on load resource..");
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                Logger.d("on page finished..");
+                loadingPanelForWebView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                Logger.d("error : " + error.toString());
+                loadingPanelForWebView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request,
+                                            WebResourceResponse errorResponse) {
+                super.onReceivedHttpError(view, request, errorResponse);
+                Logger.d("received http error : ");
+            }
+        });
+    }
+
     private void loadSimilarSelfLearning() {
-        //TODO similar resources - get resources with same file type, language, subject, grade - confirm
 
         SelfLearningContentRequest contentRequest = new SelfLearningContentRequest(content.getLanguage().toString(),
                 content.getTopic().toString());
@@ -651,14 +688,14 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
                         AlertDialog alertDialog = new AlertDialog.Builder(ContentDetailsActivity.this)
                                 .setMessage(getString(R.string.youtube_offline_available))
-                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(content.getFileName()));
                                         startActivity(intent);
                                     }
                                 })
-                                .setNegativeButton("Not Now", null)
+                                .setNegativeButton(getString(R.string.not_now), null)
                                 .create();
 
                         alertDialog.show();
@@ -715,7 +752,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                             }
                         }
                     })
-                    .setNegativeButton("Not Now", null)
+                    .setNegativeButton(getString(R.string.not_now), null)
                     .create();
 
             alertDialog.show();

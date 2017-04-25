@@ -75,7 +75,7 @@ public class DownloadUtils {
         final Context context = activity.getApplicationContext();
         AlertDialog alertDialog = new AlertDialog.Builder(activity)
                 .setMessage(context.getString(R.string.youtube_save_offline_dialog))
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                .setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -118,7 +118,7 @@ public class DownloadUtils {
                         });
                     }
                 })
-                .setNegativeButton("Not Now", null)
+                .setNegativeButton(context.getString(R.string.not_now), null)
                 .create();
 
         alertDialog.show();

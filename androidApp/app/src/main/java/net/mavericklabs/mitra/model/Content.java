@@ -40,7 +40,7 @@ import io.realm.annotations.RealmClass;
  */
 
 @RealmClass
-public class Content implements Serializable, RealmModel, Parcelable {
+public class Content implements RealmModel, Parcelable {
 
     @SerializedName("contentID")
     @PrimaryKey

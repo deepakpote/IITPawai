@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -217,6 +218,11 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
                 loadContent(holder);
             } else if(holder.getItemViewType() == 1) {
 
+                if(contents.get(holder.getAdapterPosition()).getFileType().equals(Constants.FileTypeEkStep)) {
+                    holder.saveButton.setVisibility(View.GONE);
+                } else {
+                    holder.saveButton.setVisibility(View.VISIBLE);
+                }
                 //Show file Icon
                 holder.youTubeThumbnailView.setVisibility(View.GONE);
                 loadContent(holder);
@@ -284,7 +290,7 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
             public void onClick(View view) {
                 Intent intent = new Intent(context, ContentDetailsActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("content", (Serializable) getObject(holder));
+                bundle.putParcelable("content", getObject(holder));
                 intent.putExtras(bundle);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);

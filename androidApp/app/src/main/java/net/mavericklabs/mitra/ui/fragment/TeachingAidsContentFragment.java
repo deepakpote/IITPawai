@@ -301,7 +301,7 @@ public class TeachingAidsContentFragment extends BaseContentFragment {
 
             @Override
             public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
-                Logger.d(" on fail");
+                Logger.d(" on fail " + t.getMessage());
                 if(t instanceof ConnectException) {
                     Toast.makeText(getContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
                 } else {

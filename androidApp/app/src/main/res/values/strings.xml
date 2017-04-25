@@ -118,6 +118,8 @@
     <string name="youtube_offline_available">You are currently offline. This video might be available offline. Go to Youtube App and check Offline Videos to see the video.</string>
     <string name="toast_not_available_offline">File not available offline</string>
     <string name="toast_cannot_open_file">Cannot open file. Try when you are online.</string>
+    <string name="not_now">Not now</string>
+    <string name="ok">Ok</string>
 
 
 </resources>

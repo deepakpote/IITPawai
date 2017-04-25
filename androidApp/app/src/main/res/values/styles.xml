@@ -11,6 +11,16 @@
         <item name="spinnerDropDownItemStyle">@style/SpinnerItem.DropDownItem</item>
     </style>
 
+    <style name="AppNoActionBarTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:spinnerItemStyle">@style/SpinnerItem</item>
+        <item name="spinnerDropDownItemStyle">@style/SpinnerItem.DropDownItem</item>
+    </style>
+
     <style name="DialogTitleStyle">
         <item name="android:textSize">18sp</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Title</item>
