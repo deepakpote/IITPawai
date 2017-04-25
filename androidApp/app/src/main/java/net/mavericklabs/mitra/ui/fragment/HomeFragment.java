@@ -329,39 +329,45 @@ public class HomeFragment extends Fragment{
             @Override
             public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
                 Logger.d("on response - ta ");
-                for (Content content : response.body().getData()) {
-                    bookmarkedContentFromServer.add(content.getContentID());
+                if(response.isSuccessful()) {
+                    for (Content content : response.body().getData()) {
+                        bookmarkedContentFromServer.add(content.getContentID());
+                    }
+
+                    SavedSelfLearningRequest selfLearningRequest = new SavedSelfLearningRequest(Constants.ContentTypeSelfLearning,
+                            "", "");
+
+                    RestClient.getApiService(token).getSavedSelfLearning(LanguageUtils.getCurrentLanguage(),
+                            selfLearningRequest).enqueue(new Callback<BaseModel<Content>>() {
+
+                        @Override
+                        public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                            Logger.d("on response - sl ");
+                            if(response.isSuccessful()) {
+                                for (Content content : response.body().getData()) {
+                                    bookmarkedContentFromServer.add(content.getContentID());
+                                }
+                                Logger.d(" bookmarked from server " + bookmarkedContentFromServer.toString() + " " + bookmarkedContentFromServer.size());
+
+                                //Check content to sync
+                                Realm realm = Realm.getDefaultInstance();
+                                RealmResults<Content> localBookmarkedContents = realm.where(Content.class).equalTo("isSaved", Boolean.TRUE).findAll();
+                                for (Content content : localBookmarkedContents) {
+                                    if(!bookmarkedContentFromServer.contains(content.getContentID())) {
+                                        bookmarkContent(content);
+                                    }
+                                }
+                            }
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+
+                        }
+                    });
                 }
 
-                SavedSelfLearningRequest selfLearningRequest = new SavedSelfLearningRequest(Constants.ContentTypeSelfLearning,
-                        "", "");
-
-                RestClient.getApiService(token).getSavedSelfLearning(LanguageUtils.getCurrentLanguage(),
-                        selfLearningRequest).enqueue(new Callback<BaseModel<Content>>() {
-
-                    @Override
-                    public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
-                        Logger.d("on response - sl ");
-                        for (Content content : response.body().getData()) {
-                            bookmarkedContentFromServer.add(content.getContentID());
-                        }
-                        Logger.d(" bookmarked from server " + bookmarkedContentFromServer.toString() + " " + bookmarkedContentFromServer.size());
-
-                        //Check content to sync
-                        Realm realm = Realm.getDefaultInstance();
-                        RealmResults<Content> localBookmarkedContents = realm.where(Content.class).equalTo("isSaved", Boolean.TRUE).findAll();
-                        for (Content content : localBookmarkedContents) {
-                            if(!bookmarkedContentFromServer.contains(content.getContentID())) {
-                                bookmarkContent(content);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
-
-                    }
-                });
             }
 
             @Override

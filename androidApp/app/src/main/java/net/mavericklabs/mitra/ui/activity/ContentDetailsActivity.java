@@ -117,6 +117,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
     @BindView(R.id.content_web_view) WebView contentWebView;
     @BindView(R.id.loading_panel_for_web_view) RelativeLayout loadingPanelForWebView;
     @BindView(R.id.content_chapter) TextView contentChapter;
+    @BindView(R.id.content_click_to_view) TextView clickToView;
     @BindView(R.id.view_full_screen) ImageView viewFullScreen;
 
     @OnClick(R.id.share_icon)
@@ -289,10 +290,6 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
         displayMetrics = getResources().getDisplayMetrics();
 
-        ViewGroup.LayoutParams imageLayoutParams = contentImageView.getLayoutParams();
-        imageLayoutParams.height = displayMetrics.heightPixels / 3;
-        contentImageView.setLayoutParams(imageLayoutParams);
-
         Bundle bundle = getIntent().getExtras();
         if(bundle != null) {
             content = (Content) bundle.getParcelable("content");
@@ -342,6 +339,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
                 youTubeLayout.setVisibility(View.VISIBLE);
                 contentImageView.setVisibility(View.GONE);
+                clickToView.setVisibility(View.GONE);
                 contentWebView.setVisibility(View.GONE);
                 contentLayout.setBackgroundColor(Color.BLACK);
                 actionsLayout.setVisibility(View.VISIBLE);
@@ -361,6 +359,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                 viewFullScreen.setVisibility(View.GONE);
                 youTubeLayout.setVisibility(View.GONE);
                 contentImageView.setVisibility(View.GONE);
+                clickToView.setVisibility(View.GONE);
                 setupContentWebView();
 
                 Logger.d("file path " + content.getFileName());
@@ -387,6 +386,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
                 contentLayout.setBackgroundResource(R.drawable.gradient_background);
                 contentImageView.setVisibility(View.VISIBLE);
+                clickToView.setVisibility(View.VISIBLE);
 
                 viewFullScreen.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -412,6 +412,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
             } else {
                 //Show file Icon
                 contentImageView.setVisibility(View.VISIBLE);
+                clickToView.setVisibility(View.VISIBLE);
                 youTubeLayout.setVisibility(View.GONE);
                 contentWebView.setVisibility(View.GONE);
                 contentLayout.setBackgroundResource(R.drawable.gradient_background);

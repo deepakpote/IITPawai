@@ -110,4 +110,5 @@
     <string name="youtube_save_offline_dialog">तुम्हाला आता YouTube अॅप वर नेले जाईल. आपल्या डिव्हाइसवर व्हिडिओ डाउनलोड करण्यासाठी \'Save\' वर क्लिक करा</string>
     <string name="not_now">नाही</string>
     <string name="ok">ठीक आहे</string>
+    <string name="click_to_view">पाहण्यासाठी क्लिक करा</string>
 </resources>
