@@ -25,6 +25,7 @@ package net.mavericklabs.mitra.utils;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -70,7 +71,7 @@ public class DownloadUtils {
 
     public static final int EXTERNAL_STORE_WRITE_REQUEST_CODE = 1;
 
-    private static void downloadVideo(Activity activity, final String contentID) {
+    private static void downloadVideo(final Activity activity, final String contentID) {
 
         final Context context = activity.getApplicationContext();
         AlertDialog alertDialog = new AlertDialog.Builder(activity)
@@ -78,6 +79,11 @@ public class DownloadUtils {
                 .setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+
+                        final ProgressDialog progressDialog = new ProgressDialog(activity);
+                        progressDialog.show();
+                        progressDialog.setCancelable(false);
+                        progressDialog.setMessage(context.getString(R.string.loading));
 
                         String token = UserDetailUtils.getToken(context);
                         Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService(token)
@@ -87,6 +93,9 @@ public class DownloadUtils {
 
                             @Override
                             public void onResponse(Call<BaseModel<ContentDataResponse>> call, Response<BaseModel<ContentDataResponse>> response) {
+                                if(progressDialog != null && progressDialog.isShowing()) {
+                                    progressDialog.dismiss();
+                                }
                                 if (response.isSuccessful()) {
                                     List<ContentDataResponse> responseList = response.body().getData();
                                     Logger.d(" file " + responseList.get(0).getFileName());
@@ -99,16 +108,20 @@ public class DownloadUtils {
 
                                     Realm realm = Realm.getDefaultInstance();
                                     Content content = realm.where(Content.class).equalTo("contentID",contentID).findFirst();
-                                    realm.beginTransaction();
-                                    content.setDownloaded(true);
-                                    realm.copyToRealmOrUpdate(content);
-                                    realm.commitTransaction();
-
+                                    if(content != null) {
+                                        realm.beginTransaction();
+                                        content.setDownloaded(true);
+                                        realm.copyToRealmOrUpdate(content);
+                                        realm.commitTransaction();
+                                    }
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<BaseModel<ContentDataResponse>> call, Throwable t) {
+                                if(progressDialog != null && progressDialog.isShowing()) {
+                                    progressDialog.dismiss();
+                                }
                                 if(t instanceof ConnectException) {
                                     Toast.makeText(context, context.getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
                                 } else {
@@ -150,6 +163,11 @@ public class DownloadUtils {
 
         final Context context = activity.getApplicationContext();
 
+        final ProgressDialog progressDialog = new ProgressDialog(activity);
+        progressDialog.show();
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage(context.getString(R.string.loading));
+
         String token = UserDetailUtils.getToken(context);
         Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService(token)
                 .download(new ContentDataRequest(content.getContentID()));
@@ -157,6 +175,9 @@ public class DownloadUtils {
         saveRequest.enqueue(new Callback<BaseModel<ContentDataResponse>>() {
             @Override
             public void onResponse(Call<BaseModel<ContentDataResponse>> call, Response<BaseModel<ContentDataResponse>> response) {
+                if(progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
                 if(response.isSuccessful()) {
                     List<ContentDataResponse> responseList = response.body().getData();
                     Logger.d(" file " + responseList.get(0).getFileName());
@@ -217,6 +238,9 @@ public class DownloadUtils {
             @Override
             public void onFailure(Call<BaseModel<ContentDataResponse>> call, Throwable t) {
                 Logger.d(" on failure ");
+                if(progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
                 if(t instanceof ConnectException) {
                     Toast.makeText(activity, context.getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
                 } else {

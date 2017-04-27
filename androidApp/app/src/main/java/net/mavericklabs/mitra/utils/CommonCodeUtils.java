@@ -117,7 +117,12 @@ public class CommonCodeUtils {
         RealmResults<CommonCode> contentTypeResult =
                 Realm.getDefaultInstance().where(CommonCode.class).equalTo("codeID",
                         code).findAll();
-        return contentTypeResult.get(0);
+        if(contentTypeResult.size() > 0) {
+            return contentTypeResult.get(0);
+        } else {
+            //empty object
+            return new CommonCode();
+        }
 
     }
 

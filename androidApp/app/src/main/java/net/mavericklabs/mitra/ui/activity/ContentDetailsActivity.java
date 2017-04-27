@@ -23,6 +23,7 @@
 
 package net.mavericklabs.mitra.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -123,6 +124,11 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
     @OnClick(R.id.share_icon)
     void shareContent() {
         Logger.d(" share ");
+        final ProgressDialog progressDialog = new ProgressDialog(ContentDetailsActivity.this);
+        progressDialog.show();
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage(getString(R.string.loading));
+
         String token = UserDetailUtils.getToken(getApplicationContext());
         Call<BaseModel<ContentDataResponse>> saveRequest = RestClient.getApiService(token)
                 .share(new ContentDataRequest(content.getContentID()));
@@ -130,6 +136,9 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
         saveRequest.enqueue(new Callback<BaseModel<ContentDataResponse>>() {
             @Override
             public void onResponse(Call<BaseModel<ContentDataResponse>> call, Response<BaseModel<ContentDataResponse>> response) {
+                if(progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
                 if(response.isSuccessful()) {
                     List<ContentDataResponse> responseList = response.body().getData();
                     Logger.d(" file " + responseList.get(0).getFileName());
@@ -146,6 +155,9 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
             @Override
             public void onFailure(Call<BaseModel<ContentDataResponse>> call, Throwable t) {
                 Logger.d(" on failure ");
+                if(progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
                 if(t instanceof ConnectException) {
                     Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
                 } else {
