@@ -394,8 +394,8 @@ class NewsViewSet(viewsets.ModelViewSet):
                 editImagesIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID)
                                                
         except Exception as e:
-            # Error occured while uploading the content
-#             print e
+            # Error occured while uploading the content             
+            print e
             return Response({"response_message": constants.messages.saveNews_news_save_failed,
                      "data": []},
                      status = status.HTTP_400_BAD_REQUEST)

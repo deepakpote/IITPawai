@@ -95,6 +95,25 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
+            .state('main.loggedIn.addNews', {
+                url: '/news',
+                views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Add News & Circulars';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content': {
+                        templateUrl: templateChange() + '/js/news-circulars/addNewsView.html',
+                        controller: 'addNewsController'
+                    }
+                }
+            })
             .state('main.loggedIn.selfLearning', {
                 url: '/selfLearning',
                 views: {

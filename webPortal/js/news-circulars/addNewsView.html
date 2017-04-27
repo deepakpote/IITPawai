@@ -1,0 +1,292 @@
+   
+<div class="gradient bottom-shadow">
+  <div class="content-top-box">
+    <div class="font-title pad5B">Select Category</div>
+    <div class="row">
+     <div ng-repeat="newsType in newsTypeList">
+       <div class="col-md-3">
+         <div class="card card-radio-selection">
+           <div ng-class="isNewsTypeSelected(newsType.codeID) ? 'selected-card':'unselected-card'" ng-click="newsTypeOnClick(newsType.codeID)">
+             <div class="card-content card-icon">
+               <i class="material-icons" style="font-size:48px;">{{newsType.icon}}</i>
+             </div>
+             <div class="card-action">
+               {{newsType.codeNameEn}}
+             </div>
+           </div>
+         </div>
+       </div><div class="col-md-1"></div>
+     </div>
+   </div>
+ </div>
+</div>
+
+
+<div ng-if="isNewsTypeMAA()">
+  <form name="frmAddNews" novalidate>
+    <div class="upload-container">
+      <div class="no-padding-container">
+        <div class="upload-title" style="margin-top:50px;"> Details</div>
+        <div class="col-md-3" ng-if="isNewsTypeMAA()">
+          <div class="card">
+            <div class="options-card" ng-click=setSelectedOption("Department") >
+              <div class="card-content">
+                Department
+              </div>
+              <div class="card-select" ng-class="($parent.news.departmentCodeID?'orange-background':'teal-background')">
+                <span ng-if="$parent.news.departmentCodeID" ng-repeat="department in departmentList | filter:{codeID : $parent.news.departmentCodeID}">
+                  {{department.codeNameEn}}
+                </span>
+                <span ng-if="!$parent.news.departmentCodeID">
+                  Select
+                </span>
+              </div>
+              <div class="card-action" ng-show="(selectedOption == 'Department')">
+                <div ng-repeat="department in departmentList">
+                  <div>
+                    <div class="col-md-9 no-padding align-left">
+                      {{department.codeNameEn}}
+                    </div>
+                    <div class="col-md-3 align-right no-padding" >
+                      <input type="radio" ng-model="$parent.news.departmentCodeID" ng-click = "showContentObject()" ng-value="department.codeID" />
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br />
+          </div>
+          <div class="col-md-1" ng-if="isNewsTypeMAA()"></div>
+
+          <div class="col-md-1" ng-if="isNewsTypeMAA()"></div>
+          <div class="col-md-3">
+            <div class="card">
+              <div class="options-card" ng-click=setSelectedOption("Importance")>
+                <div class="card-content">
+                  Importance
+                </div>
+                <div class="card-select" ng-class="($parent.news.newsImportanceCodeID?'orange-background':'teal-background')">
+                  <span ng-if="$parent.news.newsImportanceCodeID" ng-repeat="importance in newsImportanceList | filter:{codeID : $parent.news.newsImportanceCodeID}">
+                    {{importance.codeNameEn}}
+                  </span>
+                  <span >
+                    Select
+                  </span>
+                </div>
+                <div class="card-action" ng-show="(selectedOption == 'Importance')">
+                  <div ng-repeat="importance in newsImportanceList">
+                    <div>
+                      <div class="col-md-9 no-padding align-left">
+                        {{importance.codeNameEn}}
+                      </div>
+                      <div class="col-md-3 align-right no-padding" >
+                        <input type="radio" ng-model="$parent.news.newsImportanceCodeID" ng-click = "showContentObject()" ng-value="importance.codeID" />
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+
+            <br />
+          </div>
+
+
+          </div>
+
+          <div class="col-md-1"></div>
+
+ 
+        </div>
+      </div>
+
+      <div class = "hr"> </div>
+
+      <!-- Form entries below options -->
+
+
+      <div class="upload-container" >
+
+       <div class="col-md-8">
+        <div class="upload-title no-padding">Title</div>
+        <div class="form-group" ng-class="{'has-error': frmAddNews.engNewsTitle.$dirty && frmAddNews.engNewsTitle.$invalid}">
+         <input type="text" class="form-control" id="engNewsTitle" name="engNewsTitle" placeholder="English"
+         ng-model="news.engNewsTitle" required />
+         <div ng-messages="frmAddNews.engNewsTitle.$error" ng-if="frmAddNews.engNewsTitle.$dirty">
+          <span class="error-message" ng-show="frmAddNews.engNewsTitle.$error.required">Please enter English title in English</span>
+        </div>
+      </div>
+
+
+      <div class="form-group" ng-class="{'has-error': frmAddNews.marNewsTitle.$dirty && frmAddNews.marNewsTitle.$invalid}">
+       <input type="text" class="form-control" id="marNewsTitle" name="marNewsTitle" placeholder="मराठी"
+       ng-model="news.marNewsTitle" required />
+       <div ng-messages="frmAddNews.marNewsTitle.$error" ng-if="frmAddNews.marNewsTitle.$dirty">
+        <span class="error-message" ng-show="frmAddNews.marNewsTitle.$error.required">Please enter Marathi title in English</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4" style="text-align:right"> 
+    Kindly enter all fields in English and Marathi. <br />
+    Use <a target="_blank" href = "https://translate.google.com/?hl=mr"> Google translate </a>
+  </div>
+
+  
+</div>
+
+<div class = "hr"> </div>
+<div class="upload-container">
+  <div class="upload-title">Enter Text</div>
+  <div class="col-md-8">
+    <div class="form-group" ng-class="{'has-error': frmAddNews.engContent.$dirty && frmAddNews.engContent.$invalid}">
+     <input type="text" class="form-control" id="engContent" name="engContent" placeholder="English"
+     ng-model="news.engContent" required />
+     <div ng-messages="frmAddNews.engContent.$error" ng-if="frmAddNews.engContent.$dirty">
+      <span class="error-message" ng-show="frmAddNews.engContent.$error.required">Please enter news contents in English</span>
+    </div>
+  </div>
+
+
+  <div class="form-group" ng-class="{'has-error': frmAddNews.marContent.$dirty && frmAddNews.marContent.$invalid}">
+   <input type="text" class="form-control" id="marContent" name="marContent" placeholder="मराठी"
+   ng-model="news.marContent" required />
+   <div ng-messages="frmAddNews.marContent.$error" ng-if="frmAddNews.marContent.$dirty">
+    <span class="error-message" ng-show="frmAddNews.marContent.$error.required">Please enter news contents in Marathi</span>
+  </div>
+</div>
+</div>
+</div>
+
+<div class = "hr"> </div>
+<div class="upload-container">
+  <div class="upload-title">Add Tags / Keywords</div>
+  <div class="col-md-8">
+    <div class="form-group" ng-class="{'has-error': frmAddNews.engTags.$dirty && frmAddNews.engTags.$invalid}">
+     <textarea form="frmAddNews" class="form-control" id="engTags" name="engTags" placeholder="English"
+     ng-model="news.engTags" required ></textarea> 
+     <div ng-messages="frmAddNews.engTags.$error" ng-if="frmAddNews.engTags.$dirty">
+      <span class="error-message" ng-show="frmAddNews.engTags.$error.required">Please enter English Tags / Keywords</span>
+    </div>
+  </div>
+
+
+  <div class="form-group" ng-class="{'has-error': frmAddNews.marTags.$dirty && frmAddNews.marTags.$invalid}">
+    <textarea form="frmAddNews" class="form-control" id="marTags" name="marTags" placeholder="मराठी"
+    ng-model="news.marTags" required ></textarea> 
+    <div ng-messages="frmAddNews.marTags.$error" ng-if="frmAddNews.marTags.$dirty">
+      <span class="error-message" ng-show="frmAddNews.marTags.$error.required">Please enter Marathi Tags / Keywords</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class = "hr"> </div>
+
+<div class="upload-container">
+
+  <div class="upload-title">Add Images / Photos(max 5)</div>
+  <div class="col-md-8">
+  
+
+  <div class="form-group" ng-class="{'has-error': frmAddNews.fileUpload.$dirty && frmAddNews.fileUpload.$invalid}">
+  <label for="fileUpload" class="btn teal-background upload-button"> UPLOAD FILE</label> <span >{{newsImage1.name}}</span>
+  <input type="file" class="form-control" style="display:none" id="fileUpload" name="fileUpload"  
+  file-model="newsImage1" ng-click="imageUpload(1)" />
+<!--   <div ng-messages="frmAddNews.fileUpload.$error" ng-if="frmAddNews.fileUpload.$dirty"> -->
+<!--     <span class="error-message" ng-show="frmAddNews.fileUpload.$error.required">File upload is required.</span> -->
+<!--   </div> -->
+  </div>
+  
+    <div class="form-group" ng-class="{'has-error': frmAddNews.fileUpload2.$dirty && frmAddNews.fileUpload2.$invalid}">
+    <label for="fileUpload2" class="btn teal-background upload-button"> UPLOAD FILE</label> <span >{{newsImage2.name}}</span>
+  <input type="file" class="form-control" style="display:none" id="fileUpload2" name="fileUpload2"  
+  file-model="newsImage2" ng-click="imageUpload(2)" />
+<!--   <div ng-messages="frmAddNews.fileUpload2.$error" ng-if="frmAddNews.fileUpload2.$dirty"> -->
+<!--     <span class="error-message" ng-show="frmAddNews.fileUpload2.$error.required">File upload is required.</span> -->
+<!--   </div> -->
+  </div>
+  
+  
+      <div class="form-group" ng-class="{'has-error': frmAddNews.fileUpload2.$dirty && frmAddNews.fileUpload2.$invalid}">
+    <label for="fileUpload3" class="btn teal-background upload-button"> UPLOAD FILE</label> <span >{{newsImage3.name}}</span>
+  <input type="file" class="form-control" style="display:none" id="fileUpload3" name="fileUpload3"  
+  file-model="newsImage3" ng-click="imageUpload(3)" />
+<!--   <div ng-messages="frmAddNews.fileUpload2.$error" ng-if="frmAddNews.fileUpload2.$dirty"> -->
+<!--     <span class="error-message" ng-show="frmAddNews.fileUpload2.$error.required">File upload is required.</span> -->
+<!--   </div> -->
+  </div>
+  
+  
+      <div class="form-group" ng-class="{'has-error': frmAddNews.fileUpload2.$dirty && frmAddNews.fileUpload2.$invalid}">
+    <label for="fileUpload4" class="btn teal-background upload-button"> UPLOAD FILE</label> <span >{{newsImage4.name}}</span>
+  <input type="file" class="form-control" style="display:none" id="fileUpload4" name="fileUpload4"  
+  file-model="newsImage4" ng-click="imageUpload(4)" />
+<!--   <div ng-messages="frmAddNews.fileUpload2.$error" ng-if="frmAddNews.fileUpload2.$dirty"> -->
+<!--     <span class="error-message" ng-show="frmAddNews.fileUpload2.$error.required">File upload is required.</span> -->
+<!--   </div> -->
+  </div>
+  
+  
+      <div class="form-group" ng-class="{'has-error': frmAddNews.fileUpload2.$dirty && frmAddNews.fileUpload2.$invalid}">
+    <label for="fileUpload5" class="btn teal-background upload-button"> UPLOAD FILE</label> <span >{{newsImage5.name}}</span>
+  <input type="file" class="form-control" style="display:none" id="fileUpload5" name="fileUpload5"  
+  file-model="newsImage5" ng-click="imageUpload(5)"/>
+<!--   <div ng-messages="frmAddNews.fileUpload2.$error" ng-if="frmAddNews.fileUpload2.$dirty"> -->
+<!--     <span class="error-message" ng-show="frmAddNews.fileUpload2.$error.required">File upload is required.</span> -->
+<!--   </div> -->
+  </div>
+  
+  </div>
+  </div>
+  </div>
+  <div class = "hr"> </div>
+  
+  <div class="upload-container">
+  
+  <div class="upload-title">Attach PDF/LINK</div>
+  
+  
+  
+    <div class="form-group" ng-class="{'has-error': frmAddNews.fileTypeDropdown.$dirty && frmAddNews.fileTypeDropdown.$invalid}">
+
+<!--    <div ng-messages="frmAddNews.fileTypeDropdown.$error" ng-if="frmAddNews.fileTypeDropdown.$dirty"> -->
+<!--     <span class="error-message" ng-show="frmAddNews.fileTypeDropdown.$error.required">File Type is required.</span> -->
+<!--   </div> -->
+
+
+<div class="form-group" ng-class="{'has-error': frmAddNews.pdfFileURL.$dirty && frmAddNews.pdfFileURL.$invalid}">
+  <input type="text" class="form-control" id="pdfFileURL" name="pdfFileURL" 
+  placeholder="Enter URL" 
+  ng-model="inputs.fileName" required>
+  <div ng-messages="frmAddNews.pdfFileURL.$error" ng-if="frmAddNews.pdfFileURL.$dirty">
+    <span class="error-message" ng-show="frmAddNews.pdfFileURL.$error.required">File URL is required.</span>
+  </div>
+</div>
+<div class="form-group" ng-class="{'has-error': frmAddNews.fileUpload.$dirty && frmAddNews.fileUpload.$invalid}">
+  <label for="fileUpload6" class="btn teal-background upload-button" > UPLOAD FILE</label> <span >{{myPDFFile.name}}</span>
+  <input type="file" class="form-control" style="display:none" id="fileUpload6" name="fileUpload6"  
+  file-model="myPDFFile" ng-click="imageUpload('pdfFile')" />
+<!--   <div ng-messages="frmAddNews.fileUpload.$error" ng-if="frmAddNews.fileUpload.$dirty"> -->
+<!--     <span class="error-message" ng-show="frmAddNews.fileUpload.$error.required">File upload is required.</span> -->
+<!--   </div> -->
+</div>
+</div>
+</div>
+
+</div>
+
+
+<div class = "hr"> </div>
+
+<div class="upload-container">
+ <input type="submit" value="Save" class="btn btn-warning" ng-click="frmAddNews.$invalid? setDirty(frmAddNews) : save()" /> 
+ <input type="submit" value="Publish" class="btn btn-warning" ng-click="frmAddNews.$invalid? setDirty(frmAddNews) : publish()" /> 
+
+</div>
+</div>
+</form>
+</div>
+</div>

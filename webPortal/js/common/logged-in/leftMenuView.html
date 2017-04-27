@@ -41,8 +41,9 @@
             <div class="col-md-10">Add Training</div>
         </a><br/>
     </div>
+
     <div class="left-menu-item" ng-if="isAdmin" >
-        <a ui-sref="#"
+        <a ui-sref="main.loggedIn.addNews"
            ng-click="setSelected('add-news')"
            ng-class="{selectedItem : selectedItem === 'add-news'}">
             <div class="col-md-2">
