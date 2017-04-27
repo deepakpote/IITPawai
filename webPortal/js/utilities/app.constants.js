@@ -53,9 +53,9 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 	    if($window.location.host.includes("8000") ||
             $window.location.host.includes("localhost") ||
             $window.location.host.includes("192")) {
-	        return 'http://54.152.74.194:8000/';
+	        return 'http://maamitra.org.in:8000/';
         } else {
-            return 'http://54.152.74.194/';
+            return 'http://maamitra.org.in/';
         }
     }
 
