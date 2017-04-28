@@ -1988,7 +1988,7 @@ def getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs):
             "contentType":["Story","Worksheet","Game","Collection","Textbook"],
             "objectType":["Content"],
             "status":["Live"],
-            "tags":["MAA"],
+            "tags": {"value":"maa"},
             "domain": ["literacy","numeracy"],
             }
     # if no inputs for gradeCodeIDs then fetch content for grade 1 to 4
