@@ -40,6 +40,7 @@ import net.mavericklabs.mitra.model.database.DbGrade;
 import net.mavericklabs.mitra.model.database.DbSubject;
 import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.ArrayList;
@@ -197,7 +198,7 @@ public class TeachingAidsFragment extends Fragment implements TeachingAidsConten
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a TeachingAidsContentFragment (defined as a static inner class below).
-            return TeachingAidsContentFragment.newInstance(position);
+            return TeachingAidsContentFragment.newInstance(getFileTypeForPosition(position));
         }
 
         @Override
@@ -208,7 +209,18 @@ public class TeachingAidsFragment extends Fragment implements TeachingAidsConten
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return CommonCodeUtils.getFileTypeAtPosition(position).getCodeNameForCurrentLocale();
+            return CommonCodeUtils.getObjectFromCode(getFileTypeForPosition(position)).getCodeNameForCurrentLocale();
+        }
+
+        private int getFileTypeForPosition(int position) {
+            if(position == 0) {
+                return Constants.FileTypeVideo;
+            }
+            if(position == 1) {
+                return Constants.FileTypeEkStep;
+            }
+
+            return CommonCodeUtils.getFileTypeAtPosition(position - 1).getCodeID();
         }
 
     }

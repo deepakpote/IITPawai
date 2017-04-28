@@ -73,7 +73,7 @@ public class TeachingAidsContentFragment extends BaseContentFragment {
     Spinner gradeSpinner;
 
     private FilterChangeListener filterChangeListener;
-    private int tabNumber;
+    private int fileType;
 
     public TeachingAidsContentFragment() {
     }
@@ -82,10 +82,10 @@ public class TeachingAidsContentFragment extends BaseContentFragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static TeachingAidsContentFragment newInstance(int tabNumber) {
+    public static TeachingAidsContentFragment newInstance(int fileType) {
         TeachingAidsContentFragment fragment = new TeachingAidsContentFragment();
         Bundle args = new Bundle();
-        args.putInt("tabNumber", tabNumber);
+        args.putInt("fileType", fileType);
         fragment.setArguments(args);
         return fragment;
     }
@@ -119,7 +119,6 @@ public class TeachingAidsContentFragment extends BaseContentFragment {
         if(filterChangeListener != null && (filterChangeListener.isChanged() || onCreate)) {
             clearFilterList();
             List<CommonCode> gradeList = filterChangeListener.getGrades();
-            Logger.d(" gradelist " + gradeList.size() + " tab " + tabNumber);
             for(CommonCode grade : gradeList) {
                 addGradeToView(grade);
             }
@@ -141,7 +140,7 @@ public class TeachingAidsContentFragment extends BaseContentFragment {
     }
 
     private Integer getFileType() {
-        return CommonCodeUtils.getFileTypeAtPosition(tabNumber).getCodeID();
+        return fileType;
     }
 
     @Override
@@ -150,7 +149,7 @@ public class TeachingAidsContentFragment extends BaseContentFragment {
         View rootView = inflater.inflate(R.layout.fragment_teaching_aids_list, container, false);
         ButterKnife.bind(this, rootView);
 
-        tabNumber = getArguments().getInt("tabNumber");
+        fileType = getArguments().getInt("fileType");
 
         setupFilterView(new OnChipRemovedListener() {
             @Override
@@ -323,7 +322,7 @@ public class TeachingAidsContentFragment extends BaseContentFragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        Logger.d(" isVisible " + isVisibleToUser + tabNumber);
+        Logger.d(" isVisible " + isVisibleToUser + fileType);
         if(isVisibleToUser) {
             setFiltersAndSearch(false);
         }

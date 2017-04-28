@@ -21,8 +21,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class RestClient {
-    //private static final String BASE_URL = "http://54.152.74.194:8000/";
-    private static final String BASE_URL = "http://54.152.74.194/";
+    private static final String BASE_URL = "http://maamitra.org.in:8000/";
+    //private static final String BASE_URL = "http://54.152.74.194/";
     private static OkHttpClient client;
     private static Gson gson;
 
