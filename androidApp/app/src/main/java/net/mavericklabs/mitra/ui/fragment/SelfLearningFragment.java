@@ -141,8 +141,9 @@ public class SelfLearningFragment extends BaseContentFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(topics.get(i).getCodeID() != 0) {
-                    addTopic(topics.get(i));
-                    searchSelfLearning(0);
+                    if(addTopic(topics.get(i))) {
+                        searchSelfLearning(0);
+                    }
                 }
             }
 
@@ -162,8 +163,9 @@ public class SelfLearningFragment extends BaseContentFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(languages.get(i).getCodeID() != 0) {
-                    addLanguage(languages.get(i));
-                    searchSelfLearning(0);
+                    if(addLanguage(languages.get(i))) {
+                        searchSelfLearning(0);
+                    }
                 }
             }
 
@@ -176,16 +178,25 @@ public class SelfLearningFragment extends BaseContentFragment {
 
     }
 
-    private void addTopic(CommonCode topic) {
-        filterTopicList.add(topic);
-        addItemToFilterList(topic);
+    private boolean addTopic(CommonCode topic) {
         topicSpinner.setSelection(0 ,false);
+        if(!filterTopicList.contains(topic)) {
+            filterTopicList.add(topic);
+            addItemToFilterList(topic);
+            return true;
+        }
+        return false;
     }
 
-    private void addLanguage(CommonCode language) {
-        filterLanguageList.add(language);
-        addItemToFilterList(language);
+    private boolean addLanguage(CommonCode language) {
         languageSpinner.setSelection(0 ,false);
+        if(!filterLanguageList.contains(language)) {
+            filterLanguageList.add(language);
+            addItemToFilterList(language);
+            return true;
+        }
+        return false;
+
     }
 
     @Override

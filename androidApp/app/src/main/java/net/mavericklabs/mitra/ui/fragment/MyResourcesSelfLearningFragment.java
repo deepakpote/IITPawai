@@ -137,9 +137,11 @@ public class MyResourcesSelfLearningFragment extends BaseContentFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(topics.get(i).getCodeID() != 0) {
-                    filterTopicList.add(topics.get(i));
-                    addItemToFilterList(topics.get(i));
-                    loadMySelfLearning();
+                    if(!filterTopicList.contains(topics.get(i))) {
+                        filterTopicList.add(topics.get(i));
+                        addItemToFilterList(topics.get(i));
+                        loadMySelfLearning();
+                    }
                     topicSpinner.setSelection(0 ,false);
                 }
             }
@@ -160,9 +162,11 @@ public class MyResourcesSelfLearningFragment extends BaseContentFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(languages.get(i).getCodeID() != 0) {
-                    filterLanguageList.add(languages.get(i));
-                    addItemToFilterList(languages.get(i));
-                    loadMySelfLearning();
+                    if(!filterLanguageList.contains(languages.get(i))) {
+                        filterLanguageList.add(languages.get(i));
+                        addItemToFilterList(languages.get(i));
+                        loadMySelfLearning();
+                    }
                     languageSpinner.setSelection(0 ,false);
                 }
             }

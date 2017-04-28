@@ -92,8 +92,8 @@ public class TeachingAidsContentFragment extends BaseContentFragment {
 
     public interface FilterChangeListener {
 
-        void addGradeToFilter(CommonCode commonCode);
-        void addSubjectToFilter(CommonCode commonCode);
+        boolean addGradeToFilter(CommonCode commonCode);
+        boolean addSubjectToFilter(CommonCode commonCode);
         void removeGradeFromFilter(CommonCode commonCode);
         void removeSubjectFromFilter(CommonCode commonCode);
         void setChanged(Boolean changed);
@@ -184,9 +184,12 @@ public class TeachingAidsContentFragment extends BaseContentFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(subjects.get(i).getCodeID() != 0) {
-                    filterChangeListener.addSubjectToFilter(subjects.get(i));
-                    addSubjectToView(subjects.get(i));
-                    searchTeachingAids(getFileType(), 0);
+                    if(filterChangeListener.addSubjectToFilter(subjects.get(i))) {
+                        addSubjectToView(subjects.get(i));
+                        searchTeachingAids(getFileType(), 0);
+                    } else {
+                        subjectSpinner.setSelection(0 ,false);
+                    }
                 }
             }
 
@@ -206,9 +209,12 @@ public class TeachingAidsContentFragment extends BaseContentFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(grades.get(i).getCodeID() != 0) {
-                    filterChangeListener.addGradeToFilter(grades.get(i));
-                    addGradeToView(grades.get(i));
-                    searchTeachingAids(getFileType() , 0);
+                    if(filterChangeListener.addGradeToFilter(grades.get(i))) {
+                        addGradeToView(grades.get(i));
+                        searchTeachingAids(getFileType() , 0);
+                    } else {
+                        gradeSpinner.setSelection(0 ,false);
+                    }
                 }
             }
 

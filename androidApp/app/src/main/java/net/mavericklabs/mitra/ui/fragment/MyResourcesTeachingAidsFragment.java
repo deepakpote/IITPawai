@@ -141,9 +141,11 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(subjects.get(i).getCodeID() != 0) {
-                    filterSubjectList.add(subjects.get(i));
-                    addItemToFilterList(subjects.get(i));
-                    loadMyTeachingAids();
+                    if(!filterSubjectList.contains(subjects.get(i))) {
+                        filterSubjectList.add(subjects.get(i));
+                        addItemToFilterList(subjects.get(i));
+                        loadMyTeachingAids();
+                    }
                     subjectSpinner.setSelection(0 ,false);
                 }
             }
@@ -164,9 +166,11 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(grades.get(i).getCodeID() != 0) {
-                    filterGradeList.add(grades.get(i));
-                    addItemToFilterList(grades.get(i));
-                    loadMyTeachingAids();
+                    if(!filterGradeList.contains(grades.get(i))) {
+                        filterGradeList.add(grades.get(i));
+                        addItemToFilterList(grades.get(i));
+                        loadMyTeachingAids();
+                    }
                     gradeSpinner.setSelection(0 ,false);
                 }
 
@@ -189,9 +193,11 @@ public class MyResourcesTeachingAidsFragment extends BaseContentFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(types.get(i).getCodeID() != 0) {
-                    filterTypeList.add(types.get(i));
-                    addItemToFilterList(types.get(i));
-                    loadMyTeachingAids();
+                    if(!filterTypeList.contains(types.get(i))) {
+                        filterTypeList.add(types.get(i));
+                        addItemToFilterList(types.get(i));
+                        loadMyTeachingAids();
+                    }
                     typeSpinner.setSelection(0 ,false);
                 }
             }

@@ -44,7 +44,9 @@ import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.Logger;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.ButterKnife;
 import io.realm.Realm;
@@ -70,6 +72,7 @@ public class TeachingAidsFragment extends Fragment implements TeachingAidsConten
     private ViewPager mViewPager;
     private TabLayout tabLayout;
     private List<CommonCode> filterGradeList, filterSubjectList;
+    private HashSet<Integer> filters;
     private boolean isChanged;
 
 
@@ -108,6 +111,7 @@ public class TeachingAidsFragment extends Fragment implements TeachingAidsConten
 
         filterGradeList = new ArrayList<>();
         filterSubjectList = new ArrayList<>();
+        filters = new HashSet<>();
 
         //From profile, set initial filters
         RealmResults<DbUser> dbUser = Realm.getDefaultInstance()
@@ -144,26 +148,41 @@ public class TeachingAidsFragment extends Fragment implements TeachingAidsConten
 
 
     @Override
-    public void addGradeToFilter(CommonCode commonCode) {
-        filterGradeList.add(commonCode);
-        isChanged = true;
+    public boolean addGradeToFilter(CommonCode commonCode) {
+        Logger.d(" filters " + filters);
+
+        if(!filters.contains(commonCode.getCodeID())) {
+            filterGradeList.add(commonCode);
+            isChanged = true;
+            filters.add(commonCode.getCodeID());
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void addSubjectToFilter(CommonCode commonCode) {
-        filterSubjectList.add(commonCode);
-        isChanged = true;
+    public boolean addSubjectToFilter(CommonCode commonCode) {
+        if(!filters.contains(commonCode.getCodeID())) {
+            filterSubjectList.add(commonCode);
+            isChanged = true;
+            filters.add(commonCode.getCodeID());
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public void removeGradeFromFilter(CommonCode commonCode) {
         filterGradeList.remove(commonCode);
+        filters.remove(commonCode.getCodeID());
         isChanged = true;
     }
 
     @Override
     public void removeSubjectFromFilter(CommonCode commonCode) {
         filterSubjectList.remove(commonCode);
+        filters.remove(commonCode.getCodeID());
         isChanged = true;
     }
 
