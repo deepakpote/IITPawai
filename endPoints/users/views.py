@@ -1397,8 +1397,8 @@ def checkOTPTimer(phoneNumber):
     objLastOTPDate = objOTP.createdOn.replace(tzinfo=None)
     objCurrentDT = objCurrentDateTime.replace(tzinfo=None)
     
-#     print "objCurrentDateTime:",objCurrentDT
-#     print "objOTP.createdOn",objLastOTPDate
+    print "objCurrentDateTime:",objCurrentDT
+    print "objOTP.createdOn",objLastOTPDate
     
     #If both the datetime exists, then campare the both.
     if objLastOTPDate and objCurrentDT:
