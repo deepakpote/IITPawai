@@ -20,6 +20,7 @@ import os,time
 import string
 from django.db import connection
 from datetime import datetime, timedelta
+import pytz
 from django.utils import timezone
 from contents.models import content , contentGrade
 from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs
@@ -1385,6 +1386,24 @@ Check timestamp difference of last sent otp and current otp
 def checkOTPTimer(phoneNumber):
     sendOTP = None
     secondDifference = None
+    mysqlCurrentDate = None
+    
+    # Connection
+    cursor = connection.cursor()  
+    
+    # SQL Query
+    getCurrentDate = "select now()"
+    
+    #print "getCurrentDate:",getCurrentDate            
+    cursor.execute(getCurrentDate)
+    
+    #Queryset
+    datetimeQuerySet = cursor.fetchall()
+    
+    for item in datetimeQuerySet:
+        mysqlCurrentDate = item[0]
+        
+    #print "mysqlCurrentDate:",mysqlCurrentDate
     
     # Check if the OTP for given phoneNumber is exists or not.
     try:
@@ -1396,14 +1415,17 @@ def checkOTPTimer(phoneNumber):
     objCurrentDateTime = datetime.now()
     objLastOTPDate = objOTP.createdOn.replace(tzinfo=None)
     objCurrentDT = objCurrentDateTime.replace(tzinfo=None)
+    objUtcFormat =  objOTP.createdOn.astimezone (pytz.utc)
+    
     
     print "objCurrentDateTime:",objCurrentDT
     print "objOTP.createdOn",objLastOTPDate
+    print "mysqlCurrentDate:",mysqlCurrentDate
     
     #If both the datetime exists, then campare the both.
     if objLastOTPDate and objCurrentDT:
         # Get the datetime difference in seconds
-        secondDifference = (objCurrentDT - objLastOTPDate).total_seconds()
+        secondDifference = (mysqlCurrentDate - objLastOTPDate).total_seconds()
         print "secondDifference:",secondDifference
     
     #If the difference is gretter then 3min i.e. 180 seconds then send the OTP.
