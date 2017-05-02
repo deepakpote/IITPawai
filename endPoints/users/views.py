@@ -1380,7 +1380,7 @@ def userDeviceSave(phoneNumber, fcmDeviceID):
 
 #checkOTPTimer
 """
-Check timestamp difference of last sent otp and current otp
+Check timestamp difference of last sent otp and request for current otp
 """
 def checkOTPTimer(phoneNumber):
     sendOTP = None
@@ -1401,8 +1401,6 @@ def checkOTPTimer(phoneNumber):
     
     for item in datetimeQuerySet:
         mysqlCurrentDate = item[0]
-        
-    #print "mysqlCurrentDate:",mysqlCurrentDate
     
     # Check if the OTP for given phoneNumber is exists or not.
     try:
@@ -1410,25 +1408,27 @@ def checkOTPTimer(phoneNumber):
     except otp.DoesNotExist:
         return True
     
+    # i.e. User registration.
+    if not objOTP:
+        return True
+    
     #Get current date time
     objCurrentDateTime = datetime.now()
     objLastOTPDate = objOTP.createdOn.replace(tzinfo=None)
     objCurrentDT = objCurrentDateTime.replace(tzinfo=None)
-    #objUtcFormat =  objOTP.createdOn.astimezone (pytz.utc)
-    
-    
-    print "objCurrentDateTime:",objCurrentDT
-    print "objOTP.createdOn",objLastOTPDate
-    print "mysqlCurrentDate:",mysqlCurrentDate
+      
+#     print "objCurrentDateTime:",objCurrentDT
+#     print "objOTP.createdOn",objLastOTPDate
+#     print "mysqlCurrentDate:",mysqlCurrentDate
     
     #If both the datetime exists, then campare the both.
-    if objLastOTPDate and objCurrentDT:
+    if objLastOTPDate and mysqlCurrentDate:
         # Get the datetime difference in seconds
         secondDifference = (mysqlCurrentDate - objLastOTPDate).total_seconds()
         print "secondDifference:",secondDifference
     
     #If the difference is gretter then 3min i.e. 180 seconds then send the OTP.
-    if secondDifference > 180:
+    if secondDifference > constants.sms.reSendSMS_IntervalInSeconds:
         return True
     else:
         return False

@@ -217,6 +217,7 @@ class sms():
     registrationMessage = "Thank you for registering with MITRA. Your OTP Code is : "
     signInMessage = "Your MITRA Sign In OTP is : "
     sendSMS = False
+    reSendSMS_IntervalInSeconds = 180
     
 class ekStep():
     url = 'https://api.ekstep.in/content/v3/adv/search'
