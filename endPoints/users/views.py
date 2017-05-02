@@ -1414,7 +1414,7 @@ def checkOTPTimer(phoneNumber):
     objCurrentDateTime = datetime.now()
     objLastOTPDate = objOTP.createdOn.replace(tzinfo=None)
     objCurrentDT = objCurrentDateTime.replace(tzinfo=None)
-    objUtcFormat =  objOTP.createdOn.astimezone (pytz.utc)
+    #objUtcFormat =  objOTP.createdOn.astimezone (pytz.utc)
     
     
     print "objCurrentDateTime:",objCurrentDT
