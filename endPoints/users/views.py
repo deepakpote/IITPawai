@@ -20,7 +20,6 @@ import os,time
 import string
 from django.db import connection
 from datetime import datetime, timedelta
-import pytz
 from django.utils import timezone
 from contents.models import content , contentGrade
 from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs
