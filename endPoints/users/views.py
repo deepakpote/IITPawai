@@ -189,7 +189,7 @@ class UserViewSet(viewsets.ModelViewSet):
             # Send OTP SMS Call
             sendOtpSms(phoneNumber, generatedOTP, constants.language.english, otpMessage)
         else:
-            return Response({"response_message": registration_phone_number_is_invalid, "data": []},
+            return Response({"response_message": constants.messages.sign_in_user_not_registered, "data": []},
                             status=status.HTTP_400_BAD_REQUEST)
         
         # make call to plivo here
