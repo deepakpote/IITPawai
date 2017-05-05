@@ -318,6 +318,9 @@ class NewsViewSet(viewsets.ModelViewSet):
         objAppLanguageEng = code.objects.get(codeID = constants.appLanguage.english)
         objAppLanguageMar = code.objects.get(codeID = constants.appLanguage.marathi)
         
+        #Get array from string
+        arrNewsTagNames = getArrayFromCommaSepString(engTags)
+        
         try:
             # Check newsID is provided or not.
             if not newsID or newsID == 0:
@@ -355,6 +358,9 @@ class NewsViewSet(viewsets.ModelViewSet):
                 if pdfFile != None:
                     savePDFFile(pdfFile, newsID)
                 saveImages(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID, objUser)
+                
+                #save news tags
+                saveNewsTags(arrNewsTagNames , newsID , objUser)
             
             else:
                 # If news parameter is passed, then check news exists or not and update the newsID details.       
@@ -859,4 +865,38 @@ def getUserRoleIDs(objUser):
     if len(arrRoleIDs) > 0:
         return arrRoleIDs
     
+
+"""
+Function to save the news tags.
+"""
+def saveNewsTags(arrNewsTagNames , newsID , objUser): 
+    #Get news details
+    objNews = news.objects.get(newsID = newsID)
     
+    # Delete all old news tags of this newsID.
+    newsTag.objects.filter(news = objNews).delete()
+    
+    if not arrNewsTagNames:
+        return
+    
+    for objNewsTagName in arrNewsTagNames:  
+        if objNewsTagName[0] == '#':
+              objNewsTagName = objNewsTagName[1:]
+        # Save the grades
+        newsTag(tagName = objNewsTagName , news = objNews , createdBy = objUser).save()
+    
+    return  
+
+"""
+Common function used to get the array from space separated string.
+"""    
+def getArrayFromCommaSepString(spaceSepString):
+    
+    #Declare array.
+    arrOut = []
+
+    if spaceSepString:
+        arrOut = spaceSepString.split(' ')
+        return arrOut
+    
+    return arrOut
