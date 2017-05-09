@@ -562,6 +562,7 @@ class NewsViewSet(viewsets.ModelViewSet):
         
         objNews = None
         gradeCodeIDs = None
+        objNewsURL = None
                
         # Check if userID is passed in post param
         if not userID:
@@ -592,44 +593,32 @@ class NewsViewSet(viewsets.ModelViewSet):
                             status = status.HTTP_404_NOT_FOUND)
                                
         # Get news details in English & Marathi.
-        objContentDetails = getContentDetails(contentID)
-        #Get actual fileName.
-        objContentFileName = getContentFileName(objContent)
-        
-        #If content type is teachingAids
-        if objContentDetails.contentType.codeID == constants.mitraCode.teachingAids:
-            subjectCodeID = objContentDetails.subject.codeID 
-            topicCodeID = None
-                
-        # If content type is self learning.
-        elif objContentDetails.contentType.codeID == constants.mitraCode.selfLearning:
-            subjectCodeID = None
-            topicCodeID = objContentDetails.topic.codeID 
-        
-        #Get comma sep list of gradeCodeID from contentID
-        gradeCodeIDs = ",".join(str(con.grade.codeID) for con in contentGrade.objects.filter(content = objContent))
-        
+        objNewsDetails = getNewsDetails(newsID)
+        #Get news image URL
+        objNewsURL = getNewsImageURL(newsObject)
+        #Get comma sep list of news tags
+        newsTagNames = ",".join(str(objNewsTag.tagName) for objNewsTag in newsTag.objects.filter(news = objNews))
+
         #Build collection manually for both languages
-        response = {  'engContentTitle':        objContentDetails.engContentTitle,
-                      'marContentTitle':        objContentDetails.marContentTitle,
-                      'engInstruction':         objContentDetails.engInstruction ,
-                      'marInstruction':         objContentDetails.marInstruction,
-                      'engAuthor':              objContentDetails.engAuthor,
-                      'marAuthor':              objContentDetails.marAuthor,
-                      'contentTypeCodeID':      objContentDetails.contentType.codeID,
+        response = {  'engContentTitle':        objNewsDetails.engContentTitle,
+                      'marContentTitle':        objNewsDetails.marContentTitle,
+                      'engInstruction':         objNewsDetails.engInstruction ,
+                      'marInstruction':         objNewsDetails.marInstruction,
+                      'engAuthor':              objNewsDetails.engAuthor,
+                      'marAuthor':              objNewsDetails.marAuthor,
+                      'contentTypeCodeID':      objNewsDetails.contentType.codeID,
                       'subjectCodeID':          subjectCodeID,
                       'gradeCodeIDs':           gradeCodeIDs,
                       'topicCodeID':            topicCodeID,
-                      'requirementCodeIDs':     objContentDetails.requirement,
-                      'objectives':             objContentDetails.objectives ,
-                      'fileTypeCodeID':         objContentDetails.fileType.codeID,
+                      'requirementCodeIDs':     objNewsDetails.requirement,
+                      'objectives':             objNewsDetails.objectives ,
+                      'fileTypeCodeID':         objNewsDetails.fileType.codeID,
                       'fileName':               objContentFileName,
-                      'contentLanguageCodeID':  objContentDetails.language.codeID,
-                      'statusCodeID':           objContentDetails.status.codeID,
+                      'contentLanguageCodeID':  objNewsDetails.language.codeID,
+                      'statusCodeID':           objNewsDetails.status.codeID,
                       'chapterID':              (objContentDetails.chapter.chapterID if objContentDetails.chapter != None else None)
                     }
         
-       
         #Return the response
         return Response({"response_message": constants.messages.success, "data": [response]})
         
