@@ -337,20 +337,22 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
         if(content != null) {
             String fileName = content.getFileName();
             String videoID = StringUtils.getVideoKeyFromUrl(fileName);
-            youTubeThumbnailLoader.setVideo(videoID);
-            youTubeThumbnailLoader.
-                    setOnThumbnailLoadedListener(new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
-                @Override
-                public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
-                    holder.youTubeThumbnailView.setVisibility(View.VISIBLE);
-                    holder.contentView.setBackgroundColor(Color.BLACK);
-                }
+            if(videoID != null) {
+                youTubeThumbnailLoader.setVideo(videoID);
+                youTubeThumbnailLoader.
+                        setOnThumbnailLoadedListener(new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
+                            @Override
+                            public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
+                                holder.youTubeThumbnailView.setVisibility(View.VISIBLE);
+                                holder.contentView.setBackgroundColor(Color.BLACK);
+                            }
 
-                @Override
-                public void onThumbnailError(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader.ErrorReason errorReason) {
+                            @Override
+                            public void onThumbnailError(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader.ErrorReason errorReason) {
 
-                }
-            });
+                            }
+                        });
+            }
         }
 
     }

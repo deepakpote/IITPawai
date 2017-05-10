@@ -1,16 +1,16 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.model.Chapter;
-import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.CommonCodeWrapper;
+import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.database.Migration;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
@@ -28,6 +28,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SplashActivity extends AppCompatActivity {
+
+    private Call<BaseModel<CommonCodeWrapper>> codeNameListCall;
+    private Call<BaseModel<Chapter>> chapterListCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +60,7 @@ public class SplashActivity extends AppCompatActivity {
 
         final String codeVersion = currentCodeVersion;
 
-        Call<BaseModel<CommonCodeWrapper>> codeNameListCall = RestClient.getApiService("").getCodeNameList(codeVersion);
+        codeNameListCall = RestClient.getApiService("").getCodeNameList(codeVersion);
         codeNameListCall.enqueue(new Callback<BaseModel<CommonCodeWrapper>>() {
             @Override
             public void onResponse(Call<BaseModel<CommonCodeWrapper>> call, Response<BaseModel<CommonCodeWrapper>> response) {
@@ -117,57 +120,49 @@ public class SplashActivity extends AppCompatActivity {
         int languageCode = LanguageUtils.getCurrentLanguage();
         LanguageUtils.setLocale(languageCode, getApplicationContext());
 
-        Thread timerThread = new Thread() {
-            public void run() {
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } finally {
+        try{
+            //case 1 : user has not entered his phone number
+            if (StringUtils.isEmpty(phoneNumber)) {
+                Intent selectLanguage = new Intent(SplashActivity.this, SelectLanguageActivity.class);
+                startActivity(selectLanguage);
+                finishAffinity();
+            } else { // user has entered phone number ..
 
-                    //case 1 : user has not entered his phone number
-                    if(StringUtils.isEmpty(phoneNumber)) {
-                        Intent selectLanguage = new Intent(SplashActivity.this,SelectLanguageActivity.class);
+                //case 2: but has not verified his phone number
+                if (!UserDetailUtils.isVerifiedMobileNumber(getApplicationContext())) {
+                    Intent verifyOtp = new Intent(SplashActivity.this, VerifyOtpActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("phone_number", phoneNumber);
+                    boolean signIn = MitraSharedPreferences.readFromPreferences(
+                            getApplicationContext(),
+                            "sign_in", Boolean.FALSE);
+                    bundle.putBoolean("is_from_sign_in", signIn);
+                    verifyOtp.putExtras(bundle);
+                    startActivity(verifyOtp);
+                    finishAffinity();
+                } else { // has verified his phone number
+                    boolean hasEnteredInformation = UserDetailUtils.hasEnteredInformation(getApplicationContext());
+
+                    // case 3 : not yet entered personal information
+                    if (!hasEnteredInformation) {
+                        Intent selectLanguage = new Intent(SplashActivity.this, EditProfileActivity.class);
                         startActivity(selectLanguage);
                         finishAffinity();
-                    } else { // user has entered phone number ..
 
-                        //case 2: but has not verified his phone number
-                        if(!UserDetailUtils.isVerifiedMobileNumber(getApplicationContext())) {
-                            Intent verifyOtp = new Intent(SplashActivity.this,VerifyOtpActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("phone_number",phoneNumber);
-                            boolean signIn= MitraSharedPreferences.readFromPreferences(
-                                    getApplicationContext(),
-                                    "sign_in",Boolean.FALSE);
-                            bundle.putBoolean("is_from_sign_in",signIn);
-                            verifyOtp.putExtras(bundle);
-                            startActivity(verifyOtp);
-                            finishAffinity();
-                        } else { // has verified his phone number
-                            boolean hasEnteredInformation = UserDetailUtils.hasEnteredInformation(getApplicationContext());
-
-                            // case 3 : not yet entered personal information
-                            if(!hasEnteredInformation) {
-                                Intent selectLanguage = new Intent(SplashActivity.this,EditProfileActivity.class);
-                                startActivity(selectLanguage);
-                                finishAffinity();
-
-                            } else { // case 4 : everything good to go. sync chapters and take user home :)
-                                loadChapters();
-                            }
-                        }
+                    } else { // case 4 : everything good to go. sync chapters and take user home :)
+                        loadChapters();
                     }
                 }
             }
-        };
-        timerThread.start();
+        } catch (NullPointerException ex) {
+
+        }
 
     }
 
     private void loadChapters() {
         String token = UserDetailUtils.getToken(getApplicationContext());
-        Call<BaseModel<Chapter>> chapterListCall = RestClient.getApiService(token).getChapters("","");
+        chapterListCall = RestClient.getApiService(token).getChapters("","");
 
         RealmResults<Chapter> chapters = Realm.getDefaultInstance()
                 .where(Chapter.class).findAll();
@@ -208,9 +203,26 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void gotoHomePage() {
-        Intent home = new Intent(SplashActivity.this,HomeActivity.class);
-        startActivity(home);
-        finishAffinity();
+        try{
+            Intent home = new Intent(SplashActivity.this,HomeActivity.class);
+            startActivity(home);
+            finishAffinity();
+        } catch (NullPointerException ex) {
+
+        }
+
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Logger.d("On Pause");
+        if(codeNameListCall != null && !codeNameListCall.isExecuted()) {
+            codeNameListCall.cancel();
+        }
+
+        if(chapterListCall != null && !chapterListCall.isExecuted()) {
+            chapterListCall.cancel();
+        }
+    }
 }

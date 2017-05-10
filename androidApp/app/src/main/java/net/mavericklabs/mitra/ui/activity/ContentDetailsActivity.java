@@ -697,7 +697,7 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
                     Logger.d("Error" + errorReason);
                     if(errorReason.equals(YouTubePlayer.ErrorReason.NETWORK_ERROR)
                             && !HttpUtils.isNetworkAvailable(getApplicationContext())
-                            && content.getDownloaded()) {
+                            && (content.getDownloaded() != null && content.getDownloaded())) {
 
                         AlertDialog alertDialog = new AlertDialog.Builder(ContentDetailsActivity.this)
                                 .setMessage(getString(R.string.youtube_offline_available))

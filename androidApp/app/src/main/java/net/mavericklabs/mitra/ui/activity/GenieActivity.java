@@ -79,8 +79,8 @@ public class GenieActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
+    protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelable("content", content);
+        super.onSaveInstanceState(outState);
     }
 }
