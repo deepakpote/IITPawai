@@ -76,7 +76,7 @@
     <string name="error_invalid_otp">चुकीचा OTP</string>
     <string name="choose_profile_photo">प्रोफाईल फोटो निवडा</string>
     <string name="error_relaunch_app">कृपया तुमचे इंटरनेट कनेक्शन तपासा.</string>
-    <string name="message_share">\"मित्रा एप वरून सामग्री शेअर करीत आहे \"</string>
+    <string name="message_share">"मित्रा एप वरून सामग्री शेअर करीत आहे "</string>
     <string name="message_no_notifications">सूचना नाही</string>
     <string name="subject">विषय</string>
     <string name="topic_only">घटक</string>
@@ -111,4 +111,7 @@
     <string name="not_now">नाही</string>
     <string name="ok">ठीक आहे</string>
     <string name="click_to_view">पाहण्यासाठी क्लिक करा</string>
+    <string name="message_news_share">"मित्रा एप वरून वृत्त परिपत्रक शेअर करीत आहे "</string>
+    <string name="error_permission_denied">परवानगी नाकारली. डाउनलोड करू शकत नाही</string>
+    <string name="toast_share_news">शेअर करण्यासाठी PDF डाउनलोड करत आहे</string>
 </resources>

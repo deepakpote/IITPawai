@@ -47,7 +47,6 @@ import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.api.ContentDataRequest;
 import net.mavericklabs.mitra.model.api.ContentDataResponse;
-import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -154,12 +153,12 @@ public class DownloadUtils {
                 // onRequestPermissionsResult method gets the result of the request.
             } else {
                 Logger.d(" download pdf");
-                downloadPdf(activity, content);
+                downloadContent(activity, content);
             }
         }
     }
 
-    private static void downloadPdf(final Activity activity, final Content content) {
+    private static void downloadContent(final Activity activity, final Content content) {
 
         final Context context = activity.getApplicationContext();
 
@@ -183,54 +182,14 @@ public class DownloadUtils {
                     Logger.d(" file " + responseList.get(0).getFileName());
 
                     String url = responseList.get(0).getFileName();
-
-                    // get download service and enqueue file
-                    final String mitraDirectoryPath = createDirectoryStructure();
-
-                    final OkHttpClient client = new OkHttpClient();
-                    try {
-                        Request request = new Request.Builder()
-                                .url(url)
-                                .build();
-                        final String extension;
-                        if(content.getFileType() == Constants.FileTypeAudio) {
-                            extension = ".mp3";
-                        } else {
-                            extension = ".pdf";
-                        }
-                        client.newCall(request).enqueue(new okhttp3.Callback() {
-                            @Override
-                            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                                if(response.isSuccessful()) {
-                                    String downloadFileName = mitraDirectoryPath +
-                                            File.separator + content.getTitle() + extension;
-                                    File downloadedFile = new File(downloadFileName);
-                                    BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
-                                    sink.writeAll(response.body().source());
-                                    sink.close();
-                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(context, context.getString(R.string.download_complete),
-                                                    Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(okhttp3.Call call, IOException e) {
-
-                            }
-                        });
-
-                        Toast.makeText(context, context.getString(R.string.download_file_location,
-                                mitraDirectoryPath + File.separator +content.getTitle()),
-                                Toast.LENGTH_LONG).show();
-                    }catch (IllegalArgumentException ex) {
-                        Logger.d(" error " + ex.getMessage());
-                        Toast.makeText(activity, context.getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                    String extension;
+                    if(content.getFileType() == Constants.FileTypeAudio) {
+                        extension = ".mp3";
+                    } else {
+                        extension = ".pdf";
                     }
+
+                    downloadPDF(url, content.getTitle(), extension, activity, false);
 
                 }
             }
@@ -251,14 +210,81 @@ public class DownloadUtils {
         });
     }
 
+    private static void downloadPDF(String url, final String title, final String extension, Activity activity,
+                                    final boolean forSharing) {
+        // get download service and enqueue file
+        final String mitraDirectoryPath = createDirectoryStructure();
+        final Context context = activity.getApplicationContext();
+
+        final OkHttpClient client = new OkHttpClient();
+        try {
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+            client.newCall(request).enqueue(new okhttp3.Callback() {
+                @Override
+                public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                    if(response.isSuccessful()) {
+                        String downloadFileName = mitraDirectoryPath +
+                                File.separator + title + extension;
+                        final File downloadedFile = new File(downloadFileName);
+                        BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
+                        sink.writeAll(response.body().source());
+                        sink.close();
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context, context.getString(R.string.download_complete),
+                                        Toast.LENGTH_SHORT).show();
+                                if(forSharing) {
+                                    String shareBody = context.getString(R.string.message_news_share) + title;
+                                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                                    sharingIntent.setType("application/pdf");
+                                    sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(downloadedFile));
+                                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "MITRA " + title);
+                                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                                    context.startActivity(Intent.createChooser(sharingIntent, context.getResources().getString(R.string.share_title)));
+                                }
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(okhttp3.Call call, IOException e) {
+
+                }
+            });
+
+            Toast.makeText(context, context.getString(R.string.download_file_location,
+                    mitraDirectoryPath + File.separator +title),
+                    Toast.LENGTH_LONG).show();
+        }catch (IllegalArgumentException ex) {
+            Logger.d(" error " + ex.getMessage());
+            Toast.makeText(activity, context.getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public static void onRequestPermissionResult(int requestCode, @NonNull int[] grantResults, Activity activity,
                                                  Content content) {
         if(requestCode == DownloadUtils.EXTERNAL_STORE_WRITE_REQUEST_CODE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                downloadPdf(activity, content);
+                downloadContent(activity, content);
             } else {
                 Toast.makeText(activity, "Permission denied. Unable to download.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public static void onRequestPermissionResult(int requestCode, @NonNull int[] grantResults, Activity activity,
+                                                 News news, boolean forSharing) {
+        if(requestCode == DownloadUtils.EXTERNAL_STORE_WRITE_REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                downloadPDF(news.getPdfFileURL(), news.getNewsTitle(), ".pdf", activity, forSharing);
+            } else {
+                Toast.makeText(activity, activity.getString(R.string.error_permission_denied), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -276,12 +302,22 @@ public class DownloadUtils {
         return mitraDirectoryPath;
     }
 
-    public static void downloadNewsPDF(final Context context, List<News> newsList) {
-        // get download service and enqueue file
-        final String mitraDirectoryPath = createDirectoryStructure();
-        new DownloadNewsPdf(mitraDirectoryPath).execute(newsList.toArray(new News[newsList.size()]));
+    public static void downloadNewsPDF(Activity activity, News news, boolean forSharing) {
 
+        if (ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Request the permission.
+            Logger.d(" not granted");
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    EXTERNAL_STORE_WRITE_REQUEST_CODE);
 
+            // onRequestPermissionsResult method gets the result of the request.
+        } else {
+            Logger.d(" download pdf");
+            downloadPDF(news.getPdfFileURL(), news.getNewsTitle(), ".pdf", activity, forSharing);
+        }
     }
 
     public static String getFilePath(String title, String extension) {

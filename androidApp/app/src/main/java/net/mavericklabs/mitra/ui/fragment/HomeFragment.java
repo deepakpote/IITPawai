@@ -143,7 +143,6 @@ public class HomeFragment extends Fragment{
                     Realm realm = Realm.getDefaultInstance();
                     realm.beginTransaction();
                     List<News> news = response.body().getData();
-                    List<News> pdfNewsList = new ArrayList<News>();
 
                     for (News newsItem : news) {
                         News newsInDb = realm.where(News.class).equalTo("newsID", newsItem.getNewsID()).findFirst();
@@ -155,15 +154,10 @@ public class HomeFragment extends Fragment{
                             newsItem.setSeen(false);
                             newsItem.setSaved(false);
                             newsItem.setShowOnMainPage(true);
-                            if(newsItem.getPdfFileURL() != null) {
-                                pdfNewsList.add(newsItem);
-                            }
                         }
                         newsItem.setDateToCompare(DateUtils.convertToDate(newsItem.getPublishDate(), "yyyy-MM-dd HH:mm:ss"));
                         realm.copyToRealmOrUpdate(newsItem);
                     }
-
-                    DownloadUtils.downloadNewsPDF(getContext(), pdfNewsList);
 
                     realm.commitTransaction();
 

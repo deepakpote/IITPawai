@@ -99,6 +99,7 @@
     <string name="error_relaunch_app">Oops.. There was some problem. Please check your internet connection or relaunch the MITRA app.</string>
     <string name="error_check_internet">Please check your internet connection.</string>
     <string name="error_no_internet">You are not connected to internet. Some functionality might not work.</string>
+    <string name="error_permission_denied">Permission denied. Unable to download.</string>
     <string name="message_share">\"Sharing content from Mitra app \"</string>
     <string name="message_no_notifications">No Notifications</string>
     <string name="subject">Subject</string>
@@ -121,6 +122,8 @@
     <string name="not_now">Not now</string>
     <string name="ok">Ok</string>
     <string name="click_to_view">Click to View</string>
+    <string name="message_news_share">\"Sharing news circular from Mitra app \"</string>
+    <string name="toast_share_news">Downloading PDF to share</string>
 
 
 </resources>

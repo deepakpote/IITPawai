@@ -4,6 +4,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -60,7 +62,12 @@ public class NewsDetailsActivity extends BaseActivity {
     @BindView(R.id.share_news)
     ImageView shareNews;
 
+    @BindView(R.id.download_icon)
+    ImageView downloadNewsPDF;
+
     List<String> imageList;
+    private News news;
+    private Boolean forSharing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +79,7 @@ public class NewsDetailsActivity extends BaseActivity {
             final Bundle bundle = getIntent().getExtras();
             String newsID = bundle.getString("news_item");
             final Realm realm = Realm.getDefaultInstance();
-            final News news = realm.where(News.class).equalTo("newsID", newsID).findFirst();
+            news = realm.where(News.class).equalTo("newsID", newsID).findFirst();
 
             if(news != null) {
                 Date date = DateUtils.convertToDate(news.getPublishDate(), "yyyy-MM-dd HH:mm:ss");
@@ -119,8 +126,29 @@ public class NewsDetailsActivity extends BaseActivity {
 
                 if(StringUtils.isEmpty(news.getPdfFileURL())) {
                     showPDF.setVisibility(View.GONE);
+                    shareNews.setVisibility(View.GONE);
+                    downloadNewsPDF.setVisibility(View.GONE);
                 } else {
                     showPDF.setVisibility(View.VISIBLE);
+                    shareNews.setVisibility(View.VISIBLE);
+                    downloadNewsPDF.setVisibility(View.VISIBLE);
+
+                    downloadNewsPDF.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            forSharing = false;
+                            DownloadUtils.downloadNewsPDF(NewsDetailsActivity.this, news, false);
+                        }
+                    });
+
+                    shareNews.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Toast.makeText(getApplicationContext(), getString(R.string.toast_share_news), Toast.LENGTH_SHORT).show();
+                            forSharing = true;
+                            DownloadUtils.downloadNewsPDF(NewsDetailsActivity.this, news, true);
+                        }
+                    });
                     showPDF.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -138,11 +166,13 @@ public class NewsDetailsActivity extends BaseActivity {
                                 try {
                                     File file = new File(DownloadUtils.getFilePath(news.getNewsTitle(), ".pdf"));
                                     if(file.exists()) {
-                                        Uri uri = Uri.fromFile(file);
+                                        Uri uri = FileProvider.getUriForFile(getApplicationContext(),
+                                                "net.mavericklabs.mitra.provider", file);
 
                                         Intent intentUrl = new Intent(Intent.ACTION_VIEW);
                                         intentUrl.setDataAndType(uri, "application/pdf");
                                         intentUrl.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intentUrl.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                                         startActivity(intentUrl);
                                     } else {
                                         Toast.makeText(NewsDetailsActivity.this, getString(R.string.toast_not_available_offline), Toast.LENGTH_LONG).show();
@@ -158,14 +188,6 @@ public class NewsDetailsActivity extends BaseActivity {
                         }
                     });
                 }
-
-
-                shareNews.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //What is to be done?
-                    }
-                });
             }
         }
     }
@@ -187,6 +209,13 @@ public class NewsDetailsActivity extends BaseActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        DownloadUtils.onRequestPermissionResult(requestCode, grantResults, NewsDetailsActivity.this,
+                news, forSharing);
+        forSharing = false;
     }
 
     public class ImagePagerAdapter extends android.support.v4.view.PagerAdapter {
