@@ -360,9 +360,11 @@ public class ContentDetailsActivity extends BaseActivity implements YouTubePlaye
 
                 YouTubePlayerSupportFragment frag =
                         (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
-                frag.initialize(Constants.youtubeDeveloperKey, this);
-
-
+                try{
+                    frag.initialize(Constants.youtubeDeveloperKey, this);
+                } catch (IllegalStateException ex) {
+                    ex.printStackTrace();
+                }
 
             } else if (content.getFileType().equals(Constants.FileTypePPT) ||
                     content.getFileType().equals(Constants.FileTypeWorksheet) ||

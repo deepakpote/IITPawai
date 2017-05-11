@@ -153,23 +153,25 @@ public class BaseHorizontalCardListAdapter extends RecyclerView.Adapter<BaseHori
 
     private void loadThumbnail(final YouTubeThumbnailLoader youTubeThumbnailLoader,
                                final BaseHorizontalCardListAdapter.CardViewHolder holder) {
-        String fileName = contents.get(holder.getAdapterPosition()).getFileName();
-        String videoID = StringUtils.getVideoKeyFromUrl(fileName);
+        if(holder.getAdapterPosition() >= 0) {
+            String fileName = contents.get(holder.getAdapterPosition()).getFileName();
+            String videoID = StringUtils.getVideoKeyFromUrl(fileName);
 
-        youTubeThumbnailLoader.setVideo(videoID);
-        youTubeThumbnailLoader.
-                setOnThumbnailLoadedListener(new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
-                    @Override
-                    public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
-                        holder.contentView.setBackgroundColor(Color.BLACK);
-                        holder.youTubeThumbnailView.setVisibility(View.VISIBLE);
-                    }
+            youTubeThumbnailLoader.setVideo(videoID);
+            youTubeThumbnailLoader.
+                    setOnThumbnailLoadedListener(new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
+                        @Override
+                        public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
+                            holder.contentView.setBackgroundColor(Color.BLACK);
+                            holder.youTubeThumbnailView.setVisibility(View.VISIBLE);
+                        }
 
-                    @Override
-                    public void onThumbnailError(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader.ErrorReason errorReason) {
+                        @Override
+                        public void onThumbnailError(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader.ErrorReason errorReason) {
 
-                    }
-                });
+                        }
+                    });
+        }
     }
 
 

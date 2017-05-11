@@ -333,28 +333,29 @@ public class ContentVerticalCardListAdapter extends RecyclerView.Adapter<Recycle
 
     private void loadThumbnail(final YouTubeThumbnailLoader youTubeThumbnailLoader, final CardViewHolder holder) {
 
-        Content content = contents.get(holder.getAdapterPosition());
-        if(content != null) {
-            String fileName = content.getFileName();
-            String videoID = StringUtils.getVideoKeyFromUrl(fileName);
-            if(videoID != null) {
-                youTubeThumbnailLoader.setVideo(videoID);
-                youTubeThumbnailLoader.
-                        setOnThumbnailLoadedListener(new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
-                            @Override
-                            public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
-                                holder.youTubeThumbnailView.setVisibility(View.VISIBLE);
-                                holder.contentView.setBackgroundColor(Color.BLACK);
-                            }
+        if(holder.getAdapterPosition() >= 0) {
+            Content content = contents.get(holder.getAdapterPosition());
+            if(content != null) {
+                String fileName = content.getFileName();
+                String videoID = StringUtils.getVideoKeyFromUrl(fileName);
+                if(videoID != null) {
+                    youTubeThumbnailLoader.setVideo(videoID);
+                    youTubeThumbnailLoader.
+                            setOnThumbnailLoadedListener(new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
+                                @Override
+                                public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
+                                    holder.youTubeThumbnailView.setVisibility(View.VISIBLE);
+                                    holder.contentView.setBackgroundColor(Color.BLACK);
+                                }
 
-                            @Override
-                            public void onThumbnailError(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader.ErrorReason errorReason) {
+                                @Override
+                                public void onThumbnailError(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader.ErrorReason errorReason) {
 
-                            }
-                        });
+                                }
+                            });
+                }
             }
         }
-
     }
 
     private void removeFromSavedContent(String contentID, final CardViewHolder holder) {
