@@ -86,7 +86,23 @@ class newsImage(models.Model):
     
     class Meta:
         unique_together = ("news", "imageURL")
-        db_table = 'com_newsImage'        
+        db_table = 'com_newsImage'       
+
+#Commented for now.        
+# """
+# news tag model
+# """      
+# class newsTag(models.Model):
+#     newsTagID = models.AutoField(primary_key = True)
+#     news = models.ForeignKey('news', db_column = 'newsID', null = False, related_name = 'newsTag_newsID')
+#     tagName = models.TextField(null = True)
+#     
+#     createdBy = models.ForeignKey('users.user', related_name='newsTag_createdBy', db_column = 'createdBy')
+#     createdOn = models.DateTimeField(auto_now_add=True)
+#     
+#     class Meta:
+#         unique_together = ("news", "tagName")
+#         db_table = 'com_newsTag'     
 
 """
 user news
