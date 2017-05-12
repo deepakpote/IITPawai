@@ -199,12 +199,12 @@ class messages():
     uploadContent_upload_file_or_give_filename = 100262
     uploadContent_upload_a_valid_file = 100263
     
-    newsTagList_user_does_not_exist = 100264
-    newsTagList_no_records_found = 100265
+#     newsTagList_user_does_not_exist = 
+#     newsTagList_no_records_found = 
     
-    get_newsdetail_newsid_cannot_be_empty = 100265
-    get_newsdetail_news_not_exists = 100266
-    get_newsdetail_user_not_exists = 100267
+    get_newsdetail_newsid_cannot_be_empty = 100264
+    get_newsdetail_news_not_exists = 100265
+    get_newsdetail_user_not_exists = 100266
     
 class webportalmessages():    
     web_admin_invalid_token = 200100

@@ -8,8 +8,8 @@ from time import strftime
 
 import os,time
 
-from commons.models import code , news, configuration, newsImage , codeGroup, userNews, newsDetail, newsTag
-from commons.serializers import codeSerializer , newsSerializer , customNewsSerializer, newsTagSerializer
+from commons.models import code , news, configuration, newsImage , codeGroup, userNews, newsDetail
+from commons.serializers import codeSerializer , newsSerializer , customNewsSerializer
 from mitraEndPoints import constants, settings , utils
 from datetime import datetime
 from users.models import token , user
@@ -184,7 +184,7 @@ class NewsViewSet(viewsets.ModelViewSet):
         publishFromDate = request.data.get('publishFromDate') 
         publishToDate = request.data.get('publishToDate')      
         newsCategoryCodeID = request.data.get('newsCategoryCodeID')
-        tagName = request.data.get('tagName')
+        #tagName = request.data.get('tagName')
         statusCodeID = request.data.get('statusCodeID')
         appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
         
@@ -215,7 +215,7 @@ class NewsViewSet(viewsets.ModelViewSet):
             return Response({"response_message": responseData['message'], "data": []}, status= responseData['status'])
         
         # Get filtered news data.
-        newsData = getNewsList(departmentCodeID, publishFromDate, publishToDate, None , newsCategoryCodeID, arrStatusCodeID , appLanguageCodeID , tagName)    
+        newsData = getNewsList(departmentCodeID, publishFromDate, publishToDate, None , newsCategoryCodeID, arrStatusCodeID , appLanguageCodeID )    
         
         #If result set id empty.
         if not newsData:
@@ -320,7 +320,7 @@ class NewsViewSet(viewsets.ModelViewSet):
         objAppLanguageMar = code.objects.get(codeID = constants.appLanguage.marathi)
         
         #Get array from string
-        arrNewsTagNames = getArrayFromCommaSepString(engTags)
+        #arrNewsTagNames = getArrayFromCommaSepString(engTags)
         
         try:
             # Check newsID is provided or not.
@@ -361,7 +361,7 @@ class NewsViewSet(viewsets.ModelViewSet):
                 saveImages(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID, objUser)
                 
                 #save news tags
-                saveNewsTags(arrNewsTagNames , newsID , objUser)
+                #saveNewsTags(arrNewsTagNames , newsID , objUser)
             
             else:
                 # If news parameter is passed, then check news exists or not and update the newsID details.       
@@ -402,7 +402,7 @@ class NewsViewSet(viewsets.ModelViewSet):
                                                
         except Exception as e:
             # Error occured while uploading the content
-#             print e
+            print e
             return Response({"response_message": constants.messages.saveNews_news_save_failed,
                      "data": []},
                      status = status.HTTP_400_BAD_REQUEST)
@@ -485,7 +485,7 @@ class NewsViewSet(viewsets.ModelViewSet):
             
        
         #Get news list for respective user.
-        newsData = getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser , newsCategoryCodeID, None , appLanguageCodeID, None)   
+        newsData = getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser , newsCategoryCodeID, None , appLanguageCodeID)   
         
         #If result set is empty.
         if not newsData:
@@ -505,48 +505,49 @@ class NewsViewSet(viewsets.ModelViewSet):
                 objNew['pdfFileURL'] = basicURL +str(objNew['pdfFileURL'])
         
         return Response({"response_message": constants.messages.success, "data": serializer.data})
-    
-    """
-    Get News Tag list
-    """   
-    @list_route(methods=['POST'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
-    def newTagList(self, request):
-        tagName = request.data.get('tagName')
-        authToken = request.META.get('HTTP_AUTHTOKEN')
-
-        #get UserID from auth token
-        userID  =  getUserIDFromAuthToken(authToken)
-        
-        # check user is not null 
-        if not userID or userID == 0:
-            return Response({"response_message": constants.messages.user_userid_cannot_be_empty, 
-                             "data": []}, status = status.HTTP_401_UNAUTHORIZED)
-    
-        # check userID exists or not
-        try:
-            objUser = user.objects.get(userID = userID)
-        except user.DoesNotExist:
-            return Response({"response_message": constants.messages.newsTagList_user_does_not_exist, 
-                             "data": []}, status = status.HTTP_404_NOT_FOUND)
-            
-        newsTagListQuerySet = None
-        
-        newsTagListQuerySet = newsTag.objects.all().distinct('tagName')
-            
-        # if tagName is passed then fetch all the news for passed tagName
-        if tagName:
-            newsTagListQuerySet = newsTagListQuerySet.filter(tagName__contains=tagName)
-            
-        # if no records found
-        if not newsTagListQuerySet:
-            return Response({"response_message": constants.messages.newsTagList_no_records_found,
-                    "data": []},
-                    status = status.HTTP_200_OK)
-            
-        #News tag detail serializer.            
-        serializer = newsTagSerializer(newsTagListQuerySet, many = True)
-        
-        return Response({"response_message": constants.messages.success, "data": serializer.data})
+ 
+# Commented, as low priority item.   
+#     """
+#     Get News Tag list
+#     """   
+#     @list_route(methods=['POST'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+#     def newTagList(self, request):
+#         tagName = request.data.get('tagName')
+#         authToken = request.META.get('HTTP_AUTHTOKEN')
+# 
+#         #get UserID from auth token
+#         userID  =  getUserIDFromAuthToken(authToken)
+#         
+#         # check user is not null 
+#         if not userID or userID == 0:
+#             return Response({"response_message": constants.messages.user_userid_cannot_be_empty, 
+#                              "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+#     
+#         # check userID exists or not
+#         try:
+#             objUser = user.objects.get(userID = userID)
+#         except user.DoesNotExist:
+#             return Response({"response_message": constants.messages.newsTagList_user_does_not_exist, 
+#                              "data": []}, status = status.HTTP_404_NOT_FOUND)
+#             
+#         newsTagListQuerySet = None
+#         
+#         newsTagListQuerySet = newsTag.objects.all().distinct('tagName')
+#             
+#         # if tagName is passed then fetch all the news for passed tagName
+#         if tagName:
+#             newsTagListQuerySet = newsTagListQuerySet.filter(tagName__contains=tagName)
+#             
+#         # if no records found
+#         if not newsTagListQuerySet:
+#             return Response({"response_message": constants.messages.newsTagList_no_records_found,
+#                     "data": []},
+#                     status = status.HTTP_200_OK)
+#             
+#         #News tag detail serializer.            
+#         serializer = newsTagSerializer(newsTagListQuerySet, many = True)
+#         
+#         return Response({"response_message": constants.messages.success, "data": serializer.data})
     
     """
     API to get the news details in both languages
@@ -570,6 +571,14 @@ class NewsViewSet(viewsets.ModelViewSet):
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
             
+        # check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.get_newsdetail_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+            
         # Check if newsID is passed in post param
         if not newsID:
             return Response({"response_message": constants.messages.get_newsdetail_newsid_cannot_be_empty,
@@ -583,40 +592,31 @@ class NewsViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.get_newsdetail_news_not_exists,
                      "data": []},
                     status = status.HTTP_404_NOT_FOUND)
-        
-        # check user exists or not
-        try:
-            objUser = user.objects.get(userID = userID)
-        except user.DoesNotExist:
-            return Response({"response_message": constants.messages.get_newsdetail_user_not_exists,
-                             "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
-                               
+             
         # Get news details in English & Marathi.
         objNewsDetails = getNewsDetails(newsID)
+        
         #Get news image URL
-        objNewsURL = getNewsImageURL(newsObject)
+        objNewsURL = getNewsImageURL(objNews)
+        
         #Get comma sep list of news tags
-        newsTagNames = ",".join(str(objNewsTag.tagName) for objNewsTag in newsTag.objects.filter(news = objNews))
+        #newsTagNames = ",".join(str(objNewsTag.tagName) for objNewsTag in newsTag.objects.filter(news = objNews))
 
         #Build collection manually for both languages
-        response = {  'engContentTitle':        objNewsDetails.engContentTitle,
-                      'marContentTitle':        objNewsDetails.marContentTitle,
-                      'engInstruction':         objNewsDetails.engInstruction ,
-                      'marInstruction':         objNewsDetails.marInstruction,
-                      'engAuthor':              objNewsDetails.engAuthor,
-                      'marAuthor':              objNewsDetails.marAuthor,
-                      'contentTypeCodeID':      objNewsDetails.contentType.codeID,
-                      'subjectCodeID':          subjectCodeID,
-                      'gradeCodeIDs':           gradeCodeIDs,
-                      'topicCodeID':            topicCodeID,
-                      'requirementCodeIDs':     objNewsDetails.requirement,
-                      'objectives':             objNewsDetails.objectives ,
-                      'fileTypeCodeID':         objNewsDetails.fileType.codeID,
-                      'fileName':               objContentFileName,
-                      'contentLanguageCodeID':  objNewsDetails.language.codeID,
-                      'statusCodeID':           objNewsDetails.status.codeID,
-                      'chapterID':              (objContentDetails.chapter.chapterID if objContentDetails.chapter != None else None)
+        response = {  'newsID':              objNewsDetails.newsID,
+                      'engNewsTitle':        objNewsDetails.engNewsTitle,
+                      'marNewsTitle':        objNewsDetails.marNewsTitle,
+                      'engContent':          objNewsDetails.engcontent ,
+                      'marContent':          objNewsDetails.marcontent,
+                      'engAuthor':           objNewsDetails.engAuthor,
+                      'marAuthor':           objNewsDetails.marAuthor,
+                      'department':          objNewsDetails.department.codeID,
+                      'newsCategory':        objNewsDetails.newsCategory.codeID,
+                      'newsImportance':           objNewsDetails.newsImportance.codeID,
+                      'publishDate':              objNewsDetails.publishDate,
+                      'imageURL':                 objNewsURL,
+                      'pdfFileURL':               objNewsDetails.pdfFileURL ,
+                      'statusCodeID':             objNewsDetails.status.codeID
                     }
         
         #Return the response
@@ -701,13 +701,17 @@ def getNewsImageURL(newsObject):
     
     tempNewsImageArray = []
     imageURL = None
+    objImageList = None
     
      # Create object of common class 
     objCommon = utils.common() 
     #Get basic URL.
     basicURL = objCommon.getBaseURL(constants.newsDir.newsImage)
   
-    objImageList = newsImage.objects.filter(news = newsObject['news'])
+    try:
+        objImageList= newsImage.objects.filter(news = newsObject)
+    except Exception as e:
+        objImageList = newsImage.objects.filter(news = newsObject['news'])
     
     for objImage in objImageList:
         if objImage.imageURL:
@@ -741,7 +745,7 @@ def getLatestCodeIDfromCodeGroup(codeGroupID):
 Common function to get news List
 """
 def getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser , newsCategoryCodeID, statusCodeID , 
-                appLanguageCodeID , tagName):
+                appLanguageCodeID):
     
     if not objUser:
         # get all news of respective appLanguageCodeID.
@@ -772,10 +776,10 @@ def getNewsList(departmentCodeID, publishFromDate, publishToDate, objUser , news
     if statusCodeID:
         queryset = queryset.filter(news__status__in = statusCodeID)
         
-    #Check input tagName
-    if tagName:
-        objNewsTagList = list(newsTag.objects.filter(tagName__contain=tagName).values_list('news_id', flat=True))  
-        queryset = newsDetail.objects.filter(news__in=objNewsTagList)
+#     #Check input tagName
+#     if tagName:
+#         objNewsTagList = list(newsTag.objects.filter(tagName__contain=tagName).values_list('news_id', flat=True))  
+#         queryset = newsDetail.objects.filter(news__in=objNewsTagList)
                 
     # descending order of publish date
     queryset = queryset.order_by('news__publishDate')
@@ -988,26 +992,27 @@ def getUserRoleIDs(objUser):
         return arrRoleIDs
     
 
-"""
-Function to save the news tags.
-"""
-def saveNewsTags(arrNewsTagNames , newsID , objUser): 
-    #Get news details
-    objNews = news.objects.get(newsID = newsID)
-    
-    # Delete all old news tags of this newsID.
-    newsTag.objects.filter(news = objNews).delete()
-    
-    if not arrNewsTagNames:
-        return
-    
-    for objNewsTagName in arrNewsTagNames:  
-        if objNewsTagName[0] == '#':
-              objNewsTagName = objNewsTagName[1:]
-        # Save the grades
-        newsTag(tagName = objNewsTagName , news = objNews , createdBy = objUser).save()
-    
-    return  
+#Commented for now..
+# """
+# Function to save the news tags.
+# """
+# def saveNewsTags(arrNewsTagNames , newsID , objUser): 
+#     #Get news details
+#     objNews = news.objects.get(newsID = newsID)
+#     
+#     # Delete all old news tags of this newsID.
+#     newsTag.objects.filter(news = objNews).delete()
+#     
+#     if not arrNewsTagNames:
+#         return
+#     
+#     for objNewsTagName in arrNewsTagNames:  
+#         if objNewsTagName[0] == '#':
+#               objNewsTagName = objNewsTagName[1:]
+#         # Save the grades
+#         newsTag(tagName = objNewsTagName , news = objNews , createdBy = objUser).save()
+#     
+#     return  
 
 """
 Common function used to get the array from space separated string.
@@ -1042,18 +1047,18 @@ def getNewsDetails(newsID):
             objNewsEngDetails = newsDetail.objects.get(news = objNewsDetails , appLanguage = objAppLanguageEng)
             objNewsDetails.engNewsTitle = objNewsEngDetails.newsTitle 
             objNewsDetails.engAuthor = objNewsEngDetails.author   
-            objNewsDetails.content = objNewsEngDetails.content 
+            objNewsDetails.engcontent = objNewsEngDetails.content 
         except newsDetail.DoesNotExist:
             #If not exists.It means no news details are uploaded for English language..
             objNewsDetails.engNewsTitle = ''
             objNewsDetails.engAuthor = ''
-            objNewsDetails.content = ''
+            objNewsDetails.engcontent = ''
             
         #Check news details for Marathi language..
         try:
             objNewsMarDetails = newsDetail.objects.get(news = objNewsDetails , appLanguage = objAppLanguageMar)
             objNewsDetails.marNewsTitle = objNewsMarDetails.newsTitle    
-            objNewsDetails.marAuthor = objNewsMarDetails.Author    
+            objNewsDetails.marAuthor = objNewsMarDetails.author    
             objNewsDetails.marcontent = objNewsMarDetails.content 
         except newsDetail.DoesNotExist:
             #If not exists.It means no news details are uploaded for Marathi language..
