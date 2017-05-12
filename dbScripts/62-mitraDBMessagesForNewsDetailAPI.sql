@@ -10,5 +10,3 @@ update com_configuration set value = value + 1 where `key` = 'comCodeVersion';
 
 -- update into com_configuration
 update com_configuration set `value` = '62-mitraDBMessagesForNewsDetailAPI' where `key` = 'dbScriptExecutedUntil';
-
-select * from com_code where codeGroupID = 100;
