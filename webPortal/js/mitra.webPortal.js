@@ -4,7 +4,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
 
         var templateChange = function() {
-            return "";
+            return "webPortal";
         };
         //$locationProvider.html5Mode(true);
         $urlRouterProvider.otherwise('/home/login');
@@ -112,6 +112,49 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         templateUrl: templateChange() + '/js/news-circulars/addNewsView.html',
                         controller: 'addNewsController'
                     }
+                }
+            })
+            .state('main.loggedIn.newsList', {
+                url: '/newsList',
+                views : {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'News List';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'news' : {
+                        templateUrl : templateChange() + '/js/news-list/newsListView.html',
+                        controller : 'newsListController',
+                        controllerAs : 'newsList'
+                    }
+                }
+            })
+             .state('main.loggedIn.previewNews', {      
+                url: '/news/preview/:newsID',
+                views : {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Preview';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'news' : {
+                        templateUrl: templateChange() + '/js/news-circulars/preview/previewNewsView.html',
+                        controller: 'previewNewsController'
+                    }
+                },
+                params :{
+                    'newsList' : null,
+                    'newsID' : null
                 }
             })
             .state('main.loggedIn.selfLearning', {
