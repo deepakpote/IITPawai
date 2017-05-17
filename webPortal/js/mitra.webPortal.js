@@ -127,7 +127,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                             }
                         }
                     },
-                    'news' : {
+                    'content' : {
                         templateUrl : templateChange() + '/js/news-list/newsListView.html',
                         controller : 'newsListController',
                         controllerAs : 'newsList'
@@ -153,7 +153,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 },
                 params :{
-                    'newsList' : null,
+                    'objnewsList' : null,
                     'newsID' : null
                 }
             })

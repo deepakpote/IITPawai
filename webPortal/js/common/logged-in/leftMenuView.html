@@ -101,9 +101,9 @@
         </a><br/>
     </div>
     <div class="left-menu-item" ng-if="isTeacher || isAdmin" >
-        <a ui-sref="#"
-           ng-click="setSelected('news-circular')"
-           ng-class="{selectedItem : selectedItem === 'news-circular'}">
+        <a ui-sref="main.loggedIn.newsList"
+           ng-click="setSelected('news-list')"
+           ng-class="{selectedItem : selectedItem === 'news-list'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">subscriptions</i>
             </div>

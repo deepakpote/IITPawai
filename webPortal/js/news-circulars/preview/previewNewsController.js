@@ -1,7 +1,7 @@
-angular.module("mitraPortal").controller("reviewContentController",
+angular.module("mitraPortal").controller("previewNewsController",
     ['$scope', '$stateParams', '$state', '$window', '$log', '$http', 'appUtils', 'appConstants', 'commonService',
-        'contentService',
-        function ($scope, $stateParams, $state, $window, $log, $http, appUtils, appConstants, commonService,contentService) {
+        'newsService',
+        function ($scope, $stateParams, $state, $window, $log, $http, appUtils, appConstants, commonService,newsService) {
 
             $scope.acceptedFileTypes = {
                 "108100": "",              //Video
@@ -17,9 +17,9 @@ angular.module("mitraPortal").controller("reviewContentController",
 
             $log.debug($scope.isAdmin, $scope.isTeacher, appUtils.isAdmin(), appUtils.isTeacher());
 
-            $scope.mode = "PREVIEW"; // can be "EDIT" or "PREVIEW" or "GIVE FEEDBACK"
-            $scope.content = {};
-            $scope.contentEditable = false;
+            $scope.mode = "PREVIEW"; // can be "EDIT" or "PPREVIEW" or "GIVE FEEDBACK"
+            $scope.news = {};
+            $scope.newsEditable = false;
 
             $scope.checked = {
                 subject: false,
@@ -170,20 +170,21 @@ angular.module("mitraPortal").controller("reviewContentController",
                 );
             };
 
+            // Save/update the news details
             $scope.saveChanges = function () {
                 $log.debug("dsfsdfg");
                 var fd = new FormData();
                 //fd.append('contentID',);
-                for (var key in $scope.content) {
+                for (var key in $scope.news) {
                     $log.debug(key);
-                    $log.debug($scope.content[key]);
-                    if ($scope.content[key]) {
-                        fd.append(key, $scope.content[key]);
+                    $log.debug($scope.news[key]);
+                    if ($scope.news[key]) {
+                        fd.append(key, $scope.news[key]);
                     }
 
                 }
 
-                fd.append("contentID", $stateParams.contentID);
+                fd.append("newsID", $stateParams.newsID);
 
 
                 if ($scope.content.newFileTypeCodeID) {
@@ -230,27 +231,27 @@ angular.module("mitraPortal").controller("reviewContentController",
             };
 
 
-            var fetchContentDetails = function () {
+            var fetchNewsDetails = function () {
                 var options = {};
-                var data = {"contentID": $stateParams.contentID};
+                var data = {"newsID": $stateParams.newsID};
                 options.data = data;
-                options.url = 'content/contentDetail/';
+                options.url = 'news/newsDetail/';
                 options.headers = {"authToken": appUtils.getFromCookies("token", "")};
 
                 appUtils.ajax(options,
                     function (responseBody) {
                         //get content set
-                        $scope.content = responseBody.data[0];
+                        $scope.news = responseBody.data[0];
 
-                        setGradesFromContent();
-                        setRequirementsFromContent();
-                        fetchChapterList($scope.content.gradeCodeIDs,$scope.content.subjectCodeID);
+                        //setGradesFromContent();
+                        //setRequirementsFromContent();
+                        //fetchChapterList($scope.content.gradeCodeIDs,$scope.content.subjectCodeID);
 
                         //make a copy in case user goes to edit and discards
-                        $scope.originalContent = JSON.parse(JSON.stringify($scope.content)); //deepcopy
+                        $scope.originalNews = JSON.parse(JSON.stringify($scope.news)); //deepcopy
                     },
                     function (responseBody) {
-                        $log.debug($scope.content.gradeCodeIDs);
+                        $log.debug($scope.news);
                         $log.debug("error");
                         $log.debug(responseBody);
                     }
@@ -383,14 +384,14 @@ angular.module("mitraPortal").controller("reviewContentController",
 
             $scope.$on('codesAvailable', function (event, data) {
                 populateDropDowns();
-                fetchContentDetails();
+                fetchNewsDetails();
             });
 
             var init = function () {
                 $scope.submitted = false;
                 $scope.content = {"contentID": 0, "contentTypeCodeID": 0};
                 $scope.errorMessage = "";
-                fetchContentDetails();
+                fetchNewsDetails();
                 populateDropDowns();
             };
 

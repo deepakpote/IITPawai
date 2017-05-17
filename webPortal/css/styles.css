@@ -389,6 +389,12 @@ li.selected  {
     font-size: smaller;
 }
 
+.bottom-news-content{
+    flex-grow: 1;
+    background-color: #b2dfdb;
+    font-size: large;
+}
+
 .single-line {
     white-space: nowrap;
     overflow: hidden;

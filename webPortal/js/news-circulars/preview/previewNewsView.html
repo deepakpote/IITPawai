@@ -13,7 +13,7 @@
   </span>
         <span ng-class="mode =='EDIT' ? 'orange-text':''"
               style="text-align:center;display: inline-block;margin-left:40px;cursor: pointer;"
-              ng-click="mode='EDIT'" ng-show="isAdmin || (isTeacher && content.statusCodeID == 114100)">
+              ng-click="mode='EDIT'" ng-show="isAdmin || (isTeacher && news.statusCodeID == 114100)">
 
   <div>
     <i class="material-icons" style="font-size:24px;margin:auto;">mode_edit</i>
@@ -44,7 +44,7 @@
     <form name="frmContentUpload" ng-submit="submit()">
         <div class="upload-container">
             <div class="no-padding-container">
-                <div class="upload-title" style="margin-top:50px;">Content Details</div>
+                <div class="upload-title" style="margin-top:50px;">News Details</div>
                 <div class="col-md-3" ng-if="content.contentTypeCodeID == 107100">
                     <div class="card">
                         <div class="options-card" ng-mouseenter=setSelectedOption("Subject") ng-mouseleave=setSelectedOption("") >

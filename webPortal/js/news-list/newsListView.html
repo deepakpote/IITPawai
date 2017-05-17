@@ -12,14 +12,16 @@
 <!-- content status filter start-->
 <div class="section-padding-container">
     <ul class="filter-type">
-        <li class="filter-type" ng-class="{selected : teachingAids.status === 114101}"
-            ng-click=teachingAids.setStatus(114101) ng-if="teachingAids.isAdmin">Review</li>
-        <li class="filter-type" ng-class="{selected : teachingAids.status === 114100}"
-            ng-click=teachingAids.setStatus(114100)>Drafts</li>
-        <li class="filter-type" ng-class="{selected : teachingAids.status === 114102}"
-            ng-click=teachingAids.setStatus(114102)>Published</li>
-        <li class="filter-type" ng-class="{selected : teachingAids.status === ''}"
-            ng-click=teachingAids.setStatus('')>All</li>
+        <li class="filter-type" ng-class="{selected : newsList.status === 114101}"
+            ng-click=newsList.setDepartment(112100)>General</li>
+        <li class="filter-type" ng-class="{selected : newsList.status === ''}"
+            ng-click=newsList.setDepartment('')>All</li>
+        <li class="filter-type" ng-class="{selected : newsList.status === 114100}"
+            ng-click=newsList.setStatus(114100)>Drafts</li>
+        <li class="filter-type" ng-class="{selected : newsList.status === 114102}"
+            ng-click=newsList.setStatus(114102)>Published</li>
+        <li class="filter-type" ng-class="{selected : newsList.status === ''}"
+            ng-click=newsList.setStatus('')>All</li>
         <li class="filter-type-no-hover" style="padding-left: 50%;padding-top: 26px;">
             <i class="material-icons" style="font-size: 14px;">sort</i>
         </li>
@@ -36,148 +38,33 @@
     </ul>
 </div>
 
-<!-- content status filter end-->
-
-<div class="divider"></div>
-
-<!-- content type filter start -->
-<div class="section-padding-container">
-    <ul class="filter-type">
-        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108100}"
-            ng-click=teachingAids.setFileType(108100)>Video</li>
-        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108101}"
-            ng-click=teachingAids.setFileType(108101)>Audio</li>
-        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108102}"
-            ng-click=teachingAids.setFileType(108102)>PPT</li>
-        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108103}"
-            ng-click=teachingAids.setFileType(108103)>Worksheet</li>
-        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108104}"
-            ng-click=teachingAids.setFileType(108104)>PDF</li>
-        <li class="filter-type" ng-class="{selected : teachingAids.fileType === 108105}"
-            ng-click=teachingAids.setFileType(108105)>Genie</li>
-        <li class="filter-type" ng-class="{selected : teachingAids.fileType === ''}"
-            ng-click=teachingAids.setFileType('')>All</li>
-    </ul>
-</div>
 
 <!-- content type filter end -->
 
 <div class="divider"></div>
 
+</br>
+</br>
+
 <!-- granular filters start -->
 
-<div class="row row-no-margin" style="padding: 6%;">
+<!-- <div class="row row-no-margin" style="padding: 6%;"> -->
 
-    <div class="col-md-4 no-gutter">
-        <div class="card card-250">
-            <div class="options-card" ng-mouseenter=teachingAids.setSelectedOption("Grade") ng-mouseleave=teachingAids.setSelectedOption("")>
-                <div class="card-content">
-                    Grade
-                </div>
-                <div class="card-select" ng-class="(((gradeList |
-                                    filter:{checked:true}).length > 0)?'orange-background':'teal-background')"
-                     >
-                  {{displayGradesString}}
-                    <span ng-if="!((gradeList | filter:{checked:true}).length > 0)">
-                    Select
-                  </span>
-                </div>
-                <div class="card-action" ng-show="(teachingAids.selectedOption == 'Grade')">
-                    <div ng-repeat="grade in gradeList">
-                        <div>
-                            <div class="col-md-9 no-padding align-left">
-                                {{grade.codeNameEn}}
-                            </div>
-                            <div class="col-md-3 align-right no-padding" >
-                                <input type="checkbox" ng-model="grade.checked" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4 no-gutter">
-        <div class="card card-250">
-            <div class="options-card" ng-mouseenter=teachingAids.setSelectedOption("Subject") ng-mouseleave=teachingAids.setSelectedOption("")>
-                <div class="card-content">
-                    Subject
-                </div>
-                <div class="card-select" ng-class="(((subjectList |
-                                    filter:{checked:true}).length > 0)?'orange-background':'teal-background')"
-                     >
-                  {{displaySubjectsString}}
-                    <span ng-if="!((subjectList | filter:{checked:true}).length > 0)">
-                    Select
-                  </span>
-                </div>
-                <div class="card-action" ng-show="(teachingAids.selectedOption == 'Subject')">
-                    <div ng-repeat="subject in subjectList">
-                        <div>
-                            <div class="col-md-9 no-padding align-left">
-                                {{subject.codeNameEn}}
-                            </div>
-                            <div class="col-md-3 align-right no-padding" >
-                                <input type="checkbox" ng-model="subject.checked"
-                                       ng-click = "teachingAids.showContentObject()" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4 no-gutter">
-        <div class="card card-250">
-            <div class="options-card" ng-mouseenter=teachingAids.setSelectedOption("Uploaded-By") ng-mouseleave=teachingAids.setSelectedOption("")>
-                <div class="card-content">
-                    Uploader
-                </div>
-                <div class="card-select" ng-class="(teachingAids.uploadedBy?'orange-background':'teal-background')">
-                  <span ng-if="teachingAids.uploadedBy"
-                        ng-repeat="uploader in uploaderList | filter:{userID : teachingAids.uploadedBy} : true">
-                    {{uploader.userName}}
-                  </span>
-                    <span ng-if="!teachingAids.uploadedBy">
-                    Select
-                  </span>
-                </div>
-                <div class="card-action" ng-show="(teachingAids.selectedOption == 'Uploaded-By')">
-                    <div ng-repeat="uploader in uploaderList">
-                        <div>
-                            <div class="col-md-9 no-padding align-left">
-                                {{uploader.userName}}
-                            </div>
-                            <div class="col-md-3 align-right no-padding" >
-                                <input type="radio" ng-model="teachingAids.uploadedBy"
-                                       ng-click = "teachingAids.filterByUploader(uploader.userID)"
-                                       ng-value="uploader.userID"
-                                        />
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <br />
-    </div>
-</div>
+<!-- </div> -->
 
 <!-- granular filters end -->
 
 <!-- content start -->
 
-<div class="section-padding-container">
-    <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
-    <div class="col-md-4 list-view no-gutter" ng-repeat="teachingAid in teachingAids.data | orderBy:teachingAids.orderByKey">
-        <div class="card card-250" style="display: flex;flex-direction: column;" ng-click=teachingAids.goToReview(teachingAid)>
-            <div class="content-panel"
+<div class="section-padding-container col-md-12">
+    <span class="" us-spinner="{radius:40, width:8, length: 16}" style=""></span>
+    <div class="col-md-6 list-view no-gutter"  ng-repeat="objnewsList in newsList.data | orderBy:newsList.orderByKey">
+   
+        <div class="col-md-11" style="display: flex;flex-direction: column;" ng-click="newsList.goToPreview(objnewsList)">
+            <div class="col-md-12"
                  style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.74), rgba(0, 0, 0, 0.1)),
-                                        url({{teachingAid.thumbnailUrl}});
-                                        background-size: contain;">
+                                        url({{objnewsList.imageURL}});
+                                        background-size: contain; height: 35%;" ng-if="objnewsList.imageURL">
                 <div class="right-panel">
 
                     <i class="material-icons icon-white pointer">mode_edit</i>
@@ -188,26 +75,26 @@
 
                 </div>
             </div>
-            <div class="mid-content">
+            <div class="bottom-news-content" style="height: 10%;">
                 <div class="single-line">
-                    {{teachingAid.contentTitle}}
+                </br>
+                    &nbsp;&nbsp; <b>{{ objnewsList.newsTitle}}</b>  SEEN
                 </div>
-                <div style="font-size: smaller;">
-                    {{teachingAid.subjectName}} | {{teachingAid.grades}}
-                </div>
+  
             </div>
             <div class="bottom-content">
                 <div class="uploader single-line" style="">
-                    Author : {{teachingAid.author}}
+                   {{objnewsList.publishDate}}					SAVED
                 </div>
             </div>
         </div>
+    	<div class="col-md-1"></div>
     </div>
-    <div ng-hide="teachingAids.data.length" style="line-height: 12em;text-align: center">No resources found!</div>
+    <div ng-hide="objnewsList.data.length" style="line-height: 12em;text-align: center">No resources found!</div>
     <div class="text-center" style="clear:left;padding-top: 48px;">
-        <input ng-show="teachingAids.hasMoreData" type="button"
+        <input ng-show="objnewsList.hasMoreData" type="button"
                value="Load More" class="btn btn-warning"
-               ng-click="teachingAids.loadMore()"/>
+               ng-click="objnewsList.loadMore()"/>
     </div>
 </div>
 
