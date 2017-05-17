@@ -38,6 +38,10 @@ angular.module("mitraPortal").controller("previewNewsController",
                 chapter : false
             };
 
+            
+            $log.debug("IN     previewNewsController");
+            
+            
             $scope.setDirty = function (form) {
                 angular.forEach(form.$error.required, function (field) {
                     field.$dirty = true;
@@ -233,6 +237,7 @@ angular.module("mitraPortal").controller("previewNewsController",
 
             var fetchNewsDetails = function () {
                 var options = {};
+                $log.debug($stateParams.newsID);
                 var data = {"newsID": $stateParams.newsID};
                 options.data = data;
                 options.url = 'news/newsDetail/';
@@ -258,74 +263,74 @@ angular.module("mitraPortal").controller("previewNewsController",
                 );
             };
 
-            var setGradesFromContent = function () {
-                if ($scope.content.gradeCodeIDs) {
-                    var gradesArray = $scope.content.gradeCodeIDs.split(',');
-                    for (var i = 0; i < $scope.gradeList.length; i++) {
-                        if (gradesArray.indexOf($scope.gradeList[i].codeID.toString()) > -1) {
-                            $scope.gradeList[i].checked = true;
-                        }
-                        else {
-                            $scope.gradeList[i].checked = false;
-                        }
-                    }
-                }
-            };
+//            var setGradesFromContent = function () {
+//                if ($scope.content.gradeCodeIDs) {
+//                    var gradesArray = $scope.content.gradeCodeIDs.split(',');
+//                    for (var i = 0; i < $scope.gradeList.length; i++) {
+//                        if (gradesArray.indexOf($scope.gradeList[i].codeID.toString()) > -1) {
+//                            $scope.gradeList[i].checked = true;
+//                        }
+//                        else {
+//                            $scope.gradeList[i].checked = false;
+//                        }
+//                    }
+//                }
+//            };
 
-            var setRequirementsFromContent = function () {
-                if ($scope.content.requirementCodeIDs) {
-                    var requirementsArray = $scope.content.requirementCodeIDs.split(',');
-                    $log.debug($scope.content.requirementCodeIDs);
-                    for (var i = 0; i < $scope.requirementList.length; i++) {
-                        if (requirementsArray.indexOf($scope.requirementList[i].codeID.toString()) > -1) {
-                            $scope.requirementList[i].checked = true;
-                        }
-                        else {
-                            $scope.requirementList[i].checked = false;
-                        }
-                    }
-                }
-            };
-
-            $scope.$watch('gradeList', function (gradeList) {
-                var checkedGrades = gradeList.filter(function (grade) {
-                    return (grade.checked == true)
-                });
-                var gradesString = "";
-                var displayGradesString = "";
-                if (checkedGrades.length > 0) {
-                    gradesString = checkedGrades[0].codeID;
-                    displayGradesString = checkedGrades[0].codeNameEn;
-                }
-                for (i = 1; i < checkedGrades.length; i++) {
-
-                    gradesString += ',' + checkedGrades[i].codeID;
-                    displayGradesString += ', ' + checkedGrades[i].codeNameEn;
-                }
-                $scope.content.gradeCodeIDs = gradesString;
-                $scope.displayGradesString = displayGradesString;
-
-            }, true);
-
-            $scope.$watch('requirementList', function (requirementList) {
-                var checkedRequirements = requirementList.filter(function (requirement) {
-                    return (requirement.checked == true)
-                });
-                var requirementsString = "";
-                var displayRequirementsString = "";
-                if (checkedRequirements.length > 0) {
-                    requirementsString = checkedRequirements[0].codeID;
-                    displayRequirementsString = checkedRequirements[0].codeNameEn;
-                }
-                for (i = 1; i < checkedRequirements.length; i++) {
-
-                    requirementsString += ',' + checkedRequirements[i].codeID;
-                    displayRequirementsString += ', ' + checkedRequirements[i].codeNameEn;
-                }
-                $scope.content.requirementCodeIDs = requirementsString;
-                $scope.displayRequirementsString = displayRequirementsString;
-
-            }, true);
+//            var setRequirementsFromContent = function () {
+//                if ($scope.content.requirementCodeIDs) {
+//                    var requirementsArray = $scope.content.requirementCodeIDs.split(',');
+//                    $log.debug($scope.content.requirementCodeIDs);
+//                    for (var i = 0; i < $scope.requirementList.length; i++) {
+//                        if (requirementsArray.indexOf($scope.requirementList[i].codeID.toString()) > -1) {
+//                            $scope.requirementList[i].checked = true;
+//                        }
+//                        else {
+//                            $scope.requirementList[i].checked = false;
+//                        }
+//                    }
+//                }
+//            };
+//
+//            $scope.$watch('gradeList', function (gradeList) {
+//                var checkedGrades = gradeList.filter(function (grade) {
+//                    return (grade.checked == true)
+//                });
+//                var gradesString = "";
+//                var displayGradesString = "";
+//                if (checkedGrades.length > 0) {
+//                    gradesString = checkedGrades[0].codeID;
+//                    displayGradesString = checkedGrades[0].codeNameEn;
+//                }
+//                for (i = 1; i < checkedGrades.length; i++) {
+//
+//                    gradesString += ',' + checkedGrades[i].codeID;
+//                    displayGradesString += ', ' + checkedGrades[i].codeNameEn;
+//                }
+//                $scope.content.gradeCodeIDs = gradesString;
+//                $scope.displayGradesString = displayGradesString;
+//
+//            }, true);
+//
+//            $scope.$watch('requirementList', function (requirementList) {
+//                var checkedRequirements = requirementList.filter(function (requirement) {
+//                    return (requirement.checked == true)
+//                });
+//                var requirementsString = "";
+//                var displayRequirementsString = "";
+//                if (checkedRequirements.length > 0) {
+//                    requirementsString = checkedRequirements[0].codeID;
+//                    displayRequirementsString = checkedRequirements[0].codeNameEn;
+//                }
+//                for (i = 1; i < checkedRequirements.length; i++) {
+//
+//                    requirementsString += ',' + checkedRequirements[i].codeID;
+//                    displayRequirementsString += ', ' + checkedRequirements[i].codeNameEn;
+//                }
+//                $scope.content.requirementCodeIDs = requirementsString;
+//                $scope.displayRequirementsString = displayRequirementsString;
+//
+//            }, true);
 
             $scope.$watchGroup(['content.gradeCodeIDs', 'content.subjectCodeID'], function(newValues, oldValues, scope) {
                 console.log("old value grade");
@@ -347,14 +352,14 @@ angular.module("mitraPortal").controller("previewNewsController",
             });
 
             var populateDropDowns = function () {
-                $scope.contentTypeList = commonService.getCodeListPerCodeGroup(
-                    appConstants.codeGroup.contentType
+                $scope.NewsCategoryList = commonService.getCodeListPerCodeGroup(
+                    appConstants.codeGroup.NewsCategory
                 );
-                $scope.subjectList = commonService.getCodeListPerCodeGroup(
-                    appConstants.codeGroup.subject
+                $scope.departmentList = commonService.getCodeListPerCodeGroup(
+                    appConstants.codeGroup.department
                 );
-                $scope.gradeList = commonService.getCodeListPerCodeGroup(
-                    appConstants.codeGroup.grade
+                $scope.importanceList = commonService.getCodeListPerCodeGroup(
+                    appConstants.codeGroup.importance
                 );
                 $scope.fileTypeList = commonService.getCodeListPerCodeGroup(
                     appConstants.codeGroup.fileType
@@ -389,7 +394,7 @@ angular.module("mitraPortal").controller("previewNewsController",
 
             var init = function () {
                 $scope.submitted = false;
-                $scope.content = {"contentID": 0, "contentTypeCodeID": 0};
+                $scope.news = {"newsID": 0, "newsCategoryCodeID": 0};
                 $scope.errorMessage = "";
                 fetchNewsDetails();
                 populateDropDowns();

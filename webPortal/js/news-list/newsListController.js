@@ -1,9 +1,9 @@
 angular.module("mitraPortal").controller("newsListController", newsListController);
 
 
-newsListController.$inject = ['newsListService','commonService','$scope','appConstants','$filter', '$state', 'appUtils'];
+newsListController.$inject = ['newsListService','commonService','$scope','appConstants','$filter', '$state', 'appUtils' , '$log'];
 
-function newsListController(newsListService,commonService,$scope,appConstants,filter,$state,appUtils) {
+function newsListController(newsListService,commonService,$scope,appConstants,filter,$state,appUtils,$log) {
 
     var vm = this;
     vm.newsCategoryCodeID = 115100;
@@ -91,8 +91,9 @@ function newsListController(newsListService,commonService,$scope,appConstants,fi
     }
 
     function goToPreview(newsList){
+    	$log.debug('newsID' + newsList.news);
         $state.go('main.loggedIn.previewNews',
-            {'newsID' : newsList.newsID});
+            {'newsID' : newsList.news});
     }
 
     function fetchNewsList() {

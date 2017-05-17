@@ -147,7 +147,7 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                             }
                         }
                     },
-                    'news' : {
+                    'content' : {
                         templateUrl: templateChange() + '/js/news-circulars/preview/previewNewsView.html',
                         controller: 'previewNewsController'
                     }
