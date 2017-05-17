@@ -170,17 +170,27 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.sign_in_user_not_registered, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
         
-        generatedOTP = random.randint(100000, 999999)
-        objOtp = otp(phoneNumber = phoneNumber, otp = generatedOTP)
-        objOtp.save()
+        isOTPtimecorrect = None
         
-        if authenticationType == constants.authenticationTypes.registration:
-            otpMessage = constants.sms.registrationMessage
+        #Check, If Last OTP is sent before 3 min,then don't send the OTP,else,Send the OTP
+        isOTPtimecorrect = checkOTPTimer(phoneNumber)
+        
+        if isOTPtimecorrect:
+            print "OTP saved and sent"
+            generatedOTP = random.randint(100000, 999999)
+            objOtp = otp(phoneNumber = phoneNumber, otp = generatedOTP)
+            objOtp.save()
+            
+            if authenticationType == constants.authenticationTypes.registration:
+                otpMessage = constants.sms.registrationMessage
+            else:
+                otpMessage = constants.sms.signInMessage
+            
+            # Send OTP SMS Call
+            sendOtpSms(phoneNumber, generatedOTP, constants.language.english, otpMessage)
         else:
-            otpMessage = constants.sms.signInMessage
-        
-        # Send OTP SMS Call
-        sendOtpSms(phoneNumber, generatedOTP, constants.language.english, otpMessage)
+            return Response({"response_message": constants.messages.sign_in_user_not_registered, "data": []},
+                            status=status.HTTP_400_BAD_REQUEST)
         
         # make call to plivo here
         return Response({"response_message": constants.messages.success, "data":[]})
@@ -1370,3 +1380,58 @@ def userDeviceSave(phoneNumber, fcmDeviceID):
     # If the given phoneNumber and device ID combination does NOT exists, then, save
     device(phoneNumber = phoneNumber, fcmDeviceID = fcmDeviceID).save()
     return
+
+#checkOTPTimer
+"""
+Check timestamp difference of last sent otp and request for current otp
+"""
+def checkOTPTimer(phoneNumber):
+    sendOTP = None
+    secondDifference = None
+    mysqlCurrentDate = None
+    
+    # Connection
+    cursor = connection.cursor()  
+    
+    # SQL Query
+    getCurrentDate = "select now()"
+    
+    #print "getCurrentDate:",getCurrentDate            
+    cursor.execute(getCurrentDate)
+    
+    #Queryset
+    datetimeQuerySet = cursor.fetchall()
+    
+    for item in datetimeQuerySet:
+        mysqlCurrentDate = item[0]
+    
+    # Check if the OTP for given phoneNumber is exists or not.
+    try:
+        objOTP = otp.objects.filter(phoneNumber = phoneNumber).order_by('-createdOn').first()
+    except otp.DoesNotExist:
+        return True
+    
+    # i.e. User registration.
+    if not objOTP:
+        return True
+    
+    #Get current date time
+    objCurrentDateTime = datetime.now()
+    objLastOTPDate = objOTP.createdOn.replace(tzinfo=None)
+    objCurrentDT = objCurrentDateTime.replace(tzinfo=None)
+      
+#     print "objCurrentDateTime:",objCurrentDT
+#     print "objOTP.createdOn",objLastOTPDate
+#     print "mysqlCurrentDate:",mysqlCurrentDate
+    
+    #If both the datetime exists, then campare the both.
+    if objLastOTPDate and mysqlCurrentDate:
+        # Get the datetime difference in seconds
+        secondDifference = (mysqlCurrentDate - objLastOTPDate).total_seconds()
+        print "secondDifference:",secondDifference
+    
+    #If the difference is gretter then 3min i.e. 180 seconds then send the OTP.
+    if secondDifference > constants.sms.reSendSMS_IntervalInSeconds:
+        return True
+    else:
+        return False

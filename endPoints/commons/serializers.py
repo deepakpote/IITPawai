@@ -32,3 +32,10 @@ class customNewsSerializer(serializers.ModelSerializer):
     class Meta:
         model = newsDetail
         fields = ('news','newsTitle','author','content','tags','department','newsCategory','newsImportance','publishDate','pdfFileURL','status')
+
+#Commented for now
+# class newsTagSerializer(serializers.ModelSerializer):
+#      
+#     class Meta:
+#         model = newsTag
+#         fields = ('tagName')
