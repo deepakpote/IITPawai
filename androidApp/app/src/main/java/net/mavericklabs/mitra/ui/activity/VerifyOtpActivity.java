@@ -185,13 +185,14 @@ public class VerifyOtpActivity extends BaseActivity {
                                 Logger.d("User id saved.." + userId);
                                 UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),true);
                                 fetchUserDetails(progressDialog);
-                            } else {
-                                progressDialog.dismiss();
-                                UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),true);
-                                Intent almostDone = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
-                                MitraSharedPreferences.saveToPreferences(getApplicationContext(), "OTP", otpEditText.getText().toString());
-                                startActivity(almostDone);
                             }
+//                            else {
+//                                progressDialog.dismiss();
+//                                UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),true);
+//                                Intent almostDone = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
+//                                MitraSharedPreferences.saveToPreferences(getApplicationContext(), "OTP", otpEditText.getText().toString());
+//                                startActivity(almostDone);
+//                            }
                         } else {
                             progressDialog.dismiss();
                             Toast.makeText(getApplicationContext(), R.string.error_invalid_otp,Toast.LENGTH_LONG).show();

@@ -26,6 +26,8 @@ package net.mavericklabs.mitra.utils;
 import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.FirebaseApp;
+
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 
@@ -37,7 +39,7 @@ public class MitraApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
+        //Fabric.with(this, new Crashlytics());
         Realm.init(this);
     }
 }
