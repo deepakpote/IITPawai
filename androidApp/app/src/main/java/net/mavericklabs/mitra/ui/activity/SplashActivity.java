@@ -18,6 +18,7 @@ import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -39,7 +40,7 @@ public class SplashActivity extends AppCompatActivity {
 
 
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .schemaVersion(2) // Must be bumped when the schema changes
+                .schemaVersion(3) // Must be bumped when the schema changes
                 .migration(new Migration()) // Migration to run
                 .build();
 
@@ -57,6 +58,17 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             currentCodeVersion = "0";
         }
+
+        //TODO : temp. remove later
+//        List<CommonCode> roles = new ArrayList<>();
+//        roles.add(new CommonCode(109101, 109, "Officer", "Aadhikari", 1));
+//        roles.add(new CommonCode(109102, 109, "Kendra Pramukh", "Kendra Pramukh", 2));
+//        roles.add(new CommonCode(109103, 109, "Other", "itar", 3));
+//        Realm realm = Realm.getDefaultInstance();
+//        realm.beginTransaction();
+//        realm.copyToRealmOrUpdate(roles);
+//        realm.commitTransaction();
+
 
         final String codeVersion = currentCodeVersion;
 

@@ -103,6 +103,12 @@ public class Migration implements RealmMigration {
                     .addField("chapter", String.class, FieldAttribute.PRIMARY_KEY)
                     .addField("chapterEng", String.class)
                     .addField("chapterMar",String.class);
+            oldVersion++;
+        }
+
+        if(oldVersion == 2) {
+            schema.get("DbUser")
+                    .addField("departmentID", Integer.class);
         }
 
     }

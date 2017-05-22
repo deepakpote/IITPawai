@@ -40,6 +40,7 @@ public class DbUser extends RealmObject {
     private Integer district;
     private String Udise;
     private Integer preferredLanguage;
+    private Integer departmentID;
     private String profilePhotoPath;
     private RealmList<DbSubject> subjects;
     private RealmList<DbGrade> grades;
@@ -133,5 +134,13 @@ public class DbUser extends RealmObject {
 
     public void setTopics(RealmList<DbTopic> topics) {
         this.topics = topics;
+    }
+
+    public Integer getDepartmentID() {
+        return departmentID;
+    }
+
+    public void setDepartmentID(Integer departmentID) {
+        this.departmentID = departmentID;
     }
 }

@@ -24,10 +24,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -60,6 +62,7 @@ import net.mavericklabs.mitra.ui.fragment.SubjectFragment;
 import net.mavericklabs.mitra.ui.fragment.TopicFragment;
 import net.mavericklabs.mitra.utils.CommonCodeGroup;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
+import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.EditProfileDialogFragment;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
@@ -102,11 +105,13 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
     @BindView(R.id.topic_placeholder_text) TextView topicPlaceholderTextView;
     @BindView(R.id.i_am_spinner) Spinner userTypeSpinner;
     @BindView(R.id.district_spinner) Spinner districtSpinner;
+    @BindView(R.id.department_spinner) Spinner departmentSpinner;
     @BindView(R.id.profile_photo_image_view) ImageView profilePhotoImageView;
     @BindView(R.id.name_edit_text) EditText nameEditText;
     @BindView(R.id.udise_edit_text) EditText udiseEditText;
     @BindView(R.id.topic_recycler_view) RecyclerView topicRecyclerView;
     @BindView(R.id.scroll_view) ScrollView scrollView;
+    @BindView(R.id.department_layout) RelativeLayout departmentLayout;
 
     private Uri imageCaptureUri;
     private final int PICK_PROFILE_PHOTO = 0;
@@ -238,12 +243,17 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
 
         RealmResults<CommonCode> iAmList = Realm.getDefaultInstance().where(CommonCode.class)
                 .equalTo("codeGroupID", CommonCodeGroup.USER_TYPE).findAll();
-        List<CommonCode> userTypeList = new ArrayList<>(iAmList);
+        final List<CommonCode> userTypeList = new ArrayList<>(iAmList);
 
         RealmResults<CommonCode> districtList = Realm.getDefaultInstance().where(CommonCode.class)
                 .equalTo("codeGroupID", CommonCodeGroup.DISTRICT).findAll();
         Logger.d(" list " + districtList.size());
         List<CommonCode> districts = new ArrayList<>(districtList);
+
+        RealmResults<CommonCode> departmentsList = Realm.getDefaultInstance().where(CommonCode.class)
+                .equalTo("codeGroupID", CommonCodeGroup.DEPARTMENT_TYPES).findAll();
+
+        List<CommonCode> departments = new ArrayList<>(departmentsList);
 
         //Header - not a valid value
         districts.add(0, new CommonCode(0, 0,getString(R.string.select), getString(R.string.select), 0));
@@ -252,6 +262,32 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(EditProfileActivity.this,R.layout.custom_spinner_item_header,userTypeList);
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
         userTypeSpinner.setAdapter(adapter);
+
+        SpinnerArrayAdapter departmentAdapter = new SpinnerArrayAdapter(EditProfileActivity.this,R.layout.custom_spinner_item_header,departments);
+        departmentAdapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
+        departmentSpinner.setAdapter(departmentAdapter);
+
+        userTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(userTypeList.get(i).getCodeID().equals(Constants.UserTypeTeacher)) {
+                    udiseEditText.setVisibility(View.VISIBLE);
+                    departmentLayout.setVisibility(View.GONE);
+                } else if(userTypeList.get(i).getCodeID().equals(Constants.UserTypeOfficer)) {
+                    udiseEditText.setVisibility(View.GONE);
+                    departmentLayout.setVisibility(View.VISIBLE);
+                } else {
+                    udiseEditText.setVisibility(View.GONE);
+                    departmentLayout.setVisibility(View.GONE);
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         districtAdapter = new SpinnerArrayAdapter(EditProfileActivity.this,
                 R.layout.custom_spinner_dropdown_item, districts);
@@ -288,6 +324,10 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         userTypeSpinner.setSelection(getIndexForUserTypeSpinner(userTypeId));
         Integer spinnerId = dbUser.getDistrict();
         districtSpinner.setSelection(getIndexForDistrictSpinner(spinnerId));
+
+        //TODO
+        //Integer departmentTypeId = dbUser.getDepartmentType();
+        //departmentSpinner.setSelection(getIndexForDepartmentTypeSpinner(departmentTypeId));
 
         RealmList<DbSubject> dbSubjects = dbUser.getSubjects();
         List<BaseObject> subjectList = new ArrayList<>();
@@ -351,6 +391,17 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         for(i = 0 ; i < userTypeSpinner.getCount() ; i ++) {
             Integer id =((CommonCode)userTypeSpinner.getItemAtPosition(i)).getCodeID();
             if(id.equals(userTypeId)) {
+                break;
+            }
+        }
+        return i;
+    }
+
+    private int getIndexForDepartmentTypeSpinner(Integer departmentID) {
+        int i;
+        for(i = 0 ; i < departmentSpinner.getCount() ; i ++) {
+            Integer id =((CommonCode)departmentSpinner.getItemAtPosition(i)).getCodeID();
+            if(id.equals(departmentID)) {
                 break;
             }
         }
@@ -450,6 +501,9 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
                     dbUser.setUdise(udiseEditText.getText().toString());
                     dbUser.setUserType(getSelectedUserTypeId());
                     dbUser.setDistrict(getSelectedDistrictID());
+                    if(getSelectedDepartmentId() != null) {
+                        dbUser.setDepartmentID(getSelectedDepartmentId());
+                    }
 
                     if(!StringUtils.isEmpty(profilePhotoPath)) {
                         dbUser.setProfilePhotoPath(profilePhotoPath);
@@ -647,6 +701,14 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         return userType.getCodeID();
     }
 
+    private Integer getSelectedDepartmentId() {
+        if(departmentSpinner.getSelectedItem() != null) {
+            CommonCode departmentType = (CommonCode) departmentSpinner.getSelectedItem();
+            return departmentType.getCodeID();
+        }
+        return null;
+    }
+
     private Integer getSelectedDistrictID() {
         CommonCode district = (CommonCode) districtSpinner.getSelectedItem();
         return district.getCodeID();
@@ -693,6 +755,9 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         if(!StringUtils.isEmpty(udiseEditText.getText().toString())) {
             user.setUdiseCode(udiseEditText.getText().toString());
             dbUser.setUdise(udiseEditText.getText().toString());
+        }
+        if(getSelectedDepartmentId() != null) {
+            dbUser.setDepartmentID(getSelectedDepartmentId());
         }
 
         if(!StringUtils.isEmpty(profilePhotoPath)) {
