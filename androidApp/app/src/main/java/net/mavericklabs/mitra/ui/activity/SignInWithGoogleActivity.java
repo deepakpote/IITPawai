@@ -24,9 +24,9 @@
 package net.mavericklabs.mitra.ui.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -46,13 +46,19 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.api.NewUser;
+import net.mavericklabs.mitra.model.api.RegisterWithGoogle;
+import net.mavericklabs.mitra.model.api.RegisterWithGoogleUserResponse;
 import net.mavericklabs.mitra.utils.Logger;
-import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SignInWithGoogleActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -120,10 +126,11 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
             Logger.d(" email " + acct.getEmail());
+            Logger.d(" token " + acct.getIdToken());
             firebaseAuthWithGoogle(acct);
         } else {
             // Signed out, show unauthenticated UI.
-            proceed(null);
+            proceed(null, null);
         }
     }
 
@@ -134,31 +141,47 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
         FirebaseUser currentUser = mAuth.getCurrentUser();
         Logger.d("current user " + currentUser);
         if(currentUser != null) {
-            proceed(currentUser);
+            proceed(currentUser, null);
         }
 
     }
 
-    private void proceed(FirebaseUser currentUser) {
+    private void proceed(FirebaseUser currentUser, String idToken) {
         //Call to server here.
         //If registering, take to profile. Else sign in and proceed.
-        int authenticationType;
-        if(isFromSignIn) {
-            authenticationType = NewUser.TYPE_SIGN_IN;
-            Intent home = new Intent(SignInWithGoogleActivity.this, HomeActivity.class);
-            startActivity(home);
-            finishAffinity();
+        if (currentUser != null) {
+            if (isFromSignIn) {
+                int authenticationType = NewUser.TYPE_SIGN_IN;
+                Intent home = new Intent(SignInWithGoogleActivity.this, HomeActivity.class);
+                startActivity(home);
+                finishAffinity();
 
-        } else {
-            authenticationType = NewUser.TYPE_REGISTER;
-            Intent almostDone = new Intent(SignInWithGoogleActivity.this,AlmostDoneActivity.class);
-            startActivity(almostDone);
-            finishAffinity();
+            } else {
+
+                RestClient.getApiService("").registerUserWithGoogle(new RegisterWithGoogle(idToken)).enqueue(
+                        new Callback<BaseModel<RegisterWithGoogleUserResponse>>() {
+                            @Override
+                            public void onResponse(Call<BaseModel<RegisterWithGoogleUserResponse>> call,
+                                                   Response<BaseModel<RegisterWithGoogleUserResponse>> response) {
+                                int authenticationType = NewUser.TYPE_REGISTER;
+                                Intent almostDone = new Intent(SignInWithGoogleActivity.this, AlmostDoneActivity.class);
+                                startActivity(almostDone);
+                                finishAffinity();
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<BaseModel<RegisterWithGoogleUserResponse>> call, Throwable t) {
+
+                            }
+                        });
+
+
+            }
         }
-
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
         Logger.d( "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -170,13 +193,13 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
                             // Sign in success, update UI with the signed-in user's information
                             Logger.d( "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            proceed(user);
+                            proceed(user, acct.getIdToken());
                         } else {
                             // If sign in fails, display a message to the user.
                             Logger.d( "signInWithCredential:failure" + task.getException());
                             Toast.makeText(SignInWithGoogleActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            proceed(null);
+                            proceed(null, null);
                         }
                     }
                 });
