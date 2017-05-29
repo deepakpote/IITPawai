@@ -430,7 +430,6 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def register(self,request):
-        print request.data
         # Get input data
         phoneNumber = request.data.get('phoneNumber')
         otp_string = request.data.get('otp')
@@ -533,7 +532,7 @@ class UserViewSet(viewsets.ModelViewSet):
                                 "data": []},
                                 status = status.HTTP_404_NOT_FOUND)
 
-        googleToken = userName = request.data.get('googleToken')
+        googleToken = request.data.get('googleToken')
         email = get_email_from_google_token(googleToken)
         if not email:
             return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[]},
