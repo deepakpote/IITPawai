@@ -61,10 +61,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.activity.ChooseSignInOrRegisterActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".ui.activity.SignInUserActivity"
             android:label="@string/sign_in_title"
             android:screenOrientation="portrait" />
@@ -103,7 +99,10 @@
 
         <activity android:name=".ui.activity.BaseActivity" />
         <activity android:name=".ui.activity.PDFViewerActivity" />
-        <activity android:name=".ui.activity.SignInWithGoogleActivity"></activity>
+        <activity
+            android:name=".ui.activity.SignInWithGoogleActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
