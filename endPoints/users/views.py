@@ -15,6 +15,8 @@ from commons.models import code
 from mitraEndPoints import constants , utils, settings 
 import random
 import plivo
+import requests
+import json
 import base64
 import os,time
 import string
@@ -392,34 +394,83 @@ class UserViewSet(viewsets.ModelViewSet):
         response = { 'token' : authResponse.token }
             
         return Response({"response_message": constants.messages.success, "data": [response]})
-      
+
+    """
+    API to sign in with google from app
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def signInWithGoogle(self,request):
+        googleToken = request.data.get('googleToken')
+        email = get_email_from_google_token(googleToken)
+        if not email:
+            return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[]},
+                            status=status.HTTP_401_UNAUTHORIZED)
+
+        userObject = user.objects.filter(emailID = email).first()
+        
+        if userObject:
+            # user already present. similar to verifyotp sign in - send user id and token
+            objToken = token.objects.filter(user = userObject).first()
+            if not objToken:
+                # strange case. user is present without a corresponding token. create token in that case.
+                # no real need to check for duplicates in token generation since field is unique
+                token_string = get_random_string(length = 32)
+                objToken = token(user=userObject, token = token_string).save()
+                
+            return Response({"response_message": constants.messages.success,
+                     "data": [{'userID': userObject.userID, 'token' : objToken.token }]}
+                    )
+        else:
+            #user not present. 
+            return Response({"response_message": constants.messages.sign_in_user_not_registered,
+                         "data": []})
+
     """
     API to register user
     """
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def register(self,request):
+        print request.data
         # Get input data
         phoneNumber = request.data.get('phoneNumber')
         otp_string = request.data.get('otp')
+        email = None
 
         # validate user information
         objUserSerializer = userSerializer(data = request.data)#, context={'request': request})
         if not objUserSerializer.is_valid():
-            return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[ objUserSerializer.errors]},
+            return Response({"response_message":" constants.messages.registration_user_validation_failed", "data":[ objUserSerializer.errors]},
                             status=status.HTTP_401_UNAUTHORIZED)
         
-        # validate OTP
+        # check that either valid otp and phone number or valid oauth token is provided.
         otpList = otp.objects.filter(phoneNumber = phoneNumber,otp = otp_string).first()
         if not otpList:
-            return Response({"response_message": constants.messages.registration_otp_is_invalid, "data":[]},
+            googleToken = request.data.get('googleToken')
+            email = get_email_from_google_token(googleToken)
+            objUserSerializer.emailID = email
+            #print objUserSerializer.emailID
+            if not email:
+                #neither otp+phone number nor google token is provided
+                return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[]},
                             status=status.HTTP_401_UNAUTHORIZED)
+
+
+            
+
+
         
         # If user information is valid, save it
-        objUserSerializer.save()
+        objCreatedUser = objUserSerializer.save()
         
-        #Once user is saved, update it's created by and modified by fields
-        objCreatedUser = user.objects.get(phoneNumber = phoneNumber)
-        user.objects.filter(phoneNumber = phoneNumber).update(createdBy = objCreatedUser, modifiedBy = objCreatedUser)
+        # set email id for newly created user
+        objCreatedUser.emailID = email
+        objCreatedUser.save()
+        
+        #Once user is saved, update it's created by and modified by fields.
+        #objCreatedUser = user.objects.get(userID = objUserSerializer.userID)
+        objCreatedUser.createdBy = objCreatedUser
+        objCreatedUser.modifiedBy = objCreatedUser
+        objCreatedUser.save()
         
         #if registred user is a Teacher, then add role "Teacher"
         if objCreatedUser.userType.codeID == constants.mitraCode.userType_teacher:
@@ -464,6 +515,35 @@ class UserViewSet(viewsets.ModelViewSet):
         response = { 'userID' : objCreatedUser.userID }  #objCreatedUser.userID
         response['token'] = token_string
         return Response({"response_message": constants.messages.success, "data": [response]})
+
+    """
+    API to set email to already existing user who had originally registered with phone number
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def setNewEmail(self,request):
+        
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+        # validate user information
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.update_profile_user_not_exists,
+                                "data": []},
+                                status = status.HTTP_404_NOT_FOUND)
+
+        googleToken = userName = request.data.get('googleToken')
+        email = get_email_from_google_token(googleToken)
+        if not email:
+            return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[]},
+                            status=status.HTTP_401_UNAUTHORIZED)
+
+        objUser.emailID = email
+        objUser.save()
+
+        return Response({"response_message": constants.messages.success, "data": []})
+
     
     """
     API to update user profile.
@@ -1435,3 +1515,24 @@ def checkOTPTimer(phoneNumber):
         return True
     else:
         return False
+
+"""
+function to get email from token if valid
+"""
+def get_email_from_google_token(googleToken):
+    try:
+        result = requests.get(
+            'https://www.googleapis.com/oauth2/v1/tokeninfo',
+            params = {'id_token': googleToken}
+        )
+        tokenResult = json.loads(result.text)
+        email = tokenResult.get("email")
+        assert tokenResult.get('issued_to') == '276996264257-movh2acc81ada5tfftrjmifcg155bunm.apps.googleusercontent.com'
+        assert tokenResult.get('audience') == '276996264257-c77hctg5nldp3ed7h1b2d7fsa6nvt7ti.apps.googleusercontent.com'
+        assert tokenResult.get('email_verified') == True
+        return email
+    except:
+        return None
+    
+
+        
