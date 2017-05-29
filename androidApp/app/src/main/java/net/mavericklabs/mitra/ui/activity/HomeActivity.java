@@ -99,6 +99,7 @@ public class HomeActivity extends BaseActivity {
     public int DRAWER_ITEM_NOTIFICATION = 6;
     public int DRAWER_ITEM_PROFILE = 7;
     public int DRAWER_ITEM_SETTINGS = 8;
+    public int DRAWER_ITEM_GOOGLE_SIGN_IN = 9;
 
 
     @Override
@@ -126,6 +127,11 @@ public class HomeActivity extends BaseActivity {
                         return true;
                     }
                 });
+        if(StringUtils.isEmpty(UserDetailUtils.getEmail(getApplicationContext()))) {
+            navigationView.getMenu().getItem(DRAWER_ITEM_GOOGLE_SIGN_IN).setVisible(true);
+        } else {
+            navigationView.getMenu().getItem(DRAWER_ITEM_GOOGLE_SIGN_IN).setVisible(false);
+        }
 
         selectDrawerItem(navigationView.getMenu().getItem(DRAWER_ITEM_HOME));
         Logger.d("get intent get extras " + getIntent().getExtras());
