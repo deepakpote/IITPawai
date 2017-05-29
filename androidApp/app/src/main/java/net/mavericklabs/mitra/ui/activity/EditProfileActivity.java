@@ -115,7 +115,6 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
 
     private Uri imageCaptureUri;
     private final int PICK_PROFILE_PHOTO = 0;
-    private String otp;
     private SpinnerArrayAdapter districtAdapter;
     private List<BaseObject> selectedGradesList = new ArrayList<>();
     private List<BaseObject> selectedSubjectsList = new ArrayList<>();
@@ -238,8 +237,6 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
-
-        otp = MitraSharedPreferences.readFromPreferences(getApplicationContext(), "OTP", "");
 
         RealmResults<CommonCode> iAmList = Realm.getDefaultInstance().where(CommonCode.class)
                 .equalTo("codeGroupID", CommonCodeGroup.USER_TYPE).findAll();
@@ -740,14 +737,15 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
 
     private void registerUser() {
 
-        String phoneNumber = UserDetailUtils.getMobileNumber(getApplicationContext());
+
+        String googleToken = UserDetailUtils.getGoogleToken(getApplicationContext());
         Logger.d(" language " + Locale.getDefault().getLanguage() + " " + Locale.getDefault().getDisplayLanguage());
 
         //Get the current language name in English
 
         Integer languageCode = LanguageUtils.getCurrentLanguage();
 
-        RegisterUser user = new RegisterUser(nameEditText.getText().toString() ,otp, phoneNumber, getSelectedDistrictID(),
+        RegisterUser user = new RegisterUser(nameEditText.getText().toString() , googleToken, getSelectedDistrictID(),
                 getSelectedUserTypeId(), languageCode);
         final DbUser dbUser = new DbUser(nameEditText.getText().toString(),getSelectedUserTypeId(),getSelectedDistrictID());
         dbUser.setPreferredLanguage(languageCode);

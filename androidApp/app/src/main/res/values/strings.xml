@@ -125,6 +125,10 @@
     <string name="click_to_view">Click to View</string>
     <string name="message_news_share">\"Sharing news circular from Mitra app \"</string>
     <string name="toast_share_news">Downloading PDF to share</string>
+    <string name="sign_in_chooser">Have you previously registered on Mitra ?</string>
+    <string name="web_client_id">276996264257-c77hctg5nldp3ed7h1b2d7fsa6nvt7ti.apps.googleusercontent.com</string>
+    <string name="connect_with_google">Connect with Google</string>
+
 
 
 </resources>

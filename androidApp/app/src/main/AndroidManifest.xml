@@ -25,6 +25,7 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -32,7 +33,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
         <activity
@@ -59,14 +60,6 @@
             android:name=".ui.activity.SelectLanguageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".ui.activity.ChooseSignInOrRegisterActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".ui.activity.RegisterUserActivity"
-            android:label="@string/register_title"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.SignInUserActivity"
             android:label="@string/sign_in_title"
@@ -98,7 +91,7 @@
         <activity
             android:name=".ui.activity.GenieActivity"
             android:screenOrientation="landscape"
-            android:theme="@style/AppNoActionBarTheme"/>
+            android:theme="@style/AppNoActionBarTheme" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -106,6 +99,10 @@
 
         <activity android:name=".ui.activity.BaseActivity" />
         <activity android:name=".ui.activity.PDFViewerActivity" />
+        <activity
+            android:name=".ui.activity.SignInWithGoogleActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

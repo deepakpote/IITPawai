@@ -83,7 +83,7 @@ public class SelectLanguageActivity extends BaseActivity {
             Toast.makeText(getApplicationContext(), R.string.error_relaunch_app,Toast.LENGTH_LONG).show();
             return;
         }
-        Intent intent = new Intent(SelectLanguageActivity.this,ChooseSignInOrRegisterActivity.class);
+        Intent intent = new Intent(SelectLanguageActivity.this,SignInWithGoogleActivity.class);
         startActivity(intent);
         finishAffinity();
     }

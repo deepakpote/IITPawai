@@ -23,6 +23,30 @@ public class UserDetailUtils {
         return preferences.getString("user_id", "");
     }
 
+    public static void saveEmail(String email , Context context){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("user_email",email);
+        editor.apply();
+    }
+
+    public static String getEmail(Context context){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getString("user_email", "");
+    }
+
+    public static void saveGoogleToken(String id , Context context){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("google_token",id);
+        editor.apply();
+    }
+
+    public static String getGoogleToken(Context context){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getString("google_token", "");
+    }
+
     public static void saveToken(String id , Context context){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();

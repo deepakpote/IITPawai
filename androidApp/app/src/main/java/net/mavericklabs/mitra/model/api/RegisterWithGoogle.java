@@ -21,25 +21,27 @@
  *
  */
 
-package net.mavericklabs.mitra.utils;
+package net.mavericklabs.mitra.model.api;
 
-import android.app.Application;
-
-import com.crashlytics.android.Crashlytics;
-import com.google.firebase.FirebaseApp;
-
-import io.fabric.sdk.android.Fabric;
-import io.realm.Realm;
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by vishakha on 22/11/16.
+ * Created by vishakha on 22/05/17.
  */
 
-public class MitraApplication extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        //Fabric.with(this, new Crashlytics());
-        Realm.init(this);
+public class RegisterWithGoogle {
+    @SerializedName("googleToken")
+    private String idToken;
+
+    public RegisterWithGoogle(String idToken) {
+        this.idToken = idToken;
+    }
+
+    public String getIdToken() {
+        return idToken;
+    }
+
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
     }
 }
