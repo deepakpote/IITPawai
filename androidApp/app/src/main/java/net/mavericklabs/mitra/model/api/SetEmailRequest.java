@@ -29,19 +29,31 @@ import com.google.gson.annotations.SerializedName;
  * Created by vishakha on 22/05/17.
  */
 
-public class RegisterWithGoogle {
+public class SetEmailRequest {
     @SerializedName("googleToken")
-    private String idToken;
+    private String googleToken;
 
-    public RegisterWithGoogle(String idToken) {
-        this.idToken = idToken;
+    @SerializedName("token")
+    private String token;
+
+    public SetEmailRequest(String googleToken, String token) {
+        this.googleToken = googleToken;
+        this.token = token;
     }
 
-    public String getIdToken() {
-        return idToken;
+    public String getGoogleToken() {
+        return googleToken;
     }
 
-    public void setIdToken(String idToken) {
-        this.idToken = idToken;
+    public void setGoogleToken(String googleToken) {
+        this.googleToken = googleToken;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

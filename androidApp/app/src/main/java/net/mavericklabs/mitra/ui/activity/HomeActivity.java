@@ -2,6 +2,7 @@ package net.mavericklabs.mitra.ui.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -202,23 +203,37 @@ public class HomeActivity extends BaseActivity {
                 tabLayout.setVisibility(View.GONE);
                 fragmentClass = SettingsFragment.class;
                 break;
+            case R.id.nav_sign_in_with_google:
+                AnimationUtils.fadeOutView(tabLayout);
+                tabLayout.setVisibility(View.GONE);
+                fragmentClass = null;
+
+                Intent signIn = new Intent(HomeActivity.this, SignInWithGoogleActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("is_from_sign_in", false);
+                bundle.putBoolean("set_email", true);
+                signIn.putExtras(bundle);
+                startActivity(signIn);
+                break;
             default:
                 fragmentClass = HomeFragment.class;
 
         }
 
-        try {
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(fragmentClass != null) {
+            try {
+                fragment = (Fragment) fragmentClass.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_container, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
         }
-
-        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
 
         item.setChecked(true);
         // Set action bar title

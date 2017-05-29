@@ -34,11 +34,8 @@ public class RegisterUser {
     @SerializedName("userName")
     private String name;
 
-    @SerializedName("otp")
-    private String otp;
-
-    @SerializedName("phoneNumber")
-    private String phoneNumber;
+    @SerializedName("googleToken")
+    private String googleToken;
 
     @SerializedName("district")
     private Integer district;
@@ -62,11 +59,11 @@ public class RegisterUser {
     private Integer preferredLanguage;
 
 
-    public RegisterUser(String userName, String otp, String phoneNumber, Integer districtCode, Integer userType, Integer preferredLanguage) {
+
+    public RegisterUser(String userName, String googleToken, Integer districtCode, Integer userType, Integer preferredLanguage) {
         this.name = userName;
-        this.otp = otp;
-        this.phoneNumber = phoneNumber;
         this.district = districtCode;
+        this.googleToken = googleToken;
         this.userType = userType;
         this.preferredLanguage = preferredLanguage;
     }
@@ -77,22 +74,6 @@ public class RegisterUser {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getOtp() {
-        return otp;
-    }
-
-    public void setOtp(String otp) {
-        this.otp = otp;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public Integer getDistrict() {
@@ -149,5 +130,13 @@ public class RegisterUser {
 
     public void setTopicCodeIds(String topicCodeIds) {
         this.topicCodeIds = topicCodeIds;
+    }
+
+    public String getGoogleToken() {
+        return googleToken;
+    }
+
+    public void setGoogleToken(String googleToken) {
+        this.googleToken = googleToken;
     }
 }

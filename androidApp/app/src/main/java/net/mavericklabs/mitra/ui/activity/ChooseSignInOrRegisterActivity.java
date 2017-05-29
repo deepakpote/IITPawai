@@ -38,55 +38,7 @@ public class ChooseSignInOrRegisterActivity extends BaseActivity {
     @OnClick(R.id.select_sign_in_button)
     void signIn() {
 
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialogLayout = layoutInflater.inflate(R.layout.sign_in_chooser_dialog,null);
 
-        Button phone = (Button) dialogLayout.findViewById(R.id.phone_number_button);
-        Button google = (Button) dialogLayout.findViewById(R.id.email_button);
-        Button notRegistered = (Button) dialogLayout.findViewById(R.id.not_registered);
-
-        phone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent signIn = new Intent(ChooseSignInOrRegisterActivity.this,SignInUserActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putBoolean("is_from_sign_in", true);
-                signIn.putExtras(bundle);
-                startActivity(signIn);
-
-            }
-        });
-
-
-        google.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent signIn = new Intent(ChooseSignInOrRegisterActivity.this, SignInWithGoogleActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putBoolean("is_from_sign_in", true);
-                signIn.putExtras(bundle);
-                startActivity(signIn);
-            }
-        });
-
-        notRegistered.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent register = new Intent(ChooseSignInOrRegisterActivity.this,SignInWithGoogleActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putBoolean("is_from_sign_in", false);
-                register.putExtras(bundle);
-                startActivity(register);
-
-            }
-        });
-
-
-        AlertDialog alertDialog = new AlertDialog.Builder(ChooseSignInOrRegisterActivity.this)
-                .setView(dialogLayout)
-                .create();
-
-        alertDialog.show();
 
     }
 

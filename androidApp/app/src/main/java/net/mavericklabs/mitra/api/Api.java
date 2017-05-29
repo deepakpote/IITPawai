@@ -21,6 +21,7 @@ import net.mavericklabs.mitra.model.api.RegisterWithGoogleUserResponse;
 import net.mavericklabs.mitra.model.api.SavedSelfLearningRequest;
 import net.mavericklabs.mitra.model.api.SavedTeachingAidsRequest;
 import net.mavericklabs.mitra.model.api.SelfLearningContentRequest;
+import net.mavericklabs.mitra.model.api.SetEmailRequest;
 import net.mavericklabs.mitra.model.api.TeachingAidsContentRequest;
 import net.mavericklabs.mitra.model.api.LikeRequest;
 import net.mavericklabs.mitra.model.api.Token;
@@ -112,8 +113,11 @@ public interface Api {
     @POST("user/register/")
     Call<BaseModel<RegisterUserResponse>> registerUser(@Body RegisterUser user);
 
-    @POST("user/registerWithGoogle/")
+    @POST("user/signInWithGoogle/")
     Call<BaseModel<RegisterWithGoogleUserResponse>> registerUserWithGoogle(@Body RegisterWithGoogle userToken);
+
+    @POST("user/setNewEmail/")
+    Call<BaseModel<RegisterWithGoogleUserResponse>> setEmail(@Body RegisterWithGoogle userToken);
 
     @GET("code/")
     Call<BaseModel<CommonCodeWrapper>> getCodeNameList(@Query("version") String version);
