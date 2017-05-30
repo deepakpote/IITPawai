@@ -74,6 +74,8 @@ import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import java.net.ConnectException;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -95,6 +97,23 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
     private boolean setEmail = false;
 
     @OnClick(R.id.sign_in_button) void signIn() {
+        signInButton.setEnabled(false);
+
+        Timer buttonTimer = new Timer();
+        buttonTimer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        signInButton.setEnabled(true);
+                    }
+                });
+            }
+        }, 5000);
+
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -161,18 +180,6 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
             proceed(null, null);
         }
     }
-
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        // Check if user is signed in (non-null) and update UI accordingly.
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        Logger.d("current user " + currentUser);
-//        if(currentUser != null) {
-//            proceed(currentUser, null);
-//        }
-//
-//    }
 
     private void proceed(FirebaseUser currentUser, final String idToken) {
         //Call to server here.
@@ -246,7 +253,6 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
                                                 public void onClick(View view) {
                                                     Intent almostDone = new Intent(SignInWithGoogleActivity.this, AlmostDoneActivity.class);
                                                     startActivity(almostDone);
-                                                    finishAffinity();
 
                                                 }
                                             });

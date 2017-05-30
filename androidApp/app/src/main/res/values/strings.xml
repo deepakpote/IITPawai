@@ -11,12 +11,11 @@
     <string name="welcome_to_mitra">Welcome to MITRA!</string>
     <string name="sign_in">Sign in</string>
     <string name="register">Register</string>
-    <string name="enter_your_phone_number">Enter your phone number</string>
+    <string name="enter_your_phone_number">Enter phone number you registered with</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="do_not_have_an_account">Do not have an account?</string>
     <string name="didn_t_not_receive_otp">Didn\'t receive OTP?</string>
     <string name="resend_otp">Resend OTP</string>
-    <string name="enter_phone_number">Enter phone number</string>
     <string name="error_please_enter_6_digit_otp">Please enter 6 digit OTP</string>
     <string name="name">Name</string>
     <string name="i_am">I am</string>
@@ -125,9 +124,10 @@
     <string name="message_news_share">\"Sharing news circular from Mitra app \"</string>
     <string name="toast_share_news">Downloading PDF to share</string>
     <string name="sign_in_chooser">Have you previously registered on Mitra ?</string>
-    <string name="web_client_id">276996264257-c77hctg5nldp3ed7h1b2d7fsa6nvt7ti.apps.googleusercontent.com</string>
+    <string name="web_client_id" translatable="false">276996264257-c77hctg5nldp3ed7h1b2d7fsa6nvt7ti.apps.googleusercontent.com</string>
     <string name="connect_with_google">Connect with Google</string>
-
+    <string name="new_user">No. I am a new user</string>
+    <string name="yes_with_phone_number_and_otp">Yes. With phone number and OTP</string>
 
 
 </resources>
