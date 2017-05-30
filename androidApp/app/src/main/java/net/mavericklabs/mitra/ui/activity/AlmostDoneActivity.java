@@ -51,12 +51,21 @@ public class AlmostDoneActivity extends BaseActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
+
                     Intent profileActivity = new Intent(AlmostDoneActivity.this,EditProfileActivity.class);
                     startActivity(profileActivity);
                     finishAffinity();
+
+
                 }
             }
         };
         timerThread.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        interruptThread();
     }
 }

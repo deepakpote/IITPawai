@@ -36,11 +36,9 @@ public class SignInUserActivity extends BaseActivity {
 
     @OnClick(R.id.register_button)
     void register () {
-        Intent register = new Intent(SignInUserActivity.this,SignInWithGoogleActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("is_from_sign_in", false);
-        register.putExtras(bundle);
-        startActivity(register);
+        Intent profileActivity = new Intent(SignInUserActivity.this,EditProfileActivity.class);
+        startActivity(profileActivity);
+        finishAffinity();
     }
 
     @Override

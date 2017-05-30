@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:hint="@string/enter_phone_number"
+            android:hint="@string/enter_your_phone_number"
             android:text="+91"
             />
     </android.support.design.widget.TextInputLayout>
