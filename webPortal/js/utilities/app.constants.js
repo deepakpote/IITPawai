@@ -9,9 +9,9 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 
 	service.endpoint = {
 
-//		baseUrl: getServerUrl(),
+		baseUrl: getServerUrl(),
 
-		baseUrl: 'http://127.0.0.1:8000/',    //'http://54.152.74.194:8000/',
+//		baseUrl: 'http://127.0.0.1:8000/',    //'http://54.152.74.194:8000/',
 
 		code : {
 			list: 'code'
@@ -56,6 +56,11 @@ angular.module("mitraPortal").service('appConstants', ['$window',
     service.contentTypeCode = {
         teachingAids : 107100,
         selfLearning : 107101
+    };
+    
+    service.appLanguages = {
+    		english : 113100,
+    		marathi : 113101
     };
     
 	function getServerUrl() {

@@ -11,6 +11,8 @@ angular.module("mitraPortal").controller("addNewsController",
     $scope.inputs= {}
 
     $scope.selectedOption = "";
+    
+
 
     $scope.setSelectedOption = function (selectedOption){
       if ($scope.selectedOption == selectedOption){
@@ -74,6 +76,7 @@ angular.module("mitraPortal").controller("addNewsController",
     {
         return angular.isUndefined(val) || val === null 
     }
+    
 
     var submit = function()
     {
@@ -108,12 +111,17 @@ angular.module("mitraPortal").controller("addNewsController",
         
 		if(!isUndefinedOrNull($scope.myPDFFile))
 			{fd.append('pdfFile', $scope.myPDFFile);}
-
+		
+		console.log("Actual date format............................");
+		console.log($scope.news.publishDate);
+		
+		if(!isUndefinedOrNull($scope.news.publishDate))
+		{fd.append('publishDate', $scope.news.publishDate);}
+		
+		
         var headers = { "authToken": appUtils.getFromCookies("token",""),
         'Content-Type': undefined};
         
-        $log.debug("BEFORE fd");
-        $log.debug(fd);
 
         $http.post(appConstants.endpoint.baseUrl + "news/saveNews/", fd, {
           transformRequest: angular.identity,
@@ -130,7 +138,7 @@ angular.module("mitraPortal").controller("addNewsController",
           modalInstance.result.finally(function(){ 
             if ($scope.news.newsCategoryCodeID == appConstants.code.NewsCategory_MAA){
               $window.scrollTo(0, 0);
-              $state.go('main.notLoggedIn.home');
+              $state.go('main.loggedIn.addNews');
             }
 
           });
@@ -218,11 +226,11 @@ angular.module("mitraPortal").controller("addNewsController",
         {
           $scope.success.message = "Saved To Drafts";
         }
-        else if ($scope.statusCodeID == contentOrNewsOrTrainingStatus_SentForReview)
+        else if ($scope.statusCodeID == appConstants.code.contentOrNewsOrTrainingStatus_SentForReview)
         {
             $scope.success.message = "Sent For Review";
         }
-        else if ($scope.statusCodeID == contentOrNewsOrTrainingStatus_Published)
+        else if ($scope.statusCodeID == appConstants.code.contentOrNewsOrTrainingStatus_Published)
         {
             $scope.success.message = "Published";
         }
@@ -249,6 +257,9 @@ angular.module("mitraPortal").controller("addNewsController",
         $scope.errorMessage = "";
         $log.debug("IN init");
         populateDropDowns();
+        
+        $scope.news.publishDate = new Date();
+        console.log($scope.news.publishDate);
       };
 
       init();

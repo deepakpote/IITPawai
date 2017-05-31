@@ -206,6 +206,14 @@ class messages():
     get_newsdetail_news_not_exists = 100265
     get_newsdetail_user_not_exists = 100266
     
+    remove_news_image_user_id_cannot_be_empty = 100267
+    remove_news_image_user_does_not_exist = 100268
+    remove_news_image_news_does_not_exist = 100269
+    
+    remove_news_pdf_user_id_cannot_be_empty = 100270
+    remove_news_pdf_user_does_not_exist = 100271
+    remove_news_pdf_news_does_not_exist = 100272
+    
 class webportalmessages():    
     web_admin_invalid_token = 200100
     web_admin_phoneno_not_registered = 200101

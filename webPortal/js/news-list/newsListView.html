@@ -1,40 +1,55 @@
 <!-- unnecessary header -->
 <div style="padding-top:64px;padding-bottom:64px;" class="section-padding-container">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-    labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-    nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
-    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum
+</br>
 </div>
 
 <div class="divider"></div>
 
 <!-- content status filter start-->
-<div class="section-padding-container">
-    <ul class="filter-type">
-        <li class="filter-type" ng-class="{selected : newsList.status === 114101}"
-            ng-click=newsList.setDepartment(112100)>General</li>
-        <li class="filter-type" ng-class="{selected : newsList.status === ''}"
+<div class="section-padding-container" style="width:100%">
+    <ul class="filter-type" >
+        <li class="filter-type" ng-class="{selected : newsList.departmentCodeID === 112100}" 
+            ng-click="newsList.setDepartment(112100)">General</li>
+            
+        <li class="filter-type" ng-class="{selected : newsList.status === 114108}" 
+            ng-click=newsList.fetchSavedNews()>Saved</li>
+            
+<!--         <li class="filter-type" ng-class="{selected : newsList.departmentCodeID === 112101}"  -->
+<!--             ng-click=newsList.setDepartment(112101)>Human Resources Dept</li> -->
+            
+        <li class="filter-type" ng-class="{selected : newsList.departmentCodeID === 112103}" 
+            ng-click=newsList.setDepartment(112103)>IT Dept</li>
+            
+        <li class="filter-type" ng-class="{selected : newsList.departmentCodeID === 112107}" 
+            ng-click=newsList.setDepartment(112107)>Equity Cell</li>
+            
+         <li class="filter-type" ng-class="{selected : newsList.departmentCodeID === ''}" 
             ng-click=newsList.setDepartment('')>All</li>
-        <li class="filter-type" ng-class="{selected : newsList.status === 114100}"
-            ng-click=newsList.setStatus(114100)>Drafts</li>
-        <li class="filter-type" ng-class="{selected : newsList.status === 114102}"
-            ng-click=newsList.setStatus(114102)>Published</li>
-        <li class="filter-type" ng-class="{selected : newsList.status === ''}"
-            ng-click=newsList.setStatus('')>All</li>
-        <li class="filter-type-no-hover" style="padding-left: 50%;padding-top: 26px;">
-            <i class="material-icons" style="font-size: 14px;">sort</i>
+            
+        <li class="filter-type-no-hover" style="padding-left: 14%;padding-top: 26px;" ng-click=newsList.setPublishFromDate(news.fromDate)>
+            DATE FROM
+                  <span  >
+                       <ng-combo-date-picker ng-model="news.fromDate" ng-click=newsList.setPublishFromDatet(news.fromDate)   ng-min-date="2009-01-01" ng-max-date="2025-12-31"></ng-combo-date-picker>     
+                  </span>
+                  
         </li>
-        <li class="filter-type" style="padding-right: 0px;" ng-class="{selected : teachingAids.orderByKey === 'createdOn'}"
-            ng-click=teachingAids.setAscending()>Date
-            <span style="vertical-align: sub;">
-                <i class="material-icons pointer" style="font-size: 14px;">arrow_downward</i>
-            </span>
+<!--         <li style="padding-top: 26px;"> -->
+<!--         <span >|</span> -->
+<!--         </li> -->
+        <li style="padding-top: 26px;"  class="filter-type-no-hover">
+            TO
+                  <span  >
+                       <ng-combo-date-picker ng-model="news.toDate" ng-click=newsList.setPublishToDate(news.toDate)  ng-min-date="2010-01-01" ng-max-date="2025-12-31"></ng-combo-date-picker>     
+                  </span>
         </li>
-        <li class="filter-type" ng-class="{selected : teachingAids.orderByKey === '-createdOn'}"
-            ng-click=teachingAids.setDescending()>
-            <i class="material-icons pointer" style="font-size: 14px;padding-top: 2px;">arrow_upward</i>
-        </li>
+
+
+
+
+
+<!-- // sample code for testing  moment.js -->
+
+
     </ul>
 </div>
 
@@ -46,15 +61,6 @@
 </br>
 </br>
 
-<!-- granular filters start -->
-
-<!-- <div class="row row-no-margin" style="padding: 6%;"> -->
-
-<!-- </div> -->
-
-<!-- granular filters end -->
-
-<!-- content start -->
 
 <div class="section-padding-container col-md-12">
     <span class="" us-spinner="{radius:40, width:8, length: 16}" style=""></span>
@@ -63,9 +69,9 @@
         <div class="col-md-11" style="display: flex;flex-direction: column;" ng-click="newsList.goToPreview(objnewsList)">
             <div class="col-md-12"
                  style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.74), rgba(0, 0, 0, 0.1)),
-                                        url({{objnewsList.imageURL}});
+                                        url({{objnewsList.singleImageURL}});
                                         background-size: contain; height: 35%;" ng-if="objnewsList.imageURL">
-                <div class="right-panel">
+                <div class="right-panel" style="display: none;">
 
                     <i class="material-icons icon-white pointer">mode_edit</i>
                     <div class="text pointer">EDIT</div>
@@ -75,22 +81,23 @@
 
                 </div>
             </div>
-            <div class="bottom-news-content" style="height: 10%;">
-                <div class="single-line">
-                </br>
-                    &nbsp;&nbsp; <b>{{ objnewsList.newsTitle}}</b>  SEEN
-                </div>
+            <div class="bottom-news-content " style="height: 10%;">
+                <div class="single-line col-md-8" >
+                	</br> <b>{{ objnewsList.newsTitle}}</b> 
+                </div> 
+              <div class="col-md-2 font-news-seen" ng-if="objnewsList.seen==1"> </br> <a  style="color: gray;padding-left: 90%;padding-top: 10%;">SEEN</a></div>
   
             </div>
             <div class="bottom-content">
-                <div class="uploader single-line" style="">
-                   {{objnewsList.publishDate}}					SAVED
+                <div class="uploader single-line  col-md-8 font-secondary-text" >
+                   &nbsp; {{ objnewsList.formatedDate  }}					
                 </div>
+                <div class="col-md-2" ng-if="objnewsList.isSaved"> <a  style="color: orange;padding-left: 90%;padding-bottom: 40%;"><b>SAVED</b></a></div>
             </div>
         </div>
     	<div class="col-md-1"></div>
     </div>
-    <div ng-hide="objnewsList.data.length" style="line-height: 12em;text-align: center">No resources found!</div>
+    <div ng-hide="objnewsList.data.length" ng-if="newsList.data.length < 1" style="line-height: em;text-align: center">No resources found!</div>
     <div class="text-center" style="clear:left;padding-top: 48px;">
         <input ng-show="objnewsList.hasMoreData" type="button"
                value="Load More" class="btn btn-warning"

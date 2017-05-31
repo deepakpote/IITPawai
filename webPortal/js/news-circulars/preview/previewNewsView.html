@@ -47,11 +47,11 @@
                 <div class="upload-title" style="margin-top:50px;">News Details</div>
                 <div class="col-md-3" ng-if="news.newsCategory == 115100">
                     <div class="card">
-                        <div class="options-card" ng-mouseenter=setSelectedOption("Subject") ng-mouseleave=setSelectedOption("") >
+                        <div class="options-card" ng-mouseenter=setSelectedOption("NewsCategory") ng-mouseleave=setSelectedOption("") >
                             <div class="card-content">
                                 News Category
                             </div>
-                            <div class="card-select" ng-class="($parent.news.NewsCategoryList?'orange-background':'teal-background')">
+                            <div class="card-select" ng-class="($parent.news.newsCategory?'orange-background':'teal-background')">
                   <span ng-if="$parent.news.newsCategory" ng-repeat="NewsCategory in NewsCategoryList | filter:{codeID : $parent.news.newsCategory}">
                     {{NewsCategory.codeNameEn}}
                   </span>
@@ -59,14 +59,14 @@
                     Select
                   </span>
                             </div>
-                            <div class="card-action" ng-show="(selectedOption == 'Subject')">
+                            <div class="card-action" ng-show="(selectedOption == 'NewsCategory')">
                                 <div ng-repeat="NewsCategory in NewsCategoryList">
                                     <div>
                                         <div class="col-md-9 no-padding align-left">
                                             {{NewsCategory.codeNameEn}}
                                         </div>
                                         <div class="col-md-3 align-right no-padding" >
-                                            <input type="radio" ng-model="$parent.news.NewsCategoryList" ng-click = "showContentObject()" ng-value="subject.codeID" />
+                                            <input type="radio" ng-model="$parent.news.newsCategory" ng-click = "showContentObject()" ng-value="NewsCategory.codeID" />
                                         </div>
                                     </div>
 
@@ -78,22 +78,6 @@
                     <br />
 
 
-                    <div class="card">
-                        <div class="options-card" ng-mouseenter=setSelectedOption("contentType") ng-mouseleave=setSelectedOption("") >
-                            <div class="card-content">
-                                News Department
-                            </div>
-                            <div class="card-select" ng-class="($parent.news.departmentList?'orange-background':'teal-background')">
-                  <span ng-if="$parent.news.department" ng-repeat="department in departmentList | filter:{codeID : $parent.news.department}">
-                    {{department.codeNameEn}}
-                  </span>
-                                <span ng-if="!$parent.news.department">
-                    Select
-                  </span>
-                            </div>
-
-                        </div>
-                    </div>
 
 
 
@@ -103,11 +87,11 @@
 
                 <div class="col-md-3" ng-if="news.newsCategory == 115100">
                      <div class="card">
-                        <div class="options-card" ng-mouseenter=setSelectedOption("Subject") ng-mouseleave=setSelectedOption("") >
+                        <div class="options-card" ng-mouseenter=setSelectedOption("newsImportance") ng-mouseleave=setSelectedOption("") >
                             <div class="card-content">
                                 News Importance
                             </div>
-                            <div class="card-select" ng-class="($parent.news.importanceList?'orange-background':'teal-background')">
+                            <div class="card-select" ng-class="($parent.news.newsImportance?'orange-background':'teal-background')">
                   <span ng-if="$parent.news.newsImportance" ng-repeat="importance in importanceList | filter:{codeID : $parent.news.newsImportance}">
                     {{importance.codeNameEn}}
                   </span>
@@ -115,14 +99,14 @@
                     Select
                   </span>
                             </div>
-                            <div class="card-action" ng-show="(selectedOption == 'Subject')">
+                            <div class="card-action" ng-show="(selectedOption == 'newsImportance')">
                                 <div ng-repeat="importance in importanceList">
                                     <div>
                                         <div class="col-md-9 no-padding align-left">
                                             {{importance.codeNameEn}}
                                         </div>
                                         <div class="col-md-3 align-right no-padding" >
-                                            <input type="radio" ng-model="$parent.news.importanceList" ng-click = "showContentObject()" ng-value="subject.codeID" />
+                                            <input type="radio" ng-model="$parent.news.newsImportance" ng-click = "showContentObject()" ng-value="importance.codeID" />
                                         </div>
                                     </div>
 
@@ -138,8 +122,67 @@
 
 
                 </div>
+                
+                 <div class="col-md-3" ng-if="news.newsCategory == 115100">
+                                    <div class="card">
+                        <div class="options-card" ng-mouseenter=setSelectedOption("newsDepartment") ng-mouseleave=setSelectedOption("") >
+                            <div class="card-content">
+                                News Department
+                            </div>
+                            <div class="card-select" ng-class="($parent.news.department?'orange-background':'teal-background')">
+                  <span ng-if="$parent.news.department" ng-repeat="department in departmentList | filter:{codeID : $parent.news.department}">
+                    {{department.codeNameEn}}
+                  </span>
+                                <span ng-if="!$parent.news.department">
+                    Select
+                  </span>
+                            </div>
+                            
+                            <div class="card-action" ng-show="(selectedOption == 'newsDepartment')">
+                                <div ng-repeat="department in departmentList">
+                                    <div>
+                                        <div class="col-md-9 no-padding align-left">
+                                            {{department.codeNameEn}}
+                                        </div>
+                                        <div class="col-md-3 align-right no-padding" >
+                                            <input type="radio" ng-model="$parent.news.department" ng-click = "showContentObject()" ng-value="department.codeID" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                     </div>
+                     
+                     
+                     <!--           // Date-picker -->
+           <div class="col-md-3">
+            <div class="card">
+              <div class="options-card" >
+                <div class="card-content">
+                  Date
+                </div>
+                <div ng-class="($parent.news.publishDate?'orange-background':'teal-background')">
+                </div>
+                <div class="card-action card-select orange-background" style="height:40px">
+                  <span  >
+                       <ng-combo-date-picker ng-model="news.publishDate"></ng-combo-date-picker>     
+                  </span>
+                 </div>
+              </div>
+            </div>
+            
+
+            <br />
+
+          </div>
+                
 
 
+        </div>
         </div>
 
         <div class = "hr"> </div>
@@ -150,15 +193,12 @@
             <div class="col-md-10">
                 <div class="upload-title no-padding">News Title</div>
                 <div class="input-group form-group " ng-class="{'has-error': frmPreviewNews.engNewsTitle.$dirty && frmPreviewNews.engNewsTitle.$invalid}" style="width:100%;">
-                    <input type="text" class="form-control col-xs-4 review-input" style="width:80%" id="engNewsTitle" name="engNewsTitle" ng-disabled="mode!='EDIT'"
+                    <input type="text" class="form-control col-xs-4 review-input" style="width:90%" id="engNewsTitle" name="engNewsTitle" ng-disabled="mode!='EDIT'"
                            placeholder="English" ng-model="news.engNewsTitle" required />
-                    <i class="material-icons review-check" style="margin-left:40px;" ng-click="toggle('engNewsTitle')"
-                       ng-class="checked['engNewsTitle']?'orange-text':''" ng-if="mode=='PREVIEW' && isAdmin">
-                        check
-                    </i>
+
 
                     <div ng-messages="frmPreviewNews.engNewsTitle.$error" ng-if="frmPreviewNews.engNewsTitle.$dirty">
-                        <span class="error-message" ng-show="frmPreviewNews.engNewsTitle.$error.required">Please enter English content title</span>
+                        <span class="error-message" ng-show="frmPreviewNews.engNewsTitle.$error.required">Please enter English news title</span>
                     </div>
                 </div>
 
@@ -167,14 +207,11 @@
 
 
                 <div class="form-group input-group" ng-class="{'has-error': frmPreviewNews.marNewsTitle.$dirty && frmPreviewNews.marNewsTitle.$invalid}" style="width:100%;">
-                    <input type="text" class="form-control col-xs-4 review-input" style="width:80%"  id="marNewsTitle" name="marNewsTitle" placeholder="मराठी"  ng-disabled="mode!='EDIT'"
-                           ng-model="content.marNewsTitle" required />
-                    <i class="material-icons review-check" ng-click="toggle('marNewsTitle')"
-                       ng-class="checked['marNewsTitle']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin">
-                        check
-                    </i>
+                    <input type="text" class="form-control col-xs-4 review-input" style="width:90%"  id="marNewsTitle" name="marNewsTitle" placeholder="मराठी"  ng-disabled="mode!='EDIT'"
+                           ng-model="news.marNewsTitle" required />
+                           
                     <div ng-messages="frmPreviewNews.marNewsTitle.$error" ng-if="frmPreviewNews.marNewsTitle.$dirty">
-                        <span class="error-message" ng-show="frmPreviewNews.marNewsTitle.$error.required">Please enter Marathi content title</span>
+                        <span class="error-message" ng-show="frmPreviewNews.marNewsTitle.$error.required">Please enter Marathi news title</span>
                     </div>
                 </div>
             </div>
@@ -186,117 +223,293 @@
 
         </div>
 
-<!--         <div class = "hr"> </div> -->
-<!--   Screen given by Meghana doesn't have the Author, so, Below code for Author is commented       -->
-<!--         <div class="upload-container"> -->
-<!--             <div class="upload-title">Author Name</div> -->
-<!--             <div class="col-md-10"> -->
-<!--                 <div class="form-group input-group" ng-class="{'has-error': frmPreviewNews.engAuthor.$dirty && frmPreviewNews.engAuthor.$invalid}"  style="width:100%;"> -->
-<!--                     <input type="text" class="form-control col-xs-4 review-input" style="width:80%"  id="engAuthor" name="engAuthor" placeholder="मराठी" style="width:80%"  ng-disabled="mode!='EDIT'" -->
-<!--                            ng-model="content.engAuthor" required /> -->
-<!--                     <i class="material-icons review-check" ng-click="toggle('engAuthor')" -->
-<!--                        ng-class="checked['engAuthor']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin"> -->
-<!--                         check -->
-<!--                     </i> -->
-<!--                     <div ng-messages="frmPreviewNews.engAuthor.$error" ng-if="frmPreviewNews.engAuthor.$dirty"> -->
-<!--                         <span class="error-message" ng-show="frmPreviewNews.engAuthor.$error.required">Please enter author's name in English</span> -->
-<!--                     </div> -->
-<!--                 </div> -->
-
-
-<!--                 <div class="form-group input-group" ng-class="{'has-error': frmPreviewNews.marAuthor.$dirty && frmPreviewNews.marAuthor.$invalid}"  style="width:100%;"> -->
-<!--                     <input type="text" class="form-control col-xs-4 review-input" style="width:80%"  id="marAuthor" name="marAuthor" placeholder="मराठी"  ng-disabled="mode!='EDIT'" -->
-<!--                            ng-model="content.marAuthor" required /> -->
-<!--                     <i class="material-icons review-check" ng-click="toggle('marAuthor')" -->
-<!--                        ng-class="checked['marAuthor']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin"> -->
-<!--                         check -->
-<!--                     </i> -->
-<!--                     <div ng-messages="frmPreviewNews.marAuthor.$error" ng-if="frmPreviewNews.marAuthor.$dirty"> -->
-<!--                         <span class="error-message" ng-show="frmPreviewNews.marAuthor.$error.required">Please enter author's name in Marathi</span> -->
-<!--                     </div> -->
-<!--                 </div> -->
-<!--             </div> -->
-<!--         </div> -->
 
         <div class = "hr"> </div>
         <div class="upload-container">
             <div class="upload-title">News Content</div>
             <div class="col-md-10">
-                <div class="form-group input-group" ng-class="{'has-error': frmPreviewNews.engContent.$dirty && frmPreviewNews.engContent.$invalid}" style="width:100%;">
-     <textarea form="frmPreviewNews" class="form-control review-input" id="engContent" name="engContent" placeholder="English" style="width:80%"  ng-disabled="mode!='EDIT'"
+                <div class="form-group input-group" ng-class="{'has-error': frmPreviewNews.engContent.$dirty && frmPreviewNews.engContent.$invalid}" style="width:100%; ">
+     <textarea form="frmPreviewNews" class="form-control review-input" id="engContent" name="engContent" placeholder="English" style="width:110%;height:120px"  ng-disabled="mode!='EDIT'"
                ng-model="news.engContent" required ></textarea>
-                    <i class="material-icons review-check" ng-click="toggle('engContent')"
-                       ng-class="checked['engContent']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin">
-                        check
-                    </i>
+<!--                     <i class="material-icons review-check" ng-click="toggle('engContent')" -->
+<!--                        ng-class="checked['engContent']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin"> -->
+<!--                         check -->
+<!--                     </i> -->
                     <div ng-messages="frmPreviewNews.engContent.$error" ng-if="frmPreviewNews.engContent.$dirty">
-                        <span class="error-message" ng-show="frmPreviewNews.engContent.$error.required">Please enter English instruction</span>
+                        <span class="error-message" ng-show="frmPreviewNews.engContent.$error.required">Please enter English news content</span>
                     </div>
                 </div>
 
 
                 <div class="form-group input-group" ng-class="{'has-error': frmPreviewNews.marContent.$dirty && frmPreviewNews.marContent.$invalid}" style="width:100%;">
-     <textarea form="frmPreviewNews" class="form-control review-input" id="marContent" name="marContent" placeholder="मराठी" style="width:80%"  ng-disabled="mode!='EDIT'"
+     <textarea form="frmPreviewNews" class="form-control review-input" id="marContent" name="marContent" placeholder="मराठी" style="width:110%;height:120px"  ng-disabled="mode!='EDIT'"
                ng-model="news.marContent" required ></textarea>
-                    <i class="material-icons review-check" ng-click="toggle('marContent')"
-                       ng-class="checked['marContent']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin">
-                        check
-                    </i>
+<!--                     <i class="material-icons review-check" ng-click="toggle('marContent')" -->
+<!--                        ng-class="checked['marContent']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin"> -->
+<!--                         check -->
+<!--                     </i> -->
                     <div ng-messages="frmPreviewNews.marContent.$error" ng-if="frmPreviewNews.marContent.$dirty">
-                        <span class="error-message" ng-show="frmPreviewNews.marContent.$error.required">Please enter Marathi instruction</span>
+                        <span class="error-message" ng-show="frmPreviewNews.marContent.$error.required">Please enter Marathi news content</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class = "hr"> </div>
+
+        <div class = "hr" > </div>
 
         <div class="upload-container">
 
-            <div class="upload-title" >Content Link/Upload</div>
+            <div class="upload-title" >News Images</div>
+            
+     
+            <div class="col-md-10">
+            
+            
+
+            
+            
+            
+                <div class="form-group input-group" style="width:100%;hight:100%" >
+                    <div style="width:80%;display:inline-block;">
+
+
+				<div style="display:inline-block;cursor:pointer;" ng-click="removeImage(news.newsID,1,AllImageArray[0])" ng-if="mode=='EDIT'">
+
+                	<i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Delete image" onmouseenter="$(this).tooltip('show')">delete</i>
+               	</div>
+				
+                <div style="display:inline-flex;cursor:pointer;" ng-click="contentEditable1=true">
+                	<div>
+                	<i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Upload image" onmouseenter="$(this).tooltip('show')">edit</i>
+                	</div>
+                	<div>
+                	<span ng-if="AllImageArray[0] !='' && mode=='EDIT' && !contentEditable1"> {{AllImageArray[0].split('/').pop()}} </span>
+					</div>
+					<div style="margin-top:4px;">
+                	<span class="regular-message" style="display:inline-block;cursor:pointer;" ng-if="(AllImageArray[0] +'').length < 1 && !contentEditable1 ">No image uploaded.</span>
+					</div>
+               	</div>
+              
+               	
+
+                        
+                <div ng-if="contentEditable1">
+					<div class="form-group" ng-class="{'has-error': frmPreviewNews.fileUpload1.$dirty && frmPreviewNews.fileUpload1.$invalid}">
+                        <label for="fileUpload1" class="btn teal-background upload-button" ng-if="(news.newsCategory == 115100)" >Upload</label> 
+                        <span ng-if="(news.newsCategory == 115100)">{{newsImage1.name}}</span> 
+                        <input type="file" class="form-control" style="display:none" id="fileUpload1" name="fileUpload1"
+                               file-model="newsImage1" ng-click="imageUpload(1)" accept="{{acceptedFileTypes[news.newFileTypeCodeID]}}" ng-click="showAccepted()" />
+                        
+                        <div ng-messages="frmPreviewNews.fileUpload1.$error" ng-if="frmPreviewNews.fileUpload1.$dirty">
+                            <span class="error-message" ng-show="frmPreviewNews.fileUpload1.$error.required">File upload is required.</span>
+                        </div>
+                    </div>              
+                </div>
+                
+                <div ng-if="mode=='EDIT'">
+                  </br>
+                 </br>  
+                 </div>           
+                 
+                 
+              <div style="display:inline-block;cursor:pointer;" ng-click="removeImage(news.newsID,2,AllImageArray[1])" ng-if="mode=='EDIT'">
+                	<i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Delete image" onmouseenter="$(this).tooltip('show')">delete</i>
+               	</div>
+                
+                <div style="display:inline-flex;cursor:pointer;" ng-click="contentEditable2=true">
+                <div>
+                	<i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Upload image" onmouseenter="$(this).tooltip('show')">edit</i>
+               	</div>
+               	<div>
+                	<span ng-if="AllImageArray[1] !='' && mode=='EDIT' && !contentEditable2"> {{AllImageArray[1].split('/').pop()}} </span>
+				</div>
+				<div style="margin-top:4px;">
+                	<span class="regular-message" ng-if="(AllImageArray[1] +'').length < 1 && !contentEditable3 && mode=='EDIT'">No image uploaded.</span>
+				</div>
+               	</div>
+                        
+                <div ng-if="contentEditable2">
+					<div class="form-group" ng-class="{'has-error': frmPreviewNews.fileUpload2.$dirty && frmPreviewNews.fileUpload2.$invalid}">
+                        <label for="fileUpload2" class="btn teal-background upload-button" ng-if="(news.newsCategory == 115100)" >Upload</label> 
+                        <span ng-if="(news.newsCategory == 115100)">{{newsImage2.name}}</span> 
+                        <input type="file" class="form-control" style="display:none" id="fileUpload2" name="fileUpload2"
+                               file-model="newsImage2" ng-click="imageUpload(2)" accept="{{acceptedFileTypes[news.newFileTypeCodeID]}}" ng-click="showAccepted()" />
+                        
+                        <div ng-messages="frmPreviewNews.fileUpload2.$error" ng-if="frmPreviewNews.fileUpload2.$dirty">
+                            <span class="error-message" ng-show="frmPreviewNews.fileUpload2.$error.required">File upload is required.</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div ng-if="mode=='EDIT'">
+                  </br>
+                 </br>  
+                 </div> 
+                 
+                 
+                <div style="display:inline-block;cursor:pointer;" ng-click="removeImage(news.newsID,3,AllImageArray[2])" ng-if="mode=='EDIT'">
+                	<i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Delete image" onmouseenter="$(this).tooltip('show')">delete</i>
+               	</div>
+                
+                <div style="display:inline-flex;cursor:pointer;" ng-click="contentEditable3=true">
+                <div>
+                	<i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Upload image" onmouseenter="$(this).tooltip('show')">edit</i>
+               	</div>
+               	<div>
+                	<span ng-if="AllImageArray[2] !='' && mode=='EDIT' && !contentEditable3"> {{AllImageArray[2].split('/').pop()}} </span>
+               	</div>
+               	<div style="margin-top:4px;">
+                	<span class="regular-message" ng-if="(AllImageArray[2] +'').length < 1 && !contentEditable3 && mode=='EDIT'">No image uploaded.</span>
+				</div>
+               	</div>
+                        
+                <div ng-if="contentEditable3">
+					<div class="form-group" ng-class="{'has-error': frmPreviewNews.fileUpload3.$dirty && frmPreviewNews.fileUpload3.$invalid}">
+                        <label for="fileUpload3" class="btn teal-background upload-button" ng-if="(news.newsCategory == 115100)" >Upload</label> 
+                        <span ng-if="(news.newsCategory == 115100)">{{newsImage3.name}}</span> 
+                        <input type="file" class="form-control" style="display:none" id="fileUpload3" name="fileUpload3"
+                               file-model="newsImage3" ng-click="imageUpload(3)" accept="{{acceptedFileTypes[news.newFileTypeCodeID]}}" ng-click="showAccepted()" />
+                        
+                        <div ng-messages="frmPreviewNews.fileUpload3.$error" ng-if="frmPreviewNews.fileUpload3.$dirty">
+                            <span class="error-message" ng-show="frmPreviewNews.fileUpload3.$error.required">File upload is required.</span>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div ng-if="mode=='EDIT'">
+                  </br>
+                 </br>  
+                 </div> 
+                 
+                  <div style="display:inline-block;cursor:pointer;" ng-click="removeImage(news.newsID,4,AllImageArray[3])" ng-if="mode=='EDIT'">
+                	<i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Delete image" onmouseenter="$(this).tooltip('show')">delete</i>
+               	</div>
+                 
+                
+                <div style="display:inline-flex;cursor:pointer;" ng-click="contentEditable4=true">
+                <div>
+                	<i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Upload image" onmouseenter="$(this).tooltip('show')">edit</i>
+                </div>
+                <div>
+                	<span ng-if="AllImageArray[3] !='' && mode=='EDIT' && !contentEditable4"> {{AllImageArray[3].split('/').pop()}} </span>
+				</div>
+				<div style="margin-top:4px;">
+                	<span class="regular-message" ng-if="(AllImageArray[3] +'').length < 1 && !contentEditable4 && mode=='EDIT'">No image uploaded.</span>
+				</div>
+               	</div>
+                        
+                <div ng-if="contentEditable4">
+					<div class="form-group" ng-class="{'has-error': frmPreviewNews.fileUpload4.$dirty && frmPreviewNews.fileUpload4.$invalid}">
+                        <label for="fileUpload4" class="btn teal-background upload-button" ng-if="(news.newsCategory == 115100)" >Upload</label> 
+                        <span ng-if="(news.newsCategory == 115100)">{{newsImage4.name}}</span> 
+                        <input type="file" class="form-control" style="display:none" id="fileUpload4" name="fileUpload4"
+                               file-model="newsImage4" ng-click="imageUpload(4)" accept="{{acceptedFileTypes[news.newFileTypeCodeID]}}" ng-click="showAccepted()" />
+                        
+                        <div ng-messages="frmPreviewNews.fileUpload4.$error" ng-if="frmPreviewNews.fileUpload4.$dirty">
+                            <span class="error-message" ng-show="frmPreviewNews.fileUpload4.$error.required">File upload is required.</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div ng-if="mode=='EDIT'">
+                  </br>
+                 </br>  
+                 </div>              
+
+                 
+                 <div style="display:inline-block;cursor:pointer;" ng-click="removeImage(news.newsID,5,AllImageArray[4])" ng-if="mode=='EDIT'">
+                	<i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Delete image" onmouseenter="$(this).tooltip('show')">delete</i>
+               	</div>
+                 
+                
+                <div style="display:inline-flex;cursor:pointer;" ng-click="contentEditable5=true">
+                <div>
+                	<i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Upload image" onmouseenter="$(this).tooltip('show')">edit</i>
+                </div>
+                <div>
+                	<span ng-if="AllImageArray[4] !='' && mode=='EDIT' && !contentEditable5"> {{AllImageArray[4].split('/').pop()}} </span>
+				</div>
+				<div style="margin-top:4px;">
+                	<span class="regular-message" ng-if="(AllImageArray[4] +'').length < 1 && !contentEditable5 && mode=='EDIT'">No image uploaded.</span>
+				</div>
+               	</div>
+                        
+                <div ng-if="contentEditable5">
+					<div class="form-group" ng-class="{'has-error': frmPreviewNews.fileUpload5.$dirty && frmPreviewNews.fileUpload5.$invalid}">
+                        <label for="fileUpload5" class="btn teal-background upload-button" ng-if="(news.newsCategory == 115100)" >Upload</label> 
+                        <span ng-if="(news.newsCategory == 115100)">{{newsImage5.name}}</span> 
+                        <input type="file" class="form-control" style="display:none" id="fileUpload5" name="fileUpload5"
+                               file-model="newsImage5" ng-click="imageUpload(5)" accept="{{acceptedFileTypes[news.newFileTypeCodeID]}}" ng-click="showAccepted()" />
+                        
+                        <div ng-messages="frmPreviewNews.fileUpload5.$error" ng-if="frmPreviewNews.fileUpload5.$dirty">
+                            <span class="error-message" ng-show="frmPreviewNews.fileUpload4.$error.required">File upload is required.</span>
+                        </div>
+                    </div>
+                    
+                </div>
+      
+                   </br>
+                 </br>     
+ 
+<!--    News images uib-carousel                     -->
+<div ng-if="mode=='PREVIEW'">
+<div style="height: 100%">
+  <div uib-carousel interval="myInterval" no-wrap = "noWrapSlides" active="activeNewsCarousel">
+    <uib-slide ng-repeat="slide in newsSlides track by slide.id" index ="$index">-
+      <img ng-src="{{slide.image}}" ng-click="playVideo(slide.image)"  style="margin:auto;" alt="" >
+    </uib-slide>
+  </uib-carousel>
+  </div>
+  </div>
+  
+                </br>
+                 </br>
+
+  
+  
+  </div>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+             <div class = "hr" > </div>
+            <div class="upload-container" ng-if="news.pdfFileURL!=''">
+            <div class="upload-title" >News PDF</div>
             <div class="col-md-10">
                 <div class="form-group input-group" style="width:100%" >
+                
+                
+                 <div style="display:inline-block;cursor:pointer;" ng-click="removePDF(news.newsID,news.pdfFileURL)" ng-if="mode=='EDIT'">
+                	<i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Delete pdf" onmouseenter="$(this).tooltip('show')">delete</i>
+               	</div>
+                
+                
                     <div style="width:80%;display:inline-block;">
-                        <a target="_blank" ng-href="{{content.fileName}}">{{(content.fileTypeCodeID==108100)?content.fileName:content.fileName.split('/').pop()}}</a>
-                        <div style="display:inline-block;cursor:pointer;" ng-click="contentEditable=true"><i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'">edit</i></div>
-                    </div>
-                    <i class="material-icons review-check" ng-click="toggle('fileName')"
-                       ng-class="checked['fileName']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin">
-                        check
-                    </i>
+                    
+                    <div style="display:inline-block;cursor:pointer;" ng-click="pdfEditable=true"><i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Upload pdf" onmouseenter="$(this).tooltip('show')">edit</i></div>
+                        <a target="_blank" ng-href="{{news.pdfFileURL}}">{{news.pdfFileURL.split('/').pop()}}</a>
+                        
+                   
+                  <span class="error-message" ng-if="(news.pdfFileURL +'').length < 1 && !pdfEditable ">No PDF found.</span> 
+                                     
                 </div>
-                <div ng-if="contentEditable">
-                    <div class="form-group" ng-class="{'has-error': frmPreviewNews.fileTypeDropdown.$dirty && frmPreviewNews.fileTypeDropdown.$invalid}">
-                        <select name="fileTypeDropdown" class="form-control" ng-model="content.newFileTypeCodeID" required
-                                ng-options="fileType.codeID as fileType.codeNameEn for fileType in fileTypeList">
-                            <option value="">- Select File Type-</option>
-                        </select>
-                        <div ng-messages="frmPreviewNews.fileTypeDropdown.$error" ng-if="frmPreviewNews.fileTypeDropdown.$dirty">
-                            <span class="error-message" ng-show="frmPreviewNews.fileTypeDropdown.$error.required">File Type is required.</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group" ng-class="{'has-error': frmPreviewNews.txtFileUrl.$dirty && frmPreviewNews.txtFileUrl.$invalid}">
-                        <input type="text" class="form-control" id="txtFileUrl" name="txtFileUrl"
-                               placeholder="Enter URL" ng-if="(content.newFileTypeCodeID==108100)
-<!--         && content.newFileTypeCodeID" -->
-                               ng-model="inputs.newFileName" required>
-                        <div ng-messages="frmPreviewNews.txtFileUrl.$error" ng-if="frmPreviewNews.txtFileUrl.$dirty">
-                            <span class="error-message" ng-show="frmPreviewNews.txtFileUrl.$error.required">File URL is required.</span>
-                        </div>
-                    </div>
-                    <div class="form-group" ng-class="{'has-error': frmPreviewNews.fileUpload.$dirty && frmPreviewNews.fileUpload.$invalid}">
-                        <label for="fileUpload" class="btn teal-background upload-button" ng-if="!(content.newFileTypeCodeID==108100)
-<!--         && content.newFileTypeCodeID"> Upload</label> <span ng-if="!(content.newFileTypeCodeID==108100)  -->
-<!--         && content.newFileTypeCodeID">{{myFile.name}}</span> -->
-                        <input type="file" class="form-control" style="display:none" id="fileUpload" name="fileUpload"
-                               file-model="myFile" accept="{{acceptedFileTypes[content.newFileTypeCodeID]}}" ng-click="showAccepted()" />
-                        <div ng-messages="frmPreviewNews.fileUpload.$error" ng-if="frmPreviewNews.fileUpload.$dirty">
-                            <span class="error-message" ng-show="frmPreviewNews.fileUpload.$error.required">File upload is required.</span>
+                </div>
+                <div ng-if="pdfEditable">
+                    <div class="form-group" ng-class="{'has-error': frmPreviewNews.fileUpload6.$dirty && frmPreviewNews.fileUpload6.$invalid}">
+                        <label for="fileUpload6" class="btn teal-background upload-button" ng-if="(news.newsCategory == 115100)" >Upload</label> 
+                        <span ng-if="(news.newsCategory == 115100)">{{myPDFFile.name}}</span> 
+                        <input type="file" class="form-control" style="display:none" id="fileUpload6" name="fileUpload6"
+                               file-model="myPDFFile" ng-click="imageUpload('pdfFile')"  accept="{{acceptedFileTypes[content.newFileTypeCodeID]}}" ng-click="showAccepted()" />
+                        <div ng-messages="frmPreviewNews.fileUpload6.$error" ng-if="frmPreviewNews.fileUpload6.$dirty">
+                            <span class="error-message" ng-show="frmPreviewNews.fileUpload6.$error.required">File upload is required.</span>
                         </div>
                     </div>
                 </div>
             </div>
+           
         </div>
 </div>
 </div>
@@ -306,9 +519,9 @@
 <div class="upload-container">
 
     <!-- TODO Add send for review button here only for that user-->
-    <input type="submit" ng-value="'Send for review'" ng-click="sendForReview()" class="btn btn-warning" ng-if="mode=='PREVIEW' && !isAdmin" />
+<!--     <input type="submit" ng-value="'Cancel'" ng-click="setMode('PREVIEW')" class="btn btn-warning" ng-if="mode=='PREVIEW' && !isAdmin" /> -->
 
-    <input type="submit" ng-value="'Publish'" ng-click="publish()" class="btn btn-warning" ng-if="mode=='PREVIEW' && isAdmin" />
+    <input type="submit" ng-value="'Cancel'" ng-click="publish()" class="btn btn-warning"  />
 
     <input type="submit" ng-value="'Save Changes'" ng-click=" frmPreviewNews.$invalid? setDirty(frmPreviewNews) : saveChanges()" class="btn btn-warning" ng-if="mode=='EDIT'" />
 
