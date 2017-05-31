@@ -93,6 +93,9 @@ a:hover, a:focus {
 .error-message {
 	color: red;
 }
+.regular-message {
+	color: blue;
+}
 .accordion {
 	background-color: transparent;
 }
@@ -389,6 +392,12 @@ li.selected  {
     font-size: smaller;
 }
 
+.bottom-news-content{
+    flex-grow: 1;
+    background-color: #b2dfdb;
+    font-size: large;
+}
+
 .single-line {
     white-space: nowrap;
     overflow: hidden;
@@ -491,6 +500,23 @@ textarea.materialize-textarea:focus:not([readonly]) {
     cursor: pointer;
 }
 
+.full button span {
+    background-color: limegreen;
+    border-radius: 32px;
+    color: black;
+  }
+  
+  .partially button span {
+    background-color: orange;
+    border-radius: 32px;
+    color: black;
+  }
+
+
+.mycontent-left {
+  border-right: 1px #333;
+}
+
 /* Rules for sizing the icon. */
 .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }
@@ -504,4 +530,3 @@ textarea.materialize-textarea:focus:not([readonly]) {
 /* Rules for using icons as white on a dark background. */
 .material-icons.md-light { color: rgba(255, 255, 255, 1); }
 .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
-

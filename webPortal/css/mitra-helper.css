@@ -46,6 +46,17 @@
   text-transform:uppercase;
 }
 
+.font-secondary-text{
+  font-size: 12pt;
+  font-family: Roboto;
+}
+
+.font-news-seen{
+  font-size: 10pt;
+  font-family: Roboto;
+}
+
+
 /* font colors */
 .text-primary{
   color:rgba(0,0,0,0.87);

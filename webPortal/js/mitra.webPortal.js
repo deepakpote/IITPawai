@@ -1,10 +1,10 @@
-var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap','ngLoadingSpinner', 'ngAnimate']);
+var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap','ngLoadingSpinner', 'ngAnimate','ngComboDatePicker']);
 mitraPortal.
 config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locationProvider',
     function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
 
         var templateChange = function() {
-            return "";
+            return "mitra.test";
         };
         //$locationProvider.html5Mode(true);
         $urlRouterProvider.otherwise('/home/login');
@@ -93,6 +93,68 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         templateUrl: templateChange() + '/js/content/uploadView.html',
                         controller: 'uploadController'
                     }
+                }
+            })
+            .state('main.loggedIn.addNews', {
+                url: '/news',
+                views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Add News & Circulars';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content': {
+                        templateUrl: templateChange() + '/js/news-circulars/addNewsView.html',
+                        controller: 'addNewsController'
+                    }
+                }
+            })
+            .state('main.loggedIn.newsList', {
+                url: '/newsList',
+                views : {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'News List';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content' : {
+                        templateUrl : templateChange() + '/js/news-list/newsListView.html',
+                        controller : 'newsListController',
+                        controllerAs : 'newsList'
+                    }
+                }
+            })
+             .state('main.loggedIn.previewNews', {      
+                url: '/news/preview/:newsID',
+                views : {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Preview';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content' : {
+                        templateUrl: templateChange() + '/js/news-circulars/preview/previewNewsView.html',
+                        controller: 'previewNewsController'
+                    }
+                },
+                params :{
+                    'objnewsList' : null,
+                    'newsID' : null
                 }
             })
             .state('main.loggedIn.selfLearning', {

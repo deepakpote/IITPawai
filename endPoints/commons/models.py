@@ -5,6 +5,8 @@ from django.core.validators import RegexValidator
 from django.utils import timezone
 from pyexpat import model
 
+from datetime import datetime
+
 
 # codeGroup model
 class codeGroup(models.Model):
@@ -44,7 +46,7 @@ class news(models.Model):
     department = models.ForeignKey('commons.code', db_column = 'departmentCodeID', null = True, blank = False, related_name = 'news_departmentCodeID')
     newsCategory = models.ForeignKey('commons.code', db_column = 'newsCategoryCodeID', related_name = 'news_newsCategoryCodeID')
     newsImportance = models.ForeignKey('commons.code', db_column = 'newsImportanceCodeID', related_name = 'news_newsImportanceCodeID')
-    publishDate = models.DateTimeField(auto_now_add = True, null = False)
+    publishDate = models.DateTimeField(default=datetime.now, null = False)
     pdfFileURL = models.CharField(null = True, max_length = 255)
     status = models.ForeignKey('commons.code', db_column = 'statusCodeID', related_name = 'news_statusCodeID')
      

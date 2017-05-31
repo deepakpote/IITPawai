@@ -1,0 +1,108 @@
+<!-- unnecessary header -->
+<div style="padding-top:64px;padding-bottom:64px;" class="section-padding-container">
+</br>
+</div>
+
+<div class="divider"></div>
+
+<!-- content status filter start-->
+<div class="section-padding-container" style="width:100%">
+    <ul class="filter-type" >
+        <li class="filter-type" ng-class="{selected : newsList.departmentCodeID === 112100}" 
+            ng-click="newsList.setDepartment(112100)">General</li>
+            
+        <li class="filter-type" ng-class="{selected : newsList.status === 114108}" 
+            ng-click=newsList.fetchSavedNews()>Saved</li>
+            
+<!--         <li class="filter-type" ng-class="{selected : newsList.departmentCodeID === 112101}"  -->
+<!--             ng-click=newsList.setDepartment(112101)>Human Resources Dept</li> -->
+            
+        <li class="filter-type" ng-class="{selected : newsList.departmentCodeID === 112103}" 
+            ng-click=newsList.setDepartment(112103)>IT Dept</li>
+            
+        <li class="filter-type" ng-class="{selected : newsList.departmentCodeID === 112107}" 
+            ng-click=newsList.setDepartment(112107)>Equity Cell</li>
+            
+         <li class="filter-type" ng-class="{selected : newsList.departmentCodeID === ''}" 
+            ng-click=newsList.setDepartment('')>All</li>
+            
+        <li class="filter-type-no-hover" style="padding-left: 14%;padding-top: 26px;" ng-click=newsList.setPublishFromDate(news.fromDate)>
+            DATE FROM
+                  <span  >
+                       <ng-combo-date-picker ng-model="news.fromDate" ng-click=newsList.setPublishFromDatet(news.fromDate)   ng-min-date="2009-01-01" ng-max-date="2025-12-31"></ng-combo-date-picker>     
+                  </span>
+                  
+        </li>
+<!--         <li style="padding-top: 26px;"> -->
+<!--         <span >|</span> -->
+<!--         </li> -->
+        <li style="padding-top: 26px;"  class="filter-type-no-hover">
+            TO
+                  <span  >
+                       <ng-combo-date-picker ng-model="news.toDate" ng-click=newsList.setPublishToDate(news.toDate)  ng-min-date="2010-01-01" ng-max-date="2025-12-31"></ng-combo-date-picker>     
+                  </span>
+        </li>
+
+
+
+
+
+<!-- // sample code for testing  moment.js -->
+
+
+    </ul>
+</div>
+
+
+<!-- content type filter end -->
+
+<div class="divider"></div>
+
+</br>
+</br>
+
+
+<div class="section-padding-container col-md-12">
+    <span class="" us-spinner="{radius:40, width:8, length: 16}" style=""></span>
+    <div class="col-md-6 list-view no-gutter"  ng-repeat="objnewsList in newsList.data | orderBy:newsList.orderByKey">
+   
+        <div class="col-md-11" style="display: flex;flex-direction: column;" ng-click="newsList.goToPreview(objnewsList)">
+            <div class="col-md-12"
+                 style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.74), rgba(0, 0, 0, 0.1)),
+                                        url({{objnewsList.singleImageURL}});
+                                        background-size: contain; height: 35%;" ng-if="objnewsList.imageURL">
+                <div class="right-panel" style="display: none;">
+
+                    <i class="material-icons icon-white pointer">mode_edit</i>
+                    <div class="text pointer">EDIT</div>
+
+                    <i style="margin-top: 16px;" class="material-icons icon-white pointer">close</i>
+                    <div class="text pointer">REMOVE</div>
+
+                </div>
+            </div>
+            <div class="bottom-news-content " style="height: 10%;">
+                <div class="single-line col-md-8" >
+                	</br> <b>{{ objnewsList.newsTitle}}</b> 
+                </div> 
+              <div class="col-md-2 font-news-seen" ng-if="objnewsList.seen==1"> </br> <a  style="color: gray;padding-left: 90%;padding-top: 10%;">SEEN</a></div>
+  
+            </div>
+            <div class="bottom-content">
+                <div class="uploader single-line  col-md-8 font-secondary-text" >
+                   &nbsp; {{ objnewsList.formatedDate  }}					
+                </div>
+                <div class="col-md-2" ng-if="objnewsList.isSaved"> <a  style="color: orange;padding-left: 90%;padding-bottom: 40%;"><b>SAVED</b></a></div>
+            </div>
+        </div>
+    	<div class="col-md-1"></div>
+    </div>
+    <div ng-hide="objnewsList.data.length" ng-if="newsList.data.length < 1" style="line-height: em;text-align: center">No resources found!</div>
+    <div class="text-center" style="clear:left;padding-top: 48px;">
+        <input ng-show="objnewsList.hasMoreData" type="button"
+               value="Load More" class="btn btn-warning"
+               ng-click="objnewsList.loadMore()"/>
+    </div>
+</div>
+
+<!-- content end -->

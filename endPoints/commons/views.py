@@ -14,6 +14,8 @@ from mitraEndPoints import constants, settings , utils
 from datetime import datetime
 from users.models import token , user
 from users.authentication import TokenAuthentication
+from string import rsplit
+from dateutil import parser
  
  
 class CodeViewSet(viewsets.ModelViewSet):
@@ -188,6 +190,27 @@ class NewsViewSet(viewsets.ModelViewSet):
         statusCodeID = request.data.get('statusCodeID')
         appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
         
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        objUser = None
+        
+        if authToken:
+        
+            #get UserID from auth token
+            userID  =  getUserIDFromAuthToken(authToken)
+            
+            # check user is not null 
+            if not userID or userID == 0:
+                return Response({"response_message": constants.messages.userNews_list_user_id_cannot_be_empty, 
+                                 "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+                  
+            # check userID exists or not
+            try:
+                objUser = user.objects.get(userID = userID)
+            except user.DoesNotExist:
+                return Response({"response_message": constants.messages.userNews_list_user_does_not_exist, 
+                                 "data": []}, status = status.HTTP_404_NOT_FOUND)
+        
         arrStatusCodeID = []   
                     
         # Check if statusCodeID is passed.
@@ -228,6 +251,14 @@ class NewsViewSet(viewsets.ModelViewSet):
         # Create object of common class 
         objCommon = utils.common()     
         pdfBaseURL = objCommon.getBaseURL(constants.newsDir.newsPdf)
+        
+        objNewsList = {}
+        
+        if objUser:
+            # Get list of newsID of login user
+            objNewsList = list(userNews.objects.filter(user=objUser).values_list('news_id', flat=True))  
+            print "objNewsList:",objNewsList      
+            #queryset = newsDetail.objects.filter(news__in=objNewsList , appLanguage = appLanguageCodeID)
 
         #get image URLs and PDF URL
         for newsObject in serializer.data :
@@ -235,6 +266,11 @@ class NewsViewSet(viewsets.ModelViewSet):
             
             if newsObject['pdfFileURL'] :
                 newsObject['pdfFileURL'] = pdfBaseURL +str(newsObject['pdfFileURL'])
+                
+            if newsObject['news'] in objNewsList:
+                newsObject['isSaved'] = True
+            else:
+                newsObject['isSaved'] = False
                 
         return Response({"response_message": constants.messages.success, "data": serializer.data})
     
@@ -270,6 +306,7 @@ class NewsViewSet(viewsets.ModelViewSet):
         imageThree = request.FILES['imageThree'] if 'imageThree' in request.FILES else None
         imageFour = request.FILES['imageFour'] if 'imageFour' in request.FILES else None
         imageFive = request.FILES['imageFive'] if 'imageFive' in request.FILES else None
+    
     
         #Get user token
         authToken = request.META.get('HTTP_AUTHTOKEN')
@@ -321,6 +358,19 @@ class NewsViewSet(viewsets.ModelViewSet):
         
         #Get array from string
         #arrNewsTagNames = getArrayFromCommaSepString(engTags)
+        
+        #print "publishDate is:",publishDate
+        
+        if publishDate == 'null':
+            publishDate = datetime.now()
+        else:
+            #Split the actual date..to conver it into the correct format.
+            actualDate = publishDate.rsplit('(',1)
+            publishDate = actualDate[0]
+            
+            #Set the converted date.
+            publishDate = parser.parse(actualDate[0])
+            #print "publishDate is:",publishDate
         
         try:
             # Check newsID is provided or not.
@@ -398,7 +448,7 @@ class NewsViewSet(viewsets.ModelViewSet):
                     removePreviouslySavedPDF(newsID)
                     savePDFFile(pdfFile, newsID)
                     
-                editImagesIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID)
+                editImagesIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID, objUser)
                                                
         except Exception as e:
             # Error occured while uploading the content
@@ -448,6 +498,87 @@ class NewsViewSet(viewsets.ModelViewSet):
         objUserNews.save()
         
         return Response({"response_message": constants.messages.success, "data": []})
+    
+    
+    """
+     Remove news image
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def removeNewsImage(self, request):
+        #get Input data
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        newsID = request.data.get('newsID')
+        imageNumber = request.data.get('imageNumber')
+        imageURL = request.data.get('imageURL')
+        
+        #get UserID from auth token
+        userID  =  getUserIDFromAuthToken(authToken)
+        
+        # check user is not null 
+        if not userID or userID == 0:
+            return Response({"response_message": constants.messages.remove_news_image_user_id_cannot_be_empty, "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+        
+        if not newsID :
+            return Response({"response_message": constants.messages.remove_news_image_user_id_cannot_be_empty, "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+        # check userID exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.remove_news_image_user_does_not_exist, "data": []}, status = status.HTTP_404_NOT_FOUND)
+        
+        # check news exists or not
+        try:
+            objNews = news.objects.get(newsID = newsID)
+        except news.DoesNotExist:
+            return Response({"response_message": constants.messages.remove_news_image_news_does_not_exist, "data": []}, status = status.HTTP_404_NOT_FOUND)  
+                       
+        #removeImage(newsID, imageNumber)
+        
+        actualURL = imageURL.rsplit('/',1)
+        
+        deleteImage(newsID, imageNumber,actualURL[1])
+
+        newsImage.objects.filter(imageURL__contains = (actualURL[1])).delete()
+        
+        return Response({"response_message": constants.messages.success, "data": []})
+    
+        """
+     Remove news image
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def removeNewsPDF(self, request):
+        #get Input data
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        newsID = request.data.get('newsID')
+        
+        #get UserID from auth token
+        userID  =  getUserIDFromAuthToken(authToken)
+        
+        # check user is not null 
+        if not userID or userID == 0:
+            return Response({"response_message": constants.messages.remove_news_pdf_user_id_cannot_be_empty, "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+        
+        if not newsID :
+            return Response({"response_message": constants.messages.remove_news_pdf_user_id_cannot_be_empty, "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+        # check userID exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.remove_news_pdf_user_does_not_exist, "data": []}, status = status.HTTP_404_NOT_FOUND)
+        
+        # check news exists or not
+        try:
+            objNews = news.objects.get(newsID = newsID)
+        except news.DoesNotExist:
+            return Response({"response_message": constants.messages.remove_news_pdf_news_does_not_exist, "data": []}, status = status.HTTP_404_NOT_FOUND)  
+                                  
+        removePreviouslySavedPDF(newsID)
+        
+        news.objects.filter(newsID = newsID).update(pdfFileURL = None)
+        
+        return Response({"response_message": constants.messages.success, "data": []})
+    
+    
     """
     Get user's preferred news
     """   
@@ -503,6 +634,17 @@ class NewsViewSet(viewsets.ModelViewSet):
         for objNew in serializer.data :
             if objNew['pdfFileURL'] :
                 objNew['pdfFileURL'] = basicURL +str(objNew['pdfFileURL'])
+                
+            objNew['imageURL'] = getNewsImageURL(objNew)
+            objNew['isSaved'] = True;
+            
+#             if newsObject['pdfFileURL'] :
+#                 newsObject['pdfFileURL'] = pdfBaseURL +str(newsObject['pdfFileURL'])
+                
+#             if newsObject['news'] in objNewsList:
+#                 newsObject['isSaved'] = True
+#             else:
+#                 newsObject['isSaved'] = False
         
         return Response({"response_message": constants.messages.success, "data": serializer.data})
  
@@ -595,6 +737,14 @@ class NewsViewSet(viewsets.ModelViewSet):
              
         # Get news details in English & Marathi.
         objNewsDetails = getNewsDetails(newsID)
+        
+        
+        # Create object of common class 
+        objCommon = utils.common()     
+        pdfBaseURL = objCommon.getBaseURL(constants.newsDir.newsPdf)
+
+        if objNewsDetails.pdfFileURL :
+            objNewsDetails.pdfFileURL = pdfBaseURL +str(objNewsDetails.pdfFileURL)
         
         #Get news image URL
         objNewsURL = getNewsImageURL(objNews)
@@ -953,19 +1103,38 @@ def removeImage(newsID, imageNumber):
             #if the file is found, remove it
             if(name.startswith(str(newsID) + "_" + str(imageNumber))):
                 os.remove(os.path.join(root, name))
+                
+'''
+function to delete a specific image from news/image directory
+'''
+def deleteImage(newsID, imageNumber, imageName):
+    #under the static/news/image directory, search for file that starts with the given newsID plus image number 
+    for root, dirs, files in os.walk(constants.newsDir.imageDir, topdown=False):
+        for name in files:
+            #if the file is found, remove it
+            if(name == imageName):
+                os.remove(os.path.join(root, name))
 
 
 '''
 function to check if images are edited 
 '''
-def editImagesIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID):
+def editImagesIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, imageFive, newsID, objUser):
     imageArray = [imageOne, imageTwo, imageThree, imageFour, imageFive]
+    
+    # If newsID parameter is passed, then check news exists or not
+    try:
+        objNews = news.objects.get(newsID = newsID)
+    except news.DoesNotExist:
+        return 0
 
     for index, image in enumerate(imageArray):
         if image != None:
             removeImage(newsID, index + 1)
             newImageName = constructImageName(newsID, image, index + 1)
+            print "newImageName:",newImageName
             fileLocation = str(constants.newsDir.imageDir) + str(newImageName)
+            print "fileLocation:",
     
             #open the file in chunks and write it the to the destination
             with open(fileLocation, 'wb+') as destination:
@@ -973,7 +1142,18 @@ def editImagesIfNewImagesUploaded(imageOne, imageTwo, imageThree, imageFour, ima
                    destination.write(chunk)
  
 #            update the image name in newsImages table in DB
-            newsImage.objects.filter(imageURL__contains = (str(newsID) + '_' + str(index + 1))).update(imageURL = newImageName)
+            objCount = newsImage.objects.filter(imageURL__startswith = (str(newsID) + '_' + str(index + 1)))
+            if objCount.count()  > 0:     
+                newsImage.objects.filter(imageURL__startswith = (str(newsID) + '_' + str(index + 1))).update(imageURL = newImageName)
+            else:
+                    #create an entry in the database under newsImage table                    
+                objImage = newsImage.objects.create (
+                                              news = objNews,
+                                              imageURL = newImageName,
+                                              createdBy = objUser    
+                                             )
+                objImage.save()
+                
 
 """
 common function to return user roles
