@@ -2,7 +2,11 @@ from users.models import token, user
 from rest_framework import authentication,exceptions
 
 
+# authentication of users registering for the first time is done in the register call itself.
 
+
+# This is used for authentication of signed in users.
+# This checks for a static token that was served to the user while registering
 class TokenAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         authToken = request.META.get('HTTP_AUTHTOKEN')

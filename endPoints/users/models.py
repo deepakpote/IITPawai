@@ -12,7 +12,7 @@ class user(models.Model):
     userID = models.AutoField(primary_key = True)
      
     phoneRegex = RegexValidator(regex=r'^\+?1?\d{10,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-    phoneNumber = models.CharField(null = False, unique = True, max_length = 15, validators = [phoneRegex]) 
+    phoneNumber = models.CharField(null = True, unique = True, max_length = 15, validators = [phoneRegex]) 
      
     userName = models.CharField(max_length = 100, null = False)
     photoUrl = models.CharField(max_length = 255, null = True, blank = True)

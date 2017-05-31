@@ -19,6 +19,7 @@ def validatePhoneNumber(value):
 user serializer class
 """
 class userSerializer(serializers.ModelSerializer):
+    phoneNumber = serializers.CharField(required=False)
     class Meta:
         model = user
         fields = ('userID', 'phoneNumber', 'userName', 'userType' , 'preferredLanguage' , 'photoUrl', 'udiseCode', 'emailID', 'district')
