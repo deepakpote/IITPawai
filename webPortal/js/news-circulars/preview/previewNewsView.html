@@ -487,25 +487,25 @@
                	</div>
                 
                 
-                    <div style="width:80%;display:inline-block;">
+                    <div  style="display:inline-flex;cursor:pointer;">
                     
-                    <div style="display:inline-block;cursor:pointer;" ng-click="pdfEditable=true"><i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Upload pdf" onmouseenter="$(this).tooltip('show')">edit</i></div>
+                    <div>
+                    <div style="display:inline-flex;cursor:pointer;" ng-click="pdfEditable=true"><i class="material-icons" style="margin-left:40px;" ng-if="mode=='EDIT'" data-placement="left" title="Upload pdf" onmouseenter="$(this).tooltip('show')">edit</i></div>
+                    </div>
+                    <div>
                         <a target="_blank" ng-href="{{news.pdfFileURL}}">{{news.pdfFileURL.split('/').pop()}}</a>
-                        
-                   
-                  <span class="error-message" ng-if="(news.pdfFileURL +'').length < 1 && !pdfEditable ">No PDF found.</span> 
-                                     
+                    </div>    
+                   <div style="margin-top:8px;">
+                  <span class="regular-message" ng-if="(news.pdfFileURL +'').length < 1 && !pdfEditable ">No PDF available.</span> 
+                     </div>
                 </div>
                 </div>
                 <div ng-if="pdfEditable">
                     <div class="form-group" ng-class="{'has-error': frmPreviewNews.fileUpload6.$dirty && frmPreviewNews.fileUpload6.$invalid}">
-                        <label for="fileUpload6" class="btn teal-background upload-button" ng-if="(news.newsCategory == 115100)" >Upload</label> 
-                        <span ng-if="(news.newsCategory == 115100)">{{myPDFFile.name}}</span> 
+                        <label for="fileUpload6" class="btn teal-background upload-button" >Upload</label> 
+                        <span>{{myPDFFile.name}}</span> 
                         <input type="file" class="form-control" style="display:none" id="fileUpload6" name="fileUpload6"
-                               file-model="myPDFFile" ng-click="imageUpload('pdfFile')"  accept="{{acceptedFileTypes[content.newFileTypeCodeID]}}" ng-click="showAccepted()" />
-                        <div ng-messages="frmPreviewNews.fileUpload6.$error" ng-if="frmPreviewNews.fileUpload6.$dirty">
-                            <span class="error-message" ng-show="frmPreviewNews.fileUpload6.$error.required">File upload is required.</span>
-                        </div>
+                               file-model="myPDFFile" ng-click="imageUpload('pdfFile')" />
                     </div>
                 </div>
             </div>

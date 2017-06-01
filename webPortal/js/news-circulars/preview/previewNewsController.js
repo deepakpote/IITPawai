@@ -12,6 +12,7 @@ angular.module("mitraPortal").controller("previewNewsController",
 	  $animate.enabled(true);  
 	  $scope.myInterval = 3000;
 	  $scope.myDate;
+	  $scope.newFile = [];
 
 	  
 	$scope.playVideo = function ( url ) {
@@ -213,8 +214,18 @@ angular.module("mitraPortal").controller("previewNewsController",
             if(!isUndefinedOrNull($scope.newsImage5))
     		{fd.append('imageFive', $scope.newsImage5);}  
             
-    		if(!isUndefinedOrNull($scope.myPDFFile))
-			{fd.append('pdfFile', $scope.myPDFFile);}
+            console.log("$scope.newFile:::::::::");
+            console.log(appUtils.getFromLocalStorage("myPDFFile",""));
+                   
+//            $scope.myPDFFile = appUtils.getFromLocalStorage("myPDFFile","");
+//            console.log("$scope.myPDFFile");
+//            console.log($scope.myPDFFile);
+            
+    		if(!isUndefinedOrNull(appUtils.getFromLocalStorage("myPDFFile","")))
+			{
+    			fd.append('pdfFile', appUtils.getFromLocalStorage("myPDFFile",""));
+    			appUtils.saveToLocalStorage("myPDFFile","");
+			 }
     		
     		if(!isUndefinedOrNull($scope.news.publishDate))
     		{fd.append('publishDate', $scope.news.publishDate);}
@@ -229,6 +240,8 @@ angular.module("mitraPortal").controller("previewNewsController",
                 headers: headers
             })
                 .then(function success(response) {
+                		// cleare local storage
+                		//$localStorage.$reset();
                         console.log(response);
                         $window.scrollTo(0, 0);
                         $state.transitionTo($state.current, $stateParams, {
@@ -342,7 +355,7 @@ angular.module("mitraPortal").controller("previewNewsController",
 
         }
     ])
-    .directive('fileModel', ['$parse', '$log', function ($parse, $log) {
+    .directive('fileModel', ['$parse', '$log','appUtils', function ($parse, $log, appUtils) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -369,6 +382,7 @@ angular.module("mitraPortal").controller("previewNewsController",
                         break;
                     case 'pdfFile':
                     	scope.$parent.myPDFFile = element[0].files[0];
+                    	appUtils.saveToLocalStorage("myPDFFile",element[0].files[0]);
                         break;
                     default:
                     	$log.debug("IN switch default");
