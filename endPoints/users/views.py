@@ -437,11 +437,16 @@ class UserViewSet(viewsets.ModelViewSet):
         userType = request.data.get('userType')
         email = None
 
-        # validate user information
+        # validate user information 
         objUserSerializer = userSerializer(data = request.data)#, context={'request': request})
         if not objUserSerializer.is_valid():
             return Response({"response_message":" constants.messages.registration_user_validation_failed", "data":[ objUserSerializer.errors]},
                             status=status.HTTP_401_UNAUTHORIZED)
+            
+        if user.objects.filter(phoneNumber = phoneNumber).exists():
+            return Response({"response_message": constants.messages.register_user_phonenumber_already_registered,
+                             "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED)
     
         #check user type if department is provided
         if department:
@@ -590,6 +595,12 @@ class UserViewSet(viewsets.ModelViewSet):
             else:
                 return Response({"response_message": constants.messages.update_profile_user_validation_failed, "data":[]},
                             status=status.HTTP_401_UNAUTHORIZED)
+                
+        if phoneNumber:
+            if user.objects.filter(phoneNumber = phoneNumber).exclude(userID = userID).exists():
+                return Response({"response_message": constants.messages.register_user_phonenumber_already_registered,
+                             "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED)
         
         # If user valid, update the details.
         user.objects.filter(userID = userID).update(userName = userName , 

@@ -10,6 +10,9 @@ COMMIT;
 Insert into com_code (codeID, codeGroupID, codeNameEn, codeNameMr, createdBy, createdOn, modifiedBy, modifiedOn, comment)
 Select 100273 as codeID, 100 as codeGroupID, 'Update user profile validation failed.' as codeNameEn, '' as codeNameMr, 1 as createdBy, now() as createdOn,  1 as modifiedBy, now() as modifiedOn , 'Update user profile' as comment;
 
+Insert into com_code (codeID, codeGroupID, codeNameEn, codeNameMr, createdBy, createdOn, modifiedBy, modifiedOn, comment)
+Select 100274 as codeID, 100 as codeGroupID, 'Register user profile validation failed.' as codeNameEn, '' as codeNameMr, 1 as createdBy, now() as createdOn,  1 as modifiedBy, now() as modifiedOn , 'Register user profile' as comment;
+
 -- update com code version.
 update com_configuration set value = value + 1 where `key` = 'comCodeVersion';
 
