@@ -538,10 +538,19 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[]},
                             status=status.HTTP_401_UNAUTHORIZED)
 
-        objUser.emailID = email
-        objUser.save()
+        # TODO:
+        # send proper message for email that already exists for somebody else
 
-        return Response({"response_message": constants.messages.success, "data": []})
+        if user.objects.filter(emailID = email).exclude(userID=userID).exists():
+            return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[]},
+                            status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            objUser.emailID = email
+            objUser.save()
+            return Response({"response_message": constants.messages.success, "data": []})
+        
+
+        
 
     
     """
