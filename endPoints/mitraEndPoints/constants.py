@@ -214,6 +214,9 @@ class messages():
     remove_news_pdf_user_does_not_exist = 100271
     remove_news_pdf_news_does_not_exist = 100272
     
+    update_profile_user_validation_failed = 100273
+    register_user_phonenumber_already_registered = 100274
+    
 class webportalmessages():    
     web_admin_invalid_token = 200100
     web_admin_phoneno_not_registered = 200101

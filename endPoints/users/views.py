@@ -437,11 +437,16 @@ class UserViewSet(viewsets.ModelViewSet):
         userType = request.data.get('userType')
         email = None
 
-        # validate user information
+        # validate user information 
         objUserSerializer = userSerializer(data = request.data)#, context={'request': request})
         if not objUserSerializer.is_valid():
             return Response({"response_message":" constants.messages.registration_user_validation_failed", "data":[ objUserSerializer.errors]},
                             status=status.HTTP_401_UNAUTHORIZED)
+            
+        if user.objects.filter(phoneNumber = phoneNumber).exists():
+            return Response({"response_message": constants.messages.register_user_phonenumber_already_registered,
+                             "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED)
     
         #check user type if department is provided
         if department:
@@ -567,6 +572,7 @@ class UserViewSet(viewsets.ModelViewSet):
         preferredLanguageCodeID = request.data.get('preferredLanguageCodeID') 
         districtCodeID = request.data.get('districtCodeID') 
         authToken = request.META.get('HTTP_AUTHTOKEN')
+        department = request.data.get('department')
         
         #Get userID from authToken
         userID = getUserIDFromAuthToken(authToken)
@@ -579,6 +585,23 @@ class UserViewSet(viewsets.ModelViewSet):
                          "data": []},
                         status = status.HTTP_404_NOT_FOUND)
         
+        objDepartment = None
+        
+        #Check department is passed.
+        if department:
+            #Allow to update the department when the user type is officer.
+            if userTypeCodeID == constants.userType.Officer:
+                objDepartment = department
+            else:
+                return Response({"response_message": constants.messages.update_profile_user_validation_failed, "data":[]},
+                            status=status.HTTP_401_UNAUTHORIZED)
+                
+        if phoneNumber:
+            if user.objects.filter(phoneNumber = phoneNumber).exclude(userID = userID).exists():
+                return Response({"response_message": constants.messages.register_user_phonenumber_already_registered,
+                             "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED)
+        
         # If user valid, update the details.
         user.objects.filter(userID = userID).update(userName = userName , 
                                                                phoneNumber = phoneNumber ,
@@ -586,6 +609,7 @@ class UserViewSet(viewsets.ModelViewSet):
                                                                userType = userTypeCodeID , 
                                                                preferredLanguage = preferredLanguageCodeID , 
                                                                district = districtCodeID ,
+                                                               department = objDepartment,
                                                                modifiedBy = userID)
         
         #Save user subject
