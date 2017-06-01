@@ -9,10 +9,10 @@ from commons.models import code
 # user model
 """
 class user(models.Model):
-    userID = models.AutoField(primary_key = True)
+    userID = models.AutoField(primary_key = True )
      
     phoneRegex = RegexValidator(regex=r'^\+?1?\d{10,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-    phoneNumber = models.CharField(null = True, unique = True, max_length = 15, validators = [phoneRegex]) 
+    phoneNumber = models.CharField(null = True, max_length = 15, validators = [phoneRegex]) 
      
     userName = models.CharField(max_length = 100, null = False)
     photoUrl = models.CharField(max_length = 255, null = True, blank = True)
@@ -30,10 +30,14 @@ class user(models.Model):
     createdOn = models.DateTimeField(auto_now_add=True)
     modifiedBy = models.ForeignKey('user', null = True, related_name='user_modifiedBy', db_column = 'modifiedBy')
     modifiedOn = models.DateTimeField(auto_now=True)
-
     
-    USERNAME_FIELD = 'phoneNumber'
-    REQUIRED_FIELDS = ['name',]
+    class Meta:
+        unique_together = ("userName", "phoneNumber")
+     
+    USERNAME_FIELD = 'userID' 
+    REQUIRED_FIELDS = ['name',]  
+    
+
  
     def is_anonymous(self):
         """

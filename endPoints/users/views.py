@@ -567,6 +567,7 @@ class UserViewSet(viewsets.ModelViewSet):
         preferredLanguageCodeID = request.data.get('preferredLanguageCodeID') 
         districtCodeID = request.data.get('districtCodeID') 
         authToken = request.META.get('HTTP_AUTHTOKEN')
+        department = request.data.get('department')
         
         #Get userID from authToken
         userID = getUserIDFromAuthToken(authToken)
@@ -579,6 +580,17 @@ class UserViewSet(viewsets.ModelViewSet):
                          "data": []},
                         status = status.HTTP_404_NOT_FOUND)
         
+        objDepartment = None
+        
+        #Check department is passed.
+        if department:
+            #Allow to update the department when the user type is officer.
+            if userTypeCodeID == constants.userType.Officer:
+                objDepartment = department
+            else:
+                return Response({"response_message": constants.messages.update_profile_user_validation_failed, "data":[]},
+                            status=status.HTTP_401_UNAUTHORIZED)
+        
         # If user valid, update the details.
         user.objects.filter(userID = userID).update(userName = userName , 
                                                                phoneNumber = phoneNumber ,
@@ -586,6 +598,7 @@ class UserViewSet(viewsets.ModelViewSet):
                                                                userType = userTypeCodeID , 
                                                                preferredLanguage = preferredLanguageCodeID , 
                                                                district = districtCodeID ,
+                                                               department = objDepartment,
                                                                modifiedBy = userID)
         
         #Save user subject
