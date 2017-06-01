@@ -433,6 +433,8 @@ class UserViewSet(viewsets.ModelViewSet):
         # Get input data
         phoneNumber = request.data.get('phoneNumber')
         otp_string = request.data.get('otp')
+        department = request.data.get('department')
+        userType = request.data.get('userType')
         email = None
 
         # validate user information
@@ -440,6 +442,13 @@ class UserViewSet(viewsets.ModelViewSet):
         if not objUserSerializer.is_valid():
             return Response({"response_message":" constants.messages.registration_user_validation_failed", "data":[ objUserSerializer.errors]},
                             status=status.HTTP_401_UNAUTHORIZED)
+    
+        #check user type if department is provided
+        if department:
+            if userType != constants.userType.Officer:
+                return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[]},
+                            status=status.HTTP_401_UNAUTHORIZED)
+                 
         
         # check that either valid otp and phone number or valid oauth token is provided.
         otpList = otp.objects.filter(phoneNumber = phoneNumber,otp = otp_string).first()
