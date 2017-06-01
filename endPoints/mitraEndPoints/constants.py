@@ -281,6 +281,12 @@ class role():
     admin = 1;
     teacher = 2;
     
+class userType():
+    teacher = 109100;
+    Officer = 109101;
+    Other = 109102;
+    CenterHead = 109103;
+    
 class contentSearchRecords():
     default = 20
 
