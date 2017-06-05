@@ -31,6 +31,7 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.Content;
+import net.mavericklabs.mitra.model.api.RegisterWithGoogleUserResponse;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -59,6 +60,19 @@ public class HttpUtils {
     }
 
     public static Integer getErrorMessageForNews(Response<BaseModel<News>> response) {
+        Converter<ResponseBody, BaseModel> errorConverter =
+                RestClient.getRetrofitInstance().responseBodyConverter(BaseModel.class, new Annotation[0]);
+        try {
+            BaseModel error = errorConverter.convert(response.errorBody());
+            Logger.d(" " + error.getResponseMessage());
+            return error.getResponseMessage();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Integer getErrorMessageForSetEmail(Response<BaseModel<RegisterWithGoogleUserResponse>> response) {
         Converter<ResponseBody, BaseModel> errorConverter =
                 RestClient.getRetrofitInstance().responseBodyConverter(BaseModel.class, new Annotation[0]);
         try {

@@ -59,17 +59,6 @@ public class SplashActivity extends AppCompatActivity {
             currentCodeVersion = "0";
         }
 
-        //TODO : temp. remove later
-//        List<CommonCode> roles = new ArrayList<>();
-//        roles.add(new CommonCode(109101, 109, "Officer", "Aadhikari", 1));
-//        roles.add(new CommonCode(109102, 109, "Kendra Pramukh", "Kendra Pramukh", 2));
-//        roles.add(new CommonCode(109103, 109, "Other", "itar", 3));
-//        Realm realm = Realm.getDefaultInstance();
-//        realm.beginTransaction();
-//        realm.copyToRealmOrUpdate(roles);
-//        realm.commitTransaction();
-
-
         final String codeVersion = currentCodeVersion;
 
         codeNameListCall = RestClient.getApiService("").getCodeNameList(codeVersion);

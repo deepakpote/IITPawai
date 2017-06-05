@@ -57,16 +57,15 @@ import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.model.CommonCode;
 import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.api.LoginUser;
-import net.mavericklabs.mitra.model.api.NewUser;
 import net.mavericklabs.mitra.model.api.RegisterWithGoogle;
 import net.mavericklabs.mitra.model.api.RegisterWithGoogleUserResponse;
-import net.mavericklabs.mitra.model.api.SetEmailRequest;
 import net.mavericklabs.mitra.model.database.DbGrade;
 import net.mavericklabs.mitra.model.database.DbSubject;
 import net.mavericklabs.mitra.model.database.DbTopic;
 import net.mavericklabs.mitra.model.database.DbUser;
 import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.HttpUtils;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
@@ -191,77 +190,86 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
         //Call to server here.
         if (currentUser != null) {
 
+            if (setEmail) {
+                //User is already signed in. Accept and set email.
+                String authToken = UserDetailUtils.getToken(getApplicationContext());
+                RestClient.getApiService(authToken).setEmail(new RegisterWithGoogle(idToken)).enqueue(
+                        new Callback<BaseModel<RegisterWithGoogleUserResponse>>() {
+                            @Override
+                            public void onResponse(Call<BaseModel<RegisterWithGoogleUserResponse>> call, Response<BaseModel<RegisterWithGoogleUserResponse>> response) {
+                                progressDialog.dismiss();
+                                if (response.isSuccessful()) {
+                                    Intent home = new Intent(SignInWithGoogleActivity.this, HomeActivity.class);
+                                    startActivity(home);
+                                    finishAffinity();
+                                } else {
+                                    String error = CommonCodeUtils.getObjectFromCode(HttpUtils.getErrorMessageForSetEmail(response)).getCodeNameForCurrentLocale();
+                                    if(!StringUtils.isEmpty(error)) {
+                                        Toast.makeText(SignInWithGoogleActivity.this, error, Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(SignInWithGoogleActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<BaseModel<RegisterWithGoogleUserResponse>> call, Throwable t) {
+                                progressDialog.dismiss();
+                                Toast.makeText(SignInWithGoogleActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+
+
+                            }
+                        });
+            } else {
+
                 RestClient.getApiService("").registerUserWithGoogle(new RegisterWithGoogle(idToken)).enqueue(
                         new Callback<BaseModel<RegisterWithGoogleUserResponse>>() {
                             @Override
                             public void onResponse(Call<BaseModel<RegisterWithGoogleUserResponse>> call,
                                                    Response<BaseModel<RegisterWithGoogleUserResponse>> response) {
-                                if(response.isSuccessful()) {
+                                if (response.isSuccessful()) {
                                     //Till we get permanent token, save google token
                                     UserDetailUtils.saveGoogleToken(idToken, getApplicationContext());
 
                                     if (response.body().getResponseMessage().equals(100110)) {
                                         progressDialog.dismiss();
 
-                                        if(setEmail) {
-                                            //User is already signed in. Accept email.
-                                            String authToken = UserDetailUtils.getToken(getApplicationContext());
-                                            RestClient.getApiService(authToken).setEmail(new RegisterWithGoogle(idToken)).enqueue(
-                                                    new Callback<BaseModel<RegisterWithGoogleUserResponse>>() {
-                                                        @Override
-                                                        public void onResponse(Call<BaseModel<RegisterWithGoogleUserResponse>> call, Response<BaseModel<RegisterWithGoogleUserResponse>> response) {
-                                                            progressDialog.dismiss();
-                                                            if(response.isSuccessful()) {
-                                                                Intent home = new Intent(SignInWithGoogleActivity.this,HomeActivity.class);
-                                                                startActivity(home);
-                                                                finishAffinity();
-                                                            }
+                                        //new email for Mitra. Ask if existing user with phone no -
 
-                                                        }
+                                        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                        View dialogLayout = layoutInflater.inflate(R.layout.sign_in_chooser_dialog, null);
 
-                                                        @Override
-                                                        public void onFailure(Call<BaseModel<RegisterWithGoogleUserResponse>> call, Throwable t) {
-                                                            progressDialog.dismiss();
+                                        Button phone = (Button) dialogLayout.findViewById(R.id.phone_number_button);
+                                        Button notRegistered = (Button) dialogLayout.findViewById(R.id.not_registered);
 
-                                                        }
-                                                    });
-                                        } else {
-                                            //new email for Mitra. Ask if existing user with phone no -
+                                        phone.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                Intent signIn = new Intent(SignInWithGoogleActivity.this, SignInUserActivity.class);
+                                                Bundle bundle = new Bundle();
+                                                bundle.putBoolean("is_from_sign_in", true);
+                                                signIn.putExtras(bundle);
+                                                startActivity(signIn);
 
-                                            LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                                            View dialogLayout = layoutInflater.inflate(R.layout.sign_in_chooser_dialog,null);
+                                            }
+                                        });
 
-                                            Button phone = (Button) dialogLayout.findViewById(R.id.phone_number_button);
-                                            Button notRegistered = (Button) dialogLayout.findViewById(R.id.not_registered);
+                                        notRegistered.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                Intent almostDone = new Intent(SignInWithGoogleActivity.this, AlmostDoneActivity.class);
+                                                startActivity(almostDone);
 
-                                            phone.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View view) {
-                                                    Intent signIn = new Intent(SignInWithGoogleActivity.this,SignInUserActivity.class);
-                                                    Bundle bundle = new Bundle();
-                                                    bundle.putBoolean("is_from_sign_in", true);
-                                                    signIn.putExtras(bundle);
-                                                    startActivity(signIn);
-
-                                                }
-                                            });
-
-                                            notRegistered.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View view) {
-                                                    Intent almostDone = new Intent(SignInWithGoogleActivity.this, AlmostDoneActivity.class);
-                                                    startActivity(almostDone);
-
-                                                }
-                                            });
+                                            }
+                                        });
 
 
-                                            AlertDialog alertDialog = new AlertDialog.Builder(SignInWithGoogleActivity.this)
-                                                    .setView(dialogLayout)
-                                                    .create();
+                                        AlertDialog alertDialog = new AlertDialog.Builder(SignInWithGoogleActivity.this)
+                                                .setView(dialogLayout)
+                                                .create();
 
-                                            alertDialog.show();
-                                        }
+                                        alertDialog.show();
 
 
                                     } else {
@@ -284,9 +292,7 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
 
                             }
                         });
-
-
-
+            }
 
         }
     }
