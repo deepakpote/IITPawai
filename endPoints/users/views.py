@@ -556,7 +556,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # send proper message for email that already exists for somebody else
 
         if user.objects.filter(emailID = email).exclude(userID=userID).exists():
-            return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[]},
+            return Response({"response_message": constants.messages.setNewEmail_user_emailID_already_registered, "data":[]},
                             status=status.HTTP_401_UNAUTHORIZED)
         else:
             objUser.emailID = email

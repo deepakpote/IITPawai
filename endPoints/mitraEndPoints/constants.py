@@ -216,6 +216,7 @@ class messages():
     
     update_profile_user_validation_failed = 100273
     register_user_phonenumber_already_registered = 100274
+    setNewEmail_user_emailID_already_registered = 100275
     
 class webportalmessages():    
     web_admin_invalid_token = 200100
