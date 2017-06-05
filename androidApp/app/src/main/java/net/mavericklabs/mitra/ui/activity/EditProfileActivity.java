@@ -321,10 +321,11 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         userTypeSpinner.setSelection(getIndexForUserTypeSpinner(userTypeId));
         Integer spinnerId = dbUser.getDistrict();
         districtSpinner.setSelection(getIndexForDistrictSpinner(spinnerId));
+        Integer departmentID = dbUser.getDepartmentID();
+        if(departmentID != null) {
+            departmentSpinner.setSelection(getIndexForDepartmentTypeSpinner(departmentID));
+        }
 
-        //TODO
-        //Integer departmentTypeId = dbUser.getDepartmentType();
-        //departmentSpinner.setSelection(getIndexForDepartmentTypeSpinner(departmentTypeId));
 
         RealmList<DbSubject> dbSubjects = dbUser.getSubjects();
         List<BaseObject> subjectList = new ArrayList<>();
@@ -442,6 +443,10 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         String currentLocale = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH);
         Integer languageCode = CommonCodeUtils.getAppLanguageCode(currentLocale);
         user.setPreferredLanguageCodeID(languageCode);
+
+        if(getSelectedDepartmentId() != null) {
+            user.setDepartment(getSelectedDepartmentId());
+        }
 
         //set udise
         user.setUdiseCode(udiseEditText.getText().toString());
@@ -756,6 +761,7 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         }
         if(getSelectedDepartmentId() != null) {
             dbUser.setDepartmentID(getSelectedDepartmentId());
+            user.setDepartment(getSelectedDepartmentId());
         }
 
         if(!StringUtils.isEmpty(profilePhotoPath)) {

@@ -38,6 +38,7 @@ public class EditUser {
     private String skillCodeIDs;
     private String gradeCodeIDs;
     private String topicCodeIDs;
+    private Integer department;
 
     public EditUser(String userName, String phoneNumber, Integer userTypeCodeID, Integer districtCodeID) {
         this.userName = userName;
@@ -124,5 +125,13 @@ public class EditUser {
 
     public void setTopicCodeIDs(String topicCodeIDs) {
         this.topicCodeIDs = topicCodeIDs;
+    }
+
+    public Integer getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Integer department) {
+        this.department = department;
     }
 }

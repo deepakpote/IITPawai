@@ -161,6 +161,12 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
+            progressDialog = new ProgressDialog(SignInWithGoogleActivity.this,
+                    R.style.ProgressDialog);
+            progressDialog.setMessage(getString(R.string.loading));
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
         }
@@ -183,15 +189,7 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
 
     private void proceed(FirebaseUser currentUser, final String idToken) {
         //Call to server here.
-        //If registering, take to profile. Else sign in and proceed.
         if (currentUser != null) {
-
-            progressDialog = new ProgressDialog(SignInWithGoogleActivity.this,
-                    R.style.ProgressDialog);
-            progressDialog.setMessage(getString(R.string.loading));
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-
 
                 RestClient.getApiService("").registerUserWithGoogle(new RegisterWithGoogle(idToken)).enqueue(
                         new Callback<BaseModel<RegisterWithGoogleUserResponse>>() {
@@ -367,6 +365,9 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
                             if(!StringUtils.isEmpty(user.getPhotoUrl())) {
                                 dbUser.setProfilePhotoPath(user.getPhotoUrl());
                             }
+
+                            dbUser.setDepartmentID(user.getDepartment());
+
 
                             UserDetailUtils.setEnteredInformation(getApplicationContext(),Boolean.TRUE);
 

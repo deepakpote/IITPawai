@@ -26,6 +26,7 @@ package net.mavericklabs.mitra.ui.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +84,10 @@ public class SpinnerArrayAdapter extends ArrayAdapter<CommonCode> {
 
         CommonCode commonCode = codes.get(position);
         holder.textView.setText(commonCode.getCodeNameForCurrentLocale());
+        if(layoutResourceID == R.layout.custom_spinner_item_header) {
+            DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+            holder.textView.setMaxWidth(metrics.widthPixels / 3);
+        }
 
         return row;
     }

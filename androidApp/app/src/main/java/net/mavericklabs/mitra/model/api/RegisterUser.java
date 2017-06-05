@@ -58,6 +58,9 @@ public class RegisterUser {
     @SerializedName("preferredLanguage")
     private Integer preferredLanguage;
 
+    @SerializedName("department")
+    private Integer department;
+
 
 
     public RegisterUser(String userName, String googleToken, Integer districtCode, Integer userType, Integer preferredLanguage) {
@@ -138,5 +141,13 @@ public class RegisterUser {
 
     public void setGoogleToken(String googleToken) {
         this.googleToken = googleToken;
+    }
+
+    public Integer getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Integer department) {
+        this.department = department;
     }
 }
