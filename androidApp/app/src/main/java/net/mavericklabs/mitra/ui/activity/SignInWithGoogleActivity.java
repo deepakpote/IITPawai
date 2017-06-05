@@ -374,7 +374,7 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
                             Realm realm = Realm.getDefaultInstance();
                             realm.beginTransaction();
 
-                            realm.copyToRealm(dbUser);
+                            realm.copyToRealmOrUpdate(dbUser);
                             realm.commitTransaction();
 
                             progressDialog.dismiss();
