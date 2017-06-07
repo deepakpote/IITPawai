@@ -16,6 +16,7 @@ import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.model.database.DbNotification;
+import net.mavericklabs.mitra.utils.StringUtils;
 
 import io.realm.Realm;
 
@@ -31,14 +32,18 @@ public class MitraFirebaseMessagingService extends FirebaseMessagingService{
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        Logger.d("message received : " + remoteMessage.getData().get("Nick"));
+        Logger.d("message received : " + remoteMessage.getData());
         Logger.d("message received : " + remoteMessage.getData().get("body"));
 
         String message = remoteMessage.getData().get("body");
         String title = remoteMessage.getData().get("title");
+        String type = remoteMessage.getData().get("type");
+        if(StringUtils.isEmpty(type)) {
+            type = NOTIFICATION_TYPE_DEFAULT;
+        }
 
         DbNotification notification = new DbNotification(title,
-                                                NOTIFICATION_TYPE_DEFAULT,
+                                                type,
                                                 remoteMessage.getData().get("body"),
                                                 System.currentTimeMillis());
         Realm realm = Realm.getDefaultInstance();

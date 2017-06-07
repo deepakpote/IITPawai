@@ -98,6 +98,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="fill"
                 android:layout_marginTop="8dp"
+                android:autoLink="all"
+                android:linksClickable="true"
                 />
 
         </LinearLayout>
