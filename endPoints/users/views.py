@@ -1568,7 +1568,7 @@ def get_email_from_google_token(googleToken):
         )
         tokenResult = json.loads(result.text)
         email = tokenResult.get("email")
-        assert tokenResult.get('issued_to') == '276996264257-movh2acc81ada5tfftrjmifcg155bunm.apps.googleusercontent.com'
+        assert tokenResult.get('issued_to') in ['276996264257-movh2acc81ada5tfftrjmifcg155bunm.apps.googleusercontent.com','276996264257-rindt6lhslg4f86q0ngq65gk8tmfn0t9.apps.googleusercontent.com']
         assert tokenResult.get('audience') == '276996264257-c77hctg5nldp3ed7h1b2d7fsa6nvt7ti.apps.googleusercontent.com'
         assert tokenResult.get('email_verified') == True
         return email
