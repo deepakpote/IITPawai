@@ -8,6 +8,6 @@ import android.util.Log;
 
 public class Logger {
     public static void d(String msg) {
-        Log.d("MITRA_LOGGER",msg);
+        //Log.d("MITRA_LOGGER",msg);
     }
 }

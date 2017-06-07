@@ -116,4 +116,6 @@
     <string name="sign_in_chooser">आपण आधी मित्रावर नोंदणी केली आहे का?</string>
     <string name="new_user">नाही. मी एक नवीन वापरकर्ता आहे</string>
     <string name="yes_with_phone_number_and_otp">होय. फोन नंबर आणि OTP सह</string>
+    <string name="department">विभाग</string>
+    <string name="connect_with_google">Google वर कनेक्ट करा</string>
 </resources>
