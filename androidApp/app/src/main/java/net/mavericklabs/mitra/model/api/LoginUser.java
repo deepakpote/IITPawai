@@ -41,6 +41,7 @@ public class LoginUser {
     private Integer userType;
     private String phoneNumber;
     private String udiseCode;
+    private Integer department;
 
     public LoginUser(String userName, Integer userType, Integer district) {
         this.userName = userName;
@@ -150,5 +151,13 @@ public class LoginUser {
 
     public void setUdiseCode(String udiseCode) {
         this.udiseCode = udiseCode;
+    }
+
+    public Integer getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Integer department) {
+        this.department = department;
     }
 }

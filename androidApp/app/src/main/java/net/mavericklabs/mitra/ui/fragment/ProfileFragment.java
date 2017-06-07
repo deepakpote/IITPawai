@@ -77,6 +77,12 @@ public class ProfileFragment extends Fragment {
     @BindView(R.id.no_topics_text)
     TextView noTopicsTextView;
 
+    @BindView(R.id.user_department)
+    TextView userDepartment;
+
+    @BindView(R.id.user_udise)
+    TextView userUdise;
+
     public ProfileFragment() {
         super();
         //mandatory constructor
@@ -106,6 +112,25 @@ public class ProfileFragment extends Fragment {
                                                                 district.getCodeNameForCurrentLocale()));
             subjectRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                                                         LinearLayoutManager.HORIZONTAL,false));
+
+            if(user.getDepartmentID() != null) {
+                userDepartment.setVisibility(View.VISIBLE);
+                CommonCode department = CommonCodeUtils.getObjectFromCode(user.getDepartmentID());
+                if(department != null) {
+                    userDepartment.setText(getString(R.string.department) + " : " + department.getCodeNameForCurrentLocale());
+                }
+            } else {
+                userDepartment.setVisibility(GONE);
+            }
+
+            if(!StringUtils.isEmpty(user.getUdise())) {
+                userUdise.setVisibility(View.VISIBLE);
+                userUdise.setText(user.getUdise());
+
+            } else {
+                userUdise.setVisibility(GONE);
+            }
+
             RealmList<DbSubject> dbSubjects = user.getSubjects();
             List<BaseObject> subjectList = new ArrayList<>();
             for(DbSubject subject : dbSubjects) {

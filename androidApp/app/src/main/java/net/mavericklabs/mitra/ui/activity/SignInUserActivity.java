@@ -36,9 +36,9 @@ public class SignInUserActivity extends BaseActivity {
 
     @OnClick(R.id.register_button)
     void register () {
-        Intent register = new Intent(SignInUserActivity.this, RegisterUserActivity.class);
-        startActivity(register);
-        finish();
+        Intent profileActivity = new Intent(SignInUserActivity.this,EditProfileActivity.class);
+        startActivity(profileActivity);
+        finishAffinity();
     }
 
     @Override

@@ -43,9 +43,20 @@
                     android:layout_marginTop="16dp"
                     />
                 <TextView
+                    android:id="@+id/user_udise"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/school_udise"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    />
+                <TextView
+                    android:id="@+id/user_department"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:hint="@string/department"
                     android:layout_marginTop="32dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"

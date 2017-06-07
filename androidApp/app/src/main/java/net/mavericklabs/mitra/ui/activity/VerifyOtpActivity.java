@@ -23,6 +23,8 @@ import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.api.GenericListDataModel;
 import net.mavericklabs.mitra.model.api.LoginUser;
 import net.mavericklabs.mitra.model.api.NewUser;
+import net.mavericklabs.mitra.model.api.RegisterWithGoogle;
+import net.mavericklabs.mitra.model.api.RegisterWithGoogleUserResponse;
 import net.mavericklabs.mitra.model.api.Token;
 import net.mavericklabs.mitra.model.api.VerifyUserOtp;
 import net.mavericklabs.mitra.model.database.DbGrade;
@@ -73,6 +75,7 @@ public class VerifyOtpActivity extends BaseActivity {
                                         .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
+                                                //TODO : Not working
                                                 VerifyOtpActivity.super.onBackPressed();
                                             }
                                         })
@@ -87,15 +90,11 @@ public class VerifyOtpActivity extends BaseActivity {
     @OnClick(R.id.resend_otp_button)
     void resendOtp() {
         Call<BaseModel<GenericListDataModel>> requestOtp;
-        if(isFromSignIn) {
+
             requestOtp = RestClient.getApiService("").
                     requestOtp(new NewUser(StringUtils.removeAllWhitespace(phoneNumber),
                             NewUser.TYPE_SIGN_IN));
-        } else {
-            requestOtp = RestClient.getApiService("").
-                    requestOtp(new NewUser(StringUtils.removeAllWhitespace(phoneNumber),
-                            NewUser.TYPE_REGISTER));
-        }
+
         requestOtp.enqueue(new Callback<BaseModel<GenericListDataModel>>() {
             @Override
             public void onResponse(Call<BaseModel<GenericListDataModel>> call, Response<BaseModel<GenericListDataModel>> response) {
@@ -115,7 +114,6 @@ public class VerifyOtpActivity extends BaseActivity {
     }
 
     private String phoneNumber = "";
-    private boolean isFromSignIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,9 +124,7 @@ public class VerifyOtpActivity extends BaseActivity {
         if (getIntent().getExtras() != null) {
             Bundle bundle = getIntent().getExtras();
             phoneNumber = bundle.getString("phone_number");
-            isFromSignIn = bundle.getBoolean("is_from_sign_in");
-            MitraSharedPreferences.saveToPreferences(getApplicationContext(),"sign_in",Boolean.valueOf(isFromSignIn));
-            Logger.d("sign in.." + isFromSignIn);
+
             String formattedNumber;
             if (SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber,"in");
@@ -158,11 +154,9 @@ public class VerifyOtpActivity extends BaseActivity {
         if (id == R.id.action_next) {
             if (isValidOtp()) {
                 int authenticationType;
-                if(isFromSignIn) {
-                    authenticationType = NewUser.TYPE_SIGN_IN;
-                } else {
-                    authenticationType = NewUser.TYPE_REGISTER;
-                }
+
+                authenticationType = NewUser.TYPE_SIGN_IN;
+
                 String token = FirebaseInstanceId.getInstance().getToken();
                 VerifyUserOtp verifyUserOtp = new VerifyUserOtp(phoneNumber,otpEditText.getText().toString(),
                                                     authenticationType,token, "true");
@@ -177,7 +171,6 @@ public class VerifyOtpActivity extends BaseActivity {
                     @Override
                     public void onResponse(Call<BaseModel<Token>> call, Response<BaseModel<Token>> response) {
                         if(response.isSuccessful()) {
-                            if(isFromSignIn) {
                                 String token = response.body().getData().get(0).getToken();
                                 String userId = response.body().getData().get(0).getUserId();
                                 UserDetailUtils.saveToken(token,getApplicationContext());
@@ -185,13 +178,7 @@ public class VerifyOtpActivity extends BaseActivity {
                                 Logger.d("User id saved.." + userId);
                                 UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),true);
                                 fetchUserDetails(progressDialog);
-                            } else {
-                                progressDialog.dismiss();
-                                UserDetailUtils.setVerifiedMobileNumber(getApplicationContext(),true);
-                                Intent almostDone = new Intent(VerifyOtpActivity.this,AlmostDoneActivity.class);
-                                MitraSharedPreferences.saveToPreferences(getApplicationContext(), "OTP", otpEditText.getText().toString());
-                                startActivity(almostDone);
-                            }
+
                         } else {
                             progressDialog.dismiss();
                             Toast.makeText(getApplicationContext(), R.string.error_invalid_otp,Toast.LENGTH_LONG).show();
@@ -283,9 +270,30 @@ public class VerifyOtpActivity extends BaseActivity {
                             firebaseAnalytics.setUserProperty("district",
                                     CommonCodeUtils.getObjectFromCode(user.getDistrict()).getCodeNameEnglish());
 
-                            Intent home = new Intent(VerifyOtpActivity.this,HomeActivity.class);
-                            startActivity(home);
-                            finishAffinity();
+                            //Now set Email
+                            String idToken = UserDetailUtils.getGoogleToken(getApplicationContext());
+                            String authToken = UserDetailUtils.getToken(getApplicationContext());
+
+                            RestClient.getApiService(authToken).setEmail(new RegisterWithGoogle(idToken)).enqueue(
+                                    new Callback<BaseModel<RegisterWithGoogleUserResponse>>() {
+                                        @Override
+                                        public void onResponse(Call<BaseModel<RegisterWithGoogleUserResponse>> call, Response<BaseModel<RegisterWithGoogleUserResponse>> response) {
+                                            progressDialog.dismiss();
+                                            if(response.isSuccessful()) {
+                                                Intent home = new Intent(VerifyOtpActivity.this,HomeActivity.class);
+                                                startActivity(home);
+                                                finishAffinity();
+                                            }
+
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<BaseModel<RegisterWithGoogleUserResponse>> call, Throwable t) {
+                                            progressDialog.dismiss();
+
+                                        }
+                                    });
+
                         } else {
                             Toast.makeText(VerifyOtpActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT).show();
                             progressDialog.dismiss();

@@ -18,6 +18,7 @@ import net.mavericklabs.mitra.utils.MitraSharedPreferences;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -39,7 +40,7 @@ public class SplashActivity extends AppCompatActivity {
 
 
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .schemaVersion(2) // Must be bumped when the schema changes
+                .schemaVersion(3) // Must be bumped when the schema changes
                 .migration(new Migration()) // Migration to run
                 .build();
 
@@ -121,15 +122,16 @@ public class SplashActivity extends AppCompatActivity {
         LanguageUtils.setLocale(languageCode, getApplicationContext());
 
         try{
-            //case 1 : user has not entered his phone number
-            if (StringUtils.isEmpty(phoneNumber)) {
+            Logger.d(" User ID " + StringUtils.isEmpty(UserDetailUtils.getUserId(getApplicationContext())));
+            //case 1 : user has not entered his phone number //Incase of sign in with google, no user ID.
+            if (StringUtils.isEmpty(phoneNumber) && StringUtils.isEmpty(UserDetailUtils.getUserId(getApplicationContext()))) {
                 Intent selectLanguage = new Intent(SplashActivity.this, SelectLanguageActivity.class);
                 startActivity(selectLanguage);
                 finishAffinity();
-            } else { // user has entered phone number ..
-
-                //case 2: but has not verified his phone number
-                if (!UserDetailUtils.isVerifiedMobileNumber(getApplicationContext())) {
+            } else {
+                //
+                //case 2: user has entered phone number .. but has not verified his phone number
+                if  (!StringUtils.isEmpty(phoneNumber) && !UserDetailUtils.isVerifiedMobileNumber(getApplicationContext())) {
                     Intent verifyOtp = new Intent(SplashActivity.this, VerifyOtpActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putString("phone_number", phoneNumber);
@@ -140,7 +142,7 @@ public class SplashActivity extends AppCompatActivity {
                     verifyOtp.putExtras(bundle);
                     startActivity(verifyOtp);
                     finishAffinity();
-                } else { // has verified his phone number
+                } else { // has verified his phone number or signed in.
                     boolean hasEnteredInformation = UserDetailUtils.hasEnteredInformation(getApplicationContext());
 
                     // case 3 : not yet entered personal information

@@ -18,4 +18,9 @@ public interface Constants {
     int AppLanguageEnglish = 113100;
     int AppLanguageMarathi = 113101;
     int ContentStatusPublished = 114102;
+
+    int UserTypeTeacher = 109100;
+    int UserTypeOfficer = 109101;
+    int UserTypeKendraPramukh = 109102;
+    int UserTypeOther = 109103;
 }
