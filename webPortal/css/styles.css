@@ -77,7 +77,8 @@ a:hover, a:focus {
 	background: rgba(0, 0, 0, 0) url("../images/maa_logo.png") no-repeat scroll 0 0;
     height: 130px;
     padding: 0;
-    margin-left: 15%;
+    margin-left: 16%;
+    align: center
 }
 .mitra-language {
 	background-color: #7a7a7a;

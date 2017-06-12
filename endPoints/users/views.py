@@ -447,7 +447,6 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.register_user_phonenumber_already_registered,
                              "data": []},
                             status = status.HTTP_401_UNAUTHORIZED)
-    
         #check user type if department is provided
         if department:
             if userType != constants.userType.Officer:

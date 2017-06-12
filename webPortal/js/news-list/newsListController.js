@@ -90,6 +90,7 @@ function newsListController(newsListService,commonService,$scope,appConstants,$f
                 objDate = news.publishDate.split(" ");
                 var newFormatedDate = objDate[0].split("-");
                 news.formatedDate = newFormatedDate[2]+ '-' + newFormatedDate[1]+ '-' + newFormatedDate[0]; 
+                news.departmentName = commonService.getValueByCode(news.department)[0].codeNameEn;
                 
 //                $scope.newDate = moment(news.publishDate).toDate('dd-mm-yyyy');
 //                console.log("newDatenewDate: " + $scope.newDate);
@@ -144,6 +145,7 @@ function newsListController(newsListService,commonService,$scope,appConstants,$f
                 var news = objnews[i];
                 objDate = news.publishDate.split(" ");
                 news.formatedDate = objDate[0]; 	
+                news.departmentName = commonService.getValueByCode(news.department)[0].codeNameEn;
                 
                 if(news.imageURL != "")
             	{
