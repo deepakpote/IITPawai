@@ -33,8 +33,16 @@ public class RegisterWithGoogle {
     @SerializedName("googleToken")
     private String idToken;
 
-    public RegisterWithGoogle(String idToken) {
+    @SerializedName("fcmDeviceID")
+    private String fcmToken;
+
+    @SerializedName("fcmRegistrationRequired")
+    private String fcmRegistrationRequired;
+
+    public RegisterWithGoogle(String idToken, String fcmToken, String fcmRegistrationRequired) {
         this.idToken = idToken;
+        this.fcmToken = fcmToken;
+        this.fcmRegistrationRequired = fcmRegistrationRequired;
     }
 
     public String getIdToken() {
@@ -43,5 +51,21 @@ public class RegisterWithGoogle {
 
     public void setIdToken(String idToken) {
         this.idToken = idToken;
+    }
+
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    public String getFcmRegistrationRequired() {
+        return fcmRegistrationRequired;
+    }
+
+    public void setFcmRegistrationRequired(String fcmRegistrationRequired) {
+        this.fcmRegistrationRequired = fcmRegistrationRequired;
     }
 }

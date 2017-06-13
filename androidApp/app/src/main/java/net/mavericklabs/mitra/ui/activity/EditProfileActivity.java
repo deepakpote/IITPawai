@@ -37,6 +37,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.mavericklabs.mitra.api.RestClient;
 import net.mavericklabs.mitra.model.api.BaseModel;
@@ -255,6 +256,7 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         //Header - not a valid value
         districts.add(0, new CommonCode(0, 0,getString(R.string.select), getString(R.string.select), 0));
         userTypeList.add(0,new CommonCode(0,0,getString(R.string.select),getString(R.string.select),0));
+        departments.add(0, new CommonCode(0,0,getString(R.string.select),getString(R.string.select),0));
 
         SpinnerArrayAdapter adapter = new SpinnerArrayAdapter(EditProfileActivity.this,R.layout.custom_spinner_item_header,userTypeList);
         adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
@@ -270,12 +272,16 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
                 if(userTypeList.get(i).getCodeID().equals(Constants.UserTypeTeacher)) {
                     udiseEditText.setVisibility(View.VISIBLE);
                     departmentLayout.setVisibility(View.GONE);
+                    departmentSpinner.setSelection(0);
                 } else if(userTypeList.get(i).getCodeID().equals(Constants.UserTypeOfficer)) {
                     udiseEditText.setVisibility(View.GONE);
                     departmentLayout.setVisibility(View.VISIBLE);
+                    udiseEditText.setText("");
                 } else {
                     udiseEditText.setVisibility(View.GONE);
                     departmentLayout.setVisibility(View.GONE);
+                    udiseEditText.setText("");
+                    departmentSpinner.setSelection(0);
                 }
 
             }
@@ -446,6 +452,8 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
 
         if(getSelectedDepartmentId() != null) {
             user.setDepartment(getSelectedDepartmentId());
+        } else {
+            user.setDepartment(null);
         }
 
         //set udise
@@ -490,6 +498,8 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
         firebaseAnalytics.setUserProperty("district",
                 CommonCodeUtils.getObjectFromCode(user.getDistrictCodeID()).getCodeNameEnglish());
+        firebaseAnalytics.setUserProperty("userType",
+                CommonCodeUtils.getObjectFromCode(user.getUserTypeCodeID()).getCodeNameEnglish());
 
         RestClient.getApiService(token).updateUser(user).enqueue(new Callback<BaseModel<GenericListDataModel>>() {
             @Override
@@ -505,6 +515,8 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
                     dbUser.setDistrict(getSelectedDistrictID());
                     if(getSelectedDepartmentId() != null) {
                         dbUser.setDepartmentID(getSelectedDepartmentId());
+                    } else {
+                        dbUser.setDepartmentID(null);
                     }
 
                     if(!StringUtils.isEmpty(profilePhotoPath)) {
@@ -571,6 +583,7 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
                         finishAffinity();
                     }
                 } else {
+                    progressDialog.dismiss();
                     Toast.makeText(getApplicationContext(), R.string.error_enter_required_fields,Toast.LENGTH_LONG).show();
                 }
             }
@@ -706,7 +719,9 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
     private Integer getSelectedDepartmentId() {
         if(departmentSpinner.getSelectedItem() != null) {
             CommonCode departmentType = (CommonCode) departmentSpinner.getSelectedItem();
-            return departmentType.getCodeID();
+            if(departmentType.getCodeID() > 0) {
+                return departmentType.getCodeID();
+            }
         }
         return null;
     }
@@ -750,8 +765,9 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
 
         Integer languageCode = LanguageUtils.getCurrentLanguage();
 
+        String fcmToken = FirebaseInstanceId.getInstance().getToken();
         RegisterUser user = new RegisterUser(nameEditText.getText().toString() , googleToken, getSelectedDistrictID(),
-                getSelectedUserTypeId(), languageCode);
+                getSelectedUserTypeId(), languageCode, fcmToken, "true");
         final DbUser dbUser = new DbUser(nameEditText.getText().toString(),getSelectedUserTypeId(),getSelectedDistrictID());
         dbUser.setPreferredLanguage(languageCode);
 
@@ -762,6 +778,9 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         if(getSelectedDepartmentId() != null) {
             dbUser.setDepartmentID(getSelectedDepartmentId());
             user.setDepartment(getSelectedDepartmentId());
+        }else {
+            dbUser.setDepartmentID(null);
+            user.setDepartment(null);
         }
 
         if(!StringUtils.isEmpty(profilePhotoPath)) {
@@ -820,6 +839,7 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
         progressDialog.show();
 
         final Integer userDistrict = user.getDistrict();
+        final Integer userType = user.getUserType();
 
         RestClient.getApiService("").registerUser(user).enqueue(new Callback<BaseModel<RegisterUserResponse>>() {
             @Override
@@ -845,6 +865,8 @@ public class EditProfileActivity extends BaseActivity implements OnDialogFragmen
                         firebaseAnalytics.setUserId(serverResponse.getUserID());
                         firebaseAnalytics.setUserProperty("district",
                                 CommonCodeUtils.getObjectFromCode(userDistrict).getCodeNameEnglish());
+                        firebaseAnalytics.setUserProperty("userType",
+                                CommonCodeUtils.getObjectFromCode(userType).getCodeNameEnglish());
 
                         //store userId,token in shared preferences
                         String token = serverResponse.getToken();

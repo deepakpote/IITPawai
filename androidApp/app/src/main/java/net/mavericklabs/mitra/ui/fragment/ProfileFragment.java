@@ -116,6 +116,7 @@ public class ProfileFragment extends Fragment {
             if(user.getDepartmentID() != null) {
                 userDepartment.setVisibility(View.VISIBLE);
                 CommonCode department = CommonCodeUtils.getObjectFromCode(user.getDepartmentID());
+                Logger.d("department " + department);
                 if(department != null) {
                     userDepartment.setText(getString(R.string.department) + " : " + department.getCodeNameForCurrentLocale());
                 }

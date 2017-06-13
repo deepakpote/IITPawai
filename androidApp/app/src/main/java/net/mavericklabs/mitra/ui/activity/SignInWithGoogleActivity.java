@@ -51,6 +51,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
@@ -193,7 +194,7 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
             if (setEmail) {
                 //User is already signed in. Accept and set email.
                 String authToken = UserDetailUtils.getToken(getApplicationContext());
-                RestClient.getApiService(authToken).setEmail(new RegisterWithGoogle(idToken)).enqueue(
+                RestClient.getApiService(authToken).setEmail(new RegisterWithGoogle(idToken,"", "false")).enqueue(
                         new Callback<BaseModel<RegisterWithGoogleUserResponse>>() {
                             @Override
                             public void onResponse(Call<BaseModel<RegisterWithGoogleUserResponse>> call, Response<BaseModel<RegisterWithGoogleUserResponse>> response) {
@@ -216,14 +217,19 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
                             @Override
                             public void onFailure(Call<BaseModel<RegisterWithGoogleUserResponse>> call, Throwable t) {
                                 progressDialog.dismiss();
-                                Toast.makeText(SignInWithGoogleActivity.this, getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                                if(t instanceof ConnectException) {
+                                    Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                                }
 
 
                             }
                         });
             } else {
 
-                RestClient.getApiService("").registerUserWithGoogle(new RegisterWithGoogle(idToken)).enqueue(
+                String fcmToken = FirebaseInstanceId.getInstance().getToken();
+                RestClient.getApiService("").registerUserWithGoogle(new RegisterWithGoogle(idToken, fcmToken, "true")).enqueue(
                         new Callback<BaseModel<RegisterWithGoogleUserResponse>>() {
                             @Override
                             public void onResponse(Call<BaseModel<RegisterWithGoogleUserResponse>> call,
@@ -284,11 +290,21 @@ public class SignInWithGoogleActivity extends AppCompatActivity implements Googl
 
                                     }
 
+                                } else {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<BaseModel<RegisterWithGoogleUserResponse>> call, Throwable t) {
+                                progressDialog.dismiss();
+                                if(t instanceof ConnectException) {
+                                    Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                                }
 
                             }
                         });

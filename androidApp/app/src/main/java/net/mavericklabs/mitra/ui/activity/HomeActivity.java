@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.RestClient;
@@ -41,6 +42,7 @@ import net.mavericklabs.mitra.ui.fragment.SelfLearningFragment;
 import net.mavericklabs.mitra.ui.fragment.SettingsFragment;
 import net.mavericklabs.mitra.ui.fragment.TeachingAidsFragment;
 import net.mavericklabs.mitra.utils.AnimationUtils;
+import net.mavericklabs.mitra.utils.CommonCodeUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
@@ -264,6 +266,11 @@ public class HomeActivity extends BaseActivity {
         TextView userNameTextView = (TextView) headerView.findViewById(R.id.nav_header_user_name);
         ImageView profilePhoto = (ImageView) headerView.findViewById(R.id.nav_header_image);
         if(user.size() ==1) {
+            // Obtain the FirebaseAnalytics instance.
+            FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
+            firebaseAnalytics.setUserProperty("userType",
+                    CommonCodeUtils.getObjectFromCode(user.get(0).getUserType()).getCodeNameEnglish());
+
             userNameTextView.setText(user.get(0).getName());
             if(!StringUtils.isEmpty(user.get(0).getProfilePhotoPath())) {
                 Glide.with(this).load(user.get(0).getProfilePhotoPath())

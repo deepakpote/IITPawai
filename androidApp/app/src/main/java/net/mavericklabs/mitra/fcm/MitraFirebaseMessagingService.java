@@ -13,12 +13,16 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import net.mavericklabs.mitra.R;
+import net.mavericklabs.mitra.model.database.Migration;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
+import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.model.database.DbNotification;
+import net.mavericklabs.mitra.utils.MitraContextWrapper;
 import net.mavericklabs.mitra.utils.StringUtils;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by amoghpalnitkar on 12/7/16.
@@ -28,6 +32,22 @@ public class MitraFirebaseMessagingService extends FirebaseMessagingService{
 
     //Add more notification types here
     public final String NOTIFICATION_TYPE_DEFAULT = "0";
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+
+        //Set realm schema version
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .schemaVersion(3) // Must be bumped when the schema changes
+                .migration(new Migration()) // Migration to run
+                .build();
+
+        Realm.setDefaultConfiguration(config);
+
+
+        Context context = MitraContextWrapper.wrap(newBase, LanguageUtils.getCurrentLocale());
+        super.attachBaseContext(context);
+    }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {

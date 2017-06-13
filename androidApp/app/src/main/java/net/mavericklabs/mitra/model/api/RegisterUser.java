@@ -61,14 +61,21 @@ public class RegisterUser {
     @SerializedName("department")
     private Integer department;
 
+    @SerializedName("fcmDeviceID")
+    private String fcmToken;
 
+    @SerializedName("fcmRegistrationRequired")
+    private String fcmRegistrationRequired;
 
-    public RegisterUser(String userName, String googleToken, Integer districtCode, Integer userType, Integer preferredLanguage) {
+    public RegisterUser(String userName, String googleToken, Integer districtCode, Integer userType,
+                        Integer preferredLanguage, String fcmToken, String fcmRegistrationRequired) {
         this.name = userName;
         this.district = districtCode;
         this.googleToken = googleToken;
         this.userType = userType;
         this.preferredLanguage = preferredLanguage;
+        this.fcmToken = fcmToken;
+        this.fcmRegistrationRequired = fcmRegistrationRequired;
     }
 
     public String getName() {

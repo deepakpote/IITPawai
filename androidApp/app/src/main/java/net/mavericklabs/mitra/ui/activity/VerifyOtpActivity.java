@@ -273,8 +273,9 @@ public class VerifyOtpActivity extends BaseActivity {
                             //Now set Email
                             String idToken = UserDetailUtils.getGoogleToken(getApplicationContext());
                             String authToken = UserDetailUtils.getToken(getApplicationContext());
+                            String fcmToken = FirebaseInstanceId.getInstance().getToken();
 
-                            RestClient.getApiService(authToken).setEmail(new RegisterWithGoogle(idToken)).enqueue(
+                            RestClient.getApiService(authToken).setEmail(new RegisterWithGoogle(idToken, fcmToken, "true")).enqueue(
                                     new Callback<BaseModel<RegisterWithGoogleUserResponse>>() {
                                         @Override
                                         public void onResponse(Call<BaseModel<RegisterWithGoogleUserResponse>> call, Response<BaseModel<RegisterWithGoogleUserResponse>> response) {
@@ -290,6 +291,11 @@ public class VerifyOtpActivity extends BaseActivity {
                                         @Override
                                         public void onFailure(Call<BaseModel<RegisterWithGoogleUserResponse>> call, Throwable t) {
                                             progressDialog.dismiss();
+                                            if(t instanceof ConnectException) {
+                                                Toast.makeText(getApplicationContext(), getString(R.string.error_check_internet), Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), getString(R.string.error_message), Toast.LENGTH_SHORT).show();
+                                            }
 
                                         }
                                     });
