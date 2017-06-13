@@ -484,11 +484,12 @@ class UserViewSet(viewsets.ModelViewSet):
         if not objUserSerializer.is_valid():
             return Response({"response_message":" constants.messages.registration_user_validation_failed", "data":[ objUserSerializer.errors]},
                             status=status.HTTP_401_UNAUTHORIZED)
-            
-        if user.objects.filter(phoneNumber = phoneNumber).exists():
-            return Response({"response_message": constants.messages.register_user_phonenumber_already_registered,
-                             "data": []},
-                            status = status.HTTP_401_UNAUTHORIZED)
+        
+        if phoneNumber:
+            if user.objects.filter(phoneNumber = phoneNumber).exists():
+                return Response({"response_message": constants.messages.register_user_phonenumber_already_registered,
+                                 "data": []},
+                                status = status.HTTP_401_UNAUTHORIZED)
     
         #check user type if department is provided
         if department:
