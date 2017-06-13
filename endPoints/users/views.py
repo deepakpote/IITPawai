@@ -549,10 +549,10 @@ class UserViewSet(viewsets.ModelViewSet):
         objCreatedUser.save()
         
         #if registred user is a Teacher, then add role "Teacher"
-        if objCreatedUser.userType.codeID == constants.mitraCode.userType_teacher or objCreatedUser.userType.codeID == constants.userType.Officer or objCreatedUser.userType.codeID == constants.userType.Other or objCreatedUser.userType.codeID == constants.userType.CenterHead:
-            # get teacher role.
-            objTeacherRole = role.objects.get(roleID = constants.role.teacher)
-            userRole(user = objCreatedUser , role = objTeacherRole ).save()
+        #if objCreatedUser.userType.codeID == constants.mitraCode.userType_teacher or objCreatedUser.userType.codeID == constants.userType.Officer or objCreatedUser.userType.codeID == constants.userType.Other or objCreatedUser.userType.codeID == constants.userType.CenterHead:
+        # get teacher role.
+        objTeacherRole = role.objects.get(roleID = constants.role.teacher)
+        userRole(user = objCreatedUser , role = objTeacherRole ).save()
         
         #Save user subject
         subjectCodeIDs = request.data.get('subjectCodeIDs')

@@ -133,7 +133,7 @@ angular.module("mitraPortal").controller("addNewsController",
           var modalInstance = $uibModal.open({
             url: 'result',
             scope: $scope,
-            templateUrl :  'webPortal/js/news-circulars/submittedSuccessView.html',
+            templateUrl :  'mitra/js/news-circulars/submittedSuccessView.html',
           })
           modalInstance.result.finally(function(){ 
             if ($scope.news.newsCategoryCodeID == appConstants.code.NewsCategory_MAA){
@@ -155,7 +155,7 @@ angular.module("mitraPortal").controller("addNewsController",
           var modalInstance = $uibModal.open({
             url: 'result',
             scope: $scope,
-            templateUrl : appConstants.endpoint.baseUrl + 'webPortal/js/news-circulars/submittedErrorView.html',
+            templateUrl : appConstants.endpoint.baseUrl + 'mitra/js/news-circulars/submittedErrorView.html',
           });
         });
       }
