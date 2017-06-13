@@ -229,6 +229,7 @@ class UserViewSet(viewsets.ModelViewSet):
             
         # Create object of common class 
         objCommon = utils.common()     
+        objUser = None
 
         # Check value of registration is boolean or NOT.
         if not objCommon.isBool(fcmRegistrationRequired):
@@ -263,6 +264,15 @@ class UserViewSet(viewsets.ModelViewSet):
                 return Response({"response_message": constants.messages.sign_in_user_not_registered, "data": []},
                             status=status.HTTP_401_UNAUTHORIZED)
                 
+        if isPhoneNumberRegistered:
+            # validate user information
+            try:
+                objUser = user.objects.get(phoneNumber=phoneNumber)
+            except user.DoesNotExist:
+                return Response({"response_message": constants.messages.sign_in_user_not_registered,
+                             "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED)
+                
         
         # Check if the OTP is generated in the last 24 hours    
         currentDate = timezone.now()
@@ -276,9 +286,9 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.registration_otp_is_invalid, "data": []},
                         status=status.HTTP_401_UNAUTHORIZED)
         
-        if isfcmRegistrationRequired == True:
+        if isfcmRegistrationRequired == True and isPhoneNumberRegistered:
             #Finally save the user device id, required for push notifications
-            userDeviceSave(phoneNumber, fcmDeviceID)
+            userDeviceSave(objUser, fcmDeviceID)
         
         # For registration call, do not send auth token
         if authenticationType == constants.authenticationTypes.registration:
@@ -401,10 +411,36 @@ class UserViewSet(viewsets.ModelViewSet):
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def signInWithGoogle(self,request):
         googleToken = request.data.get('googleToken')
+        fcmDeviceID = request.data.get('fcmDeviceID')
+        fcmRegistrationRequired = request.data.get('fcmRegistrationRequired')
         email = get_email_from_google_token(googleToken)
         if not email:
             return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[]},
                             status=status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if fcmRegistrationRequired # is passed in post param
+        if not fcmRegistrationRequired:
+            return Response({"response_message": constants.messages.registration_fcmRegistrationRequired_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Create object of common class 
+        objCommon = utils.common()     
+
+        # Check value of registration is boolean or NOT.
+        if not objCommon.isBool(fcmRegistrationRequired):
+            return Response({"response_message": constants.messages.registration_fcmRegistrationRequired_value_must_be_boolean,
+                            "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED)
+            
+                #Get boolean value of fcmRegistrationRequired
+        isfcmRegistrationRequired = objCommon.getBoolValue(fcmRegistrationRequired)
+        
+        if isfcmRegistrationRequired == True:
+            # validate FCM device id. This is later on used for sending push notifications
+            if not fcmDeviceID:
+                return Response({"response_message": constants.messages.registration_fcm_device_id_cannot_be_empty, "data":[]},
+                                status=status.HTTP_401_UNAUTHORIZED)
 
         userObject = user.objects.filter(emailID = email).first()
         
@@ -416,7 +452,11 @@ class UserViewSet(viewsets.ModelViewSet):
                 # no real need to check for duplicates in token generation since field is unique
                 token_string = get_random_string(length = 32)
                 objToken = token(user=userObject, token = token_string).save()
-                
+    
+            if isfcmRegistrationRequired == True:
+                #Finally save the user device id, required for push notifications
+                userDeviceSave(userObject, fcmDeviceID)
+            
             return Response({"response_message": constants.messages.success,
                      "data": [{'userID': userObject.userID, 'token' : objToken.token }]}
                     )
@@ -435,6 +475,8 @@ class UserViewSet(viewsets.ModelViewSet):
         otp_string = request.data.get('otp')
         department = request.data.get('department')
         userType = request.data.get('userType')
+        fcmDeviceID = request.data.get('fcmDeviceID')
+        fcmRegistrationRequired = request.data.get('fcmRegistrationRequired')
         email = None
 
         # validate user information 
@@ -453,6 +495,31 @@ class UserViewSet(viewsets.ModelViewSet):
             if userType != constants.userType.Officer:
                 return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[]},
                             status=status.HTTP_401_UNAUTHORIZED)
+                
+                # Check if fcmRegistrationRequired # is passed in post param
+        if not fcmRegistrationRequired:
+            return Response({"response_message": constants.messages.registration_fcmRegistrationRequired_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Create object of common class 
+        objCommon = utils.common()     
+        objUser = None
+
+        # Check value of registration is boolean or NOT.
+        if not objCommon.isBool(fcmRegistrationRequired):
+            return Response({"response_message": constants.messages.registration_fcmRegistrationRequired_value_must_be_boolean,
+                            "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED)   
+            
+        #Get boolean value of fcmRegistrationRequired
+        isfcmRegistrationRequired = objCommon.getBoolValue(fcmRegistrationRequired)
+        
+        if isfcmRegistrationRequired == True:
+            # validate FCM device id. This is later on used for sending push notifications
+            if not fcmDeviceID:
+                return Response({"response_message": constants.messages.registration_fcm_device_id_cannot_be_empty, "data":[]},
+                                status=status.HTTP_401_UNAUTHORIZED)
                  
         
         # check that either valid otp and phone number or valid oauth token is provided.
@@ -467,11 +534,6 @@ class UserViewSet(viewsets.ModelViewSet):
                 return Response({"response_message": constants.messages.registration_user_validation_failed, "data":[]},
                             status=status.HTTP_401_UNAUTHORIZED)
 
-
-            
-
-
-        
         # If user information is valid, save it
         objCreatedUser = objUserSerializer.save()
         
@@ -522,6 +584,9 @@ class UserViewSet(viewsets.ModelViewSet):
         # Save the auth generated token
         objToken = token(user=objUserSerializer.instance, token = token_string).save()
         
+        if isfcmRegistrationRequired == True:
+            #Finally save the user device id, required for push notifications
+            userDeviceSave(objCreatedUser, fcmDeviceID)
         
         # Add user data, along with the generated token to the response
         #response = objUserSerializer.data
@@ -1492,14 +1557,17 @@ def getUserSkillCode(userInfo):
 """
 Save user's device ID for push notifications
 """
-def userDeviceSave(phoneNumber, fcmDeviceID):
+def userDeviceSave(objUser, fcmDeviceID):
     # Check if the given phoneNumber and device ID combination already exists
-    isDeviceAlreadyRegistrered = device.objects.filter(phoneNumber = phoneNumber, fcmDeviceID = fcmDeviceID).exists()
+    isDeviceAlreadyRegistrered = device.objects.filter(user = objUser, fcmDeviceID = fcmDeviceID).exists()
     if isDeviceAlreadyRegistrered:
         return
     
-    # If the given phoneNumber and device ID combination does NOT exists, then, save
-    device(phoneNumber = phoneNumber, fcmDeviceID = fcmDeviceID).save()
+    if objUser:
+        # If the given userID and device ID combination does NOT exists, then, save
+        device(user = objUser, fcmDeviceID = fcmDeviceID).save()
+        return
+    
     return
 
 #checkOTPTimer

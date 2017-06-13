@@ -94,13 +94,14 @@ class device(models.Model):
     deviceID = models.AutoField(primary_key=True)
     #user = models.ForeignKey('user', related_name='device_user', db_column = 'userID')
     phoneRegex = RegexValidator(regex=r'^\+?1?\d{10,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-    phoneNumber = models.CharField(validators = [phoneRegex], null = False, max_length = 15)
+    phoneNumber = models.CharField(validators = [phoneRegex], null = True, max_length = 15)
     fcmDeviceID =  models.CharField(null = False, max_length = 255)
     createdOn = models.DateTimeField(auto_now=False, auto_now_add = True)
+    user = models.ForeignKey('user', db_column='userID',null = True, related_name='device_userID')
 
     class Meta:
         db_table = 'usr_device'
-        unique_together = ("phoneNumber", "fcmDeviceID")
+        unique_together = ('user', 'fcmDeviceID')
 
 
 """
