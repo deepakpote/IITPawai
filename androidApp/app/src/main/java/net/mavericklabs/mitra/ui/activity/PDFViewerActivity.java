@@ -40,7 +40,7 @@ import net.mavericklabs.mitra.utils.Logger;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PDFViewerActivity extends AppCompatActivity {
+public class PDFViewerActivity extends BaseActivity {
 
     @BindView(R.id.content_web_view) WebView contentWebView;
 

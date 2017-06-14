@@ -86,7 +86,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SignInWithGoogleActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class SignInWithGoogleActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     @BindView(R.id.sign_in_button)
     SignInButton signInButton;

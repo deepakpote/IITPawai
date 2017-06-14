@@ -35,7 +35,7 @@ import net.mavericklabs.mitra.utils.Logger;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class GenieActivity extends AppCompatActivity {
+public class GenieActivity extends BaseActivity {
 
     @BindView(R.id.content_web_view)
     WebView contentWebView;
