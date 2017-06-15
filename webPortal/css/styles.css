@@ -72,12 +72,12 @@ a:hover, a:focus {
     height: 50px;
     padding: 0;
     margin-left: 15%;
-}
+} 
 .mitra-maa-logo {
-	background: rgba(0, 0, 0, 0) url("../images/maa_logo.png") no-repeat scroll 0 0;
+	background: rgba(0, 0, 0, 0) url("../images/maa_logo.png") no-repeat center;
     height: 130px;
     padding: 0;
-    margin-left: 15%;
+    align: center
 }
 .mitra-language {
 	background-color: #7a7a7a;
@@ -424,6 +424,14 @@ li.selected  {
     padding-bottom: 4px;
 }
 
+.news-bottom {
+    flex: 1;
+    padding-left: 8px;
+    padding-top: 4px;
+    padding-bottom: 13px;
+}
+
+
 .dashboard-elements {
 	padding-top:20px;
 	padding-right:50px;
@@ -522,6 +530,54 @@ textarea.materialize-textarea:focus:not([readonly]) {
 .mycontent-left {
   border-right: 1px #333;
 }
+
+.custom-date-picker
+{
+	color:white;
+	margin: -4px;
+	width: 33%;
+	display: inline-block;
+	padding: 5px;
+	height: 31px;
+	background-color: #ff9100;
+	border: 0px;
+	webkit-box-shadow:none;
+	box-shadow: none;
+	cursor: pointer;
+}
+
+.custom-month-picker
+{
+	color: white;
+	width: 33%;
+	display: inline-block;
+	padding: 3px;
+	height: 31px;
+	background-color: #ff9100;
+	border: 0px;
+	webkit-box-shadow:none;
+	box-shadow: none;
+	cursor: pointer;
+}
+
+.custom-year-picker
+{
+	color: white;
+	width: 33%;
+	display: inline-block;
+	padding: 2px;
+	height: 31px;
+	background-color: #ff9100;
+	border: 0px;
+	webkit-box-shadow:none;
+	box-shadow: none;
+	cursor: pointer;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0;
+ }
 
 /* Rules for sizing the icon. */
 .material-icons.md-18 { font-size: 18px; }
