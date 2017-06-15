@@ -167,10 +167,13 @@
                 </div>
                 <div ng-class="($parent.news.publishDate?'orange-background':'teal-background')">
                 </div>
-                <div class="card-action card-select orange-background" style="height:40px">
-                  <span  >
-                       <ng-combo-date-picker ng-model="news.publishDate"></ng-combo-date-picker>     
-                  </span>
+                <div class="card-action card-select orange-background" style="height:42px">
+                  <div  style="margin-top:-3%">
+                       <ng-combo-date-picker ng-model="news.publishDate" 
+                       ng-attrs-date='{"class": "form-control custom-date-picker"}' 
+                       ng-attrs-month='{"class": "form-control custom-month-picker"}' 
+                       ng-attrs-year='{"class": "form-control custom-year-picker"}'></ng-combo-date-picker>     
+                  </div>
                  </div>
               </div>
             </div>

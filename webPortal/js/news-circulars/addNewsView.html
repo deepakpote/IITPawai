@@ -1,17 +1,17 @@
    
-<div class="gradient bottom-shadow">
+<div class="gradient bottom-shadow" style="cursor: pointer;">
   <div class="content-top-box">
     <div class="font-title pad5B">Select Category</div>
     <div class="row">
      <div ng-repeat="newsType in newsTypeList">
        <div class="col-md-3">
-         <div class="card card-radio-selection">
+         <div class="card card-radio-selection" style="cursor: pointer;">
            <div ng-class="isNewsTypeSelected(newsType.codeID) ? 'selected-card':'unselected-card'" ng-click="newsTypeOnClick(newsType.codeID)">
              <div class="card-content">
 <!--                <i class="mitra-maa-logo" style="font-size:48px;"></i>  -->
                <div class="mitra-maa-logo" ></div>
              </div>
-             <div class="card-action">
+             <div class="card-action" style="cursor: pointer;">
                {{newsType.codeNameEn}}
              </div>
            </div>
@@ -95,16 +95,13 @@
                 </div>
               </div>
             </div>
-            
-
             <br />
             
-                            <div ng-messages="frmAddNews.importance.$error" ng-if="frmAddNews.importance.$dirty">
+      <div ng-messages="frmAddNews.importance.$error" ng-if="frmAddNews.importance.$dirty">
         <span class="error-message" ng-show="frmAddNews.importance.$error.required">Please select Importance.</span>
     </div>
           </div>
-          
-          
+
 <!--           // Date-picker -->
            <div class="col-md-3">
             <div class="card">
@@ -115,29 +112,22 @@
                 <div>
                 </div>
                 <div class="card-action card-select orange-background" style="height:42px">
-
-                  <div  style="margin-top:-5%">
-                       <ng-combo-date-picker ng-model="news.publishDate" name="publishDate" ng-required="true" ng-attrs-date='{"style": "color:green;margin:-4px;width:33%;display:inline-block;padding:5px;height:31px;","class": "form-control"}' ng-attrs-month='{"style": "color:green;width:33%;display: inline-block;padding:3px;height:31px;","class": "form-control"}' ng-attrs-year='{"style": "color:green;width:33%;display: inline-block;padding:2px;height:31px;","class": "form-control"}'></ng-combo-date-picker>     
+                  <div  style="margin-top:-3%">
+                       <ng-combo-date-picker ng-model="news.publishDate" name="publishDate" ng-required="true"
+                       ng-attrs-date='{"class": "form-control custom-date-picker"}' 
+                       ng-attrs-month='{"class": "form-control custom-month-picker"}' 
+                       ng-attrs-year='{"class": "form-control custom-year-picker"}'>
+                       </ng-combo-date-picker>     
                   </div>
-
                  </div>
               </div>
             </div>
-            
-
             <br />
-
           </div>
-
         <br />
-          
-          
       </div>    
-          
           </div>
-
           <div class="col-md-1"></div>
-          
   <div class="col-md-9">      
 
         </div>

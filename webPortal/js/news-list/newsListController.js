@@ -73,6 +73,12 @@ function newsListController(newsListService,commonService,$scope,appConstants,$f
         appUtils.saveToCookies("userSeenNewsIDs", newSeenNewsID + "," + newsList.news );
         console.log(appUtils.getFromCookies("userSeenNewsIDs",""));
     }
+    
+    function getMonthName (monthNumber) { 
+        var monthNames = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ];
+        return monthNames[monthNumber - 1];
+    }
 
     function fetchNewsList() {
         newsListService.fetch(vm.newsCategoryCodeID, vm.departmentCodeID, vm.publishFromDate,vm.publishToDate ,onSuccess, onFailure);
@@ -89,7 +95,8 @@ function newsListController(newsListService,commonService,$scope,appConstants,$f
                 var news = objnews[i];
                 objDate = news.publishDate.split(" ");
                 var newFormatedDate = objDate[0].split("-");
-                news.formatedDate = newFormatedDate[2]+ '-' + newFormatedDate[1]+ '-' + newFormatedDate[0]; 
+                var MonthName = getMonthName(newFormatedDate[1]);
+                news.formatedDate = newFormatedDate[2]+ '-' + MonthName + '-' + newFormatedDate[0]; 
                 news.departmentName = commonService.getValueByCode(news.department)[0].codeNameEn;
                 
 //                $scope.newDate = moment(news.publishDate).toDate('dd-mm-yyyy');
@@ -117,7 +124,7 @@ function newsListController(newsListService,commonService,$scope,appConstants,$f
               		}
               }
               
-              console.log("isfetchSavedNews:" + vm.isfetchSavedNews);  
+              //console.log("isfetchSavedNews:" + vm.isfetchSavedNews);  
             }
             
             getDepartments();
@@ -128,8 +135,6 @@ function newsListController(newsListService,commonService,$scope,appConstants,$f
         }
         
     }
-    
-    
     
     function fetchUserNewsList() {
         newsListService.fetchUsersNews(vm.newsCategoryCodeID, vm.departmentCodeID, vm.publishFromDate,vm.publishToDate ,onSuccess, onFailure);
@@ -144,7 +149,10 @@ function newsListController(newsListService,commonService,$scope,appConstants,$f
             	var objDate = "";
                 var news = objnews[i];
                 objDate = news.publishDate.split(" ");
-                news.formatedDate = objDate[0]; 	
+                var newFormatedDate = objDate[0].split("-");
+                var MonthName = getMonthName(newFormatedDate[1]);
+                news.formatedDate = newFormatedDate[2]+ '-' + MonthName + '-' + newFormatedDate[0]; 
+                
                 news.departmentName = commonService.getValueByCode(news.department)[0].codeNameEn;
                 
                 if(news.imageURL != "")

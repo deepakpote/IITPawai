@@ -29,7 +29,11 @@
         <li class="filter-type" style="padding-left: 14%;padding-top: 26px;" ng-click=newsList.setPublishFromDate(news.fromDate)>
             DATE FROM
                   <span  >
-                       <ng-combo-date-picker ng-model="news.fromDate" ng-click=newsList.setPublishFromDatet(news.fromDate)   ng-min-date="2009-01-01" ng-max-date="2025-12-31"></ng-combo-date-picker>     
+                       <ng-combo-date-picker ng-model="news.fromDate" ng-click=newsList.setPublishFromDatet(news.fromDate)   
+                       ng-min-date="2009-01-01" ng-max-date="2025-12-31"
+                       ng-attrs-date='{"style": "cursor:pointer;"}' 
+                       ng-attrs-month='{"style": "cursor:pointer;"}' 
+                       ng-attrs-year='{"style": "cursor:pointer;"}'></ng-combo-date-picker>     
                   </span>
                   
         </li>
@@ -39,7 +43,11 @@
         <li class="filter-type"  style="padding-top: 26px;"  class="filter-type-no-hover">
             TO
                   <span  >
-                       <ng-combo-date-picker ng-model="news.toDate" ng-click=newsList.setPublishToDate(news.toDate)  ng-min-date="2010-01-01" ng-max-date="2025-12-31"></ng-combo-date-picker>     
+                       <ng-combo-date-picker ng-model="news.toDate" ng-click=newsList.setPublishToDate(news.toDate) 
+                       ng-attrs-date='{"style": "cursor:pointer;"}' 
+                       ng-attrs-month='{"style": "cursor:pointer;"}' 
+                       ng-attrs-year='{"style": "cursor:pointer;"}' 
+                       ng-min-date="2010-01-01" ng-max-date="2025-12-31"></ng-combo-date-picker>     
                   </span>
         </li>
 
@@ -89,14 +97,14 @@
             ng-style="hoverActive ? {'color':'#ff9100'} : {}">
                 	</br> <b>{{ objnewsList.newsTitle}}</b> 
                 </div> 
-              <div class="col-md-2 font-news-seen" ng-if="objnewsList.seen==1"> </br> <a  style="color: gray;padding-left: 90%;padding-top: 10%;">SEEN</a></div>
+              <div class="col-md-2 font-news-seen" ng-if="objnewsList.seen==1" style="padding-top: 8px;"> </br> <a  style="color: gray;padding-left: 90%;padding-top: 15%;">SEEN</a></div>
   
             </div>
             <div class="bottom-content">
-                <div class="uploader single-line  col-md-8 font-secondary-text" >
-                   &nbsp; {{ objnewsList.formatedDate   }}	| {{objnewsList.departmentName}}			
+                <div class="news-bottom single-line  col-md-8 font-secondary-text" >
+                   &nbsp; {{ objnewsList.formatedDate   }} &nbsp;	| &nbsp; {{objnewsList.departmentName}}			
                 </div>
-                <div class="col-md-2" ng-if="objnewsList.isSaved"> <a  style="color: orange;padding-left: 90%;padding-bottom: 40%;"><b>SAVED</b></a></div>
+                <div class="col-md-2" ng-if="objnewsList.isSaved" style="padding-top: 7px;"> <a  style="color: orange;padding-left: 90%;padding-bottom: 35%;"><b>SAVED</b></a></div>
             </div>
         </div>
     	<div class="col-md-1"></div>
