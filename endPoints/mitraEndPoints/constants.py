@@ -218,6 +218,17 @@ class messages():
     register_user_phonenumber_already_registered = 100274
     setNewEmail_user_emailID_already_registered = 100275
     
+    saveTrainingStatus_eventDetailid_cannot_be_empty = 100276
+    saveTrainingStatus_statuscodeid_cannot_be_empty = 100277
+    saveTrainingStatus_event_doesnot_exists = 100278
+    saveTrainingStatus_status_not_exists = 100279
+    saveTrainingStatus_user_not_exists = 100280
+    
+    training_list_search_no_records_found = 100281
+    alternate_training_list_search_no_records_found = 100282
+    alternate_event_list_eventid_cannot_be_empty = 100283
+    alternate_event_list_event_does_not_exists = 100284
+    
 class webportalmessages():    
     web_admin_invalid_token = 200100
     web_admin_phoneno_not_registered = 200101

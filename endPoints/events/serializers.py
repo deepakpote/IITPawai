@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from events.models import userEvent
+from events.models import userEvent, eventInfo , event, eventDetail
 
 class eventTimeSerializer(serializers.DictField):
 	dateTime=serializers.DateTimeField()
@@ -16,12 +16,15 @@ class listAttendeeSerializer(serializers.ListField):
 
 # nested object serializer for event
 class eventSerializer(serializers.Serializer):
-	id = serializers.CharField(required=True)
+	#id = serializers.CharField(required=True)
 	summary = serializers.CharField()
 	location = serializers.CharField()
 	description = serializers.CharField()
 	end=eventTimeSerializer()
 	start=eventTimeSerializer()
+	category = serializers.CharField()
+	location = serializers.CharField()
+	trainer = serializers.CharField()
 	#recurrence=serializers.ListField(serializers.CharField(),required=False)
 	#attendees=listAttendeeSerializer(required=False)
 	#reminders=remindersSerializer(required=False)
@@ -46,3 +49,30 @@ class userEventModelSerializer(serializers.ModelSerializer):
         objEvent = userEvent(eventID=validated_data['event'],userID=validated_data['user'])
         objEvent.save()
         return objEvent
+       
+"""
+training Serializer
+"""
+class trainingListSerializer(serializers.ModelSerializer):
+     
+    # Access custom field.
+    eventID = serializers.CharField()
+    eventInfoID = serializers.CharField()
+    eventDetailID = serializers.CharField()
+    categoryCodeID = serializers.CharField()
+    appLanguageCodeID = serializers.CharField()
+    eventTitle = serializers.CharField()
+    eventDescription = serializers.CharField()
+    date = serializers.CharField()
+    districtCodeID = serializers.CharField()
+    blockCodeID = serializers.CharField() 
+    engLocation = serializers.CharField() 
+    marLocation = serializers.CharField()
+    engTrainer = serializers.CharField() 
+    marTrainer = serializers.CharField() 
+    statusCodeID = serializers.CharField()
+  
+    class Meta:
+        model = event
+        fields = ('eventID','categoryCodeID','eventInfoID','eventDetailID','appLanguageCodeID','eventTitle','eventDescription','date','districtCodeID','blockCodeID','engLocation','marLocation','engTrainer','marTrainer','statusCodeID','createdBy','createdOn')
+
