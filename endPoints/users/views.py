@@ -91,7 +91,7 @@ class UserViewSet(viewsets.ModelViewSet):
         #Verify of the user token of the webPortal admin is matching with the one registered with the system
         if(token.objects.filter(token=userTokenToVerify).exists()):
             #Fetch all the devices from usr_device table to send push notifications to
-            sqlQuery = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
+            sqlQuery = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where UU.phoneNumber = '+919673212286'"
             objDevices = []
             objDevicesObjects = device.objects.raw(sqlQuery)
             for objDeviceInstance in objDevicesObjects:
