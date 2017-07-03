@@ -85,7 +85,8 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def sendDataNotificationsToAll(self,request):
-        userTokenToVerify = request.data.get('utoken')
+        #For now, Auth token of Abhinav is given static. Will change this later.
+        userTokenToVerify = 'gRlZd3y4dKeOsIkQsH0iqblEnZm5iFsH'#request.data.get('utoken')
         result = []
         response_message = ""
         #Verify of the user token of the webPortal admin is matching with the one registered with the system
