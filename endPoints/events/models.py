@@ -60,6 +60,7 @@ class eventDetail(models.Model):
     date = models.DateTimeField(default=datetime.now, null = False)
     district = models.ForeignKey('commons.code', db_column='districtCodeID', related_name='eventDetail_districtCodeID')
     block = models.ForeignKey('commons.code', db_column='blockCodeID', related_name='eventDetail_blockCodeID')
+    state = models.ForeignKey('commons.code', db_column='stateCodeID', related_name='eventDetail_stateCodeID')
     engLocation = models.CharField(null = True, max_length = 255)
     marLocation = models.CharField(null = True, max_length = 255)
     engTrainer = models.CharField(null = True, max_length = 255)

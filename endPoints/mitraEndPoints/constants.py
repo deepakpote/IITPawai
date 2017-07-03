@@ -229,6 +229,10 @@ class messages():
     alternate_event_list_eventid_cannot_be_empty = 100283
     alternate_event_list_event_does_not_exists = 100284
     
+    blockList_districtCodeID_cannot_be_empty = 100285
+    blockList_district_not_exists = 100286
+    blockList_no_records_found = 100287
+    
 class webportalmessages():    
     web_admin_invalid_token = 200100
     web_admin_phoneno_not_registered = 200101

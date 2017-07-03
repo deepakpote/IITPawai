@@ -10,10 +10,11 @@ from django.db.models import Min
 from users.authentication import TokenAuthentication
 from mitraEndPoints import constants, utils
 from events.serializers import eventQuerySerializer,eventSerializer,userEventModelSerializer,trainingListSerializer
+from commons.serializers import codeSerializer
 from events.CalenderService import EventsCalender
 from users.models import user
 from commons.models import code
-from events.models import userEvent, eventInfo , event, eventDetail
+from events.models import userEvent, eventInfo , event, eventDetail, districtBlockMapping
 from commons.views import getUserIDFromAuthToken
 
 class EventViewSet(viewsets.ViewSet):
@@ -644,6 +645,65 @@ class EventViewSet(viewsets.ViewSet):
         saveEventDetail(objEvent, date, districtCodeID, blockCodeID, engLocation, marLocation, marTrainer, engTrainer, statusCodeID, objUser)
         #Return the response
         return Response({"response_message": constants.messages.success, "data": []})
+    
+    """
+    Get Block list from District
+    """   
+    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
+    def getBlockListFromDistrict(self, request):
+        districtCodeID = request.data.get('districtCodeID')
+
+        blockListQueryset = None
+                
+        # Check districtCodeID is passed or not.
+        if  not districtCodeID:
+            return Response({"response_message": constants.messages.blockList_districtCodeID_cannot_be_empty,
+                         "data": []},
+                         status = status.HTTP_401_UNAUTHORIZED) 
+                    
+        # If districtCodeID parameter is passed, then check districtCodeID exists or not
+        try:
+            objDistrict = code.objects.get(codeID = districtCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.blockList_district_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+            
+        # Get all blockID from districtCodeID.
+        objBlockList = districtBlockMapping.objects.filter(district = objDistrict).values_list('block' , flat=True)
+        
+        #Get blockCodeID list
+        blockListQueryset = code.objects.filter(codeID__in = objBlockList)
+        
+        # if no records found
+        if not blockListQueryset:
+            return Response({"response_message": constants.messages.blockList_no_records_found,
+                    "data": []},
+                    status = status.HTTP_200_OK)
+               
+        serializer = codeSerializer(blockListQueryset, many = True)
+        
+        return Response({"response_message": constants.messages.success, "data": serializer.data})
+    
+    """
+    API to get trainer list
+    """   
+    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
+    def getTrainerList(self, request):
+        # get inputs
+
+        # Get all trainer list.
+        objTrainerList = eventDetail.objects.values('eventDetailID','engTrainer','marTrainer').distinct()
+        
+        # Remove empty and null authors
+        objTrainerList = objTrainerList.exclude(engTrainer__isnull=True).exclude(engTrainer__exact='')
+        
+        if not objTrainerList:
+            return Response({"response_message": constants.messages.author_list_no_records_found,
+                    "data": []},
+                    status = status.HTTP_200_OK)
+        
+        return Response({"response_message": constants.messages.success, "data": objTrainerList})
         
         
 """
