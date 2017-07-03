@@ -76,6 +76,25 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
+             .state('main.loggedIn.sendNotifications', {
+                url: '/notifications',
+                views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Send Notifications';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content': {
+                        templateUrl: templateChange() + '/js/notifications/sendDataNotificationView.html',
+                        controller: 'mitra.notificationsController'
+                    }
+                }
+            })
             .state('main.loggedIn.contentUpload', {
                 url: '/content/upload',
                 views: {
