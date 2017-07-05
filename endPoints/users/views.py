@@ -87,12 +87,27 @@ class UserViewSet(viewsets.ModelViewSet):
     def sendDataNotificationsToAll(self,request):
         #For now, Auth token of Abhinav is given static. Will change this later.
         userTokenToVerify = 'gRlZd3y4dKeOsIkQsH0iqblEnZm5iFsH'#request.data.get('utoken')
+        phoneNumbers = request.data.get('phoneNumbers')
         result = []
         response_message = ""
+        startCount = 0
+        endCount = 900
+        totalDeviceCount = 0
+        loopCount = 0
+        successCount = 0
+        failedCount = 0
+        
         #Verify of the user token of the webPortal admin is matching with the one registered with the system
         if(token.objects.filter(token=userTokenToVerify).exists()):
+            
             #Fetch all the devices from usr_device table to send push notifications to
-            sqlQuery = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
+            #sqlQuery = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
+            sqlQuery = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY)
+            
+            if phoneNumbers:
+                sqlQuery = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where UU.phoneNumber in (" + str(phoneNumbers) +")"
+                
+            #print "sqlQuery:",sqlQuery
             objDevices = []
             objDevicesObjects = device.objects.raw(sqlQuery)
             for objDeviceInstance in objDevicesObjects:
@@ -106,10 +121,35 @@ class UserViewSet(viewsets.ModelViewSet):
             if(not body):
                 body = "Sample message body"
             data = {"title" : title,"body": body}
-            #send push notifications to multiple registered devices at a time
-            result = push_service.notify_multiple_devices(registration_ids=objDevices,
-                                                      data_message=data)
-            response_message = str(result['failure']) + " notifications failed, and " + str(result['success']) + " notification sent successfully."
+            
+            #Get total no of device count
+            totalDeviceCount = len(objDevices)
+            loopCount = totalDeviceCount/900
+            
+            if loopCount < 0:
+                loopCount = 1
+            
+            for num in range(0,loopCount + 1):  
+                #Get 900 fcmDeviceID to send the notifications
+                objDevice_ids = objDevices[startCount:endCount]
+                
+                #print "objDevice_ids:",objDevice_ids
+                #send push notifications to multiple registered devices at a time
+                result = push_service.notify_multiple_devices(registration_ids=objDevice_ids,data_message=data)
+                
+                #Save success count
+                successCount = successCount + result['success']
+                
+                #save failed count
+                failedCount = failedCount + result['failure']
+                
+                #increment start & end counter to send notification to next 900 fcmDeviceID
+                startCount = startCount + 900
+                endCount = endCount + 900
+                
+            
+            #response_message = str(result['failure']) + " notifications failed, and " + str(result['success']) + " notification sent successfully."
+            response_message = str(failedCount) + " notifications failed, and " + str(successCount) + " notification sent successfully."
         else:
             response_message = code.objects.get(codeID = constants.webportalmessages.web_admin_invalid_token).codeNameEn
         

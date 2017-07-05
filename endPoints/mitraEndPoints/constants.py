@@ -343,6 +343,7 @@ class uploadedContentDir():
 class fcm():
     FCM_SERVERKEY = "AAAAQH5DkUE:APA91bHzQT7zucQ6A807PrrQwzM63mUrUooqyUt_jJ4HTeR-QM-u2FW9dkAr4r_fOm7G0B2z7iFJdMDz2Nc3s4lZTrNYJ6mIovDvLSui0SpqZAiOZKCPhHsxYGCvDxDa3yo5niGsWd4haNyTKnHol1kCZEa3S2zZbw"
     DATA_NOTIFICATION_TITLE = "Mitra"
+    SEND_DATA_NOTIFICATION_QUERY = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
     
 class webportal():
 	AdminPassword = "softcorner"
