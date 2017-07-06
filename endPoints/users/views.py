@@ -32,6 +32,7 @@ from contents.serializers import contentSerializer , teachingAidSerializer
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
 from commons.models import code 
 from pyfcm import FCMNotification
+from operator import itemgetter
 
 
 
@@ -1856,13 +1857,13 @@ def sendFCMNotification(objDevices, notificationTypeCodeID, objectID, title, bod
                                                        dry_run=constants.fcm.SEND_FCM_TEST_MODE,
                                                        data_message=data)
 #         
-        #print "result:",result
+        #print "result type:", type(result)
         #Save success count
-        successCount = successCount + result[0]['success']
+        successCount = successCount + (result[0]['success'] if type(result) is list else result['success']) #itemgetter(*'success')(result)  #[result[x] for x in "success"] #result['success']
         #print "successCount:",successCount
         
-        #save failed count
-        failedCount = failedCount + result[0]['failure']
+        #save failed count 
+        failedCount = failedCount + (result[0]['failure'] if type(result) is list else result['success'])
         
         #increment start & end counter to send notification to next 900 fcmDeviceID
         startCount = startCount + constants.fcm.SEND_FCM_MSG_USER_COUNT
