@@ -86,6 +86,112 @@ class UserViewSet(viewsets.ModelViewSet):
     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
     def sendDataNotificationsToAll(self,request):
         #For now, Auth token of Abhinav is given static. Will change this later.
+        #userTokenToVerify = request.data.get('authToken') #'gRlZd3y4dKeOsIkQsH0iqblEnZm5iFsH'#request.data.get('utoken')
+        phoneNumbers = request.data.get('phoneNumbers')
+        notificationTypeCodeID = request.data.get('notificationTypeCodeID')
+        objectID = request.data.get('objectID')
+        marTitle = request.data.get('marTitle')
+        engTitle = request.data.get('engTitle')
+        marText = request.data.get('marText')
+        engText = request.data.get('engText')
+        title = request.data.get('title')
+        body = request.data.get('body')
+        result = None
+        response_message = []
+        totalSuccessCount = 0
+        totalFailureCount = 0
+
+        
+        
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+                #Verify of the user token of the webPortal admin is matching with the one registered with the system
+        if not (token.objects.filter(token=authToken).exists()):
+            return Response({"response_message": constants.messages.send_data_notification_to_all_invalid_token,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+        
+        
+        if not notificationTypeCodeID:
+            return Response({"response_message": constants.messages.send_data_notification_to_all_notificationTypeCodeID_cannot_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        if not objectID:
+            return Response({"response_message": constants.messages.send_data_notification_to_all_objectID_cannot_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        if not marTitle:
+            return Response({"response_message": constants.messages.send_data_notification_to_all_marathi_title_cannot_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        if not marText:
+            return Response({"response_message": constants.messages.send_data_notification_to_all_marathi_text_cannot_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        if not engTitle:
+            engTitle = marTitle
+            
+        if not engText:
+            engText = marText
+        
+
+        #Fetch all the devices from usr_device table to send push notifications to Marathi language users
+        #sqlQuery = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
+        sqlQueryForMarLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + "where UU.preferredLanguageCodeID = " + str(constants.appLanguage.marathi)
+        sqlQueryForEngLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + "where UU.preferredLanguageCodeID = " + str(constants.appLanguage.english)
+      
+        if constants.fcm.SEND_FCM_NOTIFICATION_TO_TEST_DEVICE:
+            sqlQueryForMarLanguage = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where UU.phoneNumber in (" + str(constants.fcm.FCM_TEST_DEVICE_PHONE_NO) +")"
+            sqlQueryForEngLanguage = sqlQueryForMarLanguage
+            
+        #Send FCM messages for those users whose preferedAppLanguage is Marathi    
+        objMarDevices = []
+        objMarDevicesObjects = device.objects.raw(sqlQueryForMarLanguage)
+        for objDeviceInstance in objMarDevicesObjects:
+            objMarDevices.append(objDeviceInstance.fcmDeviceID)
+                
+        marLangResponse = None
+        if len(objMarDevices) > 0:
+            marLangResponse = sendFCMNotification(objMarDevices, notificationTypeCodeID, objectID, marTitle, marText)
+        
+        #Send FCM messages for those users whose preferedAppLanguage is Marathi    
+        objEngDevices = []
+        objEngDevicesObjects = device.objects.raw(sqlQueryForEngLanguage)
+        for objDeviceInstance in objEngDevicesObjects:
+            objEngDevices.append(objDeviceInstance.fcmDeviceID)
+                
+        engLangResponse = None
+        if len(objEngDevices) > 0:
+            engLangResponse = sendFCMNotification(objEngDevices, notificationTypeCodeID, objectID, engTitle, engText)
+        
+        #totalSuccessCount = marLangResponse['successCount'] + engLangResponse['successCount']
+        #totalFailureCount = marLangResponse['failureCount'] + engLangResponse['failureCount']
+        totalSuccessCount = (marLangResponse['successCount'] if marLangResponse != None else 0) + (engLangResponse['successCount'] if engLangResponse != None else 0)
+        totalFailureCount = (marLangResponse['failureCount'] if marLangResponse != None else 0) + (engLangResponse['failureCount'] if engLangResponse != None else 0)
+
+        result = "Notification sent successfully to "  + str(totalSuccessCount) + " users and failed for  " + str(totalFailureCount) + " users"
+        
+        if totalSuccessCount > 0:
+            response_message = constants.messages.success
+        else:
+            response_message =  status.HTTP_400_BAD_REQUEST
+            
+        #print result     
+        return Response({"response_message": response_message, "data":result})
+    
+        """
+    API to send data push notifications to all devices having FCM id
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def getValidFCMDeviceIDs(self,request):
+        #For now, Auth token of Abhinav is given static. Will change this later.
         userTokenToVerify = 'gRlZd3y4dKeOsIkQsH0iqblEnZm5iFsH'#request.data.get('utoken')
         phoneNumbers = request.data.get('phoneNumbers')
         result = []
@@ -104,8 +210,8 @@ class UserViewSet(viewsets.ModelViewSet):
             #sqlQuery = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
             sqlQuery = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY)
             
-            if phoneNumbers:
-                sqlQuery = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where UU.phoneNumber in (" + str(phoneNumbers) +")"
+            if phoneNumbers: 
+                sqlQuery = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where UU.phoneNumber in (" + str(constants.fcm.FCM_TEST_DEVICE_PHONE_NO) +")"
                 
             #print "sqlQuery:",sqlQuery
             objDevices = []
@@ -133,15 +239,15 @@ class UserViewSet(viewsets.ModelViewSet):
                 #Get 900 fcmDeviceID to send the notifications
                 objDevice_ids = objDevices[startCount:endCount]
                 
-                #print "objDevice_ids:",objDevice_ids
                 #send push notifications to multiple registered devices at a time
-                result = push_service.notify_multiple_devices(registration_ids=objDevice_ids,data_message=data)
+                #result = push_service.notify_multiple_devices(registration_ids=objDevice_ids,data_message=data)
+                valid_registration_ids = clean_registration_ids(self,objDevice_ids)
                 
                 #Save success count
-                successCount = successCount + result['success']
+                #successCount = successCount + result['success']
                 
                 #save failed count
-                failedCount = failedCount + result['failure']
+                #failedCount = failedCount + result['failure']
                 
                 #increment start & end counter to send notification to next 900 fcmDeviceID
                 startCount = startCount + 900
@@ -149,13 +255,13 @@ class UserViewSet(viewsets.ModelViewSet):
                 
             
             #response_message = str(result['failure']) + " notifications failed, and " + str(result['success']) + " notification sent successfully."
-            response_message = str(failedCount) + " notifications failed, and " + str(successCount) + " notification sent successfully."
+            response_message = "Total " + str(totalDeviceCount) + " FCM DeviceID , and out of these " + str(len(valid_registration_ids)) + " Valid FCMDeviceID."
         else:
             response_message = code.objects.get(codeID = constants.webportalmessages.web_admin_invalid_token).codeNameEn
         
         #print response_message
         #print result     
-        return Response({"response_message": response_message, "data":result})
+        return Response({"response_message": response_message, "data":valid_registration_ids})
     
     """
     API to send OTP
@@ -1684,5 +1790,83 @@ def get_email_from_google_token(googleToken):
     except:
         return None
     
+def clean_registration_ids(self, registration_ids):
+    """Return list of active IDS from the list of registration_ids
 
+    """
+    
+    valid_registration_ids = []
+    for registration_id in registration_ids:
+        details = requests.get('https://iid.googleapis.com/iid/info/'+registration_id,
+                               headers= request_headers(),
+                               params={'details':'true'})
+
+        if details.status_code == 200:
+            valid_registration_ids.append(registration_id)
+    return valid_registration_ids
+
+def request_headers():
+    CONTENT_TYPE = "application/json"
+    return {
+        "Content-Type": CONTENT_TYPE,
+        "Authorization": "key=" + constants.fcm.FCM_SERVERKEY,
+    }
+    
+"""
+Send push notifications to the FCM deviceID
+"""
+def sendFCMNotification(objDevices, notificationTypeCodeID, objectID, title, body):    
+    
+    #Send push notification to the bunch of 900 users.
+    startCount = 0
+    endCount = constants.fcm.SEND_FCM_MSG_USER_COUNT
+    totalDeviceCount = 0
+    loopCount = 0
+    successCount = 0
+    failedCount = 0
+    response_message = []
+    mainCount = 0
+    
+    #Get API key
+    api_key = constants.fcm.FCM_SERVERKEY
+    push_service = FCMNotification(api_key=api_key)
+
+    #Build JSON to send FCM notification
+    data = {"title" : title,"body": body, "notificationTypeCodeID": notificationTypeCodeID, "ObjectID": objectID}
+    
+    #Get total no of device count
+    totalDeviceCount = len(objDevices)
+
+    loopCount = totalDeviceCount/constants.fcm.SEND_FCM_MSG_USER_COUNT 
+    
+    if totalDeviceCount % constants.fcm.SEND_FCM_MSG_USER_COUNT != 0:
+        loopCount = loopCount + 1
+    
+    #If fcmDeviceIDs are less then 900, increment the loop counter
+#     if loopCount < 1:
+#         loopCount = 1
+    
+    for num in range(0,loopCount):  
+        #Get 900 fcmDeviceID to send the notifications
+        objDevice_ids = objDevices[startCount:endCount]
+        
+        #print "objDevice_ids:",objDevice_ids
+        #send push notifications to multiple registered devices at a time
+        result = push_service.notify_multiple_devices(registration_ids=objDevice_ids,
+                                                       dry_run=constants.fcm.SEND_FCM_TEST_MODE,
+                                                       data_message=data)
+#         
+        #print "result:",result
+        #Save success count
+        successCount = successCount + result[0]['success']
+        #print "successCount:",successCount
+        
+        #save failed count
+        failedCount = failedCount + result[0]['failure']
+        
+        #increment start & end counter to send notification to next 900 fcmDeviceID
+        startCount = startCount + constants.fcm.SEND_FCM_MSG_USER_COUNT
+        endCount = endCount + constants.fcm.SEND_FCM_MSG_USER_COUNT
+    
+    return { "successCount": successCount, "failureCount": failedCount}
         

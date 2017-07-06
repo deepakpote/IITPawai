@@ -218,6 +218,14 @@ class messages():
     register_user_phonenumber_already_registered = 100274
     setNewEmail_user_emailID_already_registered = 100275
     
+    send_data_notification_to_all_invalid_token = 100288
+    send_data_notification_to_all_notificationTypeCodeID_cannot_empty = 100289
+    send_data_notification_to_all_objectID_cannot_empty = 100290
+    send_data_notification_to_all_marathi_title_cannot_empty = 100291
+    send_data_notification_to_all_marathi_text_cannot_empty = 100292
+    send_data_notification_to_all_no_fcm_device_found = 100293
+    
+    
 class webportalmessages():    
     web_admin_invalid_token = 200100
     web_admin_phoneno_not_registered = 200101
@@ -344,6 +352,10 @@ class fcm():
     FCM_SERVERKEY = "AAAAQH5DkUE:APA91bHzQT7zucQ6A807PrrQwzM63mUrUooqyUt_jJ4HTeR-QM-u2FW9dkAr4r_fOm7G0B2z7iFJdMDz2Nc3s4lZTrNYJ6mIovDvLSui0SpqZAiOZKCPhHsxYGCvDxDa3yo5niGsWd4haNyTKnHol1kCZEa3S2zZbw"
     DATA_NOTIFICATION_TITLE = "Mitra"
     SEND_DATA_NOTIFICATION_QUERY = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
+    SEND_FCM_NOTIFICATION_TO_TEST_DEVICE = True
+    FCM_TEST_DEVICE_PHONE_NO = "'+919975512171','+919890882587','+919767964054','+919967295984'"
+    SEND_FCM_TEST_MODE = False
+    SEND_FCM_MSG_USER_COUNT = 900
     
 class webportal():
 	AdminPassword = "softcorner"
