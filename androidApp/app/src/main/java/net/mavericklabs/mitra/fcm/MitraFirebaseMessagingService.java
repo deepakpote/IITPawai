@@ -77,6 +77,7 @@ public class MitraFirebaseMessagingService extends FirebaseMessagingService{
         String title = remoteMessage.getData().get("title");
         String type = remoteMessage.getData().get("type");
         String objectId = remoteMessage.getData().get("objectID");
+        Logger.d("object id is " + objectId);
         String notificationTypeCodeId = remoteMessage.getData().get("notificationTypeCodeID");
         if(StringUtils.isEmpty(type)) {
             type = NOTIFICATION_TYPE_DEFAULT;
@@ -93,17 +94,21 @@ public class MitraFirebaseMessagingService extends FirebaseMessagingService{
         realm.insert(notification);
         realm.commitTransaction();
 
-        if(notificationTypeCodeId.equals(Constants.NotificationTypeNews)) {
-            fetchNews(objectId,title,body);
-        } else if(notificationTypeCodeId.equals(Constants.NotificationTypeTeachingAids)) {
-            //TODO fetch teaching aids and proceed to show notification
-        } else if(notificationTypeCodeId.equals(Constants.NotificationTypeSelfLearning)) {
-            //TODO fetch self learning and proceed to show notification
-        } else if(notificationTypeCodeId.equals(Constants.NotificationTypeTraining)) {
-            //TODO fetch trainings and proceed to show notification
-        } else if(notificationTypeCodeId.equals(Constants.NotificationTypeOther)) {
-            //TODO set to default notification type for now. Other can be re-directed elsewhere if needed
-            showDefaultNotification(title,body);
+        if(objectId != null) {
+            if(notificationTypeCodeId.equals(Constants.NotificationTypeNews)) {
+                fetchNews(objectId,title,body);
+            } else if(notificationTypeCodeId.equals(Constants.NotificationTypeTeachingAids)) {
+                //TODO fetch teaching aids and proceed to show notification
+            } else if(notificationTypeCodeId.equals(Constants.NotificationTypeSelfLearning)) {
+                //TODO fetch self learning and proceed to show notification
+            } else if(notificationTypeCodeId.equals(Constants.NotificationTypeTraining)) {
+                //TODO fetch trainings and proceed to show notification
+            } else if(notificationTypeCodeId.equals(Constants.NotificationTypeOther)) {
+                //TODO set to default notification type for now. Other can be re-directed elsewhere if needed
+                showDefaultNotification(title,body);
+            } else {
+                showDefaultNotification(title,body);
+            }
         } else {
             showDefaultNotification(title,body);
         }

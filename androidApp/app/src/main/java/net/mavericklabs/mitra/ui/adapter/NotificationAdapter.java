@@ -20,6 +20,7 @@ import net.mavericklabs.mitra.ui.activity.NewsDetailsActivity;
 import net.mavericklabs.mitra.utils.Constants;
 import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.Logger;
+import net.mavericklabs.mitra.utils.StringUtils;
 import net.mavericklabs.mitra.utils.UserDetailUtils;
 
 import butterknife.BindView;
@@ -54,13 +55,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.notificationBody.setText(notifications.get(position).getBody());
         holder.notificationTitle.setText(notifications.get(position).getTitle());
         holder.notificationTime.setText(DateUtils.timeFormat(notifications.get(position).getReceivedTime(),"MMM dd"));
-        holder.layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int currentPosition = holder.getAdapterPosition();
-                fetchContentDetails(notifications.get(currentPosition));
-            }
-        });
+        if(!StringUtils.isEmpty(notifications.get(position).getObjectID())) {
+            holder.layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int currentPosition = holder.getAdapterPosition();
+                    fetchContentDetails(notifications.get(currentPosition));
+                }
+            });
+        }
     }
 
     private void fetchContentDetails(DbNotification notification) {
