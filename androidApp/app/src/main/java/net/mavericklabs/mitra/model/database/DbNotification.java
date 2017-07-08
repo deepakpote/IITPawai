@@ -33,17 +33,25 @@ public class DbNotification extends RealmObject {
     private String title;
     private String body;
     private String type;
+    private String notificationTypeID;
+    private String objectID;
     private long receivedTime;
 
     public DbNotification() {
 
     }
 
-    public DbNotification(String title, String type, String body, long time) {
+    public DbNotification(String title, String body, String type, String notificationTypeID, String objectID, long receivedTime) {
         this.title = title;
-        this.type = type;
         this.body = body;
-        this.receivedTime = time;
+        this.type = type;
+        this.notificationTypeID = notificationTypeID;
+        this.objectID = objectID;
+        this.receivedTime = receivedTime;
+    }
+
+    public long getReceivedTime() {
+        return receivedTime;
     }
 
     public String getTitle() {
@@ -54,14 +62,6 @@ public class DbNotification extends RealmObject {
         this.title = title;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public String getBody() {
         return body;
     }
@@ -70,11 +70,27 @@ public class DbNotification extends RealmObject {
         this.body = body;
     }
 
-    public long getReceivedTime() {
-        return receivedTime;
+    public String getType() {
+        return type;
     }
 
-    public void setReceivedTime(long receivedTime) {
-        this.receivedTime = receivedTime;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getNotificationTypeId() {
+        return notificationTypeID;
+    }
+
+    public void setNotificationTypeId(String notificationTypeId) {
+        this.notificationTypeID = notificationTypeId;
+    }
+
+    public String getObjectID() {
+        return objectID;
+    }
+
+    public void setObjectID(String objectID) {
+        this.objectID = objectID;
     }
 }

@@ -40,7 +40,7 @@ public class SplashActivity extends AppCompatActivity {
 
 
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .schemaVersion(3) // Must be bumped when the schema changes
+                .schemaVersion(4) // Must be bumped when the schema changes
                 .migration(new Migration()) // Migration to run
                 .build();
 

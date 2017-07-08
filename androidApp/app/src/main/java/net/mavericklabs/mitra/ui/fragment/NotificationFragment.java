@@ -19,6 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Created by amoghpalnitkar on 12/8/16.
@@ -47,7 +48,7 @@ public class NotificationFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<DbNotification> notifications = realm.where(DbNotification.class).findAll();
+        RealmResults<DbNotification> notifications = realm.where(DbNotification.class).findAllSorted("receivedTime", Sort.DESCENDING);
         Logger.d("notification size : " + notifications.size());
         if(notifications.isEmpty()) {
             notificationRecyclerView.setVisibility(View.GONE);

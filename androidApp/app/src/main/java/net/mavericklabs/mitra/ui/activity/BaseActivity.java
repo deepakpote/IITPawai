@@ -42,7 +42,7 @@ public class BaseActivity extends AppCompatActivity {
 
         //Set realm schema version
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .schemaVersion(3) // Must be bumped when the schema changes
+                .schemaVersion(4) // Must be bumped when the schema changes
                 .migration(new Migration()) // Migration to run
                 .build();
 
