@@ -355,8 +355,11 @@ class fcm():
     FCM_SERVERKEY = "AAAAQH5DkUE:APA91bHzQT7zucQ6A807PrrQwzM63mUrUooqyUt_jJ4HTeR-QM-u2FW9dkAr4r_fOm7G0B2z7iFJdMDz2Nc3s4lZTrNYJ6mIovDvLSui0SpqZAiOZKCPhHsxYGCvDxDa3yo5niGsWd4haNyTKnHol1kCZEa3S2zZbw"
     DATA_NOTIFICATION_TITLE = "Mitra"
     SEND_DATA_NOTIFICATION_QUERY = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
+    SEND_DATA_NOTIFICATION_QUERY_FOR_USERID = "select UD.* from usr_device UD join usr_user UU on UU.userID = UD.userID"
+    SQL_QUERY_FOR_TEST_DEVIC = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where  UU.phoneNumber IN ('+919975512171','+919890882587','+919767964054','+919967295984') UNION  select UD.* from usr_device UD join usr_user UU on UU.userID = UD.userID where UU.userID IN (12,2,3,5)"
     SEND_FCM_NOTIFICATION_TO_TEST_DEVICE = True
     FCM_TEST_DEVICE_PHONE_NO = "'+919975512171','+919890882587','+919767964054','+919967295984'"
+    FCM_DEVELOPER_USERID = "12,2,3,5"
     SEND_FCM_TEST_MODE = False
     SEND_FCM_MSG_USER_COUNT = 900
     
