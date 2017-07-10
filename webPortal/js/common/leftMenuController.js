@@ -45,6 +45,9 @@
                     case "main.loggedIn.previewNews":
                         $scope.selectedItem = 'preview-news';
                         break;
+                    case "main.loggedIn.sendNotification":
+                        $scope.selectedItem = 'send-notification';
+                        break;
                 }
             });
     }

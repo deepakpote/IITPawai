@@ -225,6 +225,9 @@ class messages():
     send_data_notification_to_all_marathi_text_cannot_empty = 100292
     send_data_notification_to_all_no_fcm_device_found = 100293
     
+    get_contentdetail_appLanguageCodeID_cannot_be_empty = 100294
+    get_contentdetail_appLanguage_not_exists = 100295
+    
     
 class webportalmessages():    
     web_admin_invalid_token = 200100

@@ -37,6 +37,49 @@ angular.module("mitraPortal").controller("reviewContentController",
                 fileType: false,
                 chapter : false
             };
+            
+            // send notification code start here
+            $scope.goToPreview = function (objContentTypeCodeID) 
+            {
+            	var iconname = ""
+        		var notificationTypeCodeID = 0
+                console.log($stateParams.contentID);
+                console.log(appConstants.code.notificationType_TeachingAid);
+                
+                console.log("typeof objContentTypeCodeID:" +  objContentTypeCodeID)
+                console.log("appConstants.code.notificationType_TeachingAid:" +  appConstants.code.notificationType_TeachingAid)
+            		
+        		if (objContentTypeCodeID == appConstants.code.contentCategory_TeachingAid) 
+        			{
+	        			iconname = 'school',
+	        			notificationTypeCodeID = appConstants.code.notificationType_TeachingAid
+        			}
+        		else if (objContentTypeCodeID == appConstants.code.contentCategory_Selflearning)
+        			{
+        			iconname = 'subscriptions',
+        			notificationTypeCodeID = appConstants.code.notificationType_SelfLearning
+        			}
+        		else
+        			{
+        			console.log("IN ELSE")
+        			}
+            
+            	console.log("GO to send notification")
+            	
+                $state.go('main.loggedIn.sendNotification',
+                    {
+                		'objectID' : $stateParams.contentID, 
+                		'notificationTypeCodeID' : notificationTypeCodeID,
+                		'iconName' : iconname
+                	});
+                    
+            	console.log("IN GO TO PREVIEW");
+            	console.log($stateParams.contentID);
+                console.log(iconname);
+                console.log(notificationTypeCodeID);
+            }
+            
+         // send notification code end here
 
             $scope.setDirty = function (form) {
                 angular.forEach(form.$error.required, function (field) {
