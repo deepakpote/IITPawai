@@ -145,11 +145,12 @@ class UserViewSet(viewsets.ModelViewSet):
 
         #Fetch all the devices from usr_device table to send push notifications to Marathi language users
         #sqlQuery = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
-        sqlQueryForMarLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + "where UU.preferredLanguageCodeID = " + str(constants.appLanguage.marathi)
-        sqlQueryForEngLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + "where UU.preferredLanguageCodeID = " + str(constants.appLanguage.english)
+        sqlQueryForMarLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + " where UU.preferredLanguageCodeID = " + str(constants.appLanguage.marathi) + " UNION " + str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY_FOR_USERID) + " where UU.preferredLanguageCodeID = " + str(constants.appLanguage.marathi)
+        sqlQueryForEngLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + " where UU.preferredLanguageCodeID = " + str(constants.appLanguage.english) + " UNION " + str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY_FOR_USERID) + " where UU.preferredLanguageCodeID = " + str(constants.appLanguage.english)
       
         if constants.fcm.SEND_FCM_NOTIFICATION_TO_TEST_DEVICE:
-            sqlQueryForMarLanguage = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where UU.phoneNumber in (" + str(constants.fcm.FCM_TEST_DEVICE_PHONE_NO) +")"
+            #sqlQueryForMarLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + "where UU.phoneNumber in (" + str(constants.fcm.FCM_TEST_DEVICE_PHONE_NO) +")"
+            sqlQueryForMarLanguage = str(constants.fcm.SQL_QUERY_FOR_TEST_DEVIC)
             sqlQueryForEngLanguage = sqlQueryForMarLanguage
             
         #Send FCM messages for those users whose preferedAppLanguage is Marathi    
