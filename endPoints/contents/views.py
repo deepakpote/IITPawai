@@ -1625,7 +1625,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         # If content type is self learning.
         elif objContentDetails.contentType.codeID == constants.mitraCode.selfLearning:
             subjectCodeID = None
-            topicCodeID = objContentDetails.topic.codeID 
+            topicCodeID = str(objContentDetails.topic.codeID)
         
         #Get comma sep list of gradeCodeID from contentID
         gradeCodeIDs = ",".join(str(con.grade.codeID) for con in contentGrade.objects.filter(content = objContent))
@@ -1638,7 +1638,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                       'contentType':         str(objContentDetails.contentType.codeID),
                       'subject':             str(subjectCodeID),
                       'gradeCodeIDs':        gradeCodeIDs,
-                      'topic':               str(topicCodeID),
+                      'topic':               topicCodeID,
                       'requirementCodeIDs':     objContentDetails.requirement,
                       'objectives':             objContentDetails.objectives ,
                       'fileType':               str(objContentDetails.fileType.codeID),
