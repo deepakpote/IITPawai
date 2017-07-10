@@ -1553,6 +1553,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         objContent = None
         gradeCodeIDs = None
+        objTopic = None
                
         # Check if userID is passed in post param
         if not userID:
@@ -1644,7 +1645,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                       'fileName':               objContentFileName,
                       'language':            str(objContentDetails.language.codeID),
                       'statusCodeID':           objContentDetails.status.codeID,
-                      'chapterID':              str((objContentDetails.chapter.chapterID if objContentDetails.chapter != None else 0)),
+                      'chapterID':          (str(objContentDetails.chapter.chapterID) if objContentDetails.chapter != None else objContentDetails.chapter),
                       'createdOn' :         objContentDetails.createdOn,
                       'modifiedOn':         objContentDetails.modifiedOn
                     }
