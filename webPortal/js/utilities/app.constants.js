@@ -21,6 +21,9 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 		},
 		news : {
 			add: 'add'
+		},
+		training : {
+			add: 'add'
 		}
 	};
 
@@ -40,7 +43,12 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 		requirement: 117,
 		NewsCategory : 115,
 		department : 112,
-		importance : 116
+		importance : 116,
+		trainingCategory : 122,
+		district: 102,
+		block: 119,
+		state: 121,
+		notificationType : 123
 	};
 
 	service.fileTypeCode = {
@@ -84,7 +92,18 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 			contentOrNewsOrTrainingStatus_Published: 114102,
 			
 			// News Category
-			NewsCategory_MAA: 115100
+			NewsCategory_MAA: 115100,
+			
+			// Content Category
+			contentCategory_TeachingAid: 107100,
+			contentCategory_Selflearning: 107101,
+			
+			// Notification Category
+			notificationType_TeachingAid: 123100,
+			notificationType_SelfLearning: 123101,
+			notificationType_News: 123102,
+			notificationType_Training: 123103,
+			notificationType_Other: 123104
 		}
 
 	return service;
