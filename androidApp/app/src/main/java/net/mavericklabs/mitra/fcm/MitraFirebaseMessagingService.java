@@ -15,10 +15,12 @@ import com.google.firebase.messaging.RemoteMessage;
 import net.mavericklabs.mitra.R;
 import net.mavericklabs.mitra.api.Api;
 import net.mavericklabs.mitra.api.RestClient;
+import net.mavericklabs.mitra.model.Content;
 import net.mavericklabs.mitra.model.News;
 import net.mavericklabs.mitra.model.api.BaseModel;
 import net.mavericklabs.mitra.model.database.Language;
 import net.mavericklabs.mitra.model.database.Migration;
+import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.activity.NewsDetailsActivity;
 import net.mavericklabs.mitra.utils.Constants;
@@ -76,7 +78,7 @@ public class MitraFirebaseMessagingService extends FirebaseMessagingService{
         String body = remoteMessage.getData().get("body");
         String title = remoteMessage.getData().get("title");
         String type = remoteMessage.getData().get("type");
-        String objectId = remoteMessage.getData().get("objectID");
+        String objectId = remoteMessage.getData().get("ObjectID");
         Logger.d("object id is " + objectId);
         String notificationTypeCodeId = remoteMessage.getData().get("notificationTypeCodeID");
         if(StringUtils.isEmpty(type)) {
@@ -95,24 +97,72 @@ public class MitraFirebaseMessagingService extends FirebaseMessagingService{
         realm.commitTransaction();
 
         if(objectId != null) {
-            if(notificationTypeCodeId.equals(Constants.NotificationTypeNews)) {
-                fetchNews(objectId,title,body);
-            } else if(notificationTypeCodeId.equals(Constants.NotificationTypeTeachingAids)) {
-                //TODO fetch teaching aids and proceed to show notification
-            } else if(notificationTypeCodeId.equals(Constants.NotificationTypeSelfLearning)) {
-                //TODO fetch self learning and proceed to show notification
-            } else if(notificationTypeCodeId.equals(Constants.NotificationTypeTraining)) {
-                //TODO fetch trainings and proceed to show notification
-            } else if(notificationTypeCodeId.equals(Constants.NotificationTypeOther)) {
-                //TODO set to default notification type for now. Other can be re-directed elsewhere if needed
-                showDefaultNotification(title,body);
-            } else {
-                showDefaultNotification(title,body);
+            switch (notificationTypeCodeId) {
+                case Constants.NotificationTypeNews:
+                    fetchNews(objectId, title, body);
+                    break;
+                case Constants.NotificationTypeTeachingAids: // deliberate fall-through
+                case Constants.NotificationTypeSelfLearning:
+                    fetchContent(objectId, title, body);
+                    break;
+                case Constants.NotificationTypeTraining:
+                    /*
+                     * showing default notification for now. can handle training notifications in
+                     * later phase
+                     */
+                    showDefaultNotification(title, body);
+                    break;
+                case Constants.NotificationTypeOther:
+                    /*
+                     * showing default notification for now. can handle training notifications in
+                     * later phase
+                     */
+                    showDefaultNotification(title, body);
+                    break;
+                default:
+                    showDefaultNotification(title, body);
+                    break;
             }
         } else {
             showDefaultNotification(title,body);
         }
 
+    }
+
+    private void fetchContent(final String contentId, final String title, final String body) {
+        String token = UserDetailUtils.getToken(getApplicationContext());
+        int languageCodeId = LanguageUtils.getCurrentLanguage();
+        Api api = RestClient.getApiService(token);
+        api.getContent(contentId,languageCodeId).enqueue(new Callback<BaseModel<Content>>() {
+            @Override
+            public void onResponse(Call<BaseModel<Content>> call, Response<BaseModel<Content>> response) {
+                Logger.d("RESPONSE RECEIVED!");
+                if(response.isSuccessful()) {
+                    Content content = response.body().getData().get(0);
+                    Logger.d("content is " + content);
+                    if(content != null) {
+                        Intent intent = new Intent(getApplicationContext(),ContentDetailsActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("content",content);
+                        intent.putExtras(bundle);
+                        Logger.d("set intent and move forward..");
+                        intent.setAction(Long.toString(System.currentTimeMillis()));
+                        proceedToShowNotification(intent,title,body);
+                    } else {
+                        showDefaultNotification(title,body);
+                        Logger.d("call failed.. B");
+                    }
+                } else {
+                    Logger.d("call failed..");
+                    showDefaultNotification(title,body);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseModel<Content>> call, Throwable t) {
+                Logger.d("call failed.. on failure.." + t.getLocalizedMessage());
+            }
+        });
     }
 
     private void fetchNews(final String newsId, final String title, final String body) {

@@ -55,6 +55,6 @@ public class NotificationFragment extends Fragment {
             noNotificationsText.setVisibility(View.VISIBLE);
         }
         notificationRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        notificationRecyclerView.setAdapter(new NotificationAdapter(getContext(),notifications));
+        notificationRecyclerView.setAdapter(new NotificationAdapter(getContext(),notifications,getActivity()));
     }
 }
