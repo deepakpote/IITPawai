@@ -37,7 +37,7 @@
 
     <span ng-class="mode =='SEND_NOTIFICATION' ? 'orange-text':''"
           style="text-align:center;display: inline-block;cursor: pointer;margin-left: 10px;"
-          ng-click="goToPreview(content.contentTypeCodeID)">
+          ng-click="goToPreview(content.contentTypeCodeID)" ng-show="isAdmin">
     <div>
       <i class="material-icons" style="font-size:24px;margin:auto;">add_alert</i>
     </div>
