@@ -40,6 +40,21 @@ angular.module("mitraPortal").controller("previewNewsController",
     $scope.mode = "PREVIEW"; // can be "EDIT" or "PPREVIEW" or "GIVE FEEDBACK"
     $scope.news = {};
     $scope.newsEditable = false;
+    
+    // send notification code start here
+    $scope.goToSendNotification= function (objNewsTypeCodeID) 
+    {
+    	console.log("IN goToSendNotification")
+        console.log($stateParams.contentID);
+    	var objID = $stateParams.newsID;
+    	console.log("objID:" + objID)
+    	
+        $state.go('main.loggedIn.sendNotification',
+            { 'objectID' : objID, 'contentType' : objNewsTypeCodeID});
+    	                    
+    }
+    
+ // send notification code end here
 
             
         $scope.setDirty = function (form) {

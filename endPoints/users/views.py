@@ -121,10 +121,11 @@ class UserViewSet(viewsets.ModelViewSet):
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
             
-        if not objectID:
-            return Response({"response_message": constants.messages.send_data_notification_to_all_objectID_cannot_empty,
-                             "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED)
+        if notificationTypeCodeID != constants.mitraCode.notificationType_Other:
+            if not objectID:
+                return Response({"response_message": constants.messages.send_data_notification_to_all_objectID_cannot_empty,
+                                 "data": []},
+                                 status = status.HTTP_401_UNAUTHORIZED)
             
         if not marTitle:
             return Response({"response_message": constants.messages.send_data_notification_to_all_marathi_title_cannot_empty,
@@ -148,6 +149,7 @@ class UserViewSet(viewsets.ModelViewSet):
         sqlQueryForMarLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + " where UU.preferredLanguageCodeID = " + str(constants.appLanguage.marathi) + " UNION " + str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY_FOR_USERID) + " where UU.preferredLanguageCodeID = " + str(constants.appLanguage.marathi)
         sqlQueryForEngLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + " where UU.preferredLanguageCodeID = " + str(constants.appLanguage.english) + " UNION " + str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY_FOR_USERID) + " where UU.preferredLanguageCodeID = " + str(constants.appLanguage.english)
       
+        print "sqlQueryForMarLanguage:",sqlQueryForMarLanguage
         if constants.fcm.SEND_FCM_NOTIFICATION_TO_TEST_DEVICE:
             #sqlQueryForMarLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + "where UU.phoneNumber in (" + str(constants.fcm.FCM_TEST_DEVICE_PHONE_NO) +")"
             sqlQueryForMarLanguage = str(constants.fcm.SQL_QUERY_FOR_TEST_DEVIC)

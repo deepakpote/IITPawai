@@ -11,7 +11,7 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 
 		baseUrl: getServerUrl(),
 
-//		baseUrl: 'http://127.0.0.1:8000/',    //'http://54.152.74.194:8000/',
+		//baseUrl: 'http://127.0.0.1:8000/',    //'http://54.152.74.194:8000/',
 
 		code : {
 			list: 'code'
@@ -26,6 +26,18 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 			add: 'add'
 		}
 	};
+	
+	service.siteName = {
+			mitraSiteName: 'mitra.test'
+		};
+	
+	service.mitraIconName = {
+			teachingAid: 'school',
+			selflearning: 'subscriptions',
+			news: 'view_headline',
+			other: 'forum'
+			
+		};
 
 	service.localStorage = {
 		baseKey: 'mitra',

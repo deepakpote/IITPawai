@@ -5,17 +5,19 @@
  * */
 angular.module("mitraPortal").controller("sendNotificationController",
   ['$scope', '$stateParams','$location', '$log', '$window', '$state', '$http', '$uibModal', 'appUtils', 'appConstants', 'sendNotificationService', 'commonService', '$filter',
-  function($scope,$stateParams, $location, $log, $window, $state, $http, $uibModal, appUtils, appConstants, newsService, commonService, filter) {
+  function($scope, $stateParams, $location, $log, $window, $state, $http, $uibModal, appUtils, appConstants, newsService, commonService, filter) {
 
 
     $scope.inputs= {}
 
     $scope.selectedOption = "";
     
-    console.log("IN NOTIFICATION")
+    // Get value from stateparams and set to scope variable.
+    $scope.objectID = $stateParams.objectID;
+    $scope.contentType = $stateParams.contentType;
+    $scope.notificationTypeCodeID  = appConstants.code.notificationType_Other;
     
-
-
+    // Set selected options
     $scope.setSelectedOption = function (selectedOption){
       if ($scope.selectedOption == selectedOption){
         $scope.selectedOption = null;
@@ -25,48 +27,46 @@ angular.module("mitraPortal").controller("sendNotificationController",
       }
     }
 
+    // set dirty value.
     $scope.setDirty = function(form){
       angular.forEach(form.$error.required, function(field) {
         field.$dirty = true;
       });
     }
-
-    // Save news in DRAFT.
-    $scope.save = function() 
-    {
-      if(validateOptions())
-      {
-        $scope.statusCodeID = appConstants.code.contentOrNewsOrTrainingStatus_Created; 
-        submit();
-      }
-    }
-
-    // sendForReview news
-    $scope.sendForReview = function() 
-    {
-
-      if(validateOptions())
-      {
-        $scope.statusCodeID = appConstants.code.contentOrNewsOrTrainingStatus_SentForReview;
-        submit();
-      }
-    }
     
-    // Publish news
-    $scope.publish = function() 
+    // Go to the object details.. 1] Content details or News details
+    $scope.goToObjectDetails = function()
     {
+		if ($scope.contentType == appConstants.code.contentCategory_TeachingAid || $scope.contentType == appConstants.code.contentCategory_Selflearning) 
+		{
+	        $state.go('main.loggedIn.reviewContent',
+	                {'contentID' : $scope.objectID});
+		}
+	else if ($scope.contentType == appConstants.code.NewsCategory_MAA)
+		{
+	        $state.go('main.loggedIn.previewNews',
+	                {'newsID' : $scope.objectID});
+		}
+	else
+		{
+	        $state.go('main.loggedIn.home');
+		}
+    }
 
+
+    // Send data notification
+    $scope.sendNotification = function() 
+    {
       if(validateOptions())
       {
-        $scope.statusCodeID = appConstants.code.contentOrNewsOrTrainingStatus_Published;
         submit();
       }
     }
 
-    // Validate news details
+    // Validate send notification details
     var validateOptions = function() 
     {
-	      if ($scope.news.newsCategoryCodeID == appConstants.code.NewsCategory_MAA)
+	      if ($scope.notificationTypeCodeID != 0)
 	      {           
 	        return true;
 	      }
@@ -79,69 +79,52 @@ angular.module("mitraPortal").controller("sendNotificationController",
         return angular.isUndefined(val) || val === null 
     }
     
-
+    // Send notification
     var submit = function()
     {
 
       var fd = new FormData();
-        for  (var key in $scope.news)
-        {
-          $log.debug(key);
-          $log.debug($scope.news[key]);
-          fd.append(key, $scope.news[key]);
-        }
-        
-        fd.append("statusCodeID", $scope.statusCodeID);
 
-        $log.debug($scope.newsImage1);
-        $log.debug(!isUndefinedOrNull($scope.newsImage1));
-        
-        if(!isUndefinedOrNull($scope.newsImage1))
-        	{fd.append('imageOne', $scope.newsImage1);}
-        
-        if(!isUndefinedOrNull($scope.newsImage2))
-    		{fd.append('imageTwo', $scope.newsImage2);}
-        
-        if(!isUndefinedOrNull($scope.newsImage3))
-    		{fd.append('imageThree', $scope.newsImage3);}
-        
-        if(!isUndefinedOrNull($scope.newsImage4))
-    		{fd.append('imageFour', $scope.newsImage4);}
-        
-        if(!isUndefinedOrNull($scope.newsImage5))
-    		{fd.append('imageFive', $scope.newsImage5);}        
-        
-		if(!isUndefinedOrNull($scope.myPDFFile))
-			{fd.append('pdfFile', $scope.myPDFFile);}
-		
-		console.log("Actual date format............................");
-		console.log($scope.news.publishDate);
-		
-		if(!isUndefinedOrNull($scope.news.publishDate))
-		{fd.append('publishDate', $scope.news.publishDate);}
-		
+        fd.append("notificationTypeCodeID", $scope.notificationTypeCodeID);
+        fd.append("objectID", $scope.objectID); 
+        fd.append("marTitle", $scope.notification.marNotificationTitle);
+        fd.append("marText",  $scope.notification.marText);
+        fd.append("engTitle", $scope.notification.engNotificationTitle);
+        fd.append("engText",  $scope.notification.engText);
+
+		console.log($scope.notification);
 		
         var headers = { "authToken": appUtils.getFromCookies("token",""),
         'Content-Type': undefined};
         
-
-        $http.post(appConstants.endpoint.baseUrl + "news/saveNews/", fd, {
+        //$http.post("http://54.152.74.194:8000/user/sendDataNotificationsToAll/", fd, {
+        $http.post(appConstants.endpoint.baseUrl + "user/sendDataNotificationsToAll/", fd, {
           transformRequest: angular.identity,
           headers: headers
         })
         .then (function success(response){
-          $scope.result= "uploaded successfully";
+          $scope.result= "Notification sent successfully";
           setSuccessDetails();
           var modalInstance = $uibModal.open({
             url: 'result',
             scope: $scope,
-            templateUrl :  'mitra/js/news-circulars/submittedSuccessView.html',
+            templateUrl : appConstants.siteName.mitraSiteName + '/js/notifications/submittedSuccessView.html',
           })
           modalInstance.result.finally(function(){ 
-            if ($scope.news.newsCategoryCodeID == appConstants.code.NewsCategory_MAA){
+            if ($scope.contentType == appConstants.code.contentCategory_TeachingAid ||
+            	$scope.contentType == appConstants.code.contentCategory_Selflearning){
               $window.scrollTo(0, 0);
-              $state.go('main.loggedIn.addNews');
+              $state.go('main.loggedIn.reviewContent',{'contentID' : $scope.objectID});
             }
+            else if($scope.contentType == appConstants.code.NewsCategory_MAA){
+                $window.scrollTo(0, 0);
+                $state.go('main.loggedIn.previewNews',{'newsID' : $scope.objectID});
+              }
+            else
+            	{
+                $window.scrollTo(0, 0);
+                $state.go('main.loggedIn.teachingAids');
+            	}
 
           });
           ;
@@ -153,89 +136,152 @@ angular.module("mitraPortal").controller("sendNotificationController",
           //$log.debug(response.data.response_message);
           $scope.uploadErrorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn;
           $log.debug($scope.uploadErrorMessage);
-          $scope.result ="Failed to add news.";
+          $scope.result ="Failed to send notifications.";
           var modalInstance = $uibModal.open({
             url: 'result',
             scope: $scope,
-            templateUrl : appConstants.endpoint.baseUrl + 'mitra/js/news-circulars/submittedErrorView.html',
+            templateUrl : appConstants.endpoint.baseUrl + appConstants.siteName.mitraSiteName + '/js/notifications/submittedErrorView.html',
           });
         });
       }
+    
+	    // Fetch news details in both languages
+	    var fetchNewsDetails = function (iNewsID) {
+	        var options = {};
+	        var data = {"newsID": iNewsID};
+	        options.data = data;
+	        options.url = 'news/newsDetail/';
+	        options.headers = {"authToken": appUtils.getFromCookies("token", "")};
+	
+	        appUtils.ajax(options,
+	            function (responseBody) {
+	                //get news set
+	        		$scope.notification.thumbnailUrl = "";
+	                $scope.newsDetail = responseBody.data[0];
+	                console.log("responseBody.data[0]:");
+	                console.log(responseBody.data[0]);
+                    $scope.notification.objectTitle = $scope.newsDetail.marNewsTitle;
+                    $scope.notification.objectDetail3 = commonService.getValueByCode($scope.newsDetail.newsCategory)[0].codeNameEn;
+	                
+                	$scope.notification.objectDetail2 = commonService.getValueByCode($scope.newsDetail.department)[0].codeNameMr;
+                    
+                	var objDate = $scope.newsDetail.publishDate.split(" ");
+                    var newFormatedDate = objDate[0].split("-");
+                    var MonthName = getMonthName(newFormatedDate[1]);
+                    $scope.notification.objectDetail1 = (newFormatedDate[2]).substring(0, 2) + '-' + MonthName + '-' + newFormatedDate[0]; 
+                    console.log($scope.newsDetail.imageURL);
+                    $scope.notification.thumbnailUrl = $scope.newsDetail.imageURL;
+	            },
+	            function (responseBody) {
+	            	console.log(responseBody);
+	            }
+	        );
+	    };
+	    
+	    // Fetch content details
+        var fetchContentDetails = function (iContentID) {
+            var options = {};
+            var data = {"contentID": iContentID};
+            options.data = data;
+            options.url = 'content/contentDetail/';
+            options.headers = {"authToken": appUtils.getFromCookies("token", "")};
 
-      $scope.addNews = function () {
-        newsService.addNews($scope.news, 
-          addNewsSuccessCB,
-          addNewsErrorCB);
-        $scope.submitted = true;
-      };
+            appUtils.ajax(options,
+                function (responseBody) {
+                    //get content set
+                    $scope.contentDeails = responseBody.data[0]; 
+                    
+                    $scope.notification.objectTitle = $scope.contentDeails.marContentTitle;
+                    $scope.notification.objectDetail3 = $scope.contentDeails.marAuthor;
+                    
+                    if($scope.contentDeails.contentTypeCodeID == appConstants.code.contentCategory_TeachingAid)
+                    	{
+                        	$scope.notification.objectDetail1 = commonService.getValueByCode($scope.contentDeails.subjectCodeID)[0].codeNameMr;
+                        	$scope.notification.objectDetail2 = 'Grade ' + commonService.getValueByCode($scope.contentDeails.gradeCodeIDs)[0].codeNameMr;
+                        
+	                        var videoId = parseYoutubeUrl($scope.contentDeails.fileName);
+	                        $scope.notification.thumbnailUrl = "http://img.youtube.com/vi/" + videoId + "/0.jpg";
+                    	}
+                    else if($scope.contentDeails.contentTypeCodeID == appConstants.code.contentCategory_Selflearning)
+                    	{
+	                    	$scope.notification.objectDetail1 = commonService.getValueByCode($scope.contentDeails.topicCodeID)[0].codeNameMr;
+	                    	$scope.notification.objectDetail2 = commonService.getValueByCode($scope.contentDeails.contentLanguageCodeID)[0].codeNameMr;
+                    	}
+
+
+                },
+                function (responseBody) {
+                	console.log(responseBody);
+                }
+            );
+        };
+        
+        // Get month names in short
+        function getMonthName (monthNumber) { 
+            var monthNames = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ];
+            return monthNames[monthNumber - 1];
+        }
+        
+        // Parse youtube videos to get the vID
+	    function parseYoutubeUrl(url) {
+	        var regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+	        var match = url.match(regExp);
+	        if (match && match[2].length == 11) {
+	            return match[2];
+	        } else {
+	            //error
+	        }
+	    } 
 
       $scope.getCodeFromCodeList = function(codeID){};
 
-      // Check if the news category is M.A.A
-      $scope.isNewsTypeMAA = function (response) {
-        return ($scope.news.newsCategoryCodeID === appConstants.code.NewsCategory_MAA);
-      }
-
-      // Set news category 
-      $scope.newsTypeOnClick = function (selectedNewsTypeCodeID) {
-        $scope.news.newsCategoryCodeID = selectedNewsTypeCodeID;  
-      }
-
-      
-      $scope.isNewsTypeSelected = function (newsTypeCodeID) {
-        return ($scope.news.newsCategoryCodeID === newsTypeCodeID);
-      }
-
-      // Get news type/category.
-      var getNewsTypes = function () {
-        $scope.newsTypeList = commonService.getCodeListPerCodeGroup(
-          appConstants.codeGroup.NewsCategory
-          );
-        var icons = ["LOGO HERE"];
-        for (var i=0; i<$scope.newsTypeList.length;i++){
-          $scope.newsTypeList[i].icon = icons[i];
+      $scope.isNotificationTypeSelected = function (notificationTypeCodeID) {
+          return ($scope.notificationTypeCodeID === notificationTypeCodeID);
         }
-      };
+      
+      // Check if ObjectID is exists.
+      $scope.ifObjectIDExists = function () {
+    	  if($scope.objectID != null && $scope.objectID != 0)
+    		  {
+    		  return true;
+    		  }
+          return false;
+        }
 
-      // Get departments for news
-      var getDepartments = function () {
-        $scope.departmentList = commonService.getCodeListPerCodeGroup(
-          appConstants.codeGroup.department
+      // Get notification type.
+      var getNotificationTypes = function () {
+        $scope.notificationTypeList = commonService.getCodeListPerCodeGroup(
+          appConstants.codeGroup.notificationType
           );
       };
-
-      // Get news importance
-      var getNewsImportance = function () {
-        $scope.newsImportanceList = commonService.getCodeListPerCodeGroup(
-          appConstants.codeGroup.importance
-          );
-      };
-
 
       var populateDropDowns = function() {
-    	getNewsTypes();
-    	getDepartments();
-    	getNewsImportance();
+    	getNotificationTypes();
       };
 
+      // Set succes details
       var setSuccessDetails = function() {
         $scope.success = {};
         
         $scope.success.uploaderName = "self";
 
-
-        if ($scope.statusCodeID == appConstants.code.contentOrNewsOrTrainingStatus_Created)
+        if ($scope.notificationTypeCodeID == appConstants.code.notificationType_TeachingAid)
         {
-          $scope.success.message = "Saved To Drafts";
+          $scope.success.message = "Teaching Aid notification sent successfully";
         }
-        else if ($scope.statusCodeID == appConstants.code.contentOrNewsOrTrainingStatus_SentForReview)
+        else if ($scope.notificationTypeCodeID == appConstants.code.notificationType_SelfLearning)
         {
-            $scope.success.message = "Sent For Review";
+            $scope.success.message = "Self learning notification sent successfully";
         }
-        else if ($scope.statusCodeID == appConstants.code.contentOrNewsOrTrainingStatus_Published)
+        else if ($scope.notificationTypeCodeID == appConstants.code.notificationType_News)
         {
-            $scope.success.message = "Published";
+            $scope.success.message = "News notification sent successfully";
         }
+        else
+    	{
+        	$scope.success.message = "Notification sent successfully";
+    	}
         
       }
 
@@ -246,26 +292,47 @@ angular.module("mitraPortal").controller("sendNotificationController",
       
       $scope.selectedImageNumber = "";
       
-      // Set selected image number.
-      $scope.imageUpload = function (selectedImageNumber) {
-    	  $log.debug(selectedImageNumber);
-    	  $scope.selectedImageNumber = "";
-        $scope.selectedImageNumber = selectedImageNumber;  
-      }
 
       var init = function () {
         $scope.submitted = false;
+        $scope.notification = {};
         $scope.news = {};
         $scope.errorMessage = "";
-        console.log("$stateParams.objectID:" + $stateParams.objectID);
-        console.log("$stateParams.notificationTypeCodeID:" + $stateParams.notificationTypeCodeID);
-        console.log("$stateParams.iconName:" + $stateParams.iconName);
+        engNotificationTitle = "";
+        
+    	// Check content type and set related value to the scope.
+		if ($scope.contentType == appConstants.code.contentCategory_TeachingAid) 
+			{
+				fetchContentDetails($scope.objectID);
+				$scope.iconname = appConstants.mitraIconName.teachingAid;
+    			$scope.notificationTypeCodeID = appConstants.code.notificationType_TeachingAid;
+    			$scope.bottomContentName = "Author ";
+			}
+		else if ($scope.contentType == appConstants.code.contentCategory_Selflearning)
+			{
+				fetchContentDetails($scope.objectID);
+				$scope.iconname = appConstants.mitraIconName.selflearning;
+				$scope.notificationTypeCodeID = appConstants.code.notificationType_SelfLearning;
+				$scope.bottomContentName = "Author ";
+			}
+		else if ($scope.contentType == appConstants.code.NewsCategory_MAA)
+			{
+				fetchNewsDetails($scope.objectID);
+				$scope.iconname = appConstants.mitraIconName.news;
+				$scope.notificationTypeCodeID = appConstants.code.notificationType_News;
+				$scope.bottomContentName = "News Category ";
+			}
+		else
+			{
+				$scope.iconname = appConstants.mitraIconName.other;
+				$scope.notificationTypeCodeID = appConstants.code.notificationType_Other;
+				$scope.bottomContentName = "";
+			}
+        
         populateDropDowns();
         
-        $scope.news.publishDate = new Date();
-        console.log($scope.news.publishDate);
       };
 
       init();
-      getNewsTypes();
+      getNotificationTypes();
     }]);
