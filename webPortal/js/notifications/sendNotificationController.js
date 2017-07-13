@@ -104,6 +104,7 @@ angular.module("mitraPortal").controller("sendNotificationController",
         })
         .then (function success(response){
           $scope.result= "Notification sent successfully";
+          console.log(response);
           setSuccessDetails();
           var modalInstance = $uibModal.open({
             url: 'result',
