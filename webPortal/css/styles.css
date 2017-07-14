@@ -574,6 +574,25 @@ textarea.materialize-textarea:focus:not([readonly]) {
 	cursor: pointer;
 }
 
+.overlay {
+background: #e9e9e9;
+display: none;
+position: absolute;
+top: 40%;
+right: 0;
+bottom: 0;
+left: 0;
+opacity: 0.5;
+z-index: 1;
+}
+
+#loading-img {
+background: url('https://i2.wp.com/www.dhp11.com/foswiki/pub/Internal/2012-06-12/spinner.gif') center center no-repeat;
+height: 100%;
+width: 90%;
+z-index: 20;
+}
+
 .dropdown:hover .dropdown-menu {
     display: block;
     margin-top: 0;

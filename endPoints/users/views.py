@@ -136,8 +136,8 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"response_message": constants.messages.send_notification_notificationType_not_exists,
                          "data": []},
                         status = status.HTTP_404_NOT_FOUND)
-            
-        if notificationTypeCodeID != constants.mitraCode.notificationType_Other:
+
+        if int(notificationTypeCodeID) != constants.mitraCode.notificationType_Other:
             if not objectID:
                 return Response({"response_message": constants.messages.send_data_notification_to_all_objectID_cannot_empty,
                                  "data": []},
@@ -1835,7 +1835,6 @@ def request_headers():
 Send push notifications to the FCM deviceID
 """
 def sendFCMNotification(objDevices, objNotificationType, objectID, title, body, objUser):    
-    
     #Send push notification to the bunch of 900 users.
     startCount = 0
     endCount = constants.fcm.SEND_FCM_MSG_USER_COUNT
@@ -1886,15 +1885,18 @@ def sendFCMNotification(objDevices, objNotificationType, objectID, title, body, 
         #increment start & end counter to send notification to next 900 fcmDeviceID
         startCount = startCount + constants.fcm.SEND_FCM_MSG_USER_COUNT
         endCount = endCount + constants.fcm.SEND_FCM_MSG_USER_COUNT
-        
-        #Save push notification responses userRole.
-        fcmNotificationResponse(fcmDevicesIDs = objDevice_ids , 
-                                notificationType = objNotificationType,
-                                objectID =  objectID,
-                                title = title,
-                                body = body,
-                                responseMessage = result,
-                                createdBy = objUser).save()
+                
+        try:
+            #Save push notification responses userRole.
+            fcmNotificationResponse(fcmDevicesIDs = objDevice_ids , 
+                                    notificationType = objNotificationType,
+                                    objectID =  objectID,
+                                    title = title,
+                                    body = body,
+                                    responseMessage = result,
+                                    createdBy = objUser).save()
+        except:
+            print "Error while saving the response " 
     
     return { "successCount": successCount, "failureCount": failedCount}
         
