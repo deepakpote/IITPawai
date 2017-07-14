@@ -10,7 +10,7 @@ from users.serializers import userSerializer, otpSerializer, userRoleSerializer
 
 from rest_framework.permissions import IsAuthenticated
 from users.authentication import TokenAuthentication
-from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth, device, userContent, role, userRole
+from users.models import user, otp, token, userSubject, userSkill, userTopic, userGrade, userAuth, device, userContent, role, userRole, fcmNotificationResponse
 from commons.models import code
 from mitraEndPoints import constants , utils, settings 
 import random
@@ -115,11 +115,27 @@ class UserViewSet(viewsets.ModelViewSet):
         #Get userID from authToken
         userID = getUserIDFromAuthToken(authToken)
         
+        # validate user information
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.send_notification_user_not_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
+        
         
         if not notificationTypeCodeID:
             return Response({"response_message": constants.messages.send_data_notification_to_all_notificationTypeCodeID_cannot_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
+            
+        # validate notification type
+        try:
+            objNotificationType = code.objects.get(codeID = notificationTypeCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.send_notification_notificationType_not_exists,
+                         "data": []},
+                        status = status.HTTP_404_NOT_FOUND)
             
         if notificationTypeCodeID != constants.mitraCode.notificationType_Other:
             if not objectID:
@@ -149,7 +165,6 @@ class UserViewSet(viewsets.ModelViewSet):
         sqlQueryForMarLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + " where UU.preferredLanguageCodeID = " + str(constants.appLanguage.marathi) + " UNION " + str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY_FOR_USERID) + " where UU.preferredLanguageCodeID = " + str(constants.appLanguage.marathi)
         sqlQueryForEngLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + " where UU.preferredLanguageCodeID = " + str(constants.appLanguage.english) + " UNION " + str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY_FOR_USERID) + " where UU.preferredLanguageCodeID = " + str(constants.appLanguage.english)
       
-        print "sqlQueryForMarLanguage:",sqlQueryForMarLanguage
         if constants.fcm.SEND_FCM_NOTIFICATION_TO_TEST_DEVICE:
             #sqlQueryForMarLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + "where UU.phoneNumber in (" + str(constants.fcm.FCM_TEST_DEVICE_PHONE_NO) +")"
             sqlQueryForMarLanguage = str(constants.fcm.SQL_QUERY_FOR_TEST_DEVIC)
@@ -163,7 +178,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 
         marLangResponse = None
         if len(objMarDevices) > 0:
-            marLangResponse = sendFCMNotification(objMarDevices, notificationTypeCodeID, objectID, marTitle, marText)
+            marLangResponse = sendFCMNotification(objMarDevices, objNotificationType, objectID, marTitle, marText, objUser)
         
         #Send FCM messages for those users whose preferedAppLanguage is Marathi    
         objEngDevices = []
@@ -173,7 +188,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 
         engLangResponse = None
         if len(objEngDevices) > 0:
-            engLangResponse = sendFCMNotification(objEngDevices, notificationTypeCodeID, objectID, engTitle, engText)
+            engLangResponse = sendFCMNotification(objEngDevices, objNotificationType, objectID, engTitle, engText, objUser)
         
         #totalSuccessCount = marLangResponse['successCount'] + engLangResponse['successCount']
         #totalFailureCount = marLangResponse['failureCount'] + engLangResponse['failureCount']
@@ -185,7 +200,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if totalSuccessCount > 0:
             response_message = constants.messages.success
         else:
-            response_message =  status.HTTP_400_BAD_REQUEST
+            response_message =  constants.messages.success
             
         #print result     
         return Response({"response_message": response_message, "data":result})
@@ -1819,7 +1834,7 @@ def request_headers():
 """
 Send push notifications to the FCM deviceID
 """
-def sendFCMNotification(objDevices, notificationTypeCodeID, objectID, title, body):    
+def sendFCMNotification(objDevices, objNotificationType, objectID, title, body, objUser):    
     
     #Send push notification to the bunch of 900 users.
     startCount = 0
@@ -1836,7 +1851,7 @@ def sendFCMNotification(objDevices, notificationTypeCodeID, objectID, title, bod
     push_service = FCMNotification(api_key=api_key)
 
     #Build JSON to send FCM notification
-    data = {"title" : title,"body": body, "notificationTypeCodeID": notificationTypeCodeID, "ObjectID": objectID}
+    data = {"title" : title,"body": body, "notificationTypeCodeID": objNotificationType.codeID, "ObjectID": objectID}
     
     #Get total no of device count
     totalDeviceCount = len(objDevices)
@@ -1871,6 +1886,15 @@ def sendFCMNotification(objDevices, notificationTypeCodeID, objectID, title, bod
         #increment start & end counter to send notification to next 900 fcmDeviceID
         startCount = startCount + constants.fcm.SEND_FCM_MSG_USER_COUNT
         endCount = endCount + constants.fcm.SEND_FCM_MSG_USER_COUNT
+        
+        #Save push notification responses userRole.
+        fcmNotificationResponse(fcmDevicesIDs = objDevice_ids , 
+                                notificationType = objNotificationType,
+                                objectID =  objectID,
+                                title = title,
+                                body = body,
+                                responseMessage = result,
+                                createdBy = objUser).save()
     
     return { "successCount": successCount, "failureCount": failedCount}
         

@@ -228,6 +228,9 @@ class messages():
     get_contentdetail_appLanguageCodeID_cannot_be_empty = 100294
     get_contentdetail_appLanguage_not_exists = 100295
     
+    send_notification_user_not_exists = 100296
+    send_notification_notificationType_not_exists = 100297
+    
     
 class webportalmessages():    
     web_admin_invalid_token = 200100
