@@ -1619,7 +1619,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         #If content type is teachingAids
         if objContentDetails.contentType.codeID == constants.mitraCode.teachingAids:
-            subjectCodeID = objContentDetails.subject.codeID 
+            subjectCodeID = str(objContentDetails.subject.codeID) 
             topicCodeID = None
                 
         # If content type is self learning.
@@ -1636,7 +1636,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                       'instruction':         objContentDetails.instruction,
                       'author':              objContentDetails.author,
                       'contentType':         str(objContentDetails.contentType.codeID),
-                      'subject':             str(subjectCodeID),
+                      'subject':             subjectCodeID,
                       'gradeCodeIDs':        gradeCodeIDs,
                       'topic':               topicCodeID,
                       'requirementCodeIDs':     objContentDetails.requirement,

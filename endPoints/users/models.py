@@ -210,6 +210,23 @@ class userRole(models.Model):
     class Meta:
         db_table = 'usr_userRole' 
         unique_together = ('user', 'role') 
+        
+"""
+FCM Notification response model
+"""
+class fcmNotificationResponse(models.Model):
+    fcmResponseID = models.AutoField(primary_key=True)
+    fcmDevicesIDs = models.TextField(null = True)
+    notificationType = models.ForeignKey('commons.code', db_column='notificationTypeCodeID', related_name='fcmNotificationResponse_notificationTypeCodeID')
+    objectID = models.IntegerField(null = True, blank = True)
+    title = models.TextField(null = True)
+    body = models.TextField(null = True)
+    responseMessage = models.TextField(null = True)
+    createdOn = models.DateTimeField(auto_now_add=True)
+    createdBy = models.ForeignKey('user', null = True, related_name='fcmNotificationResponse_createdBy', db_column = 'createdBy')
+
+    class Meta:
+        db_table = 'usr_fcmNotificationResponse'
 
 # class language(models.Model):
 #     languageID = models.AutoField(primary_key = True)
