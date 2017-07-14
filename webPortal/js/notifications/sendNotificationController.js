@@ -57,6 +57,8 @@ angular.module("mitraPortal").controller("sendNotificationController",
     // Send data notification
     $scope.sendNotification = function() 
     {
+    	$('.overlay').show()
+    	  
       if(validateOptions())
       {
         submit();
@@ -83,10 +85,14 @@ angular.module("mitraPortal").controller("sendNotificationController",
     var submit = function()
     {
 
+    	
       var fd = new FormData();
 
         fd.append("notificationTypeCodeID", $scope.notificationTypeCodeID);
-        fd.append("objectID", $scope.objectID); 
+        
+        if(!isUndefinedOrNull($scope.objectID))
+    	{fd.append('objectID', $scope.objectID);}
+      
         fd.append("marTitle", $scope.notification.marNotificationTitle);
         fd.append("marText",  $scope.notification.marText);
         fd.append("engTitle", $scope.notification.engNotificationTitle);
@@ -103,6 +109,7 @@ angular.module("mitraPortal").controller("sendNotificationController",
           headers: headers
         })
         .then (function success(response){
+        	$('.overlay').hide()
           $scope.result= "Notification sent successfully";
           console.log(response);
           setSuccessDetails();
@@ -131,12 +138,13 @@ angular.module("mitraPortal").controller("sendNotificationController",
           ;
         },
         function error(response){
+        	$('.overlay').hide()
           $log.debug("IN ERRORR RESPONSE");
           $log.debug(response);
           //$log.debug(response.data);
           //$log.debug(response.data.response_message);
-          $scope.uploadErrorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn;
-          $log.debug($scope.uploadErrorMessage);
+          //$scope.uploadErrorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn;
+          $scope.uploadErrorMessage = "Failed to send notifications.";
           $scope.result ="Failed to send notifications.";
           var modalInstance = $uibModal.open({
             url: 'result',
