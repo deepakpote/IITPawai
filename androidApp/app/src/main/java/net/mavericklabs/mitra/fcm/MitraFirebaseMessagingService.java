@@ -24,6 +24,7 @@ import net.mavericklabs.mitra.ui.activity.ContentDetailsActivity;
 import net.mavericklabs.mitra.ui.activity.HomeActivity;
 import net.mavericklabs.mitra.ui.activity.NewsDetailsActivity;
 import net.mavericklabs.mitra.utils.Constants;
+import net.mavericklabs.mitra.utils.DateUtils;
 import net.mavericklabs.mitra.utils.LanguageUtils;
 import net.mavericklabs.mitra.utils.Logger;
 import net.mavericklabs.mitra.model.database.DbNotification;
@@ -175,7 +176,22 @@ public class MitraFirebaseMessagingService extends FirebaseMessagingService{
                     Logger.d("news id " + newsList.get(0).getNewsID());
                     Realm realm = Realm.getDefaultInstance();
                     realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(newsList);
+
+                    for (News newsItem : newsList) {
+                        News newsInDb = realm.where(News.class).equalTo("newsID", newsItem.getNewsID()).findFirst();
+                        if(newsInDb != null) {
+                            newsItem.setSeen(newsInDb.isSeen());
+                            newsItem.setSaved(newsInDb.isSaved());
+                            newsItem.setShowOnMainPage(newsInDb.isShowOnMainPage());
+                        } else {
+                            newsItem.setSeen(false);
+                            newsItem.setSaved(false);
+                            newsItem.setShowOnMainPage(true);
+                        }
+                        newsItem.setDateToCompare(DateUtils.convertToDate(newsItem.getPublishDate(), "yyyy-MM-dd HH:mm:ss"));
+                        realm.copyToRealmOrUpdate(newsItem);
+                    }
+
                     realm.commitTransaction();
 
                     RealmResults<News> results = realm.where(News.class).equalTo("newsID",newsId).findAll();

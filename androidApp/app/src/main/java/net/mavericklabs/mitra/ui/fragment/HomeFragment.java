@@ -302,6 +302,7 @@ public class HomeFragment extends Fragment{
         Realm realm = Realm.getDefaultInstance();
         RealmResults<News> dbNews = realm.where(News.class).equalTo("showOnMainPage",
                 Boolean.TRUE).findAllSorted("dateToCompare", Sort.DESCENDING);
+        Logger.d("dbnews " + dbNews.size());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         newsRecyclerView.setLayoutManager(layoutManager);
         List<News> newsListToShow = realm.copyFromRealm(dbNews);
