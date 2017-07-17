@@ -365,7 +365,8 @@ class fcm():
     DATA_NOTIFICATION_TITLE = "Mitra"
     SEND_DATA_NOTIFICATION_QUERY = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
     SEND_DATA_NOTIFICATION_QUERY_FOR_USERID = "select UD.* from usr_device UD join usr_user UU on UU.userID = UD.userID"
-    SQL_QUERY_FOR_TEST_DEVIC = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where  UU.phoneNumber IN ('+919975512171','+919890882587','+919767964054','+919967295984') UNION  select UD.* from usr_device UD join usr_user UU on UU.userID = UD.userID where UU.userID IN (12,2,3,5,87)"
+    SQL_QUERY_FOR_TEST_DEVIC_MARATHI = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where  UU.phoneNumber IN ('+919975512171','+919890882587','+919767964054','+919967295984') and UU.preferredLanguageCodeID = 113101 UNION  select UD.* from usr_device UD join usr_user UU on UU.userID = UD.userID where UU.userID IN (12,2,3,5,87) and UU.preferredLanguageCodeID = 113101"
+    SQL_QUERY_FOR_TEST_DEVIC_ENGLISH = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where  UU.phoneNumber IN ('+919975512171','+919890882587','+919767964054','+919967295984') and UU.preferredLanguageCodeID = 113100 UNION  select UD.* from usr_device UD join usr_user UU on UU.userID = UD.userID where UU.userID IN (12,2,3,5,87) and UU.preferredLanguageCodeID = 113100"
     SEND_FCM_NOTIFICATION_TO_TEST_DEVICE = False
     FCM_TEST_DEVICE_PHONE_NO = "'+919975512171','+919890882587','+919767964054','+919967295984'"
     FCM_DEVELOPER_USERID = "12,2,3,5,87"

@@ -167,8 +167,10 @@ class UserViewSet(viewsets.ModelViewSet):
       
         if constants.fcm.SEND_FCM_NOTIFICATION_TO_TEST_DEVICE:
             #sqlQueryForMarLanguage = str(constants.fcm.SEND_DATA_NOTIFICATION_QUERY) + "where UU.phoneNumber in (" + str(constants.fcm.FCM_TEST_DEVICE_PHONE_NO) +")"
-            sqlQueryForMarLanguage = str(constants.fcm.SQL_QUERY_FOR_TEST_DEVIC)
-            sqlQueryForEngLanguage = sqlQueryForMarLanguage
+            sqlQueryForMarLanguage = str(constants.fcm.SQL_QUERY_FOR_TEST_DEVIC_MARATHI)
+            sqlQueryForEngLanguage = str(constants.fcm.SQL_QUERY_FOR_TEST_DEVIC_ENGLISH)
+            
+
             
         #Send FCM messages for those users whose preferedAppLanguage is Marathi    
         objMarDevices = []
@@ -176,6 +178,7 @@ class UserViewSet(viewsets.ModelViewSet):
         for objDeviceInstance in objMarDevicesObjects:
             objMarDevices.append(objDeviceInstance.fcmDeviceID)
                 
+        print "len(objMarDevices):",len(objMarDevices)
         marLangResponse = None
         if len(objMarDevices) > 0:
             marLangResponse = sendFCMNotification(objMarDevices, objNotificationType, objectID, marTitle, marText, objUser)
@@ -186,6 +189,7 @@ class UserViewSet(viewsets.ModelViewSet):
         for objDeviceInstance in objEngDevicesObjects:
             objEngDevices.append(objDeviceInstance.fcmDeviceID)
                 
+        print "len(objEngDevices):",len(objEngDevices)
         engLangResponse = None
         if len(objEngDevices) > 0:
             engLangResponse = sendFCMNotification(objEngDevices, objNotificationType, objectID, engTitle, engText, objUser)
