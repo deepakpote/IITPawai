@@ -1537,6 +1537,122 @@ class ContentViewSet(viewsets.ModelViewSet):
         serializer = chapterDetailSerializer(chapterDetailQuerySet, many = True)
         
         return Response({"response_message": constants.messages.success, "data": serializer.data})
+    
+    """
+    API to get the content details for specific app languages
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def contentDetailForApp(self,request):
+        # get inputs
+        contentID = request.data.get('contentID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        appLanguageCodeID = request.data.get('appLanguageCodeID')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+        
+        objContent = None
+        gradeCodeIDs = None
+        objTopic = None
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if contentID is passed in post param
+        if not contentID:
+            return Response({"response_message": constants.messages.get_contentdetail_contentid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # Check if appLanguageCodeID is passed in post param
+        if not appLanguageCodeID:
+            return Response({"response_message": constants.messages.get_contentdetail_appLanguageCodeID_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+               
+        # If contentID parameter is passed, then check content exists or not
+        try:
+            objContent = content.objects.get(contentID = contentID)
+        except content.DoesNotExist:
+            return Response({"response_message": constants.messages.get_contentdetail_content_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+            
+        # If appLanguageCodeID parameter is passed, then check content exists or not
+        try:
+            objAppLanguage = code.objects.get(codeID = appLanguageCodeID)
+        except code.DoesNotExist:
+            return Response({"response_message": constants.messages.get_contentdetail_appLanguage_not_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        # check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.get_contentdetail_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+            
+        objContentDetails = None
+        
+        #Get details from content models.
+        objContentDetails = content.objects.get(contentID = contentID)
+        
+        #Check content details for according to the app language..
+        try:
+            objContentAppDetails = contentDetail.objects.get(content = objContentDetails , appLanguage = objAppLanguage)
+            objContentDetails.contentTitle = objContentAppDetails.contentTitle 
+            objContentDetails.instruction = objContentAppDetails.instruction   
+            objContentDetails.author = objContentAppDetails.author 
+        except contentDetail.DoesNotExist:
+            #If not exists.It means no content is not uploaded for App language..
+            objContentDetails.contentTitle = ''
+            objContentDetails.instruction = ''
+            objContentDetails.author = ''
+                               
+        #Get actual fileName.
+        objContentFileName = getContentFileName(objContent)
+        
+        #If content type is teachingAids
+        if objContentDetails.contentType.codeID == constants.mitraCode.teachingAids:
+            subjectCodeID = str(objContentDetails.subject.codeID) 
+            topicCodeID = None
+                
+        # If content type is self learning.
+        elif objContentDetails.contentType.codeID == constants.mitraCode.selfLearning:
+            subjectCodeID = None
+            topicCodeID = str(objContentDetails.topic.codeID)
+        
+        #Get comma sep list of gradeCodeID from contentID
+        gradeCodeIDs = ",".join(str(con.grade.codeID) for con in contentGrade.objects.filter(content = objContent))
+        
+        #Build collection manually for both languages
+        response = {  'contentID' :          str(objContentDetails.contentID),
+                      'contentTitle':        objContentDetails.contentTitle,
+                      'instruction':         objContentDetails.instruction,
+                      'author':              objContentDetails.author,
+                      'contentType':         str(objContentDetails.contentType.codeID),
+                      'subject':             subjectCodeID,
+                      'gradeCodeIDs':        gradeCodeIDs,
+                      'topic':               topicCodeID,
+                      'requirementCodeIDs':     objContentDetails.requirement,
+                      'objectives':             objContentDetails.objectives ,
+                      'fileType':               str(objContentDetails.fileType.codeID),
+                      'fileName':               objContentFileName,
+                      'language':            str(objContentDetails.language.codeID),
+                      'statusCodeID':           objContentDetails.status.codeID,
+                      'chapterID':          (str(objContentDetails.chapter.chapterID) if objContentDetails.chapter != None else objContentDetails.chapter),
+                      'createdOn' :         objContentDetails.createdOn,
+                      'modifiedOn':         objContentDetails.modifiedOn
+                    }
+        
+       
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": [response]})
         
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array
@@ -2133,6 +2249,4 @@ function to cnstruct a preview URL of ekstep content
 def getFileNameFromEkStep(identifier):
     contextPath = constants.ekStep.contentPreviewUrl
     return contextPath + str(identifier)     
-
-
     

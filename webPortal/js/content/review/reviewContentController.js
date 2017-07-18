@@ -37,6 +37,31 @@ angular.module("mitraPortal").controller("reviewContentController",
                 fileType: false,
                 chapter : false
             };
+            
+            // send notification code start here
+            $scope.goToPreview = function (objContentTypeCodeID) 
+            {
+            	var iconname = ""
+        		var notificationTypeCodeID = 0
+                console.log($stateParams.contentID);
+                console.log(appConstants.code.notificationType_TeachingAid);
+                
+
+            
+            	console.log("GO to send notification")
+            	var objID = $stateParams.contentID;
+            	console.log("objID:" + objID)
+            	
+                $state.go('main.loggedIn.sendNotification',
+                    { 'objectID' : objID, 'contentType' : objContentTypeCodeID});
+            	                    
+            	console.log("IN GO TO PREVIEW");
+            	console.log($stateParams.objectID);
+//                console.log(iconname);
+//                console.log(notificationTypeCodeID);
+            }
+            
+         // send notification code end here
 
             $scope.setDirty = function (form) {
                 angular.forEach(form.$error.required, function (field) {

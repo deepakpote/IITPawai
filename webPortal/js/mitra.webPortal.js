@@ -76,6 +76,45 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     }
                 }
             })
+             .state('main.loggedIn.sendNotifications', { // OLD UI
+                url: '/notifications',
+                views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Send Notifications';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content': {
+                        templateUrl: templateChange() + '/js/notifications/sendDataNotificationView.html',
+                        controller: 'mitra.notificationsController'
+                    }
+                }
+            })
+            .state('main.loggedIn.sendNotification', { // NEW UI
+                url: '/notification',
+                params:{objectID:null,contentType:null},
+                views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Send Notification';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content': {
+                        templateUrl: templateChange() + '/js/notifications/sendNotificationView.html',
+                        controller: 'sendNotificationController'
+                    }
+                }
+            })
             .state('main.loggedIn.contentUpload', {
                 url: '/content/upload',
                 views: {

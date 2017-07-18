@@ -232,6 +232,20 @@ class messages():
     blockList_districtCodeID_cannot_be_empty = 100285
     blockList_district_not_exists = 100286
     blockList_no_records_found = 100287
+
+    send_data_notification_to_all_invalid_token = 100288
+    send_data_notification_to_all_notificationTypeCodeID_cannot_empty = 100289
+    send_data_notification_to_all_objectID_cannot_empty = 100290
+    send_data_notification_to_all_marathi_title_cannot_empty = 100291
+    send_data_notification_to_all_marathi_text_cannot_empty = 100292
+    send_data_notification_to_all_no_fcm_device_found = 100293
+    
+    get_contentdetail_appLanguageCodeID_cannot_be_empty = 100294
+    get_contentdetail_appLanguage_not_exists = 100295
+    
+    send_notification_user_not_exists = 100296
+    send_notification_notificationType_not_exists = 100297
+    
     
 class webportalmessages():    
     web_admin_invalid_token = 200100
@@ -295,6 +309,12 @@ class mitraCode():
     human_resources_department = 112101
     high_priority = 116100
     userType_teacher = 109100
+    notificationType_TeachingAid = 123100
+    notificationType_SelfLearning = 123101
+    notificationType_News = 123102
+    notificationType_TrainingCalendar = 123103
+    notificationType_Other = 123104
+    
     
 class role():
     admin = 1;
@@ -358,6 +378,15 @@ class uploadedContentDir():
 class fcm():
     FCM_SERVERKEY = "AAAAQH5DkUE:APA91bHzQT7zucQ6A807PrrQwzM63mUrUooqyUt_jJ4HTeR-QM-u2FW9dkAr4r_fOm7G0B2z7iFJdMDz2Nc3s4lZTrNYJ6mIovDvLSui0SpqZAiOZKCPhHsxYGCvDxDa3yo5niGsWd4haNyTKnHol1kCZEa3S2zZbw"
     DATA_NOTIFICATION_TITLE = "Mitra"
+    SEND_DATA_NOTIFICATION_QUERY = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber"
+    SEND_DATA_NOTIFICATION_QUERY_FOR_USERID = "select UD.* from usr_device UD join usr_user UU on UU.userID = UD.userID"
+    SQL_QUERY_FOR_TEST_DEVIC_MARATHI = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where  UU.phoneNumber IN ('+919975512171','+919890882587','+919767964054','+919967295984') and UU.preferredLanguageCodeID = 113101 UNION  select UD.* from usr_device UD join usr_user UU on UU.userID = UD.userID where UU.userID IN (12,2,3,5,87) and UU.preferredLanguageCodeID = 113101"
+    SQL_QUERY_FOR_TEST_DEVIC_ENGLISH = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where  UU.phoneNumber IN ('+919975512171','+919890882587','+919767964054','+919967295984') and UU.preferredLanguageCodeID = 113100 UNION  select UD.* from usr_device UD join usr_user UU on UU.userID = UD.userID where UU.userID IN (12,2,3,5,87) and UU.preferredLanguageCodeID = 113100"
+    SEND_FCM_NOTIFICATION_TO_TEST_DEVICE = False
+    FCM_TEST_DEVICE_PHONE_NO = "'+919975512171','+919890882587','+919767964054','+919967295984'"
+    FCM_DEVELOPER_USERID = "12,2,3,5,87"
+    SEND_FCM_TEST_MODE = True
+    SEND_FCM_MSG_USER_COUNT = 900
     
 class webportal():
 	AdminPassword = "softcorner"

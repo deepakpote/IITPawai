@@ -1,0 +1,176 @@
+   
+<div class="gradient bottom-shadow" style="cursor: pointer;">
+  <div class="content-top-box">
+    <div class="font-title pad5B">Notification Category</div>
+    <div class="row">
+     <div ng-repeat="notificationType in notificationTypeList | filter:{codeID : notificationTypeCodeID}">
+       <div class="col-md-3">
+         <div class="card card-radio-selection" style="cursor: pointer;">
+           <div ng-class="isNotificationTypeSelected(notificationType.codeID) ? 'selected-card':'unselected-card'">
+             <div class="card-content card-icon">
+                                <i class="material-icons" style="font-size:48px;">{{iconname}}</i>
+             </div>
+             <div class="card-action" style="cursor: pointer;">
+               {{notificationType.codeNameEn}}
+             </div>
+           </div>
+         </div>
+       </div><div class="col-md-1"></div>
+     </div>
+   </div>
+ </div>
+</div>
+
+
+<div ng-if="isNotificationTypeSelected(notificationTypeCodeID)">
+  <form name="frmSendNotification" novalidate>
+  
+  <div class="upload-container"  style="margin-bottom: 23px;" ng-if="ifObjectIDExists()">
+  <div class="no-padding-container" style="margin-bottom: 0px;">
+  <div class="upload-title" style="margin-top:34px;margin-bottom: 14px;">Notification content</div>
+  
+  <!--       // content details code goes here -->
+    <div class="section-padding-container" style="padding-left:01%;">
+    <span class="" us-spinner="{radius:30, width:8, length: 16}" style=""></span>
+    <div class="col-md-4 list-view no-gutter">
+        <div class="card card-250" style="display: flex;flex-direction: column;" ng-click="goToObjectDetails()">
+            <div class="content-panel"
+                 style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.74), rgba(0, 0, 0, 0.1)),
+                                        url({{notification.thumbnailUrl}});
+                                        background-size: contain;">
+                <div class="right-panel" style="padding-top:58px;">
+
+                    <i class="material-icons icon-white pointer" >mdit</i>
+                    <div class="text pointer" ></div>
+
+                    <i style="margin-top: 16px;" class="material-icons icon-white pointer">clsose</i>
+                    <div class="text pointer"></div>
+
+                </div>
+            </div>
+            <div class="mid-content" style="padding-top: 5px;padding-bottom: 5px;">
+                <div class="single-line">
+                    {{notification.objectTitle}}
+                </div>
+                <div style="font-size: smaller;">
+                    {{notification.objectDetail1}} |  {{notification.objectDetail2}}
+                </div>
+            </div>
+            <div class="bottom-content">
+                <div class="uploader single-line" style="">
+                   {{ bottomContentName }} : {{notification.objectDetail3}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div> 
+</div>
+  </div>
+	 <div class="col-md-1"></div>
+  <div class="col-md-9">      
+
+        </div>
+      
+      <div class = "hr" style="margin-top: -28px;border-bottom: 0px solid #ccc;"> </div>
+      
+      
+      
+      
+ 
+      
+<div class = "hr" ng-if="ifObjectIDExists()"> </div>
+<!--       // content details code ends here -->
+      
+      
+      
+      
+      
+      
+      <div ng-if="!ifObjectIDExists()">
+      
+      <div style="margin-top: 6%;">
+      </div>
+      </div >
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+      <!-- Form entries below options -->
+
+
+      <div class="upload-container" >
+
+       <div class="col-md-8">
+        <div class="upload-title no-padding">Notification Title</div>
+        <div class="form-group" ng-class="{'has-error': frmSendNotification.engNotificationTitle.$dirty && frmSendNotification.engNotificationTitle.$invalid}">
+         <input type="text" class="form-control" id="engNotificationTitle" name="engNotificationTitle" placeholder="English"
+         ng-model="notification.engNotificationTitle" required />
+         <div ng-messages="frmSendNotification.engNotificationTitle.$error" ng-if="frmSendNotification.engNotificationTitle.$dirty">
+          <span class="error-message" ng-show="frmSendNotification.engNotificationTitle.$error.required">Please enter notification title in English</span>
+        </div>
+      </div>
+
+
+      <div class="form-group" ng-class="{'has-error': frmSendNotification.marNotificationTitle.$dirty && frmSendNotification.marNotificationTitle.$invalid}">
+       <input type="text" class="form-control" id="marNotificationTitle" name="marNotificationTitle" placeholder="मराठी"
+       ng-model="notification.marNotificationTitle" required />
+       <div ng-messages="frmSendNotification.marNotificationTitle.$error" ng-if="frmSendNotification.marNotificationTitle.$dirty">
+        <span class="error-message" ng-show="frmSendNotification.marNotificationTitle.$error.required">Please enter notification title in English</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4" style="text-align:right"> 
+    Kindly enter all fields in English and Marathi. <br />
+    Use <a target="_blank" href = "https://translate.google.com/?hl=mr"><font color="#FF9100">Google translate</font>  </a>
+  </div>
+
+  
+</div>
+
+
+<div class="overlay">
+<div id="loading-img"></div>
+</div>
+  
+<div class = "hr"> </div>
+<div class="upload-container">
+  <div class="upload-title">Enter Notification Text</div>
+  <div class="col-md-8">
+    <div class="form-group" ng-class="{'has-error': frmSendNotification.engText.$dirty && frmSendNotification.engText.$invalid}">
+     <textarea form="frmSendNotification" class="form-control" id="engText" style="width:110%;height:120px" name="engText" placeholder="English"
+     ng-model="notification.engText" required ></textarea>
+     <div ng-messages="frmSendNotification.engText.$error" ng-if="frmSendNotification.engText.$dirty">
+      <span class="error-message" ng-show="frmSendNotification.engText.$error.required">Please enter notification text in English</span>
+    </div>
+  </div>
+
+  <div class="form-group" ng-class="{'has-error': frmSendNotification.marText.$dirty && frmSendNotification.marText.$invalid}">
+   <textarea form="frmSendNotification" class="form-control" id="marText" style="width:110%;height:120px" name="marText" placeholder="मराठी"
+   ng-model="notification.marText" required></textarea>
+   <div ng-messages="frmSendNotification.marText.$error" ng-if="frmSendNotification.marText.$dirty">
+    <span class="error-message" ng-show="frmSendNotification.marText.$error.required">Please enter notification in Marathi</span>
+  </div>
+</div>
+</div>
+</div>
+
+
+
+<div class = "hr"> </div>
+
+<div class="upload-container">
+ <input type="submit" value="Send" class="btn btn-warning" ng-if="isNotificationTypeSelected(notificationTypeCodeID)" ng-click="frmSendNotification.$invalid? setDirty(frmSendNotification) : sendNotification()" /> 
+</div>
+</form>
+</div>

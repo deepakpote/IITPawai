@@ -48,6 +48,9 @@
                     case "main.loggedIn.addTraining":
                         $scope.selectedItem = 'add-training';
                         break;
+                    case "main.loggedIn.sendNotification":
+                        $scope.selectedItem = 'send-notification';
+                        break;
                 }
             });
     }

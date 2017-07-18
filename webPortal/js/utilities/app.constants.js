@@ -11,7 +11,7 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 
 		baseUrl: getServerUrl(),
 
-//		baseUrl: 'http://127.0.0.1:8000/',    //'http://54.152.74.194:8000/',
+		//baseUrl: 'http://127.0.0.1:8000/',    //'http://54.152.74.194:8000/',
 
 		code : {
 			list: 'code'
@@ -21,8 +21,23 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 		},
 		news : {
 			add: 'add'
+		},
+		training : {
+			add: 'add'
 		}
 	};
+	
+	service.siteName = {
+			mitraSiteName: 'mitra.test'
+		};
+	
+	service.mitraIconName = {
+			teachingAid: 'school',
+			selflearning: 'subscriptions',
+			news: 'view_headline',
+			other: 'forum'
+			
+		};
 
 	service.localStorage = {
 		baseKey: 'mitra',
@@ -40,7 +55,12 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 		requirement: 117,
 		NewsCategory : 115,
 		department : 112,
-		importance : 116
+		importance : 116,
+		trainingCategory : 122,
+		district: 102,
+		block: 119,
+		state: 121,
+		notificationType : 123
 	};
 
 	service.fileTypeCode = {
@@ -84,7 +104,18 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 			contentOrNewsOrTrainingStatus_Published: 114102,
 			
 			// News Category
-			NewsCategory_MAA: 115100
+			NewsCategory_MAA: 115100,
+			
+			// Content Category
+			contentCategory_TeachingAid: 107100,
+			contentCategory_Selflearning: 107101,
+			
+			// Notification Category
+			notificationType_TeachingAid: 123100,
+			notificationType_SelfLearning: 123101,
+			notificationType_News: 123102,
+			notificationType_Training: 123103,
+			notificationType_Other: 123104
 		}
 
 	return service;

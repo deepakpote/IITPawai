@@ -12,7 +12,7 @@ class user(models.Model):
     userID = models.AutoField(primary_key = True )
      
     phoneRegex = RegexValidator(regex=r'^\+?1?\d{10,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-    phoneNumber = models.CharField(null = True, max_length = 15, validators = [phoneRegex]) 
+    phoneNumber = models.CharField(null = True,db_index=True, max_length = 15, validators = [phoneRegex]) 
      
     userName = models.CharField(max_length = 100, null = False)
     photoUrl = models.CharField(max_length = 255, null = True, blank = True)
@@ -94,7 +94,7 @@ class device(models.Model):
     deviceID = models.AutoField(primary_key=True)
     #user = models.ForeignKey('user', related_name='device_user', db_column = 'userID')
     phoneRegex = RegexValidator(regex=r'^\+?1?\d{10,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-    phoneNumber = models.CharField(validators = [phoneRegex], null = True, max_length = 15)
+    phoneNumber = models.CharField(validators = [phoneRegex], null = True, db_index=True, max_length = 15)
     fcmDeviceID =  models.CharField(null = False, max_length = 255)
     createdOn = models.DateTimeField(auto_now=False, auto_now_add = True)
     user = models.ForeignKey('user', db_column='userID',null = True, related_name='device_userID')
@@ -210,6 +210,23 @@ class userRole(models.Model):
     class Meta:
         db_table = 'usr_userRole' 
         unique_together = ('user', 'role') 
+        
+"""
+FCM Notification response model
+"""
+class fcmNotificationResponse(models.Model):
+    fcmResponseID = models.AutoField(primary_key=True)
+    fcmDevicesIDs = models.TextField(null = True)
+    notificationType = models.ForeignKey('commons.code', db_column='notificationTypeCodeID', related_name='fcmNotificationResponse_notificationTypeCodeID')
+    objectID = models.IntegerField(null = True, blank = True)
+    title = models.TextField(null = True)
+    body = models.TextField(null = True)
+    responseMessage = models.TextField(null = True)
+    createdOn = models.DateTimeField(auto_now_add=True)
+    createdBy = models.ForeignKey('user', null = True, related_name='fcmNotificationResponse_createdBy', db_column = 'createdBy')
+
+    class Meta:
+        db_table = 'usr_fcmNotificationResponse'
 
 # class language(models.Model):
 #     languageID = models.AutoField(primary_key = True)
