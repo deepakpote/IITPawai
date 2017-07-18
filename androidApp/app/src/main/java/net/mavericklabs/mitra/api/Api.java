@@ -134,4 +134,7 @@ public interface Api {
     Call<BaseModel<Chapter>> getChapters(@Field("subjectCodeID") String subjectCodeID,
                                          @Field("gradeCodeID") String gradeCodeID);
 
+    @POST("content/contentDetailForApp/")
+    @FormUrlEncoded
+    Call<BaseModel<Content>> getContent(@Field("contentID") String contentID, @Field("appLanguageCodeID") int languageCode);
 }

@@ -23,4 +23,10 @@ public interface Constants {
     int UserTypeOfficer = 109101;
     int UserTypeKendraPramukh = 109102;
     int UserTypeOther = 109103;
+
+    String NotificationTypeTeachingAids = "123100";
+    String NotificationTypeSelfLearning = "123101";
+    String NotificationTypeNews = "123102";
+    String NotificationTypeTraining = "123103";
+    String NotificationTypeOther = "123104";
 }

@@ -109,6 +109,13 @@ public class Migration implements RealmMigration {
         if(oldVersion == 2) {
             schema.get("DbUser")
                     .addField("departmentID", Integer.class);
+            oldVersion++;
+        }
+
+        if(oldVersion == 3) {
+            schema.get("DbNotification")
+                    .addField("notificationTypeID",String.class)
+                    .addField("objectID",String.class);
         }
 
     }
