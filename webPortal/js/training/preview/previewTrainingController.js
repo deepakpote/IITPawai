@@ -1,36 +1,356 @@
-angular.module("mitraPortal").controller("previewNewsController",
-    ['$scope', '$stateParams', '$state', '$window', '$log', '$http', 'appUtils', 'appConstants', 'commonService',
-        'newsService','$animate',
-        function ($scope, $stateParams, $state, $window, $log, $http, appUtils, appConstants, commonService,newsService,$animate) {
+angular.module("mitraPortal").controller("previewTrainingController",
+    ['$scope', '$stateParams', '$state', '$window', '$log', '$http','$uibModal', 'appUtils', 'appConstants', 'commonService',
+        'trainingService','$animate',
+        function ($scope, $stateParams, $state, $window, $log, $http, $uibModal, appUtils, appConstants, commonService,trainingService,$animate) {
 
       $scope.objNews = [];
   	  $scope.myInterval = 0;
-	  $scope.myTransition = false;
-	  $scope.noWrapSlides = false;
-	  $scope.activeCarousel1 = 0;
-	  $scope.activeNewsCarousel = 0;
 	  $animate.enabled(true);  
 	  $scope.myInterval = 3000;
 	  $scope.myDate;
 	  $scope.newFile = [];
-
 	  
-	$scope.playVideo = function ( url ) {
-		 $window.open(url, '_blank')
-	};
-	
-	$scope.goTo = function ( state ) {
-		$state.go(state)
-	};
-    	
-    $scope.acceptedFileTypes = {
-        "108100": "",              //Video
-        "108101": "audio/*",       //Audio
-        "108102": ".ppt,.pptx",    //PPT
-        "108103": ".xls,.xlsx",    //Worksheet
-        "108104": ".pdf",          //PDF
-        "108105": ""             //Ek Step
+	  //$stateParams.contentType;
+	  $scope.calledFromAdmin = $stateParams.calledFromAdmin;
+	 
+    // Get training type/category.
+    var getTrainingTypes = function () {
+    	console.log("IN getTrainingTypes");
+      $scope.trainingTypeList = commonService.getCodeListPerCodeGroup(
+        appConstants.codeGroup.trainingCategory
+        );
+      var icons = ["LOGO HERE"];
+      for (var i=0; i<$scope.trainingTypeList.length;i++){
+        $scope.trainingTypeList[i].icon = icons[i];
+      }
     };
+    
+    // set trainer setSelectedTrainer
+    $scope.setSelectedTrainerDetails = function (selectedTrainerID,engTrainer,marTrainer,index) 
+    {
+  	  
+        $scope.selectedTrainerCodeID = selectedTrainerID; 
+        $scope.items[index].engTrainer = engTrainer;
+        $scope.items[index].marTrainer = marTrainer;
+        $scope.items[index].selectedTrainerCodeID = selectedTrainerID;
+
+     }
+    
+    //set Selected State
+    $scope.setSelectedStateDetails = function (selectedStateCodeID,index) {
+        $scope.items[index].selectedStateCodeID = selectedStateCodeID;
+      }
+    
+    // Set training category 
+    $scope.setSelectedDistrictDetails = function (selectedDistrictID,index) {
+  	    $scope.items[index].selectedBlockCodeID = selectedDistrictID;
+        getBlockList(selectedDistrictID);
+    }
+    
+    // Set training block 
+    $scope.setSelectedBlockDetails = function (selectedBlockID,index) {
+  	 // $scope.items[index].selectedBlockCodeID = selectedBlockID;
+    }
+	
+    // Get state for training
+    var getState = function () {
+      $scope.stateList = commonService.getCodeListPerCodeGroup(
+        appConstants.codeGroup.state
+        );
+    };
+    
+    // Get district for training
+    var getDistrict = function () {
+      $scope.districtList = commonService.getCodeListPerCodeGroup(
+        appConstants.codeGroup.district
+        );
+    };
+    
+    // Get display block for training
+    var getDisplayBlock = function () {
+      $scope.displayBlockList = commonService.getCodeListPerCodeGroup(
+        appConstants.codeGroup.block
+        );
+    };
+    
+    // Get block for training
+    var getBlock = function () {
+      $scope.blockList = commonService.getCodeListPerCodeGroup(
+        appConstants.codeGroup.block
+        );
+    };
+
+    // Get block list from district
+    function getBlockList(districtCodeID) {
+        if(districtCodeID) {
+            trainingService.getBlockList(districtCodeID, fetchedBlockList, failureInFetchingBlockList);
+        }
+    }
+
+    // Success blockList
+    function fetchedBlockList(response) {
+        $scope.displayBlockList = response.data;
+    }
+    
+    // Failed blockList
+    function failureInFetchingBlockList(response) {
+        console.log(response);
+    }
+    
+    // Get trainer list
+    function getTrainerList() 
+    {
+  	  trainingService.getTrainerList(fetchedTrainerList, failureInFetchingTrainerList);
+    }
+
+    // Success trainerList
+    function fetchedTrainerList(response) {
+        $scope.trainerList = response.data;
+    }
+    
+    // Failed trainerList
+    function failureInFetchingTrainerList(response) {
+        console.log(response);
+    }
+	
+    // Create array and push the alternative events into the array...and then call to the API.
+    $scope.items = [];
+    
+    $scope.add = function (eventID,eventDetailID,selectedTrainerCodeID,engTrainer,marTrainer,publishDate,selectedStateCodeID,selectedDistrictCodeID,selectedBlockCodeID,engLocation,marLocation,isEditable) {
+  	  
+        $scope.items.push({ 
+          eventID : eventID,
+      	  eventDetailID : eventDetailID,
+          selectedTrainerCodeID: selectedTrainerCodeID,
+      	  engTrainer: engTrainer,
+      	  marTrainer: marTrainer,
+      	  publishDate: publishDate,
+      	  selectedStateCodeID:selectedStateCodeID,
+      	  selectedDistrictCodeID:selectedDistrictCodeID,
+      	  selectedBlockCodeID:selectedBlockCodeID,
+      	  engLocation: engLocation,
+      	  marLocation: marLocation,
+      	  isEditable: isEditable
+        });
+        
+      }
+	
+	// delete alternative events
+    $scope.deleteAlternativeEvent = function (index,eventDetailsID)
+    {
+    	// get count for number of user attending the event.
+    	getUserCountForEvent(eventDetailsID);
+        if (confirm($scope.EventAttendingUserCount + " User's are attending this event. Do you want to delete this?")) {
+            alert("Event successfully deleted");
+            //delete from the array...
+            $scope.items.splice(index, 1); 
+            
+            //delete from DB
+            deleteAlternativeEvent(eventDetailsID); 
+        }
+    	
+     }
+    
+    //update the training details i.e Allow to edit only training description and add new alternative events
+    $scope.updateTrainingDeails = function()
+    {
+    	submit();
+    }
+	
+    // add new events or update the event info.
+    var submit = function()
+    {
+      var fd = new FormData();
+      
+        fd.append("eventID", $stateParams.eventID);
+        fd.append("categoryCodeID", $scope.training.categoryCodeID);
+        fd.append("marEventTitle", $scope.training.marEventTitle);  
+        fd.append("engEventTitle", $scope.training.engEventTitle);
+        
+        fd.append("marEventDescription", $scope.training.marEventDescription);  
+        fd.append("engEventDescription", $scope.training.engEventDescription);
+
+        var headers = { "authToken": appUtils.getFromCookies("token",""),
+        'Content-Type': undefined};
+        
+        $http.post(appConstants.endpoint.baseUrl + "events/addEvent/", fd, {
+          transformRequest: angular.identity,
+          headers: headers
+        })
+        .then (function success(response){
+          $scope.result= "Event added successfully";
+          console.log(response.data);
+
+          if (((response.data.data)[0].eventID) > 0){
+        	 saveAlternateEvents((response.data.data)[0].eventID);
+        }
+          
+	        $scope.result= "uploaded successfully";
+	        setSuccessDetails();
+	        var modalInstance = $uibModal.open({
+	          url: 'result',
+	          scope: $scope,
+	          templateUrl : appConstants.siteName.mitraSiteName + '/js/training/submittedSuccessView.html',
+	        })
+	        modalInstance.result.finally(function(){ 
+	            $window.scrollTo(0, 0);
+	            $state.go('main.loggedIn.trainingList');
+	        });
+         
+          
+        },
+        function error(response){
+          $scope.uploadErrorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn;
+          $scope.result ="Failed to add training.";
+
+          $scope.uploadErrorMessage = "Failed to add training.";
+          $scope.result ="Failed to add training.";
+          var modalInstance = $uibModal.open({
+            url: 'result',
+            scope: $scope,
+            templateUrl : appConstants.endpoint.baseUrl + appConstants.siteName.mitraSiteName +  '/js/training/submittedErrorView.html',
+          });
+          
+          
+        });
+      }
+    
+    var setSuccessDetails = function() 
+    {
+        $scope.success = {};
+        $scope.success.title = $scope.training.engEventTitle;
+        $scope.success.uploaderName = "self";
+        $scope.success.message = "Training details saved successfully";
+     }
+	
+	// Save alternative events...
+    var saveAlternateEvents = function(eventID)
+    {
+    	for (var i=0; i<$scope.items.length;i++)
+    	{
+    		// Add new alternative event.
+    		if($scope.items[i].eventDetailID == '0')
+    		{
+	    	    var fd = new FormData();
+	
+	            fd.append("eventID", eventID);
+	            
+	            if(!isUndefinedOrNull($scope.items[i].publishDate))
+	            	{fd.append('date', $scope.items[i].publishDate);}
+	            
+	            if(!isUndefinedOrNull($scope.items[i].selectedStateCodeID))
+	        		{fd.append('stateCodeID', $scope.items[i].selectedStateCodeID);}   
+	            
+	            if(!isUndefinedOrNull($scope.items[i].selectedDistrictCodeID))
+	        		{fd.append('districtCodeID', $scope.items[i].selectedDistrictCodeID);}
+	            
+	            if(!isUndefinedOrNull($scope.items[i].selectedBlockCodeID))
+	        		{fd.append('blockCodeID', $scope.items[i].selectedBlockCodeID);}
+	            
+	            if(!isUndefinedOrNull($scope.items[i].engLocation))
+	        		{fd.append('engLocation', $scope.items[i].engLocation);} 
+	            
+	            if(!isUndefinedOrNull($scope.items[i].marLocation))
+	    		{fd.append('marLocation', $scope.items[i].marLocation);}  
+	            
+	            if(!isUndefinedOrNull($scope.items[i].marTrainer))
+	    		{fd.append('marTrainer', $scope.items[i].marTrainer);}  
+	            
+	            if(!isUndefinedOrNull($scope.items[i].engTrainer))
+	    		{fd.append('engTrainer', $scope.items[i].engTrainer);}  
+	            
+	    		if(!isUndefinedOrNull(appConstants.code.contentOrNewsOrTrainingStatus_Published))
+	    			{fd.append('statusCodeID', appConstants.code.contentOrNewsOrTrainingStatus_Published);}
+	    		
+	            var headers = { "authToken": appUtils.getFromCookies("token",""),
+	            'Content-Type': undefined};
+	            
+	            $http.post(appConstants.endpoint.baseUrl + "events/addAlternateEvent/", fd, {
+	              transformRequest: angular.identity,
+	              headers: headers
+	            })
+	            .then (function success(response){
+	            	$scope.trainingSaveedSuccessfully = true;
+	            	console.log("Success........");
+	            },
+	            function error(response){
+	              $scope.trainingSaveedSuccessfully = false;
+	              $scope.uploadErrorMessage = "Failed to add training.";
+	              $scope.result ="Failed to add training.";
+	              var modalInstance = $uibModal.open({
+	                url: 'result',
+	                scope: $scope,
+	                templateUrl : appConstants.endpoint.baseUrl + appConstants.siteName.mitraSiteName +  '/js/training/submittedErrorView.html',
+	              });
+	            });
+          
+    		}
+            //end for loop
+    	   }
+    }
+    
+    // Get user count for the specific event.
+    var getUserCountForEvent = function(eventDetailID)
+    {
+
+      var fd = new FormData();
+      
+        fd.append("eventDetailID", eventDetailID);
+       
+        var headers = { "authToken": appUtils.getFromCookies("token",""),
+        'Content-Type': undefined};
+        
+        $http.post(appConstants.endpoint.baseUrl + "events/getUserCountForEvent/", fd, {
+          transformRequest: angular.identity,
+          headers: headers
+        })
+        .then (function success(response){
+          $scope.result= "Event added successfully";
+          console.log(response.data);
+          $scope.EventAttendingUserCount = (response.data).data.userCount; 
+        },
+        function error(response){
+          $scope.uploadErrorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn;
+          $scope.result ="Failed to add training.";
+          var modalInstance = $uibModal.open({
+            url: 'result',
+            scope: $scope,
+            templateUrl : appConstants.endpoint.baseUrl + 'mitra/js/news-circulars/submittedErrorView.html',
+          });
+        });
+      }
+	
+    //delete single event...
+    var deleteAlternativeEvent = function(eventDetailID)
+    {
+
+      var fd = new FormData();
+      
+        fd.append("eventDetailID", eventDetailID);
+       
+        var headers = { "authToken": appUtils.getFromCookies("token",""),
+        'Content-Type': undefined};
+        
+        $http.post(appConstants.endpoint.baseUrl + "events/deleteAlternateEvent/", fd, {
+          transformRequest: angular.identity,
+          headers: headers
+        })
+        .then (function success(response){
+          $scope.result= "Event deleted successfully successfully";
+          console.log(response.data);
+        },
+        function error(response){
+          $scope.uploadErrorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn;
+          $log.debug($scope.uploadErrorMessage);
+          $scope.result ="Failed to add training.";
+          var modalInstance = $uibModal.open({
+            url: 'result',
+            scope: $scope,
+            templateUrl : appConstants.endpoint.baseUrl + 'mitra/js/news-circulars/submittedErrorView.html',
+          });
+        });
+      }
+    	
     $scope.inputs = {};
     $scope.isAdmin = appUtils.isAdmin();
     $scope.isTeacher = appUtils.isTeacher();
@@ -49,16 +369,17 @@ angular.module("mitraPortal").controller("previewNewsController",
         };
 
 
-        $scope.setSelectedOption = function (selectedOption) {
+        $scope.setSelectedOption = function (selectedOption,index) {
             if ($scope.mode == 'EDIT') {
                 if ($scope.selectedOption == selectedOption) {
                     $scope.selectedOption = null;
                 }
                 else {
-                    $scope.selectedOption = selectedOption;
+                    $scope.selectedOption = selectedOption + index;
                 }
             }
         };
+        
 
         $scope.setMode = function (mode) {
             if ($scope.mode == 'EDIT' && mode == 'PREVIEW' && $scope.originalContent) 
@@ -84,237 +405,42 @@ angular.module("mitraPortal").controller("previewNewsController",
         
         $scope.selectedImageNumber = "";
         
-        // Set selected image number.
-        $scope.imageUpload = function (selectedImageNumber) {
-      	  $log.debug(selectedImageNumber);
-      	  $scope.selectedImageNumber = "";
-          $scope.selectedImageNumber = selectedImageNumber;  
-        }
-        
-
-        
-        // remove news PDF
-        $scope.removePDF = function (newsID,pdfName) {
-        	console.log("removePDF");
-        	console.log(newsID);
-        	console.log(pdfName);
-        	deleteNewsPDF(newsID,pdfName);
-        	$scope.news.pdfFileURL = "Pdf deleted sucessfully";
-          }
-        
-        // delete the news PDF
-        var deleteNewsPDF = function(newsID,pdfName) {
-            var nextState = null;
-
-            var options = {};
-            var data = {
-                "newsID": newsID
-            };
-            options.data = data;
-            options.url = 'news/removeNewsPDF/';
-            options.headers = {"authToken": appUtils.getFromCookies("token", "")};
-
-            appUtils.ajax(options,
-                function (responseBody) {
-                    $log.debug(responseBody);
-                   // $state.go(nextState);
-                   // $window.scrollTo(0, 0);
-                 
-//                    $state.transitionTo($state.current, $stateParams, {
-//                        reload: true,
-//                        inherit: false,
-//                        notify: true
-//                    });
-                    
-                },
-                function (responseBody) {
-                    $log.debug(responseBody);
-                }
-            );
-        };
-        
-        // remove image news
-        $scope.removeImage = function (newsID,imageNumber,imageURL) {
-        	console.log("ERRORRRRRRR");
-        	console.log(newsID);
-        	console.log(imageNumber);
-        	console.log(imageURL);
-        	$scope.AllImageArray[imageNumber - 1] = "";
-        	deleteNewsImage(newsID,imageNumber,imageURL);
-          }
-        
-        var deleteNewsImage = function(newsID,imageNumber,imageURL) {
-            var nextState = null;
-            var options = {};
-            var data = {
-                "newsID": newsID,
-                "imageNumber": imageNumber,
-                "imageURL":imageURL
-            };
-            options.data = data;
-            options.url = 'news/removeNewsImage/';
-            options.headers = {"authToken": appUtils.getFromCookies("token", "")};
-
-            appUtils.ajax(options,
-                function (responseBody) {
-                    $log.debug("success...IMAGE DELETEDDDDDDDDDDDDDD");
-                    console.log(responseBody);
-                   // $window.scrollTo(0, 0);
-                 
-//                    $state.transitionTo($state.current, $stateParams, {
-//                        reload: true,
-//                        inherit: false,
-//                        notify: true
-//                    });
-                    
-                },
-                function (responseBody) {
-                    $log.debug("error .IMAGE NOTTTDELETEDDDDDDDDDDDDDD");
-                    $log.debug(responseBody);
-                    
-                }
-            );
-        };
-        
-        
-
-        
-        
-        // Save/update the news details
-        $scope.saveChanges = function () {
-            $log.debug("IN saveChanges function");
-            var fd = new FormData();
-
-            for (var key in $scope.news) {
-                $log.debug(key);
-                $log.debug($scope.news[key]);
-                if ($scope.news[key]) {
-                    fd.append(key, $scope.news[key]);
-                }
-
-            }
-            
-            fd.append("newsCategoryCodeID", $scope.news.newsCategory); 
-            fd.append("departmentCodeID", $scope.news.department);
-            fd.append("newsImportanceCodeID", $scope.news.newsImportance);
-            fd.append("newsID", $stateParams.newsID);
-            
-            if(!isUndefinedOrNull($scope.newsImage1))
-        	{fd.append('imageOne', $scope.newsImage1);}
-            
-            if(!isUndefinedOrNull($scope.newsImage2))
-        	{fd.append('imageTwo', $scope.newsImage2);}
-            
-            if(!isUndefinedOrNull($scope.newsImage3))
-        	{fd.append('imageThree', $scope.newsImage3);}
-            
-            if(!isUndefinedOrNull($scope.newsImage4))
-    		{fd.append('imageFour', $scope.newsImage4);}
-        
-            if(!isUndefinedOrNull($scope.newsImage5))
-    		{fd.append('imageFive', $scope.newsImage5);}  
-            
-            console.log("$scope.newFile:::::::::");
-            console.log(appUtils.getFromLocalStorage("myPDFFile",""));
-                   
-//            $scope.myPDFFile = appUtils.getFromLocalStorage("myPDFFile","");
-//            console.log("$scope.myPDFFile");
-//            console.log($scope.myPDFFile);
-            
-    		if(!isUndefinedOrNull(appUtils.getFromLocalStorage("myPDFFile","")))
-			{
-    			fd.append('pdfFile', appUtils.getFromLocalStorage("myPDFFile",""));
-    			appUtils.saveToLocalStorage("myPDFFile","");
-			 }
-    		
-    		if(!isUndefinedOrNull($scope.news.publishDate))
-    		{fd.append('publishDate', $scope.news.publishDate);}
-
-            var headers = {
-                "authToken": appUtils.getFromCookies("token", ""),
-                'Content-Type': undefined
-            };
-
-            $http.post(appConstants.endpoint.baseUrl + "news/saveNews/", fd, {
-                transformRequest: angular.identity,
-                headers: headers
-            })
-                .then(function success(response) {
-                		// cleare local storage
-                		//$localStorage.$reset();
-                        console.log(response);
-                        $window.scrollTo(0, 0);
-                        $state.transitionTo($state.current, $stateParams, {
-                            reload: true,
-                            inherit: false,
-                            notify: true
-                        });
-
-
-                    },
-                    function error(response) {
-                    	console.log("ERRORRRRRRR");
-                    	console.log(response);
-                    	console.log(fd);
-                        $log.debug("fd");
-                    });
-        };
-        
-        $animate.enabled(true);  
-        
-        $scope.myInterval = 3000;
-     	
-//             $scope.newsSlides = [
-//                 { image: 'http://lorempixel.com/400/200/sports', id : 1 },    
-//                 { image: 'http://lorempixel.com/400/200/', id : 2 },
-//                 { image: 'http://lorempixel.com/400/200/people', id : 3 }, 
-//             ]
-        
-      $scope.newsSlides = []
-       
-      // From comma seperated string of image URLS build the collection.
-        var setNewsSlides = function (newsImageURL) {
-            if ($scope.news.imageURL) {
-                var newsImageArray = $scope.news.imageURL.split(',');
-                $scope.AllImageArray = newsImageArray;
-                for (var i = 0; i < newsImageArray.length; i++) 
-                {
-                	$scope.newsSlides.push({
-                		image: newsImageArray[i],
-    					id: i
-    				})
-                }
-            }
-            
-        };
-
-            // Fetch news details in both languages
-            var fetchNewsDetails = function () {
+            // Fetch training details in both languages
+            var fetchTrainingDetails = function () 
+            {
                 var options = {};
-                $log.debug($stateParams.newsID);
-                var data = {"newsID": $stateParams.newsID};
+                var data = {"eventID": $stateParams.eventID};
                 options.data = data;
-                options.url = 'news/newsDetail/';
+                options.url = 'events/alternateTrainingDetailList/';
                 options.headers = {"authToken": appUtils.getFromCookies("token", "")};
 
                 appUtils.ajax(options,
                     function (responseBody) {
                         //get news set
-                        $scope.news = responseBody.data[0];
+                        $scope.trainings = responseBody.data;
                         $scope.objNews = $scope.news;
                         
-                        $scope.news.publishDate = moment($scope.news.publishDate).toDate();
+                        for(var i = 0 ; i < $scope.trainings.length; i++) 
+                        {
+                        	console.log("fetchTrainingDetailsfetchTrainingDetails");
+                        	console.log("$scope.$scope.trainings.date" + $scope.trainings[i].date);
+                        	$scope.trainings[i].publishDate = moment($scope.trainings[i].date).toDate();
+                        	console.log("$scope.trainings[i].publishDate:" + $scope.trainings[i].publishDate);
+                        	console.log($scope.trainings[i].publishDate);
+                        	$scope.add($scope.trainings[i].eventID,$scope.trainings[i].eventDetailID,$scope.trainings[i].eventDetailID,$scope.trainings[i].engTrainer,$scope.trainings[i].marTrainer,$scope.trainings[i].publishDate,$scope.trainings[i].stateCodeID,$scope.trainings[i].districtCodeID,$scope.trainings[i].blockCodeID,$scope.trainings[i].engLocation,$scope.trainings[i].marLocation,false)
                         
-                        //$scope.AllImageArray = [];
-                        // Build the collection from comma seperated string. i.e Comma seperated imageURL
-                        setNewsSlides($scope.news.imageURL);
+                        	$scope.training.engEventTitle = $scope.trainings[i].engEventTitle;
+                        	$scope.training.marEventTitle = $scope.trainings[i].marEventTitle;
+                        	
+                        	$scope.training.engEventDescription = $scope.trainings[i].engEventDescription;
+                        	$scope.training.marEventDescription = $scope.trainings[i].marEventDescription;
+                        	
+                        	$scope.training.categoryCodeID = $scope.trainings[i].categoryCodeID;
 
-                        //make a copy in case user goes to edit and discards
-                        $scope.originalNews = JSON.parse(JSON.stringify($scope.news)); //deepcopy
+                        }
+                        
                     },
                     function (responseBody) {
-                        $log.debug($scope.news);
-                        $log.debug("error");
                         $log.debug(responseBody);
                     }
                 );
@@ -332,66 +458,38 @@ angular.module("mitraPortal").controller("previewNewsController",
                 $scope.importanceList = commonService.getCodeListPerCodeGroup(
                     appConstants.codeGroup.importance
                 );
+                
+            	getDistrict();
+            	getState();
+            	getBlock();
+            //	getDisplayBlock();
+            //	getBlockList();
+            	getTrainerList();
             };
 
             $scope.$on('codesAvailable', function (event, data) {
                 populateDropDowns();
-                fetchNewsDetails();
+                fetchTrainingDetails();
             });
             
             var init = function () {
+            	
+            	$scope.EventAttendingUserCount = 0;
+            	$scope.stateparamEventID = $stateParams.eventID;
                 $scope.submitted = false;
                 $scope.news = {"newsID": 0, "newsCategoryCodeID": 0};
+                $scope.training = {};
+                $scope.trainingCategoryState = appConstants.code.trainingCategory_State;
                 $scope.errorMessage = "";
-                fetchNewsDetails();
+                fetchTrainingDetails();
                 populateDropDowns();
-               
+                getTrainingTypes();
             	  
             };
 
             // Call to the init function.
             init();
-
-
+            getTrainingTypes();
+            //$scope.add();
         }
-    ])
-    .directive('fileModel', ['$parse', '$log','appUtils', function ($parse, $log, appUtils) {
-        return {
-            restrict: 'A',
-            link: function (scope, element, attrs) {
-
-
-                element.bind('change', function () {
-                	
-                	
-                	switch (scope.selectedImageNumber) {
-                    case 1:
-                    	scope.$parent.newsImage1 = element[0].files[0];
-                        break;
-                    case 2:
-                    	scope.$parent.newsImage2 = element[0].files[0];
-                        break;
-                    case 3:
-                    	scope.$parent.newsImage3 = element[0].files[0];
-                        break;
-                    case 4:
-                    	scope.$parent.newsImage4 = element[0].files[0];
-                        break;
-                    case 5:
-                    	scope.$parent.newsImage5 = element[0].files[0];
-                        break;
-                    case 'pdfFile':
-                    	scope.$parent.myPDFFile = element[0].files[0];
-                    	appUtils.saveToLocalStorage("myPDFFile",element[0].files[0]);
-                        break;
-                    default:
-                    	$log.debug("IN switch default");
-
-                }
-                	
-                	
-                    scope.$apply();
-                });
-            }
-        };
-    }]);
+    ]);

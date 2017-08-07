@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from events.models import userEvent, eventInfo , event, eventDetail
+from events.models import eventInfo , event, eventDetail
 
 class eventTimeSerializer(serializers.DictField):
 	dateTime=serializers.DateTimeField()
@@ -40,15 +40,15 @@ class eventQuerySerializer(serializers.Serializer):
 	#districtCodeIDs = serializers.CharField()
 
 # model serializer for user and attended event relationship	
-class userEventModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = userEvent
-        fields = ('event','user')
+# class userEventModelSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = userEvent
+#         fields = ('event','user')
         
-    def create(self, validated_data):
-        objEvent = userEvent(eventID=validated_data['event'],userID=validated_data['user'])
-        objEvent.save()
-        return objEvent
+#     def create(self, validated_data):
+#         objEvent = userEvent(eventID=validated_data['event'],userID=validated_data['user'])
+#         objEvent.save()
+#         return objEvent
        
 """
 training Serializer

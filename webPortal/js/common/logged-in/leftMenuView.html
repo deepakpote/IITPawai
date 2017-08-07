@@ -91,13 +91,23 @@
         </a><br/>
     </div>
     <div class="left-menu-item" ng-if="isTeacher || isAdmin" >
-        <a ui-sref="#"
+        <a ui-sref="main.loggedIn.trainingList"
            ng-click="setSelected('training-calendar')"
            ng-class="{selectedItem : selectedItem === 'training-calendar'}">
             <div class="col-md-2">
                 <i class="material-icons md-18">date_range</i>
             </div>
             <div class="col-md-10">Training Calendar</div>
+        </a><br/>
+    </div>
+        <div class="left-menu-item" ng-if="isAdmin" >
+        <a ui-sref="main.loggedIn.trainingListForAdmin"
+           ng-click="setSelected('training-calendar-forAdmin')"
+           ng-class="{selectedItem : selectedItem === 'training-calendar-forAdmin'}">
+            <div class="col-md-2">
+                <i class="material-icons md-18">date_range</i>
+            </div>
+            <div class="col-md-10">Training Calendar- Admin</div>
         </a><br/>
     </div>
     <div class="left-menu-item" ng-if="isTeacher || isAdmin" >

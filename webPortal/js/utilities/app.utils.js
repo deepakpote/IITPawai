@@ -89,8 +89,7 @@ angular.module("mitraPortal").service('appUtils', ['$http', '$log', '$rootScope'
             if (value == undefined) {
                 value = defaultValue;
             }
-            console.log("get from cookie " + value);
-            console.log("get from cookie expires ");
+
             return value;
         };
 

@@ -246,6 +246,22 @@ class messages():
     send_notification_user_not_exists = 100296
     send_notification_notificationType_not_exists = 100297
     
+    add_event_event_not_exists = 100298
+    add_event_date_cannot_be_empty = 100299
+    add_event_stateCodeID_cannot_be_empty = 100300
+    add_event_districtCodeID_cannot_be_empty = 100301
+    add_event_blockCodeID_cannot_be_empty = 100302
+    add_event_marTrainer_cannot_be_empty = 100303
+    add_event_engTrainer_cannot_be_empty = 100304
+    add_event_statusCodeID_cannot_be_empty = 100305
+    add_event_user_not_exists = 100306
+    
+    add_event_marEventTitle_cannot_be_empty = 100307
+    deleteAlternateEvent_eventDetailid_cannot_be_empty = 100308
+    deleteAlternateEvent_event_doesnot_exists = 100309
+    
+    myTrainingList_userID_cannot_be_empty = 100310
+    
     
 class webportalmessages():    
     web_admin_invalid_token = 200100
@@ -382,7 +398,7 @@ class fcm():
     SEND_DATA_NOTIFICATION_QUERY_FOR_USERID = "select UD.* from usr_device UD join usr_user UU on UU.userID = UD.userID"
     SQL_QUERY_FOR_TEST_DEVIC_MARATHI = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where  UU.phoneNumber IN ('+919975512171','+919890882587','+919767964054','+919967295984') and UU.preferredLanguageCodeID = 113101 UNION  select UD.* from usr_device UD join usr_user UU on UU.userID = UD.userID where UU.userID IN (12,2,3,5,87) and UU.preferredLanguageCodeID = 113101"
     SQL_QUERY_FOR_TEST_DEVIC_ENGLISH = "select UD.* from usr_device UD join usr_user UU on UU.phoneNumber = UD.phoneNumber where  UU.phoneNumber IN ('+919975512171','+919890882587','+919767964054','+919967295984') and UU.preferredLanguageCodeID = 113100 UNION  select UD.* from usr_device UD join usr_user UU on UU.userID = UD.userID where UU.userID IN (12,2,3,5,87) and UU.preferredLanguageCodeID = 113100"
-    SEND_FCM_NOTIFICATION_TO_TEST_DEVICE = False
+    SEND_FCM_NOTIFICATION_TO_TEST_DEVICE = True
     FCM_TEST_DEVICE_PHONE_NO = "'+919975512171','+919890882587','+919767964054','+919967295984'"
     FCM_DEVELOPER_USERID = "12,2,3,5,87"
     SEND_FCM_TEST_MODE = True

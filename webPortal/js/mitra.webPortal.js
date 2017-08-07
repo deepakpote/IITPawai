@@ -1,13 +1,14 @@
-var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap','ngLoadingSpinner', 'ngAnimate','ngComboDatePicker']);
+var mitraPortal = angular.module("mitraPortal", ['ngCookies','ngMessages','ui.router','ui.bootstrap','ngLoadingSpinner', 'ngAnimate','ngSanitize','ngComboDatePicker']);
 mitraPortal.
-config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locationProvider',
-    function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider) {
+config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locationProvider','$sceDelegateProvider',
+    function config($stateProvider, $urlRouterProvider, loginModalStateProvider, $locationProvider,$sceDelegateProvider) {
 
         var templateChange = function() {
-            return "mitra.test";
+            return "";
         };
         //$locationProvider.html5Mode(true);
         $urlRouterProvider.otherwise('/home/login');
+        $sceDelegateProvider.resourceUrlWhitelist(['**']);
 
         $stateProvider
             .state('main', {
@@ -73,6 +74,25 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                     'content': {
                         templateUrl: templateChange() + '/js/dashboard/dashboardView.html',
                         controller: 'dashboardController'
+                    }
+                }
+            })
+             .state('main.loggedIn.addTraining', { 
+                url: '/training',
+                views: {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Add Trainings';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content': {
+                        templateUrl: templateChange() + '/js/training/addTrainingView.html',
+                        controller: 'addTrainingController'
                     }
                 }
             })
@@ -171,6 +191,74 @@ config(['$stateProvider', '$urlRouterProvider','loginModalStateProvider','$locat
                         controller : 'newsListController',
                         controllerAs : 'newsList'
                     }
+                }
+            })
+             .state('main.loggedIn.trainingList', {
+                url: '/trainingList/:calledFromAdmin',
+                views : {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Training List';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content' : {
+                        templateUrl : templateChange() + '/js/training-list/trainingListView.html',
+                        controller : 'trainingListController',
+                        controllerAs : 'trainingList'
+                    },
+                    params :{
+                        'calledFromAdmin' : true
+                    }
+                }
+            })
+             .state('main.loggedIn.trainingListForAdmin', {
+                url: '/trainingListForAdmin/:calledFromAdmin',
+                views : {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Training List';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content' : {
+                        templateUrl : templateChange() + '/js/training-list/trainingListView.html',
+                        controller : 'trainingListController',
+                        controllerAs : 'trainingList'
+                    }
+                },
+                params :{
+                    'calledFromAdmin' : true
+                }
+            })
+             .state('main.loggedIn.previewTrainingDetails', {      
+                url: '/training/preview/:eventID',
+                views : {
+                    'header': {
+                        templateUrl: templateChange() + '/js/common/logged-in/headerView.html',
+                        controller : function($scope,$window) {
+                            $scope.title = 'Preview';
+                            $scope.showBackArrow = true;
+                            $scope.goBack = function() {
+                                $window.history.back();
+                            }
+                        }
+                    },
+                    'content' : {
+                        templateUrl: templateChange() + '/js/training/preview/previewTrainingView.html',
+                        controller: 'previewTrainingController'
+                    }
+                },
+                params :{
+                    'eventID' : null
                 }
             })
              .state('main.loggedIn.previewNews', {      

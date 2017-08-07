@@ -7,21 +7,23 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.db import connection
 from django.db.models import Min
+from string import rsplit
+from dateutil import parser
 from users.authentication import TokenAuthentication
 from mitraEndPoints import constants, utils
-from events.serializers import eventQuerySerializer,eventSerializer,userEventModelSerializer,trainingListSerializer
+from events.serializers import eventQuerySerializer,eventSerializer,trainingListSerializer
 from commons.serializers import codeSerializer
 from events.CalenderService import EventsCalender
 from users.models import user
 from commons.models import code
-from events.models import userEvent, eventInfo , event, eventDetail, districtBlockMapping
+from events.models import eventInfo , event, eventDetail, districtBlockMapping, usersEvent
 from commons.views import getUserIDFromAuthToken
 
 class EventViewSet(viewsets.ViewSet):
     """
-    API endpoint to fetch list of events from calender
+    API endpoint to fetch list of events from calendar
     """
-    serializer_class = userEventModelSerializer
+    #serializer_class = userEventModelSerializer
     calender = EventsCalender()
     
     http_method_names = ['get', 'post']
@@ -79,13 +81,13 @@ class EventViewSet(viewsets.ViewSet):
     """
     @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
     def attendEvent(self, request):
-        eventID = request.data.get('eventID')
+        eventDetailID = request.data.get('eventDetailID')
         authToken = request.META.get('HTTP_AUTHTOKEN')
         
         #Get userID from authToken
         userID = getUserIDFromAuthToken(authToken)
         # Check if userID is passed in post param
-        if not eventID:
+        if not eventDetailID:
             return Response({"response_message": constants.messages.event_attend_eventid_cannot_be_empty,
                              "data": []},
                              status = status.HTTP_401_UNAUTHORIZED)
@@ -104,16 +106,24 @@ class EventViewSet(viewsets.ViewSet):
                              "data": []},
                             status = status.HTTP_404_NOT_FOUND)
             
+        # If userID parameter is passed, then check user exists or not
+        try:
+            objEventDetail = eventDetail.objects.get(eventDetailID = eventDetailID)
+        except eventDetail.DoesNotExist:
+            return Response({"response_message": constants.messages.event_attend_user_does_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+            
 #         objUserEventSerializer = userEventModelSerializer(data = request.data)
 #         if not objUserEventSerializer.is_valid():
 #             return Response({"response_message": constants.messages.event_attend_parameters_not_valid,"data": []},
 #                             status=status.HTTP_401_UNAUTHORIZED)
-        if userEvent.objects.filter(event = eventID, user = objUser).exists():
+        if usersEvent.objects.filter(eventDetail = objEventDetail, user = objUser).exists():
             return Response({"response_message": constants.messages.event_attend_user_already_attending_event,
                              "data": []},
                             status = status.HTTP_200_OK)
         
-        objUserEvent = userEvent(event = eventID, user = objUser)
+        objUserEvent = usersEvent(eventDetail = objEventDetail, user = objUser)
         objUserEvent.save()
         
         #objUserEvent = objUserEventSerializer.create(objUserEventSerializer.data)
@@ -128,8 +138,10 @@ class EventViewSet(viewsets.ViewSet):
     def trainingList(self, request):
         categoryCodeID = request.data.get('categoryCodeID') 
         date = request.data.get('date')
+        trainingListForMonth = request.data.get('trainingListForMonth')
         districtCodeID = request.data.get('districtCodeID')
         blockCodeID = request.data.get('blockCodeID')
+        trainer = request.data.get('trainer')
         authToken = request.META.get('HTTP_AUTHTOKEN')
         appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
 
@@ -172,25 +184,49 @@ class EventViewSet(viewsets.ViewSet):
                                     from evt_eventdetail ED 
                                     group by ED.eventID) A 
                                     on A.eventID = E.eventID
-                            join evt_eventdetail ED on ED.eventID = E.eventID and ED.date = A.date
-                            where EI.appLanguageCodeID = 113100 """
+                            join evt_eventdetail ED on ED.eventID = E.eventID """ 
+                            
+        if not date and not blockCodeID and not districtCodeID and not trainer:
+            searchTrainingListQuery = searchTrainingListQuery + str(" and ED.date = A.date")
+            
+                            
+        searchTrainingListQuery = searchTrainingListQuery + str(" where EI.appLanguageCodeID = 113100 ")                   
         
         if categoryCodeID:
             searchTrainingListQuery = searchTrainingListQuery + str(" AND E.categoryCodeID = " + str(categoryCodeID))
             
         if date:
-            searchTrainingListQuery = searchTrainingListQuery + str(" AND ED.date = '" + str(date) + "'")
+                        #Split the actual date..to conver it into the correct format.
+            actualDate = date.rsplit('(',1)
+            date = actualDate[0]
+            #Set the converted date.
+            date = parser.parse(actualDate[0])
+            
+            searchTrainingListQuery = searchTrainingListQuery + str(" AND date(ED.date) = '" + str(date) + "'")
+            
+        if trainingListForMonth:
+            #Split the actual date..to convert it into the correct format.
+            actualDate = trainingListForMonth.rsplit('(',1)
+            date = actualDate[0]
+            
+            #Set the converted date.
+            trainingListForMonth = parser.parse(actualDate[0])
+            searchTrainingListQuery = searchTrainingListQuery + str(" AND year(ED.date) = year('" + str(trainingListForMonth) + "')" + " AND month(ED.date) = month('" + str(trainingListForMonth) + "')")
             
         if districtCodeID:
             searchTrainingListQuery = searchTrainingListQuery + str(" AND ED.districtCodeID = " + str(districtCodeID))
             
         if blockCodeID:
             searchTrainingListQuery = searchTrainingListQuery + str(" AND ED.blockCodeID = " + str(blockCodeID))
-        
+            
+        if trainer:
+            searchTrainingListQuery = searchTrainingListQuery + str(" AND ED.engTrainer ='" + str(trainer) + "'")
+            
+        searchTrainingListQuery = searchTrainingListQuery + str(" order by eventID desc")
         
         #(appLanguageCodeID,str(arrFileTypeCodeID),str(arrStatusCodeID),constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
                        
-        print "searchTrainingListQuery:",searchTrainingListQuery            
+        print "trainingList:",searchTrainingListQuery            
         cursor.execute(searchTrainingListQuery)
     
         #Query set
@@ -226,10 +262,10 @@ class EventViewSet(viewsets.ViewSet):
                     "data": []},
                     status = status.HTTP_200_OK) 
         
-        return Response({"response_message": constants.messages.success, "data": [response_data]})
+        return Response({"response_message": constants.messages.success, "data": response_data})
     
     
-        """
+    """
     Get training list
     """   
     @list_route(methods=['POST'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
@@ -296,7 +332,7 @@ class EventViewSet(viewsets.ViewSet):
                             from evt_event E 
                             inner join evt_eventinfo EI on E.eventID = EI.eventID
                             inner join evt_eventdetail ED on ED.eventID = E.eventID 
-                            where EI.appLanguageCodeID = 113100 AND E.eventID = """ + str(eventID) + """ AND ED.eventDetailID <> """ + str(objEventDetail[0]) 
+                            where EI.appLanguageCodeID = 113100 AND E.eventID = """ + str(eventID) #+ """ AND ED.eventDetailID <> """ + str(objEventDetail[0]) 
         
         if categoryCodeID:
             searchTrainingListQuery = searchTrainingListQuery + str(" AND E.categoryCodeID = " + str(categoryCodeID))
@@ -349,7 +385,108 @@ class EventViewSet(viewsets.ViewSet):
                     "data": []},
                     status = status.HTTP_200_OK) 
         
-        return Response({"response_message": constants.messages.success, "data": [response_data]})
+        return Response({"response_message": constants.messages.success, "data": response_data})
+    
+    """
+    Get alternate training details list
+    """   
+    @list_route(methods=['POST'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def alternateTrainingDetailList(self, request):
+        eventID = request.data.get('eventID') 
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
+
+        #get UserID from auth token
+        userID  =  getUserIDFromAuthToken(authToken)
+        objEvent = None
+        
+        # check user is not null 
+        if not userID or userID == 0:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty, 
+                             "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+            
+        # check eventID is not null 
+        if not eventID or eventID == 0:
+            return Response({"response_message": constants.messages.alternate_event_list_eventid_cannot_be_empty, 
+                             "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+            
+        # If eventID parameter is passed, then check eventID exists or not
+        try:
+            objEvent = event.objects.get(eventID = eventID)
+        except event.DoesNotExist:
+            return Response({"response_message": constants.messages.alternate_event_list_event_does_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+          
+        # Connection
+        cursor = connection.cursor()  
+        
+        # Create object of common class
+        objCommon = utils.common()
+        
+        # SQL Query
+        searchTrainingListQuery = """ select
+                                    E.eventID,
+                                    (select eventTitle from evt_eventInfo where eventID = E.eventID and applanguageCodeID = 113100 ) as 'engEventTitle' ,
+                                    (select eventTitle from evt_eventInfo where eventID = E.eventID and applanguageCodeID = 113101 ) as 'marEventTitle' ,
+                                    (select eventDescription from evt_eventInfo where eventID = E.eventID and applanguageCodeID = 113100 ) as 'engEventDescription' ,
+                                    (select eventDescription from evt_eventInfo where eventID = E.eventID and applanguageCodeID = 113101 ) as 'marEventDescription' ,
+                                    ED.eventDetailID,
+                                    E.categoryCodeID,
+                                    ED.date,
+                                    ED.districtCodeID,
+                                    ED.blockCodeID,
+                                    ED.engLocation,
+                                    ED.marLocation,
+                                    ED.engTrainer,
+                                    ED.marTrainer,
+                                    ED.statusCodeID,
+                                    E.createdBy,
+                                    E.createdOn,
+                                    ED.stateCodeID
+                            from evt_event E
+                            inner join evt_eventdetail ED on ED.eventID = E.eventID
+                            where E.eventID =  """ + str(eventID) #+ """ AND ED.eventDetailID <> """ + str(objEventDetail[0]) 
+        
+                       
+        print "searchTrainingListQuery:",searchTrainingListQuery            
+        cursor.execute(searchTrainingListQuery)
+    
+        #Query set
+        TrainingListQuerySet = cursor.fetchall()
+        
+        response_data = []
+        
+        for item in TrainingListQuerySet:
+            objResponse_data = {
+                                    'eventID':          item[0], 
+                                    'engEventTitle':      item[1], 
+                                    'marEventTitle':      item[2],
+                                    'engEventDescription': item[3],
+                                    'marEventDescription': item[4],
+                                    'eventDetailID':    item[5],
+                                    'categoryCodeID':   item[6],
+                                    'date':                 item[7],
+                                    'districtCodeID' :        item[8],
+                                    'blockCodeID':         item[9],
+                                    'engLocation':           item[10],
+                                    'marLocation' :      item[11],
+                                    'engTrainer':         item[12],
+                                    'marTrainer':        item[13],
+                                    'statusCodeID':       item[14],
+                                    'createdBy':        item[15],
+                                    'createdOn':        item[16],
+                                    'stateCodeID':      item[17]
+                                }
+            response_data.append(objResponse_data)
+            
+        #Check for the no of records fetched.
+        if not TrainingListQuerySet:
+            return Response({"response_message": constants.messages.training_list_search_no_records_found,
+                    "data": []},
+                    status = status.HTTP_200_OK) 
+        
+        return Response({"response_message": constants.messages.success, "data": response_data})
     
     """
     API to save the training status
@@ -428,18 +565,19 @@ class EventViewSet(viewsets.ViewSet):
         engEventDescription = request.data.get('engEventDescription')
         marEventDescription = request.data.get('marEventDescription')
         
-        date = request.data.get('date')
-        
-        districtCodeID = request.data.get('districtCodeID')
-        blockCodeID = request.data.get('blockCodeID')
-        
-        engLocation = request.data.get('engLocation')
-        marLocation = request.data.get('marLocation')
-        
-        engTrainer = request.data.get('engTrainer')
-        marTrainer = request.data.get('marTrainer')
-        
-        statusCodeID = request.data.get('statusCodeID')
+#         date = request.data.get('date')
+#         
+#         districtCodeID = request.data.get('districtCodeID')
+#         blockCodeID = request.data.get('blockCodeID')
+#         stateCodeID = request.data.get('stateCodeID')
+#         
+#         engLocation = request.data.get('engLocation')
+#         marLocation = request.data.get('marLocation')
+#         
+#         engTrainer = request.data.get('engTrainer')
+#         marTrainer = request.data.get('marTrainer')
+#         
+#         statusCodeID = request.data.get('statusCodeID')
                 
         #Get userID from authToken
         userID = getUserIDFromAuthToken(authToken)
@@ -481,54 +619,54 @@ class EventViewSet(viewsets.ViewSet):
                             "data": []},
                             status = status.HTTP_401_UNAUTHORIZED) 
 
-        # Check marEventDescription param is passed or not.
-        if not date:
-            return Response({"response_message": constants.messages.add_event_date_cannot_be_empty,
-                            "data": []},
-                            status = status.HTTP_401_UNAUTHORIZED) 
-        
-        # Check districtCodeID param is passed or not.
-        if not districtCodeID:
-            return Response({"response_message": constants.messages.add_event_districtCodeID_cannot_be_empty,
-                            "data": []},
-                            status = status.HTTP_401_UNAUTHORIZED) 
-            
-        # Check blockCodeID param is passed or not.
-        if not blockCodeID:
-            return Response({"response_message": constants.messages.add_event_blockCodeID_cannot_be_empty,
-                            "data": []},
-                            status = status.HTTP_401_UNAUTHORIZED) 
-            
-        # Check engLocation param is passed or not.
-        if not engLocation:
-            return Response({"response_message": constants.messages.add_event_engLocation_cannot_be_empty,
-                            "data": []},
-                            status = status.HTTP_401_UNAUTHORIZED) 
-            
-        # Check marLocation param is passed or not.
-        if not marLocation:
-            return Response({"response_message": constants.messages.add_event_marLocation_cannot_be_empty,
-                            "data": []},
-                            status = status.HTTP_401_UNAUTHORIZED) 
-            
-
-        # Check marTrainer param is passed or not.
-        if not marTrainer:
-            return Response({"response_message": constants.messages.add_event_marTrainer_cannot_be_empty,
-                            "data": []},
-                            status = status.HTTP_401_UNAUTHORIZED) 
-            
-        # Check engTrainer param is passed or not.
-        if not engTrainer:
-            return Response({"response_message": constants.messages.add_event_engTrainer_cannot_be_empty,
-                            "data": []},
-                            status = status.HTTP_401_UNAUTHORIZED) 
-            
-        # Check statusCodeID param is passed or not.
-        if not statusCodeID:
-            return Response({"response_message": constants.messages.add_event_statusCodeID_cannot_be_empty,
-                            "data": []},
-                            status = status.HTTP_401_UNAUTHORIZED) 
+#         # Check marEventDescription param is passed or not.
+#         if not date:
+#             return Response({"response_message": constants.messages.add_event_date_cannot_be_empty,
+#                             "data": []},
+#                             status = status.HTTP_401_UNAUTHORIZED) 
+#         
+#         # Check districtCodeID param is passed or not.
+#         if not districtCodeID:
+#             return Response({"response_message": constants.messages.add_event_districtCodeID_cannot_be_empty,
+#                             "data": []},
+#                             status = status.HTTP_401_UNAUTHORIZED) 
+#             
+#         # Check blockCodeID param is passed or not.
+#         if not blockCodeID:
+#             return Response({"response_message": constants.messages.add_event_blockCodeID_cannot_be_empty,
+#                             "data": []},
+#                             status = status.HTTP_401_UNAUTHORIZED) 
+#             
+#         # Check engLocation param is passed or not.
+#         if not engLocation:
+#             return Response({"response_message": constants.messages.add_event_engLocation_cannot_be_empty,
+#                             "data": []},
+#                             status = status.HTTP_401_UNAUTHORIZED) 
+#             
+#         # Check marLocation param is passed or not.
+#         if not marLocation:
+#             return Response({"response_message": constants.messages.add_event_marLocation_cannot_be_empty,
+#                             "data": []},
+#                             status = status.HTTP_401_UNAUTHORIZED) 
+#             
+# 
+#         # Check marTrainer param is passed or not.
+#         if not marTrainer:
+#             return Response({"response_message": constants.messages.add_event_marTrainer_cannot_be_empty,
+#                             "data": []},
+#                             status = status.HTTP_401_UNAUTHORIZED) 
+#             
+#         # Check engTrainer param is passed or not.
+#         if not engTrainer:
+#             return Response({"response_message": constants.messages.add_event_engTrainer_cannot_be_empty,
+#                             "data": []},
+#                             status = status.HTTP_401_UNAUTHORIZED) 
+#             
+#         # Check statusCodeID param is passed or not.
+#         if not statusCodeID:
+#             return Response({"response_message": constants.messages.add_event_statusCodeID_cannot_be_empty,
+#                             "data": []},
+#                             status = status.HTTP_401_UNAUTHORIZED) 
         
         # If userID parameter is passed, then check user exists or not
         try:
@@ -540,10 +678,13 @@ class EventViewSet(viewsets.ViewSet):
                                
         # Save content like response.
         objeEvent = saveEvent(eventID, categoryCodeID, marEventTitle, engEventTitle, engEventDescription, marEventDescription , objUser)
+        
+                #set the file name to the response.
+        response = { 'eventID' : objeEvent.eventID }
 
-        saveEventDetail(objeEvent, date, districtCodeID, blockCodeID, engLocation, marLocation, marTrainer, engTrainer, statusCodeID, objUser)
+        #saveEventDetail(objeEvent, date,stateCodeID, districtCodeID, blockCodeID, engLocation, marLocation, marTrainer, engTrainer, statusCodeID, objUser)
         #Return the response
-        return Response({"response_message": constants.messages.success, "data": []})
+        return Response({"response_message": constants.messages.success, "data": [response]})
     
     
     """
@@ -555,6 +696,7 @@ class EventViewSet(viewsets.ViewSet):
         eventID = request.data.get('eventID')
         date = request.data.get('date')
         
+        stateCodeID = request.data.get('stateCodeID')
         districtCodeID = request.data.get('districtCodeID')
         blockCodeID = request.data.get('blockCodeID')
         
@@ -589,6 +731,12 @@ class EventViewSet(viewsets.ViewSet):
             return Response({"response_message": constants.messages.add_event_date_cannot_be_empty,
                             "data": []},
                             status = status.HTTP_401_UNAUTHORIZED) 
+            
+        # Check stateCodeID param is passed or not.
+        if not stateCodeID:
+            return Response({"response_message": constants.messages.add_event_stateCodeID_cannot_be_empty,
+                            "data": []},
+                            status = status.HTTP_401_UNAUTHORIZED) 
         
         # Check districtCodeID param is passed or not.
         if not districtCodeID:
@@ -602,17 +750,17 @@ class EventViewSet(viewsets.ViewSet):
                             "data": []},
                             status = status.HTTP_401_UNAUTHORIZED) 
             
-        # Check engLocation param is passed or not.
-        if not engLocation:
-            return Response({"response_message": constants.messages.add_event_engLocation_cannot_be_empty,
-                            "data": []},
-                            status = status.HTTP_401_UNAUTHORIZED) 
-            
-        # Check marLocation param is passed or not.
-        if not marLocation:
-            return Response({"response_message": constants.messages.add_event_marLocation_cannot_be_empty,
-                            "data": []},
-                            status = status.HTTP_401_UNAUTHORIZED) 
+#         # Check engLocation param is passed or not.
+#         if not engLocation:
+#             return Response({"response_message": constants.messages.add_event_engLocation_cannot_be_empty,
+#                             "data": []},
+#                             status = status.HTTP_401_UNAUTHORIZED) 
+#             
+#         # Check marLocation param is passed or not.
+#         if not marLocation:
+#             return Response({"response_message": constants.messages.add_event_marLocation_cannot_be_empty,
+#                             "data": []},
+#                             status = status.HTTP_401_UNAUTHORIZED) 
             
 
         # Check marTrainer param is passed or not.
@@ -640,9 +788,16 @@ class EventViewSet(viewsets.ViewSet):
             return Response({"response_message": constants.messages.add_event_user_not_exists,
                              "data": []},
                             status = status.HTTP_404_NOT_FOUND)
+            
+        #Split the actual date..to conver it into the correct format.
+        actualDate = date.rsplit('(',1)
+        publishDate = actualDate[0]
+        
+        #Set the converted date.
+        publishDate = parser.parse(actualDate[0])
                                
         # Save event details.
-        saveEventDetail(objEvent, date, districtCodeID, blockCodeID, engLocation, marLocation, marTrainer, engTrainer, statusCodeID, objUser)
+        saveEventDetail(objEvent, publishDate,stateCodeID, districtCodeID, blockCodeID, engLocation, marLocation, marTrainer, engTrainer, statusCodeID, objUser)
         #Return the response
         return Response({"response_message": constants.messages.success, "data": []})
     
@@ -675,6 +830,9 @@ class EventViewSet(viewsets.ViewSet):
         #Get blockCodeID list
         blockListQueryset = code.objects.filter(codeID__in = objBlockList)
         
+        # order by enCodeName. i.e. Block name in english
+        blockListQueryset = blockListQueryset.order_by('codeNameEn')
+        
         # if no records found
         if not blockListQueryset:
             return Response({"response_message": constants.messages.blockList_no_records_found,
@@ -684,6 +842,45 @@ class EventViewSet(viewsets.ViewSet):
         serializer = codeSerializer(blockListQueryset, many = True)
         
         return Response({"response_message": constants.messages.success, "data": serializer.data})
+    
+    """
+    Get My training List
+    """   
+    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
+    def myTrainingList(self, request):
+        authToken = request.META.get('HTTP_AUTHTOKEN') 
+                
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+
+        myTrainingListQueryset = None
+                
+        # Check districtCodeID is passed or not.
+        if  not userID:
+            return Response({"response_message": constants.messages.myTrainingList_userID_cannot_be_empty,
+                         "data": []},
+                         status = status.HTTP_401_UNAUTHORIZED) 
+            
+                # If userID parameter is passed, then check user exists or not
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.add_event_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+        
+        #Get myTrainingListQueryset list
+        myTrainingListQueryset = list(usersEvent.objects.filter(user  = objUser).values('eventDetail','user'))
+        
+        # if no records found
+        if not myTrainingListQueryset:
+            return Response({"response_message": constants.messages.myTrainingList_no_records_found,
+                    "data": []},
+                    status = status.HTTP_200_OK)
+               
+        #serializer = codeSerializer(blockListQueryset, many = True)
+        
+        return Response({"response_message": constants.messages.success, "data": myTrainingListQueryset})
     
     """
     API to get trainer list
@@ -698,12 +895,104 @@ class EventViewSet(viewsets.ViewSet):
         # Remove empty and null authors
         objTrainerList = objTrainerList.exclude(engTrainer__isnull=True).exclude(engTrainer__exact='')
         
+        #Order by engTrainer name
+        objTrainerList = objTrainerList.order_by('engTrainer')
+        
         if not objTrainerList:
             return Response({"response_message": constants.messages.author_list_no_records_found,
                     "data": []},
                     status = status.HTTP_200_OK)
         
         return Response({"response_message": constants.messages.success, "data": objTrainerList})
+    
+    """
+    API to delete the alternative event.
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def deleteAlternateEvent(self,request):
+        # get inputs
+        eventDetailID = request.data.get('eventDetailID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # Check if eventDetailID is passed in post param
+        if not eventDetailID:
+            return Response({"response_message": constants.messages.deleteAlternateEvent_eventDetailid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+               
+        # If eventDetailID parameter is passed, then check event exists or not
+        try:
+            objEventDetail = eventDetail.objects.get(eventDetailID = eventDetailID)
+        except eventDetail.DoesNotExist:
+            return Response({"response_message": constants.messages.deleteAlternateEvent_event_doesnot_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+        
+        #delete from users event table.
+        usersEvent.objects.filter(eventDetail = objEventDetail).delete()
+                               
+        #delete from event detail table.
+        eventDetail.objects.filter(eventDetailID = eventDetailID).delete()
+
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": []}) 
+    
+    """
+    API to get users count for attending event.
+    """   
+    @list_route(methods=['POST'], permission_classes=[permissions.AllowAny])
+    def getUserCountForEvent(self, request):
+        
+        # get inputs
+        eventDetailID = request.data.get('eventDetailID')
+        authToken = request.META.get('HTTP_AUTHTOKEN')
+        
+        #Get userID from authToken
+        userID = getUserIDFromAuthToken(authToken)
+               
+        # Check if userID is passed in post param
+        if not userID:
+            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
+                             "data": []},
+                             status = status.HTTP_401_UNAUTHORIZED)
+            
+        # If userID parameter is passed, then check user exists or not.
+        try:
+            objUser = user.objects.get(userID = userID)
+        except user.DoesNotExist:
+            return Response({"response_message": constants.messages.add_event_user_not_exists,
+                             "data": []},
+                            status = status.HTTP_404_NOT_FOUND)
+            
+        # Check if eventDetailID is passed in post param
+        if not eventDetailID:
+            return Response({"response_message": constants.messages.deleteAlternateEvent_eventDetailid_cannot_be_empty,
+                     "data": []},
+                     status = status.HTTP_401_UNAUTHORIZED) 
+               
+        # If eventDetailID parameter is passed, then check event exists or not
+        try:
+            objEventDetail = eventDetail.objects.get(eventDetailID = eventDetailID)
+        except eventDetail.DoesNotExist:
+            return Response({"response_message": constants.messages.deleteAlternateEvent_event_doesnot_exists,
+                     "data": []},
+                    status = status.HTTP_404_NOT_FOUND)
+
+        # Get user count for the event...
+        objuserCount = usersEvent.objects.filter(eventDetail = objEventDetail).count()
+        
+        response = { 'userCount' : objuserCount }
+                
+        return Response({"response_message": constants.messages.success, "data": response})
         
         
 """
@@ -711,55 +1000,71 @@ Common function to event info.
 """
 def saveEvent(eventID, categoryCodeID, marEventTitle, engEventTitle, engEventDescription, marEventDescription, objUser):
     
-    #Check categoryCodeID exists or not
-    try:
-        objCategory = code.objects.get(codeID = categoryCodeID)
-    except code.DoesNotExist:
-        return
-    
-    #Save event
-    objEvent = event.objects.create(category = objCategory, createdBy = objUser)
-    objEvent.save()
-        
     # Get app language instances for English and Marathi.
     objAppLanguageEng = code.objects.get(codeID = constants.appLanguage.english)
     objAppLanguageMar = code.objects.get(codeID = constants.appLanguage.marathi)
         
-    #Save the training info for multiple language.
-    eventInfo.objects.bulk_create(
-                                        [
-                                        eventInfo(
-                                                event = objEvent,
-                                                appLanguage = objAppLanguageMar,
-                                                eventTitle = marEventTitle, 
-                                                eventDescription = marEventDescription
-                                                ),
-                                         eventInfo(
-                                                event = objEvent,
-                                                appLanguage = objAppLanguageEng,
-                                                eventTitle = engEventTitle, 
-                                                eventDescription = engEventDescription),
-                                        ]
-                                     )
+        
+    if not eventID or eventID == 0:
+        #Check categoryCodeID exists or not
+        try:
+            objCategory = code.objects.get(codeID = categoryCodeID)
+        except code.DoesNotExist:
+            return
+        
+        #Save event
+        objEvent = event.objects.create(category = objCategory, createdBy = objUser)
+        objEvent.save()
+                        
+        #Save the training info for multiple language.
+        eventInfo.objects.bulk_create(
+                                            [
+                                            eventInfo(
+                                                    event = objEvent,
+                                                    appLanguage = objAppLanguageMar,
+                                                    eventTitle = marEventTitle, 
+                                                    eventDescription = marEventDescription
+                                                    ),
+                                             eventInfo(
+                                                    event = objEvent,
+                                                    appLanguage = objAppLanguageEng,
+                                                    eventTitle = engEventTitle, 
+                                                    eventDescription = engEventDescription),
+                                            ]
+                                         )
+    else:
+        # If eventID parameter is passed, then check eventID exists or not and update the event details.       
+        try:
+            objEvent = event.objects.get(eventID = eventID)
+        except event.DoesNotExist:
+            return statusHttpNotFound(constants.messages.uploadContent_contentID_does_not_exists)
+         
+        # If eventID valid, update the details.
+        eventInfo.objects.filter(event = objEvent, appLanguage = objAppLanguageEng).update(eventDescription = engEventDescription)
+        
+        eventInfo.objects.filter(event = objEvent, appLanguage = objAppLanguageMar).update(eventDescription = marEventDescription)
+    
     #return event object.
     return objEvent
 
 """
 Common function to event details for Master Event.
 """
-def saveEventDetail(objEvent, date,districtCodeID, blockCodeID, engLocation, marLocation, marTrainer, engTrainer, statusCodeID, objUser):
+def saveEventDetail(objEvent, date,stateCodeID ,districtCodeID, blockCodeID, engLocation, marLocation, marTrainer, engTrainer, statusCodeID, objUser):
     
     #Check categoryCodeID exists or not
     try:
         objDistrict = code.objects.get(codeID = districtCodeID)
         objBlock = code.objects.get(codeID = blockCodeID) 
         objStatus = code.objects.get(codeID = statusCodeID)
+        objState = code.objects.get(codeID = stateCodeID)
     except code.DoesNotExist:
         return
     
     #Save event details.
     eventDetail(event = objEvent,
                 date = date,
+                state = objState,
                 district = objDistrict,
                 block = objBlock,
                 engLocation = engLocation,

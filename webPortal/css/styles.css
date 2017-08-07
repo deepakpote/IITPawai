@@ -79,6 +79,25 @@ a:hover, a:focus {
     padding: 0;
     align: center
 }
+.add-alternate-event {
+	background: rgba(0, 0, 0, 0) url("../images/AddAlternateEvent.png") no-repeat center;
+    height: 130px;
+    padding: 0;
+    align: center
+}
+.delete-event {
+	background: rgba(0, 0, 0, 0) url("../images/deleteImage.png") no-repeat center;
+    height: 130px;
+    padding: 0;
+    align: center
+}
+
+.reset-calendar-filter {
+	background: rgba(0, 0, 0, 0) url("../images/resetCalendarFilter.png") no-repeat center;
+    height: 130px;
+    padding: 0;
+    align: center
+}
 .mitra-language {
 	background-color: #7a7a7a;
     color: #fff;
@@ -586,12 +605,33 @@ opacity: 0.5;
 z-index: 1;
 }
 
+.wrapmyText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+}
+
 #loading-img {
 background: url('https://i2.wp.com/www.dhp11.com/foswiki/pub/Internal/2012-06-12/spinner.gif') center center no-repeat;
 height: 100%;
 width: 90%;
 z-index: 20;
 }
+
+.modal { 
+	display: block;
+}
+
+.dialog-header-confirm { background-color: #333333; }
+
+.dialog-header-confirm span, .dialog-header-confirm h4 { color: #ffffff; }
+
+/* Ease Display */
+
+.pad { padding: 25px; }
+
+
 
 .dropdown:hover .dropdown-menu {
     display: block;
@@ -611,3 +651,45 @@ z-index: 20;
 /* Rules for using icons as white on a dark background. */
 .material-icons.md-light { color: rgba(255, 255, 255, 1); }
 .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+
+td {
+    border-bottom: 2px #ccc solid;
+    border-left: none;
+  	border-right: none;
+}
+
+th {
+    border: 2px #009688 solid;
+    border-left: none;
+    border-right: none;
+}
+
+tr {
+    border-left: none;
+    border-right: none;
+}
+
+.circle
+    {
+    width:30px;
+    height:30px;
+    border-radius:30px;
+    font-size:20px;
+    color:#fff;
+    line-height:30px;
+    text-align:center;
+    background:#ff9100;
+    }
+    
+  .uib-tooltip-inner {
+    max-width: 350px;
+    /* If max-width does not work, try using width instead */
+    width: 350px; 
+}
+
+table { box-shadow: 0px 4px 22px #999; }
+
+.highLightDayOfWeek
+{
+	color:black;
+}

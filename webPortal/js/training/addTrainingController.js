@@ -9,17 +9,18 @@ angular.module("mitraPortal").controller("addTrainingController",
 
 
     $scope.inputs= {}
-    
     $scope.location = "STATE"; // can be "STATE" or "DISTRICT" or "BLOCK"
-
     $scope.selectedOption = "";
+    $scope.trainingSaveedSuccessfully = false;
     
-    $scope.setSelectedOption = function (selectedOption){
+    
+    
+    $scope.setSelectedOption = function (selectedOption,index){
       if ($scope.selectedOption == selectedOption){
         $scope.selectedOption = null;
       }
       else{
-        $scope.selectedOption = selectedOption;
+        $scope.selectedOption = selectedOption + index;
       }
     }
 
@@ -29,40 +30,8 @@ angular.module("mitraPortal").controller("addTrainingController",
       });
     }
 
-    // Save news in DRAFT.
-    $scope.save = function() 
-    {
-      if(validateOptions())
-      {
-        $scope.statusCodeID = appConstants.code.contentOrNewsOrTrainingStatus_Created; 
-        submit();
-      }
-    }
 
-    // sendForReview news
-    $scope.sendForReview = function() 
-    {
-
-      if(validateOptions())
-      {
-        $scope.statusCodeID = appConstants.code.contentOrNewsOrTrainingStatus_SentForReview;
-        submit();
-      }
-    }
     
-    // Publish news
-    $scope.publish = function() 
-    {
-
-      if(validateOptions())
-      {
-        $scope.statusCodeID = appConstants.code.contentOrNewsOrTrainingStatus_Published;
-        submit();
-      }
-    }
-    
-
-
     // Validate details
     var validateOptions = function() 
     {
@@ -84,90 +53,152 @@ angular.module("mitraPortal").controller("addTrainingController",
     {
 
       var fd = new FormData();
-        for  (var key in $scope.news)
-        {
-          $log.debug(key);
-          $log.debug($scope.news[key]);
-          fd.append(key, $scope.news[key]);
-        }
-        
-        fd.append("statusCodeID", $scope.statusCodeID);
 
-        $log.debug($scope.newsImage1);
-        $log.debug(!isUndefinedOrNull($scope.newsImage1));
+        fd.append("categoryCodeID", $scope.training.trainingCategoryCodeID);
         
-        if(!isUndefinedOrNull($scope.newsImage1))
-        	{fd.append('imageOne', $scope.newsImage1);}
+        fd.append("marEventTitle", $scope.training.marTrainingTitle);
+        fd.append("engEventTitle", $scope.training.engTrainingTitle);
         
-        if(!isUndefinedOrNull($scope.newsImage2))
-    		{fd.append('imageTwo', $scope.newsImage2);}
-        
-        if(!isUndefinedOrNull($scope.newsImage3))
-    		{fd.append('imageThree', $scope.newsImage3);}
-        
-        if(!isUndefinedOrNull($scope.newsImage4))
-    		{fd.append('imageFour', $scope.newsImage4);}
-        
-        if(!isUndefinedOrNull($scope.newsImage5))
-    		{fd.append('imageFive', $scope.newsImage5);}        
-        
-		if(!isUndefinedOrNull($scope.myPDFFile))
-			{fd.append('pdfFile', $scope.myPDFFile);}
-		
-		console.log("Actual date format............................");
-		console.log($scope.news.publishDate);
-		
-		if(!isUndefinedOrNull($scope.news.publishDate))
-		{fd.append('publishDate', $scope.news.publishDate);}
-		
-		
+        fd.append("marEventDescription", $scope.training.marDescription);
+        fd.append("engEventDescription", $scope.training.engDescription);
+
         var headers = { "authToken": appUtils.getFromCookies("token",""),
         'Content-Type': undefined};
         
 
-        $http.post(appConstants.endpoint.baseUrl + "news/saveNews/", fd, {
+        $http.post(appConstants.endpoint.baseUrl + "events/addEvent/", fd, {
           transformRequest: angular.identity,
           headers: headers
         })
         .then (function success(response){
-          $scope.result= "uploaded successfully";
-          setSuccessDetails();
-          var modalInstance = $uibModal.open({
-            url: 'result',
-            scope: $scope,
-            templateUrl :  'mitra/js/news-circulars/submittedSuccessView.html',
-          })
-          modalInstance.result.finally(function(){ 
-            if ($scope.news.newsCategoryCodeID == appConstants.code.NewsCategory_MAA){
-              $window.scrollTo(0, 0);
-              $state.go('main.loggedIn.addNews');
-            }
-
-          });
-          ;
+          $scope.result= "Event added successfully";
+          //setSuccessDetails()
+          console.log(response.data);
+          console.log("EventID:" + (response.data.data)[0].eventID);
+          if (((response.data.data)[0].eventID) > 0){
+        	 saveAlternateEvents((response.data.data)[0].eventID);
+        }
+          
+	        $scope.result= "uploaded successfully";
+	        setSuccessDetails();
+	        var modalInstance = $uibModal.open({
+	          url: 'result',
+	          scope: $scope,
+	          templateUrl : appConstants.siteName.mitraSiteName + '/js/training/submittedSuccessView.html',
+	        })
+	        modalInstance.result.finally(function(){ 
+	            $window.scrollTo(0, 0);
+	            $state.go('main.loggedIn.trainingList');
+	        });
+         
+          
         },
         function error(response){
-          $log.debug("IN ERRORR RESPONSE");
-          $log.debug(response);
-          //$log.debug(response.data);
-          //$log.debug(response.data.response_message);
           $scope.uploadErrorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn;
-          $log.debug($scope.uploadErrorMessage);
-          $scope.result ="Failed to add news.";
+          $scope.uploadErrorMessage = "Failed to add training.";
+          $scope.result ="Failed to add training.";
           var modalInstance = $uibModal.open({
             url: 'result',
             scope: $scope,
-            templateUrl : appConstants.endpoint.baseUrl + 'mitra/js/news-circulars/submittedErrorView.html',
+            templateUrl : appConstants.endpoint.baseUrl + appConstants.siteName.mitraSiteName +  '/js/training/submittedErrorView.html',
           });
+          
         });
       }
+    
+    var saveAlternateEvents = function(eventID)
+    {
+    	
+    	for (var i=0; i<$scope.items.length;i++)
+    	{
+    		console.log("IN FOR LOOP");
+    	    console.log( $scope.items[i].publishDate);
+    	        
+    	    var fd = new FormData();
 
-      $scope.addNews = function () {
-        newsService.addNews($scope.news, 
-          addNewsSuccessCB,
-          addNewsErrorCB);
-        $scope.submitted = true;
-      };
+            fd.append("eventID", eventID);
+            
+            if(!isUndefinedOrNull($scope.items[i].publishDate))
+            	{fd.append('date', $scope.items[i].publishDate);}
+            
+            if(!isUndefinedOrNull($scope.items[i].selectedStateCodeID))
+        		{fd.append('stateCodeID', $scope.items[i].selectedStateCodeID);}   
+            
+            if(!isUndefinedOrNull($scope.items[i].selectedDistrictCodeID))
+        		{fd.append('districtCodeID', $scope.items[i].selectedDistrictCodeID);}
+            
+            if(!isUndefinedOrNull($scope.items[i].selectedBlockCodeID))
+        		{fd.append('blockCodeID', $scope.items[i].selectedBlockCodeID);}
+            
+            if(!isUndefinedOrNull($scope.items[i].engLocation))
+        		{fd.append('engLocation', $scope.items[i].engLocation);} 
+            
+            if(!isUndefinedOrNull($scope.items[i].marLocation))
+    		{fd.append('marLocation', $scope.items[i].marLocation);}  
+            
+            if(!isUndefinedOrNull($scope.items[i].marTrainer))
+    		{fd.append('marTrainer', $scope.items[i].marTrainer);}  
+            
+            if(!isUndefinedOrNull($scope.items[i].engTrainer))
+    		{fd.append('engTrainer', $scope.items[i].engTrainer);}  
+            
+    		if(!isUndefinedOrNull(appConstants.code.contentOrNewsOrTrainingStatus_Published))
+    			{fd.append('statusCodeID', appConstants.code.contentOrNewsOrTrainingStatus_Published);}
+    		
+            var headers = { "authToken": appUtils.getFromCookies("token",""),
+            'Content-Type': undefined};
+            
+
+            $http.post(appConstants.endpoint.baseUrl + "events/addAlternateEvent/", fd, {
+              transformRequest: angular.identity,
+              headers: headers
+            })
+            .then (function success(response){
+            	$scope.trainingSaveedSuccessfully = true;
+            	console.log("Success........");
+            },
+            function error(response){
+            	$scope.trainingSaveedSuccessfully = false;
+              //$scope.uploadErrorMessage = commonService.getValueByCode(response.data.response_message)[0].codeNameEn;
+              $scope.uploadErrorMessage = "Failed to add training.";
+              $scope.result ="Failed to add training.";
+              var modalInstance = $uibModal.open({
+                url: 'result',
+                scope: $scope,
+                templateUrl : appConstants.endpoint.baseUrl + appConstants.siteName.mitraSiteName +  '/js/training/submittedErrorView.html',
+              });
+            });
+          
+    	   }
+    	
+//    	if($scope.trainingSaveedSuccessfully == true)
+//    		{
+//		        $scope.result= "uploaded successfully";
+//		        setSuccessDetails();
+//		        var modalInstance = $uibModal.open({
+//		          url: 'result',
+//		          scope: $scope,
+//		          templateUrl : appConstants.siteName.mitraSiteName + '/js/training/submittedSuccessView.html',
+//		        })
+//		        modalInstance.result.finally(function(){ 
+//		            $window.scrollTo(0, 0);
+//		            $state.go('main.loggedIn.home');
+//		        });
+//    		}
+//    	else
+//    		{
+//	            $scope.uploadErrorMessage = "Failed to add training.";
+//	            $scope.result ="Failed to add training.";
+//	            var modalInstance = $uibModal.open({
+//	              url: 'result',
+//	              scope: $scope,
+//	              templateUrl : appConstants.endpoint.baseUrl + appConstants.siteName.mitraSiteName +  '/js/training/submittedErrorView.html',
+//	            });
+//    		}
+        
+    
+    }
+
 
       $scope.getCodeFromCodeList = function(codeID){};
 
@@ -200,7 +231,6 @@ angular.module("mitraPortal").controller("addTrainingController",
       // set trainer setSelectedTrainer
       $scope.setSelectedTrainer = function (selectedTrainerID,engTrainer,marTrainer) 
       {
-    	  console.log("selectedTrainerID:" + selectedTrainerID);
           $scope.selectedTrainerCodeID = selectedTrainerID; 
           $scope.engTrainer = engTrainer;
           $scope.marTrainer = marTrainer;
@@ -236,6 +266,13 @@ angular.module("mitraPortal").controller("addTrainingController",
           );
       };
       
+      // Get display block for training
+      var getDisplayBlock = function () {
+        $scope.displayBlockList = commonService.getCodeListPerCodeGroup(
+          appConstants.codeGroup.block
+          );
+      };
+      
       // Get block for training
       var getBlock = function () {
         $scope.blockList = commonService.getCodeListPerCodeGroup(
@@ -252,8 +289,9 @@ angular.module("mitraPortal").controller("addTrainingController",
 
       // Success blockList
       function fetchedBlockList(response) {
+    	  console.log("getBlockList response");
           console.log(response);
-          $scope.blockList = response.data;
+          $scope.displayBlockList = response.data;
       }
       
       // Failed blockList
@@ -271,56 +309,138 @@ angular.module("mitraPortal").controller("addTrainingController",
       function fetchedTrainerList(response) {
           console.log(response);
           $scope.trainerList = response.data;
+          
+          // Get unique trainer names
+          $scope.trainerList = UniqueArraybyId($scope.trainerList ,"engTrainer");
+          $scope.trainerList
       }
+      
+      // Get unique trainer names
+      function UniqueArraybyId(collection, keyname) {
+    	  console.log("IN UniqueArraybyId");
+          var output = [], 
+              keys = [];
+
+          angular.forEach(collection, function(item) {
+              var key = item[keyname];
+              if(keys.indexOf(key) === -1) {
+                  keys.push(key);
+                  output.push(item);
+              }
+          });
+          return output;
+      };
       
       // Failed trainerList
       function failureInFetchingTrainerList(response) {
           console.log(response);
       }
       
-      // Add alternative file
-      $scope.addAlternateEvent = function () {
+ 
+      $scope.items = [];
+      
+      $scope.add = function () {
     	  
-    	  var newEle = angular.element("<div class='gradient bottom-shadow' style='cursor: pointer;'>");
-    	   // var newEle = angular.element("<div ng-include='webPortal/js/training/addAlternateTrainingView.html'></div>");
-    	    var target = document.getElementById('alternateEventID');
-    	    angular.element(target).append(newEle);
+    	  console.log("IN ADD NEWWWWWWWW");
+          $scope.items.push({ 
+        	  selectedTrainerCodeID: null,
+        	  engTrainer: "",
+        	  marTrainer: "",
+        	  publishDate: null,
+        	  selectedStateCodeID:null,
+        	  selectedDistrictCodeID:'',
+        	  selectedBlockCodeID:0,
+        	  engLocation: "",
+        	  marLocation: ""
+          });
+          
+        }
+      
+      $scope.deleteAlternativeEvent = function (index)
+      {
+    	  console.log("IN DELETE");
+          $scope.items.splice(index, 1); 
+       }
+      
+      // Publish news
+      $scope.publish = function() 
+      {
+
+    	  console.log("$scope.items:");
+    	  console.log($scope.items);
+    	  submit();
       }
       
-     
+      // set trainer setSelectedTrainer
+      $scope.setSelectedTrainerDetails = function (selectedTrainerID,engTrainer,marTrainer,index) 
+      {
+    	  
+          $scope.selectedTrainerCodeID = selectedTrainerID; 
+          $scope.items[index].engTrainer = engTrainer;
+          $scope.items[index].marTrainer = marTrainer;
+          $scope.items[index].selectedTrainerCodeID = selectedTrainerID;
+          
+          console.log("$scope.items[index].selectedTrainerCodeID:" + $scope.items[index].selectedTrainerCodeID );
+          console.log($scope.items[index]);
+       }
+      
+      //set Selected State
+      $scope.setSelectedStateDetails = function (selectedStateCodeID,index) {
+          $scope.items[index].selectedStateCodeID = selectedStateCodeID;
+          getDistrict();
+        }
+      
+      // Set training category 
+      $scope.setSelectedDistrictDetails = function (selectedDistrictID,index) {
+    	  $scope.items[index].selectedBlockCodeID = null;
+          getBlockList(selectedDistrictID);
+      }
+      
+      // Set training block 
+      $scope.setSelectedBlockDetails = function (selectedBlockID,index) {
+    	 // $scope.items[index].selectedBlockCodeID = selectedBlockID;
+      }
+        
+
       var populateDropDowns = function() {
     	getTrainingTypes();
-    	getDistrict();
+    //	getDistrict();
     	getState();
     	getBlock();
-    	getBlockList();
+   // 	getDisplayBlock();
+   // 	getBlockList();
     	getTrainerList();
       };
 
       var setSuccessDetails = function() {
         $scope.success = {};
+        $scope.success.title = $scope.training.marTrainingTitle;
         
         $scope.success.uploaderName = "self";
 
-        if ($scope.statusCodeID == appConstants.code.contentOrNewsOrTrainingStatus_Created)
-        {
-          $scope.success.message = "Saved To Drafts";
-        }
-        else if ($scope.statusCodeID == appConstants.code.contentOrNewsOrTrainingStatus_SentForReview)
-        {
-            $scope.success.message = "Sent For Review";
-        }
-        else if ($scope.statusCodeID == appConstants.code.contentOrNewsOrTrainingStatus_Published)
-        {
-            $scope.success.message = "Published";
+        $scope.success.message = "Training details saved successfully";
+        
         }
         
-      }
-
-
+      
       $scope.$on('codesAvailable', function(event,data){
         populateDropDowns();
       });
+      
+      function formatDate(date) {
+    	  var monthNames = [
+    	    "January", "February", "March",
+    	    "April", "May", "June", "July",
+    	    "Aug", "September", "October",
+    	    "November", "December"
+    	  ];
+
+    	  var day = date.getDate();
+    	  var monthIndex = date.getMonth();
+    	  var year = date.getFullYear();
+
+    	  return year + '-' + monthNames[monthIndex] + '-' + day;
+    	}
       
 
       var init = function () {
@@ -329,10 +449,14 @@ angular.module("mitraPortal").controller("addTrainingController",
         $scope.errorMessage = "";
         $log.debug("IN init");
         populateDropDowns();
-        
+        $scope.add();
         $scope.training.publishDate = new Date();
-        console.log($scope.training.publishDate);
+        $scope.minimumDate = String(formatDate(new Date()));
+       
+        $scope.min = new Date('2014-09-07');
+        $scope.max = new Date('2016-09-07');
         
+        $scope.training.trainingCategoryCodeID = appConstants.code.trainingCategory_State;
       };
 
       init();

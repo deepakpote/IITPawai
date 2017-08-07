@@ -115,7 +115,10 @@ angular.module("mitraPortal").service('appConstants', ['$window',
 			notificationType_SelfLearning: 123101,
 			notificationType_News: 123102,
 			notificationType_Training: 123103,
-			notificationType_Other: 123104
+			notificationType_Other: 123104,
+			
+			//Training Category
+			trainingCategory_State: 122100
 		}
 
 	return service;
