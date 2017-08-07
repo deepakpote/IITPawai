@@ -1,0 +1,409 @@
+<div class="upload-container">
+    <div class="col-md-8" style="padding-top:92px;">
+    <span ng-class="mode =='PREVIEW' ? 'orange-text':''"
+          style="text-align:center;display: inline-block;cursor: pointer;"
+          ng-click="setMode('PREVIEW')"
+    >
+    <div>
+      <i class="material-icons" style="font-size:24px;margin:auto;">remove_red_eye</i>
+    </div>
+    <div class="">
+      PREVIEW
+    </div>
+  </span>
+        <span ng-class="mode =='EDIT' ? 'orange-text':''" uib-tooltip="Edit training details" tooltip-placement="top" 
+              style="text-align:center;display: inline-block;margin-left:40px;cursor: pointer;"
+              ng-click="mode='EDIT'" ng-show="isAdmin || (isTeacher && news.statusCodeID == 114100)">
+
+  <div>
+    <i class="material-icons" style="font-size:24px;margin:auto;">mode_edit</i>
+  </div>
+  <div class="">
+    EDIT
+  </div>
+</span>
+        <span ng-class="mode =='GIVE FEEDBACK' ? 'orange-text':''"
+              style="text-align:center;display: inline-block;margin-left:40px;cursor: pointer;"
+              ng-click="mode='GIVE FEEDBACK'">
+<div>
+  <i class="material-icons" style="font-size:24px;margin:auto;">feedback</i>
+</div>
+<div class="">
+  GIVE FEEDBACK
+</div>
+
+</span>
+    </div>
+</div>
+
+<div class = "hr"> </div>
+
+<div>
+
+
+    <form name="frmPreviewTrainings" ng-submit="submit()">
+        <div class="upload-container">
+            <div class="no-padding-container">
+                <div class="upload-title" style="margin-top:50px;">Training Details</div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="options-card" ng-mouseenter=setSelectedOption("TrainingCategory","") ng-mouseleave=setSelectedOption("") >
+                            <div class="card-content">
+                                Training Category
+                            </div>
+                            <div class="card-select" ng-class="(trainingCategoryState?'orange-background':'teal-background')">
+                  <span ng-repeat="trainingCategory in trainingTypeList">
+                    {{trainingCategory.codeNameEn}}
+                  </span>
+                  
+                  
+                 <span ng-if="!trainingCategoryState">
+                    Select
+                  </span>
+                            </div>
+                            <div class="card-action" ng-show="(selectedOption == 'TrainingCategory')">
+                                <div ng-repeat="trainingCategory in trainingTypeList">
+                                    <div>
+                                        <div class="col-md-9 no-padding align-left">
+                                            {{trainingCategory.codeNameEn}}
+                                        </div>
+                                        <div class="col-md-3 align-right no-padding" >
+                                            <input type="radio" ng-model="training.trainingCategoryState" ng-click = "showContentObject()" ng-value="trainingCategory.codeID" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+
+
+
+
+                </div>
+
+                <div class="col-md-1" ng-if="content.contentTypeCodeID == 107100"></div>
+
+                
+
+                     
+                     
+
+                
+
+
+        </div>
+        </div>
+
+        <div class = "hr"> </div>
+
+
+        <div class="upload-container" >
+
+            <div class="col-md-10">
+                <div class="upload-title no-padding">Training Title</div>
+                <div class="input-group form-group " ng-class="{'has-error': frmPreviewTrainings.engEventTitle.$dirty && frmPreviewTrainings.engEventTitle.$invalid}" style="width:100%;">
+                    <input type="text" class="form-control col-xs-4 review-input" style="width:90%" id="engEventTitle" name="engEventTitle" ng-disabled="true"
+                           placeholder="English" ng-model="training.engEventTitle" required />
+
+
+                    <div ng-messages="frmPreviewTrainings.engEventTitle.$error" ng-if="frmPreviewTrainings.engEventTitle.$dirty">
+                        <span class="error-message" ng-show="frmPreviewTrainings.engEventTitle.$error.required">Please enter training title in English</span>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="form-group input-group" ng-class="{'has-error': frmPreviewTrainings.marEventTitle.$dirty && frmPreviewTrainings.marEventTitle.$invalid}" style="width:100%;">
+                    <input type="text" class="form-control col-xs-4 review-input" style="width:90%"  id="marEventTitle" name="marEventTitle" placeholder="मराठी"  ng-disabled="true"
+                           ng-model="training.marEventTitle" required />
+                           
+                    <div ng-messages="frmPreviewTrainings.marEventTitle.$error" ng-if="frmPreviewTrainings.marEventTitle.$dirty">
+                        <span class="error-message" ng-show="frmPreviewTrainings.marEventTitle.$error.required">Please enter training title in Marathi</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2" style="text-align:right">
+                Kindly enter all fields in English and Marathi. <br />
+                Use <a target="_blank" href = "https://translate.google.com/?hl=mr"> Google translate </a>
+            </div>
+
+
+        </div>
+
+
+        <div class = "hr"> </div>
+        <div class="upload-container">
+            <div class="upload-title">Training Information</div>
+            <div class="col-md-10">
+                <div class="form-group input-group" ng-class="{'has-error': frmPreviewTrainings.engEventDescription.$dirty && frmPreviewTrainings.engEventDescription.$invalid}" style="width:100%; ">
+     <textarea form="frmPreviewTrainings" class="form-control review-input" id="engEventDescription" name="engEventDescription" placeholder="English" style="width:110%;height:120px"  ng-disabled="mode!='EDIT'"
+               ng-model="training.engEventDescription" required ></textarea>
+<!--                     <i class="material-icons review-check" ng-click="toggle('engContent')" -->
+<!--                        ng-class="checked['engContent']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin"> -->
+<!--                         check -->
+<!--                     </i> -->
+                    <div ng-messages="frmPreviewTrainings.engEventDescription.$error" ng-if="frmPreviewTrainings.engEventDescription.$dirty">
+                        <span class="error-message" ng-show="frmPreviewTrainings.engEventDescription.$error.required">Please enter Training information in English</span>
+                    </div>
+                </div>
+
+
+                <div class="form-group input-group" ng-class="{'has-error': frmPreviewTrainings.marEventDescription.$dirty && frmPreviewTrainings.marEventDescription.$invalid}" style="width:100%;">
+     <textarea form="frmPreviewTrainings" class="form-control review-input" id="marEventDescription" name="marEventDescription" placeholder="मराठी" style="width:110%;height:120px"  ng-disabled="mode!='EDIT'"
+               ng-model="training.marEventDescription" required ></textarea>
+<!--                     <i class="material-icons review-check" ng-click="toggle('marContent')" -->
+<!--                        ng-class="checked['marContent']?'orange-text':''" style="margin-left:40px;" ng-if="mode=='PREVIEW' && isAdmin"> -->
+<!--                         check -->
+<!--                     </i> -->
+                    <div ng-messages="frmPreviewTrainings.marEventDescription.$error" ng-if="frmPreviewTrainings.marEventDescription.$dirty">
+                        <span class="error-message" ng-show="frmPreviewTrainings.marEventDescription.$error.required">Please enter Marathi news content</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class = "hr" > </div>
+
+        <div class="upload-container">
+
+<!--             <div class="upload-title" >News Images</div> -->
+            
+     
+<!-- Trial code for repeating items starts -->
+<div ng-repeat="item in items" style="margin-top: -50px;">
+
+
+    <div class="upload-container">
+      <div class="no-padding-container">
+        <div class="upload-title" style="margin-top:47px;">Training Details</div>
+
+        <!--           // Date-picker -->
+           <div class="col-md-3">
+            <div class="card">
+              <div class="options-card" >
+                <div class="card-content">
+                  Date
+                </div> 
+                <div>
+                </div>
+                <div class="card-action card-select orange-background" style="height:42px">
+                  <div  style="margin-top:-3%" ng-style="!item.isEditable ? { 'pointer-events':'none'} : {}">
+                       <ng-combo-date-picker ng-model="item.publishDate" name="publishDate" ng-required="true"
+                       ng-attrs-date='{"class": "form-control custom-date-picker"}' 
+                       ng-attrs-month='{"class": "form-control custom-month-picker"}' 
+                       ng-attrs-year='{"class": "form-control custom-year-picker"}'
+                       ng-min-date="2017-01-01" ng-max-date="2027-12-31">
+                       </ng-combo-date-picker>     
+                  </div>
+                 </div>
+                 
+   <div ng-messages="frmPreviewTrainings.publishDate.$error" ng-if="frmPreviewTrainings.publishDate.$dirty">
+    <span class="error-message" ng-show="frmPreviewTrainings.publishDate.$error.required">Select date.</span>
+  </div>
+                 
+                 
+              </div>
+            </div>
+            <br />
+          </div>
+          
+          
+          
+<!--           Code for location -->
+        <div class="col-md-3" style="overflow:none;">
+          <div class="card" style="box-shadow: none;overflow:none;">
+            <div class="options-card" style="overflow:none;" ng-click=setSelectedOption(location) ng-mouseenter=setSelectedOption(location,$index) ng-mouseleave=setSelectedOption("")>
+              <div class="card-content">
+                Location
+              </div>
+              
+              <div class="col-md-3" style="width:48%;margin-left:-8%;" ng-mouseenter="location='STATE'" ng-mouseleave="location=''">
+              <div class="card-select" style="overflow:none;style="width:100px;margin-left:-16px;" ng-class="(item.selectedStateCodeID?'orange-background':'teal-background')" >
+                <span ng-if="item.selectedStateCodeID" ng-repeat="state in stateList | filter:{codeID : item.selectedStateCodeID}">
+                  {{state.codeNameEn | limitTo: 4 }} {{'..'}}
+                </span>
+                <span ng-if="!item.selectedStateCodeID">
+                  Select
+                </span>
+              </div>
+
+                </div>
+                
+               <div class="col-md-3" style="width:30%;margin-left:-9%;" ng-mouseenter="location='DISTRICT'" ng-mouseleave="location=''">
+               <div class="card-select" style="width:100px;margin-left:-61%;" ng-class="(item.selectedDistrictCodeID?'orange-background':'teal-background')">
+                  <span ng-if="item.selectedDistrictCodeID" ng-repeat="district in districtList | filter:{codeID : item.selectedDistrictCodeID}">
+                    {{district.codeNameEn}}
+                  </span>
+                  <span ng-if="!item.selectedDistrictCodeID">
+                    Select
+                  </span>
+                </div>   
+                </div>
+                    
+                <div class="col-md-3" style="width:30%;margin-left:0%;" ng-mouseenter="location='BLOCK'" ng-mouseleave="location=''">
+               <div class="card-select" style="width:100px;margin-left:-17;" ng-class="(item.selectedBlockCodeID?'orange-background':'teal-background')">
+                <span ng-if="item.selectedBlockCodeID" ng-repeat="block in blockList | filter:{codeID : item.selectedBlockCodeID}">
+                  {{block.codeNameEn}}
+                </span>
+                 <span style="width:120%;" ng-if="!item.selectedBlockCodeID">
+                  Select
+                </span>
+                </div>
+                </div>
+                
+              <div class="card-action" style="overflow:none;" ng-show="(selectedOption == 'STATE' + $index) && item.isEditable">
+                <div ng-repeat="state in stateList">
+                
+                  <div style="overflow:none;">
+                    <div class="col-md-9 no-padding align-left">
+                      {{state.codeNameEn}}
+                    </div>
+                    <div class="col-md-3 align-left no-padding" style="overflow:none;">
+                      <input type="radio" ng-model="item.selectedStateCodeID" ng-click = "setSelectedStateDetails(state.codeID,$index)" ng-value="state.codeID" name="selectedStateCodeID" id="selectedStateCodeID" ng-required="true" />
+                    </div>
+
+                  </div>
+                  </div>
+                </div>
+                
+                
+              <div class="card-action" ng-show="(selectedOption == 'DISTRICT' + $index) && item.isEditable">
+                  <div ng-repeat="district in districtList">
+                    <div>
+                      <div class="col-md-9 no-padding align-left">
+                        {{district.codeNameEn}}
+                      </div>
+                      <div class="col-md-3 align-right no-padding" >
+                        <input type="radio" ng-model="item.selectedDistrictCodeID" ng-click = "setSelectedDistrictDetails(district.codeID,$parent.$index)" ng-value="district.codeID" name="selectedDistrictCodeID" ng-required="true"  />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+               	<div class="card-action" ng-show="(selectedOption == 'BLOCK' + $index) && item.isEditable">
+                                <div ng-repeat="block in displayBlockList">
+                                    <div>
+                                        <div class="col-md-9 no-padding align-left">
+                                            {{block.codeNameEn}}
+                                        </div>
+                                        <div class="col-md-3 align-right no-padding" >
+                                            <input type="radio" ng-model="item.selectedBlockCodeID" ng-click = "setSelectedBlockDetails(block.codeID)" ng-value="block.codeID" name="selectedBlockCodeID" ng-required="true" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                
+
+              </div>
+              
+             <input type="text"  style="box-shadow: none;" id="engLocation" name="engLocation" placeholder="English"
+         ng-model="item.engLocation" ng-disabled="!item.isEditable" />
+         
+         <input type="text"  style="box-shadow: none;margin:0%" id="marLocation" name="marLocation" placeholder="मराठी"
+         ng-model="item.marLocation" ng-disabled="!item.isEditable" />
+         
+         
+                    <div ng-messages="frmPreviewTrainings.selectedStateCodeID.$error" ng-if="frmPreviewTrainings.selectedStateCodeID.$dirty || frmPreviewTrainings.selectedDistrictCodeID.$dirty || frmPreviewTrainings.selectedBlockCodeID.$dirty">
+    					<span class="error-message" ng-show="frmPreviewTrainings.selectedStateCodeID.$error.required || frmPreviewTrainings.selectedDistrictCodeID.$error.required || frmPreviewTrainings.selectedBlockCodeID.$error.required">Please enter Location</span>
+  					</div> 
+              
+            </div>
+            <br />
+          </div>
+<!-- code for location end -->
+
+
+
+
+          <div class="col-md-3">
+            <div class="card" style="box-shadow: none;">
+              <div class="options-card" ng-click=setSelectedOption("Trainer") ng-mouseenter=setSelectedOption("Trainer",$index) ng-mouseleave=setSelectedOption("")>
+                <div class="card-content">
+                  Trainer
+                </div>
+                <div class="card-select" ng-class="(item.selectedTrainerCodeID?'orange-background':'teal-background')">
+                  <span ng-if="item.selectedTrainerCodeID" ng-repeat="trainer in trainerList | filter:{eventDetailID : item.selectedTrainerCodeID}  : true |filter:search:strict">
+                    {{trainer.marTrainer}}
+                  </span>
+                  <span ng-if="!item.selectedTrainerCodeID">
+                    Select
+                  </span>
+                </div>
+                <div class="card-action" ng-show="(selectedOption == 'Trainer' + $index) && item.isEditable">
+                
+
+                  <div ng-repeat="trainer in trainerList">
+                    <div>
+                      <div class="col-md-9 no-padding align-left">
+                        {{trainer.engTrainer}}
+                      </div>
+                      <div class="col-md-3 align-right no-padding" >
+                        <input type="radio" ng-model="item.selectedTrainerCodeID" ng-click = "setSelectedTrainerDetails(trainer.eventDetailID,trainer.engTrainer,trainer.marTrainer,$parent.$index)" ng-value="trainer.eventDetailID" name="selectedTrainerCodeID" ng-required="true"  />
+                      </div>
+                    </div>
+
+                  </div>
+                  
+                </div>
+              </div>
+              
+              <input type="text"  style="box-shadow: none;" id="engTrainer" name="engTrainer" placeholder="English"
+         ng-model="item.engTrainer" ng-required="true" ng-disabled="!item.isEditable" />
+         
+         <input type="text"  style="box-shadow: none;margin:0%" id="marTrainer" name="marTrainer" placeholder="मराठी"
+         ng-model="item.marTrainer" ng-required="true" ng-disabled="!item.isEditable"  />  
+         
+           <div ng-messages="frmPreviewTrainings.selectedTrainerCodeID.$error" ng-if="frmPreviewTrainings.selectedTrainerCodeID.$dirty && frmPreviewTrainings.engTrainer.$dirty && frmPreviewTrainings.marTrainer.$dirty">
+    <span class="error-message" ng-show="frmPreviewTrainings.selectedTrainerCodeID.$error.required && frmPreviewTrainings.engTrainer.$error.required && frmPreviewTrainings.marTrainer.$error.required">Select Trainer.</span>
+  </div>
+              
+            </div>
+            <br />
+            
+          </div>
+          
+          <div class="col-md-3">
+          <div class="delete-event" style="text-align: center;cursor: pointer;" ng-if="(items.length > 1)" ng-click="deleteAlternativeEvent($index,item.eventDetailID)" uib-tooltip="Delete training" tooltip-placement="top" ></div>
+          </div>
+          
+          <br />
+</div>
+</div>
+
+<div class = "hr"> </div>
+</div>
+<div class="add-alternate-event" style="text-align: center;cursor: pointer;" ng-click="add(stateparamEventID,0,0,null,null,null,null,null,null,'','',true)"  uib-tooltip="Add training" tooltip-placement="top" >
+            </div>
+             
+
+</div>
+</div>
+
+<div class = "hr"> </div>
+
+<div class="upload-container">
+
+    <!-- TODO Add send for review button here only for that user-->
+<!--     <input type="submit" ng-value="'Cancel'" ng-click="setMode('PREVIEW')" class="btn btn-warning" ng-if="mode=='PREVIEW' && !isAdmin" /> -->
+
+    <input type="submit" ng-value="'Cancel'" ng-click="publish()" class="btn btn-warning"  />
+
+    <input type="submit" ng-value="'Save Changes'" ng-click=" frmPreviewTrainings.$invalid? setDirty(frmPreviewTrainings) : updateTrainingDeails()" class="btn btn-warning" ng-if="mode=='EDIT'" />
+
+    <input type="submit" ng-value="'Discard Changes'" ng-click="setMode('PREVIEW')" class="btn btn-warning" ng-if="mode=='EDIT'" />
+
+
+
+</div>
+</div>
+</form>
+</div>
+</div>
