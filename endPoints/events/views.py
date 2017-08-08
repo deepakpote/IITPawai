@@ -179,7 +179,7 @@ class EventViewSet(viewsets.ViewSet):
                                     E.createdBy,
                                     E.createdOn         
                             from evt_event E 
-                            inner join evt_eventinfo EI on E.eventID = EI.eventID
+                            inner join evt_eventInfo EI on E.eventID = EI.eventID
                             join (    select min(ED.date) as date, ED.eventID 
                                     from evt_eventdetail ED 
                                     group by ED.eventID) A 
@@ -330,7 +330,7 @@ class EventViewSet(viewsets.ViewSet):
                                     E.createdBy,
                                     E.createdOn         
                             from evt_event E 
-                            inner join evt_eventinfo EI on E.eventID = EI.eventID
+                            inner join evt_eventInfo EI on E.eventID = EI.eventID
                             inner join evt_eventdetail ED on ED.eventID = E.eventID 
                             where EI.appLanguageCodeID = 113100 AND E.eventID = """ + str(eventID) #+ """ AND ED.eventDetailID <> """ + str(objEventDetail[0]) 
         
@@ -349,7 +349,7 @@ class EventViewSet(viewsets.ViewSet):
         
         #(appLanguageCodeID,str(arrFileTypeCodeID),str(arrStatusCodeID),constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
                        
-        print "searchTrainingListQuery:",searchTrainingListQuery            
+        #print "searchTrainingListQuery:",searchTrainingListQuery            
         cursor.execute(searchTrainingListQuery)
     
         #Query set
