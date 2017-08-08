@@ -181,10 +181,10 @@ class EventViewSet(viewsets.ViewSet):
                             from evt_event E 
                             inner join evt_eventInfo EI on E.eventID = EI.eventID
                             join (    select min(ED.date) as date, ED.eventID 
-                                    from evt_eventdetail ED 
+                                    from evt_eventDetail ED 
                                     group by ED.eventID) A 
                                     on A.eventID = E.eventID
-                            join evt_eventdetail ED on ED.eventID = E.eventID """ 
+                            join evt_eventDetail ED on ED.eventID = E.eventID """ 
                             
         if not date and not blockCodeID and not districtCodeID and not trainer:
             searchTrainingListQuery = searchTrainingListQuery + str(" and ED.date = A.date")
@@ -331,7 +331,7 @@ class EventViewSet(viewsets.ViewSet):
                                     E.createdOn         
                             from evt_event E 
                             inner join evt_eventInfo EI on E.eventID = EI.eventID
-                            inner join evt_eventdetail ED on ED.eventID = E.eventID 
+                            inner join evt_eventDetail ED on ED.eventID = E.eventID 
                             where EI.appLanguageCodeID = 113100 AND E.eventID = """ + str(eventID) #+ """ AND ED.eventDetailID <> """ + str(objEventDetail[0]) 
         
         if categoryCodeID:
@@ -445,7 +445,7 @@ class EventViewSet(viewsets.ViewSet):
                                     E.createdOn,
                                     ED.stateCodeID
                             from evt_event E
-                            inner join evt_eventdetail ED on ED.eventID = E.eventID
+                            inner join evt_eventDetail ED on ED.eventID = E.eventID
                             where E.eventID =  """ + str(eventID) #+ """ AND ED.eventDetailID <> """ + str(objEventDetail[0]) 
         
                        
