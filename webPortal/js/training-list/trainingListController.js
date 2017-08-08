@@ -774,10 +774,22 @@ function trainingListController(trainingListService,trainingService,commonServic
     	
     }
     
+    //$scope.previousMonthCount = 0;
+    //$scope.nextMonthCount = 0;
+    
     function showCalendarDetails(showDate)
     {
+    	console.log("IN showCalendarDetails");
     	console.log(showDate);
     	var totalNoOfDay = daysInMonth((showDate.getMonth() + 1),showDate.getFullYear())
+    	
+    	var todaydate = new Date();
+    	var previousMonthDays = daysInMonth((showDate.getMonth()),showDate.getFullYear())
+
+    	
+    	console.log("todaydate.getMonth()" + showDate.getMonth());
+    	console.log("previousMonthDays:" + previousMonthDays);
+    	console.log(previousMonthDays);
     	
         $scope.monthDays = [01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
         
@@ -786,14 +798,28 @@ function trainingListController(trainingListService,trainingService,commonServic
         });
         
     	var diffCount = getDiffCountFromDate(showDate)
-
-    	console.log($scope.monthDays);
+    	$scope.previousMonthCount = diffCount;
+    	//alert($scope.previousMonthCount);
     	
     	for(var v=0; v< diffCount; v++)
     		{
-    		 $scope.monthDays.unshift('');
+    		 $scope.monthDays.unshift(previousMonthDays);
+    		 previousMonthDays = previousMonthDays -1;
     		}
     	
+        console.log("$scope.monthDays.length:" + $scope.monthDays.length%7);
+        var modValue = $scope.monthDays.length % 7;
+        $scope.nextMonthCount = $scope.monthDays.length;
+        //alert( $scope.monthDays.length);
+        if(modValue != 0)
+    	{
+        	var startDay = 1;
+        	for(var i = modValue; i < 7; i++)
+        		{
+        		$scope.monthDays.push(startDay);
+        		startDay = startDay +1;
+        		}
+    	}
 
         var dates = [];
 
@@ -806,6 +832,8 @@ function trainingListController(trainingListService,trainingService,commonServic
             dates[dates.length-1].push($scope.monthDays[i]);
         }
         
+
+               
         $scope.dates = dates;
     }
     
@@ -835,6 +863,27 @@ function trainingListController(trainingListService,trainingService,commonServic
     $scope.showEventOnDay = function(day)
     {
     	if($scope.listOfCurrentMonthDates.indexOf(pad(day)) != -1)
+    	{
+    		return true;
+    	}
+    	else
+    	{
+    		return false;
+    	}
+
+    }
+    
+    $scope.checkValidDay = function(day,parentIndex,index)
+    {
+    	console.log("day :::"+ day);
+    	console.log("parentIndex :::"+ parentIndex);
+    	console.log("index :::"+ index);
+    	var tt = (parentIndex * 7) + index + 1;
+    	if(tt <= parseInt($scope.previousMonthCount))
+    	{
+    		return true;
+    	}
+    	else if(tt > parseInt($scope.nextMonthCount))
     	{
     		return true;
     	}

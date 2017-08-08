@@ -66,9 +66,9 @@
        <th scope="col" title="Saturday" style="text-align:center;border:#65BEB6;" ng-class="(showCurrentDay(5) ? 'highLightDayOfWeek' :'')"> F</th>
        <th scope="col" title="Sunday" style="text-align:center;border:#65BEB6;" ng-class="(showCurrentDay(6) ? 'highLightDayOfWeek' :'')">S </th>
      </tr>
-     <tr ng-repeat="days in dates">
+     <tr ng-repeat="days in dates track by $index">
          <td width="90px" align="center" height="45px" ng-repeat="day in days track by $index">
-         <div  ng-class="(showEventOnDay(day) ? 'circle' :'')">
+         <div  ng-class="(showEventOnDay(day) && !checkValidDay(day,$parent.$index,$index) ? 'circle' :'')" ng-style="checkValidDay(day,$parent.$index,$index) ? { color:'gray' } : { 'color': 'black' }">
          <span >    {{ day }} </span>
              <!-- After seven iterations a new `<tr>` should be aded -->
              </div>
