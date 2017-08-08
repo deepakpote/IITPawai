@@ -28,19 +28,19 @@ class EventViewSet(viewsets.ViewSet):
     
     http_method_names = ['get', 'post']
     
-    """
-    API to Fetch list of events
-    """
-    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
-    def listEvents(self, request):
-        queryParameters = eventQuerySerializer(data=request.data)
-        
-        if not queryParameters.is_valid():
-            return Response({"response_message": constants.messages.event_list_invalid_input, "data": []},
-                            status=status.HTTP_401_UNAUTHORIZED)
-        
-        lstEvents=EventViewSet.calender.listEvents(**(queryParameters.data))
-        return Response({"response_message": constants.messages.success, "data":lstEvents})
+#     """
+#     API to Fetch list of events
+#     """
+#     @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+#     def listEvents(self, request):
+#         queryParameters = eventQuerySerializer(data=request.data)
+#         
+#         if not queryParameters.is_valid():
+#             return Response({"response_message": constants.messages.event_list_invalid_input, "data": []},
+#                             status=status.HTTP_401_UNAUTHORIZED)
+#         
+#         lstEvents=EventViewSet.calender.listEvents(**(queryParameters.data))
+#         return Response({"response_message": constants.messages.success, "data":lstEvents})
     
     """
     API to add event
@@ -75,6 +75,78 @@ class EventViewSet(viewsets.ViewSet):
         
         result=EventViewSet.calender.updateEvent(objEventSerializer.data, eventID)
         return Response({"response_message": constants.messages.success, "data":result})
+    
+        """
+    Get alternate training details list
+    """   
+    @list_route(methods=['POST'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
+    def listEvents(self, request):
+        #authToken = request.META.get('HTTP_AUTHTOKEN')
+        #appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
+
+        #get UserID from auth token
+        #userID  =  getUserIDFromAuthToken(authToken)
+        objEvent = None
+        
+        # check user is not null 
+#         if not userID or userID == 0:
+#             return Response({"response_message": constants.messages.user_userid_cannot_be_empty, 
+#                              "data": []}, status = status.HTTP_401_UNAUTHORIZED)
+          
+        # Connection
+        cursor = connection.cursor()  
+        
+        # Create object of common class
+        objCommon = utils.common()
+        
+        # SQL Query
+        searchTrainingListQuery = """ 
+                                select  
+                                E.eventID as 'id', 
+                                EI.eventTitle as 'summary', 
+                                CONCAT(ED.engLocation, ' ',(select codeNameEn from com_code where codeID = ED.blockCodeID), ',',(select codeNameEn from com_code where codeID = ED.districtCodeID), ',' ,(select codeNameEn from com_code where codeID = ED.stateCodeID)) as 'location',
+                                EI.eventDescription as 'description',
+                                ED.date,
+                                ED.engLocation
+                                from evt_event E 
+                                inner join evt_eventInfo EI on E.eventID = EI.eventID
+                                inner join evt_eventDetail ED on ED.eventID = E.eventID 
+                                where EI.appLanguageCodeID = """ + str(constants.appLanguage.english)
+        
+                       
+        print "searchTrainingListQuery:",searchTrainingListQuery            
+        cursor.execute(searchTrainingListQuery)
+    
+        #Query set
+        TrainingListQuerySet = cursor.fetchall()
+        
+        response_data = []
+        
+        for item in TrainingListQuerySet:
+            objResponse_data = {
+                                    'id':          item[0], 
+                                    'summary':      item[1], 
+                                    'location':      item[2],
+                                    'description': item[3],
+                                    'end': {
+                                            'timeZone' : 'Asia/Calcutta',
+                                            'dateTime' : item[4]
+                                            },
+                                    'start':  
+                                            {
+                                            'timeZone' : 'Asia/Calcutta',
+                                            'dateTime' : item[4]
+                                            }  
+                                }
+            response_data.append(objResponse_data)
+            
+        #Check for the no of records fetched.
+        if not TrainingListQuerySet:
+            return Response({"response_message": constants.messages.training_list_search_no_records_found,
+                    "data": []},
+                    status = status.HTTP_200_OK) 
+        
+        return Response({"response_message": constants.messages.success, "data": response_data})
     
     """
     API to attend event
