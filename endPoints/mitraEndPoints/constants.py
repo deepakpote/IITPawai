@@ -261,6 +261,7 @@ class messages():
     deleteAlternateEvent_event_doesnot_exists = 100309
     
     myTrainingList_userID_cannot_be_empty = 100310
+    myTrainingList_no_records_found = 100310
     
     
 class webportalmessages():    

@@ -226,7 +226,7 @@ class EventViewSet(viewsets.ViewSet):
         
         #(appLanguageCodeID,str(arrFileTypeCodeID),str(arrStatusCodeID),constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
                        
-        print "trainingList:",searchTrainingListQuery            
+        #print "trainingList:",searchTrainingListQuery            
         cursor.execute(searchTrainingListQuery)
     
         #Query set

@@ -27,7 +27,6 @@ function trainingListController(trainingListService,trainingService,commonServic
     vm.setCalendarDetails = setCalendarDetails;
     $scope.currentDate = new Date();
     
-    console.log("$scope.currentDate::::" + $scope.currentDate);
     $scope.currentMonthName = String(($scope.currentDate)).split(" ");
     
     vm.showCalendarDetails = showCalendarDetails;
@@ -37,7 +36,6 @@ function trainingListController(trainingListService,trainingService,commonServic
     
     
     vm.oneAtATime = true;
-    //$scope.oneAtATime = true;
     
     vm.status = {
     	    isCustomHeaderOpen: false,
@@ -52,10 +50,6 @@ function trainingListController(trainingListService,trainingService,commonServic
     vm.goToTrainingPreview = goToTrainingPreview;
     vm.selectedOption = "";
     vm.setSelectedOption = setSelectedOption;
-    vm.dataFilter = {
-        "subjectCodeIDs" : "",
-        "gradeCodeIDs" : ""
-    };
     
     $scope.training = {};
     $scope.training.divider = "";
@@ -83,9 +77,6 @@ function trainingListController(trainingListService,trainingService,commonServic
  
     //calendar code start here....********************************
     $scope.open = function (eventDetailID,eventName,eventID) {
-    	console.log("eventDetailID: " + eventDetailID);
-    	console.log("eventName: " + eventName);
-    	console.log("eventID: " + eventID);
     	attendEvent(eventDetailID,eventName);
     	//getAlternateTrainingList(eventID);
     }
@@ -245,17 +236,13 @@ function trainingListController(trainingListService,trainingService,commonServic
     	            	//2017-06-23T17:00:00
     	            	
     	                objDate = ($scope.objTrainingListForMonth[i].date).split("-");
-    	                console.log("$scope.objTrainingListForMonth[i].date:" + $scope.objTrainingListForMonth[i].date);
     	                var MonthName = getMonthName(objDate[1]);
 
     	                $scope.objTrainingListForMonth[i].newdate = objDate[2].substring(0, 2) + '-' + MonthName + '-' + objDate[0]; 
-    	                console.log("$scope.objTrainingListForMonth[i].newdate:" + $scope.objTrainingListForMonth[i].newdate);
 
     	                //Set district & block name..
     	                $scope.objTrainingListForMonth[i].place = commonService.getValueByCode($scope.objTrainingListForMonth[i].blockCodeID)[0].codeNameEn;
     	                
-    	               // var val = pad(objDate[2].substring(0, 2));
-
     	                $scope.listOfCurrentMonthDates.push(objDate[2].substring(0, 2));
     	            }   
     	         
@@ -291,17 +278,12 @@ function trainingListController(trainingListService,trainingService,commonServic
     	          
     	          var objTrainings = response.data;
     	          $scope.objMyTrainingList = (response.data).data;
-    	          //$scope.training.countOfTraining = $scope.objTrainingListForMonth.length;
-
 
     	            for(var i = 0 ; i < $scope.objMyTrainingList.length ; i ++) 
     	            {
     	                $scope.myTrainingList.push($scope.objMyTrainingList[i].eventDetail);
     	            }   
     	            
-    	            console.log("$scope.myTrainingList = [];:" + $scope.myTrainingList);
-    	            console.log($scope.myTrainingList);
-    	         
     	        },
     	        function error(response){
     	          console.log("IN ERRORR RESPONSE");
@@ -352,8 +334,7 @@ function trainingListController(trainingListService,trainingService,commonServic
     	          console.log(response.data);
     	          
     	          var objTrainings = response.data;
-    	          $scope.objAllTrainingList = (response.data).data;
-    	          console.log("!st event:" + $scope.objAllTrainingList[0]);  
+    	          $scope.objAllTrainingList = (response.data).data; 
 
     	            for(var i = 0 ; i < $scope.objAllTrainingList.length ; i ++) {
     	            	var formatedDate = "";
@@ -368,7 +349,7 @@ function trainingListController(trainingListService,trainingService,commonServic
 
     	                $scope.objAllTrainingList[i].newdate = objDate[2].substring(0, 2) + '-' + MonthName + '-' + objDate[0]; 
 
-    	                //Set distrci & blocl name..
+    	                //Set district & block name..
     	                $scope.objAllTrainingList[i].place = commonService.getValueByCode($scope.objAllTrainingList[i].blockCodeID)[0].codeNameEn;
     	            }   
     	         
@@ -425,16 +406,11 @@ function trainingListController(trainingListService,trainingService,commonServic
 		    	                var MonthName = getMonthName(objDate[1]);
 		
 		    	                $scope.objAlternateTrainingList[i].newdate = objDate[2].substring(0, 2) + '-' + MonthName + '-' + objDate[0]; 
-		    	                
-		    	                console.log("$scope.objTrainingListForMonth[i].blockCodeID issss:")
-		    	                console.log($scope.objAlternateTrainingList[i]);
 		
-		    	                //Set distrci & block name..
+		    	                //Set district & block name..
 		    	                $scope.objAlternateTrainingList[i].place = commonService.getValueByCode($scope.objAlternateTrainingList[i].blockCodeID)[0].codeNameEn;
 		    	            }   
 		    	         
-		    	            console.log("IN LAST"); //
-		    	            console.log($scope.objAlternateTrainingList);
 		    	        },
 		    	        function error(response){
 		    	          console.log("IN ERRORR RESPONSE");
@@ -465,7 +441,6 @@ function trainingListController(trainingListService,trainingService,commonServic
     	        .then (function success(response){
     	          console.log("Event attended successfully....");
     	          $scope.IsEventSuccessfullyAttended = true;
-    	          console.log($scope.IsEventSuccessfullyAttended);
     	          console.log(response.data);
     	          
     	          $scope.success = {};
@@ -497,12 +472,6 @@ function trainingListController(trainingListService,trainingService,commonServic
     		          scope: $scope,
     		          templateUrl : appConstants.siteName.mitraSiteName + '/js/training/submittedSuccessView.html',
     		        })
-    	          
-//		        	var modalInstance = $uibModal.open({
-//		            	scope: $scope,
-//		            	templateUrl: appConstants.endpoint.baseUrl + 'webPortal/js/training-list/popup.html',
-//		            	controller: 'trainingListController',
-//		            	});
 		        	
     	        },
     	        function error(response){
@@ -671,21 +640,18 @@ function trainingListController(trainingListService,trainingService,commonServic
     
     //setPublishFromDate
     function setFilterDate(filterDate) {
-    	console.log(filterDate);
     	vm.filterDate = filterDate;
     	getAllTrainingList();
     }
 
 
     function setSelectedOption(option) {
-        console.log("selected option : " + option);
         vm.selectedOption = option;
     }
     
     // set trainer setSelectedTrainer
     function setSelectedTrainerDetails(selectedTrainer) 
     {
-    	console.log("setSelectedTrainerDetails");
         vm.trainer = selectedTrainer; 
         getAllTrainingList();
 
@@ -693,16 +659,12 @@ function trainingListController(trainingListService,trainingService,commonServic
     
     function setTrainingListForMonth(selectedDate)
     {
-    	console.log("IN setTrainingListForMonth:" + selectedDate);
-    	console.log(selectedDate);
-    	//$scope.dt = selectedDate;
     	getTrainingListForMonth();
     	$scope.resetTrainingDetails();
     }
     
     function resetTrainingFilter()
     {
-    	console.log("Filter reset");
     	vm.filterDate = null;
         vm.selectedDistrictCodeID = null;
         vm.selectedBlockCodeID = null;
@@ -710,8 +672,6 @@ function trainingListController(trainingListService,trainingService,commonServic
         $scope.training.filterDate = null;
         getAllTrainingList();
     }
-    
-    // ////////////////////////
     
 
     var startCount = 5;
@@ -743,9 +703,6 @@ function trainingListController(trainingListService,trainingService,commonServic
     });
     
     $scope.selectedMonth = $scope.selectedMonth[0];
-    console.log("$scope.selectedMonth::::::::::::::::::::::" + $scope.selectedMonth);
-    console.log($scope.selectedMonth[0]);
-    
     
     $scope.years = [
         {year : "2015"},
@@ -771,10 +728,6 @@ function trainingListController(trainingListService,trainingService,commonServic
     
     $scope.setSelectedMonth = function()
     {
-    	console.log("$scope.selectedMonth:" + $scope.selectedMonth);
-    	console.log( $scope.selectedMonth);
-    	console.log( $scope.selectedMonth.month);
-    
     	//set date in this for mat & make call to setCalendarDetails function 
     	//Thu Aug 03 2017 14:13:30 GMT+0530 (India Standard Time)
 
@@ -797,13 +750,10 @@ function trainingListController(trainingListService,trainingService,commonServic
     
     $scope.setSelectedYear = function()
     {
-    	console.log("$scope.selectedYear:" + $scope.selectedYear);
-    	console.log($scope.selectedYear);
     	
     	if(!isUndefinedOrNull($scope.selectedMonth.month))
     	{
     	 var formatDate = "Thu " + $scope.selectedMonth.month + " 01 " + $scope.selectedYear.year + " 14:13:30 GMT+0530 (India Standard Time)"
-    	 console.log("formatDate" + formatDate);
     	 setCalendarDetails(formatDate);
     	 
     	 $scope.resetTrainingDetails();
@@ -813,8 +763,6 @@ function trainingListController(trainingListService,trainingService,commonServic
     
     function setCalendarDetails(idate)
     {
-    	console.log("Set calendar details");
-    	console.log(idate);
     	
     	var formattedDate = new Date(idate);
     	$scope.dt = formattedDate;
@@ -830,8 +778,6 @@ function trainingListController(trainingListService,trainingService,commonServic
     {
     	console.log(showDate);
     	var totalNoOfDay = daysInMonth((showDate.getMonth() + 1),showDate.getFullYear())
-    	console.log("getFullYear:" + showDate.getFullYear());
-    	console.log("totalNoOfDay():"  + totalNoOfDay);
     	
         $scope.monthDays = [01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
         
@@ -848,8 +794,6 @@ function trainingListController(trainingListService,trainingService,commonServic
     		 $scope.monthDays.unshift('');
     		}
     	
-    	console.log("$scope.monthDays.length:" + $scope.monthDays.length);
-    	console.log($scope.monthDays);
 
         var dates = [];
 
@@ -862,7 +806,6 @@ function trainingListController(trainingListService,trainingService,commonServic
             dates[dates.length-1].push($scope.monthDays[i]);
         }
         
-       // alert(dates);
         $scope.dates = dates;
     }
     
@@ -884,8 +827,6 @@ function trainingListController(trainingListService,trainingService,commonServic
 
         var firstDay = new Date(convertedDate.getFullYear(), convertedDate.getMonth(), 1);
         var objDay = (firstDay.toString()).split(" ");
-        console.log(objDay[0]);
-        console.log($scope.weekDays[objDay[0]]);
         var diffCount = $scope.weekDays[objDay[0]];
         // alert($scope.weekDays[oobj[0]]);
         return diffCount;
