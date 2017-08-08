@@ -112,9 +112,7 @@ class EventViewSet(viewsets.ViewSet):
                                 inner join evt_eventInfo EI on E.eventID = EI.eventID
                                 inner join evt_eventDetail ED on ED.eventID = E.eventID 
                                 where EI.appLanguageCodeID = """ + str(constants.appLanguage.english)
-        
-                       
-        print "searchTrainingListQuery:",searchTrainingListQuery            
+                
         cursor.execute(searchTrainingListQuery)
     
         #Query set
