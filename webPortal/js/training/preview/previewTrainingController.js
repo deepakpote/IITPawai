@@ -15,7 +15,6 @@ angular.module("mitraPortal").controller("previewTrainingController",
 	 
     // Get training type/category.
     var getTrainingTypes = function () {
-    	console.log("IN getTrainingTypes");
       $scope.trainingTypeList = commonService.getCodeListPerCodeGroup(
         appConstants.codeGroup.trainingCategory
         );

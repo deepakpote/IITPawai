@@ -341,7 +341,6 @@ angular.module("mitraPortal").controller("addTrainingController",
       
       $scope.add = function () {
     	  
-    	  console.log("IN ADD NEWWWWWWWW");
           $scope.items.push({ 
         	  selectedTrainerCodeID: null,
         	  engTrainer: "",
@@ -358,16 +357,12 @@ angular.module("mitraPortal").controller("addTrainingController",
       
       $scope.deleteAlternativeEvent = function (index)
       {
-    	  console.log("IN DELETE");
           $scope.items.splice(index, 1); 
        }
       
       // Publish news
       $scope.publish = function() 
       {
-
-    	  console.log("$scope.items:");
-    	  console.log($scope.items);
     	  submit();
       }
       
@@ -379,9 +374,6 @@ angular.module("mitraPortal").controller("addTrainingController",
           $scope.items[index].engTrainer = engTrainer;
           $scope.items[index].marTrainer = marTrainer;
           $scope.items[index].selectedTrainerCodeID = selectedTrainerID;
-          
-          console.log("$scope.items[index].selectedTrainerCodeID:" + $scope.items[index].selectedTrainerCodeID );
-          console.log($scope.items[index]);
        }
       
       //set Selected State
