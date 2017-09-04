@@ -139,7 +139,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                 status = status.HTTP_404_NOT_FOUND)
          
          
-        #declare count for fro to fetch the records.
+        #declare count for for to fetch the records.
         fromRecord = 0
             
         #If pageNumber param is not set then fetch the default no of rows from the content
@@ -232,11 +232,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CV.instruction,
                                             CASE CV.fileTypeCodeID
                                                 WHEN 108100 THEN  CV. fileName
-                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CV.fileName) 
-                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CV.fileName) 
-                                                WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CV.fileName) 
-                                                WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CV.fileName) 
-                                                WHEN 108105 THEN  CV. fileName
+                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CV.fileName) 
+                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentFlipbook)) + """',CV.fileName) 
                                                 ELSE NULL
                                                 END as fileName,
                                             CV.author,
@@ -324,7 +321,7 @@ class ContentViewSet(viewsets.ModelViewSet):
 
         #userID = request.data.get('userID') 
         languageCodeIDs = request.data.get('languageCodeIDs')
-        topicCodeIDs = request.data.get('topicCodeIDs') 
+        #topicCodeIDs = request.data.get('topicCodeIDs') 
         pageNumber = request.data.get('pageNumber')
         
         appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID') 
@@ -455,13 +452,13 @@ class ContentViewSet(viewsets.ModelViewSet):
                                 status = status.HTTP_404_NOT_FOUND)
         
         #Get the applicable topic list for the respective user.    
-        arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs)  
-        
-        arrTopicCodeIDs = tuple(map(int, arrTopicCodeIDs))
-         
-         
-        if len(arrTopicCodeIDs) ==1:
-            arrTopicCodeIDs =  '(%s)' % ', '.join(map(repr, arrTopicCodeIDs))
+#         arrTopicCodeIDs = getSearchContentApplicableTopicCodeIDs(topicCodeIDs)  
+#         
+#         arrTopicCodeIDs = tuple(map(int, arrTopicCodeIDs))
+#          
+#          
+#         if len(arrTopicCodeIDs) ==1:
+#             arrTopicCodeIDs =  '(%s)' % ', '.join(map(repr, arrTopicCodeIDs))
         
         
         # If uploadedBy is empty then don't add the check of uploadedBy.
@@ -484,11 +481,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CV.instruction  ,
                                             CASE CV.fileTypeCodeID
                                                 WHEN 108100 THEN  CV. fileName
-                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentAudioDir)) + """',CV.fileName) 
-                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPPTDir)) + """',CV.fileName) 
-                                                WHEN 108103 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentWorksheet)) + """',CV.fileName) 
-                                                WHEN 108104 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CV.fileName) 
-                                                WHEN 108105 THEN  CV. fileName
+                                                WHEN 108101 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentPDF)) + """',CV.fileName) 
+                                                WHEN 108102 THEN   CONCAT('""" + str(objCommon.getBaseURL(constants.uploadedContentDir.contentFlipbook)) + """',CV.fileName) 
                                                 ELSE NULL
                                                 END as fileName,
                                             CV.author ,
@@ -497,16 +491,14 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CV.fileTypeCodeID,
                                             CV.languageCodeID,
                                             CV.subjectCodeID,
-                                            CV.topicCodeID,
                                             CV.createdOn,
                                             CV.modifiedOn
                                             from vw_con_contentDetail CV
                                             where """ + uploadedByCheck + myDraftCheck +""" CV.languageCodeID IN %s 
                                             and CV.contentTypeCodeID = %s 
                                             and CV.statusCodeID IN %s
-                                            and CV.topicCodeID IN %s 
                                             and CV.appLanguageCodeID = %s 
-                                            order by CV.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,str(arrStatusCodeID),str(arrTopicCodeIDs),appLanguageCodeID,fromRecord,pageNumber)
+                                            order by CV.contentID limit %s,%s"""%(arrLanguageCodeID,constants.mitraCode.selfLearning,str(arrStatusCodeID),appLanguageCodeID,fromRecord,pageNumber)
          
         cursor.execute(searchSelfLearningQuery)
            
@@ -528,9 +520,8 @@ class ContentViewSet(viewsets.ModelViewSet):
                                 'fileType' :        item[9],
                                 'language':         item[10],
                                 'subject':          item[11],
-                                'topic' :           item[12],
-                                'createdOn':        item[13],
-                                'modifiedOn':       item[14]
+                                'createdOn':        item[12],
+                                'modifiedOn':       item[13]
                                 }
              
             response_data.append(objResponse_data)
@@ -915,7 +906,6 @@ class ContentViewSet(viewsets.ModelViewSet):
                          
             if uploadedFile:
                 if request.data.get('fileName'):
-                    print "IFFF"
                     return statusHttpUnauthorized(constants.messages.uploadContent_upload_file_or_give_filename)
                 else:
                     try:
