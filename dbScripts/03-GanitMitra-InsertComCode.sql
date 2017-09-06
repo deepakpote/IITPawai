@@ -199,8 +199,6 @@ INSERT INTO `com_code` VALUES (100100,'Success','',NULL,NULL,now(),now(),100,1,1
 SET FOREIGN_KEY_CHECKS = 1;
 
 
-
-select * from com_codegroup;
 -- Insert code group for department.
 Insert into com_codeGroup (codeGroupID, codeGroupName, createdBy, createdOn, modifiedBy, modifiedOn)
 Select 112 as codeGroupID, 'Department' as codeGroupName, 1 as createdBy, now() as createdOn,  1 as modifiedBy, now() as modifiedOn
