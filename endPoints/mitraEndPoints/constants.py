@@ -263,6 +263,8 @@ class messages():
     myTrainingList_userID_cannot_be_empty = 100310
     myTrainingList_no_records_found = 100310
     
+    user_doesnot_exists = 100311
+    
     
 class webportalmessages():    
     web_admin_invalid_token = 200100
@@ -411,3 +413,4 @@ class webportal():
     
 class configurationKey():
     comCodeVersion = "comCodeVersion"
+    minAppVersion = "minAppVersion"
