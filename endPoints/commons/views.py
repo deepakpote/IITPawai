@@ -65,6 +65,28 @@ class CodeViewSet(viewsets.ModelViewSet):
 
         return Response({"response_message": constants.messages.success, "data": [response]})
     
+        """
+    API to get the minimum app version.
+    """
+    @list_route(methods=['post'], permission_classes=[permissions.AllowAny])
+    def getMinAppVersion(self,request):
+
+        #Check minimum application version in configuration
+        try:
+            objconfiguration = configuration.objects.get(key = constants.configurationKey.minAppVersion)
+        except configuration.DoesNotExist:
+            #If not exists.It means no entry made for the minAppVersion
+            objconfiguration = configuration()
+            objconfiguration.value = 0
+                    
+        #set the minAppVersionto the response.
+        response = { 'minAppVersion' : objconfiguration.value }
+        
+        #Return the response
+        return Response({"response_message": constants.messages.success, "data": [response]})
+    
+    
+    
     """
     API to save com code.
     """
@@ -772,46 +794,7 @@ class NewsViewSet(viewsets.ModelViewSet):
         #Return the response
         return Response({"response_message": constants.messages.success, "data": [response]})
     
-    """
-    API to get the minimum app version.
-    """
-    @list_route(methods=['post'], permission_classes=[permissions.IsAuthenticated],authentication_classes = [TokenAuthentication])
-    def getMinAppVersion(self,request):
-        # get inputs
-        authToken = request.META.get('HTTP_AUTHTOKEN')
-        
-        #Get userID from authToken
-        userID = getUserIDFromAuthToken(authToken)
-               
-        # Check if userID is passed in post param
-        if not userID:
-            return Response({"response_message": constants.messages.user_userid_cannot_be_empty,
-                             "data": []},
-                             status = status.HTTP_401_UNAUTHORIZED)
-        
-        # If userID parameter is passed, then check user exists or not
-        try:
-            objUser = user.objects.get(userID = userID)
-        except user.DoesNotExist:
-            return Response({"response_message": constants.messages.user_doesnot_exists,
-                             "data": []},
-                            status = status.HTTP_404_NOT_FOUND)
-        
-        #Check minimum application version in configuration
-        try:
-            objconfiguration = configuration.objects.get(key = constants.configurationKey.minAppVersion)
-        except configuration.DoesNotExist:
-            #If not exists.It means no entry made for the minAppVersion
-            objconfiguration = configuration()
-            objconfiguration.value = 0
-                    
-        #set the minAppVersionto the response.
-        response = { 'minAppVersion' : objconfiguration.value }
-        
-        #Return the response
-        return Response({"response_message": constants.messages.success, "data": [response]})
-        
-        
+
 def getCodeIDs(codeGroupID):
     
     #Declare array.
