@@ -57,8 +57,11 @@ class selfLearningSerializer(serializers.ModelSerializer):
         fields = ( 'contentID', 'contentTitle' , 'contentType', 'topic' , 'requirementCodeIDs', 'instruction', 'fileType', 'fileName','author','objectives','language','createdOn','modifiedOn',)
  
 class chapterDetailSerializer(serializers.ModelSerializer):
+    
+    subjectCodeID = serializers.CharField(source= 'chapter.subject.codeID') 
+    gradeCodeID = serializers.CharField(source= 'chapter.grade.codeID')
      
     class Meta:
         model = chapterDetail
-        fields = ('chapter', 'chapterEng' ,'chapterMar',)
+        fields = ('chapter', 'chapterEng' ,'chapterMar','subjectCodeID','gradeCodeID',)
  
