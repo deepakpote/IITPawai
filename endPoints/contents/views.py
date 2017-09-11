@@ -38,7 +38,7 @@ class ContentViewSet(viewsets.ModelViewSet):
         
         subjectCodeIDs = request.data.get('subjectCodeIDs') 
         gradeCodeIDs = request.data.get('gradeCodeIDs')
-        chapterID = request.data.get('chapterID')
+        chapterIDs = request.data.get('chapterIDs')
         pageNumber = request.data.get('pageNumber')
         
         appLanguageCodeID = request.META.get('HTTP_APPLANGUAGECODEID')
@@ -186,9 +186,11 @@ class ContentViewSet(viewsets.ModelViewSet):
              return getContentFromEkStepAPI(subjectCodeIDs, gradeCodeIDs)
             
         #Get the applicable subject list for the respective user.    
-        arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs)         
+        arrSubjectCodeIDs = getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs)   
+        print "arrSubjectCodeIDs:",arrSubjectCodeIDs      
 
         arrSubjectCodeIDs = tuple(map(int, arrSubjectCodeIDs))
+        print "arrSubjectCodeIDs:",arrSubjectCodeIDs
         
         #print "arrSubjectCodeIDs : ",arrSubjectCodeIDs
         
@@ -212,11 +214,23 @@ class ContentViewSet(viewsets.ModelViewSet):
             # Added the check for uploadedBy.
             uploadedByCheck = 'CV.createdBy = ' + str(uploadedBy) + ' AND '
         
+        arrchapterID = []
         chapterCheck = ''
         # If subjectCodeIDs and gradeCodeIDs are provided then check for 'chapterID' only. 
-        if subjectCodeIDs and gradeCodeIDs and chapterID:
+        if subjectCodeIDs and gradeCodeIDs and chapterIDs:
+            #Get the array from comma sep string of fileTypeCodeIDs.
+            arrchapterID = getArray(chapterIDs)
+            print "arrchapterID:",arrchapterID
+            
+            arrchapterID = tuple(map(int, arrchapterID))
+            print "tuple(map(int, arrchapterID)):",tuple(map(int, arrchapterID))
+        
+            #If the length of arrchapterID is 1 then remove last comma.
+            if len(arrchapterID) == 1:
+                arrchapterID =  '(%s)' % ', '.join(map(repr, arrchapterID))
+            
             # Added check for Chapter. 
-            chapterCheck = 'CV.chapterID = ' + str(chapterID) + ' AND '
+            chapterCheck = 'CV.chapterID IN ' + str(arrchapterID) + ' AND '
             
                  
         # Connection
@@ -268,7 +282,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CV.subjectCodeID,
                                             CV.topicCodeID order by CV.contentID limit %s,%s"""%(appLanguageCodeID,str(arrFileTypeCodeID),str(arrStatusCodeID),constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
                        
-        #print "searchTeachingAidQuery:",searchTeachingAidQuery            
+        print "searchTeachingAidQuery:",searchTeachingAidQuery            
         cursor.execute(searchTeachingAidQuery)
     
         #Queryset
@@ -1643,7 +1657,15 @@ class ContentViewSet(viewsets.ModelViewSet):
        
         #Return the response
         return Response({"response_message": constants.messages.success, "data": [response]})
-        
+
+
+def getArray(myString):
+    # If myString parameter is passed, split it into an array
+    if myString:
+        arrOfMyStrings = myString.split(',')
+        return arrOfMyStrings
+
+      
 def getSearchContentApplicableSubjectCodeIDs(subjectCodeIDs):
     # If subjectCodeIDs parameter is passed, split it into an array
     if subjectCodeIDs:

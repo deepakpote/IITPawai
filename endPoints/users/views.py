@@ -24,7 +24,7 @@ from django.db import connection
 from datetime import datetime, timedelta
 from django.utils import timezone
 from contents.models import content , contentGrade
-from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs
+from contents.views import getSearchContentApplicableSubjectCodeIDs , getSearchContentApplicableGradeCodeIDs , getSearchContentApplicableTopicCodeIDs, getArray
 from time import gmtime, strftime
 from contents.serializers import contentSerializer , teachingAidSerializer , selfLearningSerializer
 from commons.views import getCodeIDs, getArrayFromCommaSepString, getUserIDFromAuthToken
@@ -1078,6 +1078,7 @@ class UserViewSet(viewsets.ModelViewSet):
         subjectCodeIDs = request.data.get('subjectCodeIDs') 
         gradeCodeIDs = request.data.get('gradeCodeIDs')
         fileTypeCodeIDs = request.data.get('fileTypeCodeIDs')
+        chapterIDs = request.data.get('chapterIDs')
         
         topicCodeIDs = request.data.get('topicCodeIDs') 
         languageCodeIDs = request.data.get('languageCodeIDs')
@@ -1165,10 +1166,14 @@ class UserViewSet(viewsets.ModelViewSet):
                 # Get codeIDs related to filetype codegroup
                 arrContentFileTypeCodeID = getCodeIDs(constants.mitraCodeGroup.fileType)
             else:
+                print "arrContentFileTypeCodeID:"
                 #Get the array from comma sep string of fileTypeCodeIDs.
-                arrContentFileTypeCodeID = getArrayFromCommaSepString(fileTypeCodeIDs)
+                arrContentFileTypeCodeID = getArray(fileTypeCodeIDs)
                 
+            print "arrContentFileTypeCodeID:",arrContentFileTypeCodeID
+            
             arrContentFileTypeCodeID = tuple(map(int, arrContentFileTypeCodeID))
+            print "tuple(map(int, arrContentFileTypeCodeID)):",tuple(map(int, arrContentFileTypeCodeID))
         
             #If the length of filetypecodeID is 1 then remove last comma.
             if len(arrContentFileTypeCodeID) == 1:
@@ -1176,6 +1181,25 @@ class UserViewSet(viewsets.ModelViewSet):
                 
             #Get the applicable content for GradeCodeID.
             #arrContentID = list(contentGrade.objects.filter(grade__in = arrGradeCodeIDs).values_list('content',flat = True).distinct())
+       
+            arrchapterID = []
+            chapterCheck = ''
+            # If subjectCodeIDs and gradeCodeIDs are provided then check for 'chapterID' only. 
+            if subjectCodeIDs and gradeCodeIDs and chapterIDs:
+                #Get the array from comma sep string of fileTypeCodeIDs.
+                arrchapterID = getArray(chapterIDs)
+                print "arrchapterID:",arrchapterID
+                
+                arrchapterID = tuple(map(int, arrchapterID))
+                print "tuple(map(int, arrchapterID)):",tuple(map(int, arrchapterID))
+            
+                #If the length of arrchapterID is 1 then remove last comma.
+                if len(arrchapterID) == 1:
+                    arrchapterID =  '(%s)' % ', '.join(map(repr, arrchapterID))
+                
+                # Added check for Chapter. 
+                chapterCheck = 'CC.chapterID IN ' + str(arrchapterID) + ' AND '
+       
        
             # Connection
             cursor = connection.cursor()  
@@ -1207,7 +1231,7 @@ class UserViewSet(viewsets.ModelViewSet):
                                                 INNER JOIN con_contentGrade CG ON CC.contentID = CG.contentID 
                                                 INNER JOIN usr_userContent UC ON CC.contentID = UC.contentID
                                                 INNER JOIN con_contentDetail CCG ON CC.contentID = CCG.contentID
-                                                where UC.userID = %s
+                                                where """ + chapterCheck +  """ UC.userID = %s
                                                 and CC.fileTypeCodeID IN %s 
                                                 and CC.contentTypeCodeID = %s 
                                                 and CC.subjectCodeID IN %s 
@@ -1215,7 +1239,8 @@ class UserViewSet(viewsets.ModelViewSet):
                                                 and CCG.appLanguageCodeID = %s
                                                 group by CC.contentID, CCG.contentTitle, CC.requirement, CCG.instruction, CC.fileName, CCG.author, CC.objectives, CC.contentTypeCodeID, CC.fileTypeCodeID, CC.languageCodeID, CC.subjectCodeID,
                                                 CC.topicCodeID order by CC.contentID"""%(userID,arrContentFileTypeCodeID,107100,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),appLanguageCodeID)
-                                          
+                         
+            print "searchTeachingAidQuery:",searchTeachingAidQuery                              
             cursor.execute(searchTeachingAidQuery)
             
             #Queryset
