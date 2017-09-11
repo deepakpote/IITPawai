@@ -282,7 +282,7 @@ class ContentViewSet(viewsets.ModelViewSet):
                                             CV.subjectCodeID,
                                             CV.topicCodeID order by CV.contentID limit %s,%s"""%(appLanguageCodeID,str(arrFileTypeCodeID),str(arrStatusCodeID),constants.mitraCode.teachingAids,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),fromRecord,pageNumber)
                        
-        print "searchTeachingAidQuery:",searchTeachingAidQuery            
+        #print "searchTeachingAidQuery:",searchTeachingAidQuery            
         cursor.execute(searchTeachingAidQuery)
     
         #Queryset

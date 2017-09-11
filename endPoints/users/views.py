@@ -1239,8 +1239,7 @@ class UserViewSet(viewsets.ModelViewSet):
                                                 and CCG.appLanguageCodeID = %s
                                                 group by CC.contentID, CCG.contentTitle, CC.requirement, CCG.instruction, CC.fileName, CCG.author, CC.objectives, CC.contentTypeCodeID, CC.fileTypeCodeID, CC.languageCodeID, CC.subjectCodeID,
                                                 CC.topicCodeID order by CC.contentID"""%(userID,arrContentFileTypeCodeID,107100,str(arrSubjectCodeIDs),str(arrGradeCodeIDs),appLanguageCodeID)
-                         
-            print "searchTeachingAidQuery:",searchTeachingAidQuery                              
+                                                
             cursor.execute(searchTeachingAidQuery)
             
             #Queryset
